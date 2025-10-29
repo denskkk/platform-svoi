@@ -1,0 +1,135 @@
+'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Логіка входу
+    console.log('Login:', { email, password })
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Логотип */}
+        <div className="text-center">
+          <Link href="/" className="inline-flex items-center space-x-2 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">С</span>
+            </div>
+            <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
+          </Link>
+          <h2 className="text-3xl font-bold text-neutral-900 mb-2">
+            Вітаємо знову!
+          </h2>
+          <p className="text-neutral-600">
+            Увійдіть, щоб продовжити роботу
+          </p>
+        </div>
+
+        {/* Форма */}
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+                Email або телефон
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-neutral-400" />
+                </div>
+                <input
+                  id="email"
+                  type="text"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="example@email.com"
+                />
+              </div>
+            </div>
+
+            {/* Пароль */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+                Пароль
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-neutral-400" />
+                </div>
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="block w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-neutral-400 hover:text-neutral-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-neutral-400 hover:text-neutral-600" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Запам'ятати мене */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                />
+                <label htmlFor="remember" className="ml-2 block text-sm text-neutral-700">
+                  Запам'ятати мене
+                </label>
+              </div>
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-primary-600 hover:text-primary-700"
+              >
+                Забули пароль?
+              </Link>
+            </div>
+
+            {/* Кнопка входу */}
+            <button
+              type="submit"
+              className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+            >
+              Увійти
+            </button>
+          </form>
+
+          {/* Реєстрація */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-neutral-600">
+              Ще не маєте профілю?{' '}
+              <Link href="/auth/register" className="text-primary-600 hover:text-primary-700 font-medium">
+                Створити профіль
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
