@@ -759,7 +759,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Склад сім'ї */}
                 {profile.familyComposition && (
                   <div>
-                    <p className="font-medium text-neutral-900">Склад сім'ї</p>
+                    <p className="font-medium text-neutral-900">Склад сім&apos;ї</p>
                     <p className="text-sm text-neutral-600">{profile.familyComposition}</p>
                   </div>
                 )}

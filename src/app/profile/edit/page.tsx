@@ -473,7 +473,7 @@ export default function EditProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Ім'я *
+                      Ім&apos;я *
                     </label>
                     <input
                       type="text"
@@ -593,7 +593,7 @@ export default function EditProfilePage() {
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Склад сім'ї
+                    Склад сім&apos;ї
                   </label>
                   <textarea
                     name="familyComposition"

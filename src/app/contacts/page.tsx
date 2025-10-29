@@ -34,10 +34,10 @@ export default function ContactsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Зв'яжіться з нами
+            Зв&apos;яжіться з нами
           </h1>
           <p className="text-xl text-gray-600">
-            Ми завжди раді допомогти вам. Оберіть зручний спосіб зв'язку.
+            Ми завжди раді допомогти вам. Оберіть зручний спосіб зв&apos;язку.
           </p>
         </div>
 
@@ -110,7 +110,7 @@ export default function ContactsPage() {
                 </div>
                 <div className="ml-4">
                   <h3 className="font-semibold text-gray-900">Години роботи</h3>
-                  <p className="text-gray-600">Понеділок - П'ятниця: 9:00 - 18:00</p>
+                  <p className="text-gray-600">Понеділок - П&apos;ятниця: 9:00 - 18:00</p>
                   <p className="text-gray-600">Субота: 10:00 - 14:00</p>
                   <p className="text-gray-600">Неділя: Вихідний</p>
                 </div>
@@ -163,7 +163,7 @@ export default function ContactsPage() {
             <form className="space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Ваше ім'я *
+                  Ваше ім&apos;я *
                 </label>
                 <input
                   type="text"
@@ -244,7 +244,7 @@ export default function ContactsPage() {
               </button>
 
               <p className="text-sm text-gray-500 text-center">
-                Поля позначені * є обов'язковими
+                Поля позначені * є обов&apos;язковими
               </p>
             </form>
           </div>
@@ -262,7 +262,7 @@ export default function ContactsPage() {
                 Як зареєструватися на платформі?
               </summary>
               <p className="mt-2 text-gray-600">
-                Натисніть кнопку "Реєстрація" у верхньому меню, заповніть форму та підтвердіть email. 
+                Натисніть кнопку &quot;Реєстрація&quot; у верхньому меню, заповніть форму та підтвердіть email. 
                 Це займе лише кілька хвилин!
               </p>
             </details>
@@ -281,7 +281,7 @@ export default function ContactsPage() {
                 Як залишити відгук про послугу?
               </summary>
               <p className="mt-2 text-gray-600">
-                Перейдіть на сторінку послуги, прокрутіть до розділу відгуків та натисніть "Додати відгук". 
+                Перейдіть на сторінку послуги, прокрутіть до розділу відгуків та натисніть &quot;Додати відгук&quot;. 
                 Ви можете поставити оцінку та написати коментар.
               </p>
             </details>
@@ -291,7 +291,7 @@ export default function ContactsPage() {
                 Що робити, якщо забув пароль?
               </summary>
               <p className="mt-2 text-gray-600">
-                На сторінці входу натисніть "Забули пароль?", введіть свій email та отримаєте 
+                На сторінці входу натисніть &quot;Забули пароль?&quot;, введіть свій email та отримаєте 
                 посилання для відновлення паролю.
               </p>
             </details>
@@ -301,7 +301,7 @@ export default function ContactsPage() {
                 Як стати бізнес-акаунтом?
               </summary>
               <p className="mt-2 text-gray-600">
-                При реєстрації оберіть тип акаунту "Підприємець" або змініть тип у налаштуваннях профілю. 
+                При реєстрації оберіть тип акаунту &quot;Підприємець&quot; або змініть тип у налаштуваннях профілю. 
                 Після цього ви зможете додавати послуги та отримувати відгуки.
               </p>
             </details>

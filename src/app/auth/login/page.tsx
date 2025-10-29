@@ -99,7 +99,7 @@ export default function LoginPage() {
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
                 />
                 <label htmlFor="remember" className="ml-2 block text-sm text-neutral-700">
-                  Запам'ятати мене
+                  Запам&apos;ятати мене
                 </label>
               </div>
               <Link

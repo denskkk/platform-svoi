@@ -550,7 +550,7 @@ export default function BusinessQuestionnairePage() {
           🌐 Контакти та соцмережі
         </h2>
         <p className="text-neutral-600">
-          Як з вами зв'язатись
+          Як з вами зв&apos;язатись
         </p>
       </div>
 

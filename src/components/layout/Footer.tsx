@@ -24,7 +24,7 @@ export function Footer() {
             </p>
             <div className="flex items-center space-x-2 text-sm text-neutral-400">
               <Heart className="w-4 h-4 text-primary-500" />
-              <span>Зроблено з любов'ю до України</span>
+              <span>Зроблено з любов&apos;ю до України</span>
             </div>
           </div>
 

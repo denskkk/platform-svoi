@@ -33,7 +33,7 @@ export default function AboutPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">
-            Про платформу "Свій для Своїх"
+            Про платформу &quot;Свій для Своїх&quot;
           </h1>
 
           <div className="prose prose-lg max-w-none">
@@ -52,7 +52,7 @@ export default function AboutPage() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                💡 Чому "Свій для Своїх"?
+                💡 Чому &quot;Свій для Своїх&quot;?
               </h2>
               <ul className="list-disc list-inside text-gray-600 space-y-2">
                 <li>

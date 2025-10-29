@@ -111,7 +111,7 @@ export default function RegisterBusinessPage() {
             {/* Ім'я представника */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
-                Ваше ім'я (представника компанії)
+                Ваше ім&apos;я (представника компанії)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -132,7 +132,7 @@ export default function RegisterBusinessPage() {
             {/* Назва компанії */}
             <div>
               <label htmlFor="companyName" className="block text-sm font-medium text-neutral-700 mb-2">
-                Назва компанії (необов'язково)
+                Назва компанії (необов&apos;язково)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -153,7 +153,7 @@ export default function RegisterBusinessPage() {
             {/* Посада */}
             <div>
               <label htmlFor="position" className="block text-sm font-medium text-neutral-700 mb-2">
-                Ваша посада (необов'язково)
+                Ваша посада (необов&apos;язково)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
