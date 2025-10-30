@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
     // Повернути користувача без пароля
     const { passwordHash, ...userWithoutPassword } = user;
 
-    // Створити відповідь БЕЗ токена в JSON (токен буде в httpOnly cookie)
+    // Створити відповідь і ТАКОЖ повернути token в JSON для localStorage (для HTTP без SSL)
     const response = NextResponse.json({
       success: true,
       message: 'Вхід успішний!',
       user: userWithoutPassword,
-      // НЕ повертаємо token в JSON - він буде в httpOnly cookie
+      token,
     });
 
     // Зберегти токен в httpOnly cookie (безпечно від XSS атак)
