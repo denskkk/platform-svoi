@@ -19,13 +19,38 @@ export function Navbar() {
         setUser(storedUser ? JSON.parse(storedUser) : null)
       } catch {
         setUser(null)
+      }
+    }
+
+    const syncWithServer = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' })
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+          try {
+            localStorage.setItem('user', JSON.stringify(data.user))
+          } catch {}
+        } else {
+          // Якщо сесії нема — прибираємо потенційно застарілі localStorage дані
+          try {
+            localStorage.removeItem('user')
+            localStorage.removeItem('token')
+          } catch {}
+          setUser(null)
+        }
+      } catch {
+        // Не блокуємо UI у випадку помилки мережі
       } finally {
         setIsLoading(false)
       }
     }
 
-    // Initial read with tiny delay to avoid flash
-    const timer = setTimeout(readUser, 100)
+    // Initial read with tiny delay to avoid flash, потім валідація на сервері
+    const timer = setTimeout(() => {
+      readUser()
+      syncWithServer()
+    }, 100)
 
     // React to cross-tab/local updates
     const onStorage = (e: StorageEvent) => {
@@ -43,7 +68,7 @@ export function Navbar() {
     window.addEventListener('focus', onFocus)
 
     return () => {
-      clearTimeout(timer)
+  clearTimeout(timer)
       window.removeEventListener('storage', onStorage)
       window.removeEventListener('auth:changed', onAuthChanged as EventListener)
       window.removeEventListener('visibilitychange', onFocus)
@@ -51,11 +76,18 @@ export function Navbar() {
     }
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    } catch {}
+    try {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+    } catch {}
     setUser(null)
     setShowProfileMenu(false)
+    // Повідомляємо інші вкладки/компоненти
+    try { window.dispatchEvent(new Event('auth:changed')) } catch {}
     router.push('/')
   }
 
