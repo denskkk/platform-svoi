@@ -32,8 +32,13 @@ export default function LoginPage() {
       // Зберегти користувача та токен для клієнта
       if (data.user) saveUser(data.user)
       if (data.token) saveToken(data.token)
-      // Перехід на каталог
-      router.push('/catalog')
+      // Повідомити інші компоненти про зміну авторизації
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('auth:changed'))
+      }
+      // Перехід на профіль користувача
+      const target = data?.user?.id ? `/profile/${data.user.id}` : '/catalog'
+      router.push(target)
     } catch (err: any) {
       setError(err.message || 'Не вдалося увійти')
     } finally {

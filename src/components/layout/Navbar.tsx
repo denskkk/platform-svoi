@@ -13,18 +13,42 @@ export function Navbar() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Проверить авторизацию с задержкой для показа загрузки
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('user')
-      if (storedUser) {
-        setUser(JSON.parse(storedUser))
+    const readUser = () => {
+      try {
+        const storedUser = localStorage.getItem('user')
+        setUser(storedUser ? JSON.parse(storedUser) : null)
+      } catch {
+        setUser(null)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
-    
-    // Небольшая задержка чтобы избежать мерцания
-    const timer = setTimeout(checkAuth, 100)
-    return () => clearTimeout(timer)
+
+    // Initial read with tiny delay to avoid flash
+    const timer = setTimeout(readUser, 100)
+
+    // React to cross-tab/local updates
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'user') readUser()
+    }
+    window.addEventListener('storage', onStorage)
+
+    // React to explicit auth change events
+    const onAuthChanged = () => readUser()
+    window.addEventListener('auth:changed', onAuthChanged as EventListener)
+
+    // Refresh when tab gains focus
+    const onFocus = () => readUser()
+    window.addEventListener('visibilitychange', onFocus)
+    window.addEventListener('focus', onFocus)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('storage', onStorage)
+      window.removeEventListener('auth:changed', onAuthChanged as EventListener)
+      window.removeEventListener('visibilitychange', onFocus)
+      window.removeEventListener('focus', onFocus)
+    }
   }, [])
 
   const handleLogout = () => {
