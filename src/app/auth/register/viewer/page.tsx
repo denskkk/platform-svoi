@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone } from 'lucide-react';
+import { saveUser, saveToken } from '@/lib/client-auth';
 
 export default function ViewerRegisterPage() {
   const router = useRouter();
@@ -53,8 +54,8 @@ export default function ViewerRegisterPage() {
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          phone: formData.phone,
-          city: formData.city,
+          phone: formData.phone || undefined,
+          city: formData.city || undefined, // Не відправляти порожній рядок
           role: 'user', // Глядач = звичайний користувач
         }),
       });
@@ -65,9 +66,12 @@ export default function ViewerRegisterPage() {
         throw new Error(data.error || 'Помилка реєстрації');
       }
 
-      // Зберегти дані користувача
+      // Зберегти дані користувача та токен
       if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+        saveUser(data.user);
+      }
+      if (data.token) {
+        saveToken(data.token);
       }
 
       // Перенаправити на каталог послуг

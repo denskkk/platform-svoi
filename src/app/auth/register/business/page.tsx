@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff, Building2, Briefcase } from 'lucide-react'
 import { cities } from '@/lib/constants'
+import { saveUser, saveToken } from '@/lib/client-auth'
 
 export default function RegisterBusinessPage() {
   const router = useRouter()
@@ -56,7 +57,7 @@ export default function RegisterBusinessPage() {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
-          city: formData.city,
+          city: formData.city || undefined, // Не відправляти порожній рядок
           role: 'business',
         }),
       })
@@ -68,8 +69,12 @@ export default function RegisterBusinessPage() {
       }
 
       // Зберегти токен та дані користувача
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
+      if (data.token) {
+        saveToken(data.token)
+      }
+      if (data.user) {
+        saveUser(data.user)
+      }
 
       // Перейти на бізнес-анкету
       router.push('/auth/business-questionnaire')
@@ -215,7 +220,7 @@ export default function RegisterBusinessPage() {
             {/* Місто */}
             <div>
               <label htmlFor="city" className="block text-sm font-medium text-neutral-700 mb-2">
-                Місто (де працює компанія)
+                Місто (необов&apos;язково)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -223,17 +228,17 @@ export default function RegisterBusinessPage() {
                 </div>
                 <select
                   id="city"
-                  required
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 >
-                  <option value="">Оберіть місто</option>
+                  <option value="">Оберіть місто (необов&apos;язково)</option>
                   {cities.map((city) => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
               </div>
+              <p className="mt-1 text-xs text-neutral-500">Можете вказати пізніше в анкеті</p>
             </div>
 
             {/* Пароль */}

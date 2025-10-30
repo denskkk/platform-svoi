@@ -134,15 +134,15 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Створити відповідь БЕЗ токена в JSON
+    // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
       success: true,
       message: 'Реєстрація успішна!',
       user,
-      // НЕ повертаємо token в JSON
+      token, // Повертаємо токен для localStorage (буде використовуватись в бізнес-анкеті)
     }, { status: 201 });
 
-    // Зберегти токен в httpOnly cookie (безпечно від XSS атак)
+    // ТАКОЖ зберегти токен в httpOnly cookie для безпеки
     setAuthCookie(response, token);
 
     return response;
