@@ -161,8 +161,9 @@ export default function EditBusinessProfilePage() {
   const uploadLogo = async (): Promise<string | null> => {
     if (!logoFile) return null;
 
-    const formData = new FormData();
-    formData.append('file', logoFile);
+  const formData = new FormData();
+  formData.append('file', logoFile);
+  formData.append('type', 'logos');
 
     try {
       const response = await fetch('/api/upload', {
@@ -206,6 +207,7 @@ export default function EditBusinessProfilePage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           companyName: formData.companyName || null,

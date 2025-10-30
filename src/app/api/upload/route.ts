@@ -61,8 +61,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
+  const formData = await request.formData();
+  const file = formData.get('file') as File;
+  const rawType = (formData.get('type') as string) || 'avatars';
+  const allowedDirs = new Set(['avatars', 'logos', 'services', 'misc']);
+  const safeDir = allowedDirs.has(rawType) ? rawType : 'avatars';
     
     if (!file) {
       return NextResponse.json(
@@ -103,10 +106,10 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     
     const timestamp = Date.now();
-    const filename = `avatar-${timestamp}.webp`; // Завжди зберігаємо як WebP (найкраща компресія)
+  const filename = `${safeDir.slice(0, -1)}-${timestamp}.webp`; // name prefix from type; зберігаємо як WebP
     
     // Путь к папке uploads
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'avatars');
+  const uploadsDir = join(process.cwd(), 'public', 'uploads', safeDir);
     
     // Создаем папку если не существует
     if (!existsSync(uploadsDir)) {
@@ -135,7 +138,7 @@ export async function POST(request: NextRequest) {
     console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → ${optimizedSizeMB}MB`);
     
     // Возвращаем URL файла
-    const url = `/uploads/avatars/${filename}`;
+  const url = `/uploads/${safeDir}/${filename}`;
     
     return NextResponse.json({
       success: true,

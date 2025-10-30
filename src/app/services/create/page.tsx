@@ -104,8 +104,9 @@ export default function CreateServicePage() {
   const uploadImage = async (): Promise<string | null> => {
     if (!imageFile) return null;
 
-    const formData = new FormData();
-    formData.append('file', imageFile);
+  const formData = new FormData();
+  formData.append('file', imageFile);
+  formData.append('type', 'services');
 
     try {
       const response = await fetch('/api/upload', {

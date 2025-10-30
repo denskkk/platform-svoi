@@ -217,7 +217,7 @@ cat /etc/nginx/sites-available/sviydlyasvoih.com.ua
 sudo nano /etc/nginx/sites-available/sviydlyasvoih.com.ua
 ```
 
-**Вміст файлу:**
+**Вміст файлу (з прямою подачею статичних завантажень):**
 
 ```nginx
 server {
@@ -226,6 +226,15 @@ server {
 
     # Максимальний розмір файлу для завантаження
     client_max_body_size 10M;
+
+   # Статичні завантаження з диска (швидше і надійніше)
+   location /uploads/ {
+      alias /var/www/sviydlyasvoih/platform-svoi/public/uploads/;
+      access_log off;
+      expires 30d;
+      add_header Cache-Control "public, max-age=31536000, immutable";
+      try_files $uri $uri/ =404;
+   }
 
     location / {
         proxy_pass http://localhost:3000;

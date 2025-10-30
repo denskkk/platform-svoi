@@ -190,8 +190,9 @@ export default function EditProfilePage() {
   const uploadAvatar = async (): Promise<string | null> => {
     if (!avatarFile) return null;
 
-    const formData = new FormData();
-    formData.append('file', avatarFile);
+  const formData = new FormData();
+  formData.append('file', avatarFile);
+  formData.append('type', 'avatars');
 
     try {
       const response = await fetch('/api/upload', {
@@ -288,6 +289,7 @@ export default function EditProfilePage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });
