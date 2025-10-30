@@ -55,7 +55,7 @@ model User {
   passwordHash String   @map("password_hash") @db.VarChar(255)
   
   // Локація
-  city         String   @db.VarChar(100)
+  city         String?  @db.VarChar(100)
   region       String?  @db.VarChar(100)
   housingType  String?  @map("housing_type") @db.VarChar(50) // будинок / квартира / інше
   livingSituation String? @map("living_situation") @db.VarChar(100) // самостійно / з родиною
@@ -167,7 +167,7 @@ model Service {
   priceUnit   String?  @map("price_unit") @db.VarChar(50)
   
   // Локація
-  city        String   @db.VarChar(100)
+  city        String?  @db.VarChar(100)
   region      String?  @db.VarChar(100)
   address     String?  @db.VarChar(255)
   
