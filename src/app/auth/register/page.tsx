@@ -5,9 +5,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Users, Briefcase, Eye } from 'lucide-react';
+import { Users, Briefcase } from 'lucide-react';
 
-type AccountType = 'individual' | 'business' | 'viewer';
+type AccountType = 'individual' | 'business';
 
 export default function RegisterPage() {
   const accountTypes = [
@@ -26,14 +26,6 @@ export default function RegisterPage() {
       icon: Briefcase,
       color: 'purple',
       href: '/auth/register/business',
-    },
-    {
-      id: 'viewer' as AccountType,
-      title: 'Глядач',
-      description: 'Я просто хочу переглянути послуги без реєстрації',
-      icon: Eye,
-      color: 'green',
-      href: '/catalog',
     },
   ];
 
@@ -54,7 +46,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Account Types */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+  <div className="grid md:grid-cols-2 gap-6 mb-8">
           {accountTypes.map((type) => {
             const Icon = type.icon;
             return (
@@ -81,7 +73,7 @@ export default function RegisterPage() {
         <div className="text-center">
           <p className="text-gray-600">
             Вже є акаунт?{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+            <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
               Увійти
             </Link>
           </p>
