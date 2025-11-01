@@ -24,7 +24,15 @@ export function Navbar() {
 
     const syncWithServer = async () => {
       try {
-        const res = await fetch('/api/auth/me', { credentials: 'include' })
+        let token: string | null = null
+        try { token = localStorage.getItem('token') } catch {}
+        const headers: Record<string, string> = {}
+        if (token) headers['Authorization'] = `Bearer ${token}`
+
+        const res = await fetch('/api/auth/me', {
+          credentials: 'include',
+          headers,
+        })
         if (res.ok) {
           const data = await res.json()
           setUser(data.user)
