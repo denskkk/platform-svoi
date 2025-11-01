@@ -75,19 +75,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Валідація типу файлу (тільки безпечні формати зображень)
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    // Додаємо підтримку HEIC/HEIF (часто з iPhone)
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/heic',
+      'image/heif',
+    ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Дозволені тільки зображення: JPG, PNG, WebP, GIF' },
+        { error: 'Дозволені тільки зображення: JPG, PNG, WebP, GIF, HEIC/HEIF' },
         { status: 400 }
       );
     }
 
-    // Валідація розміру файлу (максимум 5MB)
-    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    // Валідація розміру файлу (максимум 10MB)
+    // Узгоджено з Nginx client_max_body_size (переконайтесь, що в конфігурації 10M або більше)
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: 'Файл занадто великий. Максимум 5MB' },
+        { error: 'Файл занадто великий. Максимум 10MB' },
         { status: 400 }
       );
     }
@@ -116,17 +126,35 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadsDir, { recursive: true });
     }
 
-    // Оптимізуємо зображення:
-    // - Resize до 400x400 (достатньо для аватарів)
-    // - Конвертуємо в WebP (краща компресія ніж JPEG/PNG)
-    // - Якість 85% (баланс між розміром та якістю)
-    const optimizedBuffer = await sharp(buffer)
-      .resize(400, 400, {
-        fit: 'cover', // Обрізає зображення щоб заповнити квадрат
-        position: 'center'
-      })
-      .webp({ quality: 85 })
-      .toBuffer();
+    // Оптимізуємо зображення залежно від типу каталогу:
+    // - avatars/logos: 400x400
+    // - services: до 1200x800 (cover)
+    // - misc: до 800x800 (cover)
+    const isAvatar = safeDir === 'avatars' || safeDir === 'logos';
+    const isService = safeDir === 'services';
+
+    let pipeline = sharp(buffer);
+
+    if (isAvatar) {
+      pipeline = pipeline.resize(400, 400, {
+        fit: 'cover',
+        position: 'center',
+      });
+    } else if (isService) {
+      pipeline = pipeline.resize(1200, 800, {
+        fit: 'cover',
+        position: 'center',
+        withoutEnlargement: true,
+      });
+    } else {
+      pipeline = pipeline.resize(800, 800, {
+        fit: 'cover',
+        position: 'center',
+        withoutEnlargement: true,
+      });
+    }
+
+    const optimizedBuffer = await pipeline.webp({ quality: 85 }).toBuffer();
 
     // Сохраняем оптимізований файл
     const filepath = join(uploadsDir, filename);

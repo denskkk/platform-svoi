@@ -168,8 +168,8 @@ export default function EditProfilePage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 5MB');
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Файл занадто великий. Максимум 10MB');
         return;
       }
       
@@ -379,7 +379,7 @@ export default function EditProfilePage() {
               <div>
                 <h3 className="font-semibold text-neutral-900">Фото профілю</h3>
                 <p className="text-sm text-neutral-600 mt-1">
-                  JPG, PNG або GIF. Максимум 5MB
+                  JPG, PNG, GIF або HEIC. Максимум 10MB
                 </p>
                 {avatarFile && (
                   <p className="text-sm text-primary-600 mt-1">

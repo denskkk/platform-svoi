@@ -139,8 +139,8 @@ export default function EditBusinessProfilePage() {
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 5MB');
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Файл занадто великий. Максимум 10MB');
         return;
       }
       
@@ -314,7 +314,7 @@ export default function EditBusinessProfilePage() {
               <div>
                 <h3 className="font-semibold text-neutral-900">Лого компанії</h3>
                 <p className="text-sm text-neutral-600 mt-1">
-                  PNG або JPG з прозорим фоном. Максимум 5MB
+                  PNG, JPG або HEIC (бажано з прозорим фоном). Максимум 10MB
                 </p>
                 {logoFile && (
                   <p className="text-sm text-accent-600 mt-1">

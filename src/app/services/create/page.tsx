@@ -76,8 +76,8 @@ export default function CreateServicePage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 5MB');
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Файл занадто великий. Максимум 10MB');
         return;
       }
       
@@ -308,7 +308,7 @@ export default function CreateServicePage() {
                     <p className="mb-2 text-sm text-gray-600">
                       <span className="font-semibold">Натисніть для вибору</span> або перетягніть
                     </p>
-                    <p className="text-xs text-gray-500">PNG, JPG до 5MB</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, HEIC до 10MB</p>
                   </div>
                   <input
                     id="image-upload"
