@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Search } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export function HeroSection() {
@@ -10,6 +10,17 @@ export function HeroSection() {
   const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('')
   const [city, setCity] = useState('')
+  const [isAuthed, setIsAuthed] = useState<boolean | null>(null)
+
+  // Мінімальна перевірка: якщо у localStorage є user — ховаємо CTA реєстрації
+  useEffect(() => {
+    try {
+      const u = localStorage.getItem('user')
+      setIsAuthed(!!u)
+    } catch {
+      setIsAuthed(false)
+    }
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -116,21 +127,23 @@ export function HeroSection() {
           </button>
         </form>
 
-        {/* Прямий заклик до дії: реєстрація/вхід видно одразу на головній */}
-        <div className="max-w-4xl mx-auto mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 justify-center animate-slide-up">
-          <Link
-            href="/auth/register"
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-lg bg-accent-500 hover:bg-accent-600 text-white font-semibold shadow-lg hover:shadow-xl transition-colors"
-          >
-            Створити профіль
-          </Link>
-          <Link
-            href="/auth/login"
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50 font-medium transition-colors"
-          >
-            Увійти
-          </Link>
-        </div>
+        {/* Прямий заклик до дії: реєстрація/вхід видно одразу на головній (тільки якщо не залогінений) */}
+        {isAuthed === false && (
+          <div className="max-w-4xl mx-auto mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 justify-center animate-slide-up">
+            <Link
+              href="/auth/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-lg bg-accent-500 hover:bg-accent-600 text-white font-semibold shadow-lg hover:shadow-xl transition-colors"
+            >
+              Створити профіль
+            </Link>
+            <Link
+              href="/auth/login"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50 font-medium transition-colors"
+            >
+              Увійти
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   )

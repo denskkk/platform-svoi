@@ -226,6 +226,16 @@ export function Navbar() {
               </div>
             )}
 
+            {/* Mobile: Показати CTA реєстрації одразу у шапці, якщо не залогінений */}
+            {!isLoading && !user && (
+              <Link
+                href="/auth/register"
+                className="md:hidden px-3 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium text-sm"
+              >
+                Створити профіль
+              </Link>
+            )}
+
             <button
               className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
