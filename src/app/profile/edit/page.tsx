@@ -711,7 +711,7 @@ export default function EditProfilePage() {
                   {formData.hasCar === 'yes' && (
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Марка, модель авто
+                        Марка та модель авто <span className="text-neutral-400 font-normal">(без держномера)</span>
                       </label>
                       <input
                         type="text"
@@ -719,7 +719,9 @@ export default function EditProfilePage() {
                         value={formData.carInfo}
                         onChange={handleChange}
                         className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Наприклад: Toyota Camry 2020"
                       />
+                      <p className="mt-1 text-xs text-neutral-500">Не вказуйте державний номер авто з міркувань конфіденційності.</p>
                     </div>
                   )}
 
