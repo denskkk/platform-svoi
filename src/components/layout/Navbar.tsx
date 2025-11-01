@@ -94,6 +94,7 @@ export function Navbar() {
     } catch {}
     setUser(null)
     setShowProfileMenu(false)
+    setIsMenuOpen(false)
     // Повідомляємо інші вкладки/компоненти
     try { window.dispatchEvent(new Event('auth:changed')) } catch {}
     router.push('/')
@@ -280,21 +281,76 @@ export function Navbar() {
             >
               Контакти
             </Link>
+
+            {/* Auth-dependent section */}
             <div className="pt-2 border-t border-neutral-200">
-              <Link
-                href="/auth/login"
-                className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Увійти
-              </Link>
-              <Link
-                href="/auth/register"
-                className="block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium text-center mt-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Створити профіль
-              </Link>
+              {isLoading ? (
+                <>
+                  <div className="h-10 bg-neutral-200 rounded-lg animate-pulse mb-2"></div>
+                  <div className="h-10 bg-neutral-200 rounded-lg animate-pulse"></div>
+                </>
+              ) : user ? (
+                <>
+                  <Link
+                    href={`/profile/${user.id}`}
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Мій профіль
+                  </Link>
+                  <Link
+                    href="/profile/edit"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Редагувати профіль
+                  </Link>
+                  <Link
+                    href="/services/create"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    + Додати послугу
+                  </Link>
+                  <Link
+                    href="/favorites"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Обране
+                  </Link>
+                  <Link
+                    href="/messages"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Повідомлення
+                  </Link>
+                  <button
+                    onClick={async () => { await handleLogout(); setIsMenuOpen(false) }}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                  >
+                    Вийти
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Увійти
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium text-center mt-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Створити профіль
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
