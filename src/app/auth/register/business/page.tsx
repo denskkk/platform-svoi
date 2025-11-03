@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -13,7 +13,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-export default function RegisterBusinessPage() {
+function BusinessRegistrationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isPremium = searchParams?.get("premium") === "true";
@@ -730,5 +730,20 @@ export default function RegisterBusinessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterBusinessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Завантаження...</p>
+        </div>
+      </div>
+    }>
+      <BusinessRegistrationForm />
+    </Suspense>
   );
 }
