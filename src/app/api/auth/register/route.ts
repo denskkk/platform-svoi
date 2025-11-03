@@ -36,12 +36,46 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { firstName, lastName, email, password, phone, city, role = 'user' } = body;
+    const { 
+      firstName, 
+      lastName, 
+      email, 
+      password, 
+      phone, 
+      city, 
+      role = 'user',
+      accountType = 'basic',
+      // Extended fields
+      educationLevel,
+      educationDetails,
+      employmentStatus,
+      industry,
+      workExperience,
+      childrenAges,
+      housingType,
+      hasCar,
+      carInfo,
+      hasPets,
+      petsInfo,
+      hobbies,
+      foodPreferences,
+      shoppingPreferences,
+      travelPreferences
+    } = body;
 
     // Валідація обов'язкових полів
     if (!firstName || !lastName || !email || !password) {
       return NextResponse.json(
         { error: 'Заповніть всі обов\'язкові поля' },
+        { status: 400 }
+      );
+    }
+
+    // Валідація accountType
+    const validAccountTypes = ['guest', 'basic', 'extended'];
+    if (!validAccountTypes.includes(accountType)) {
+      return NextResponse.json(
+        { error: 'Невірний тип акаунту' },
         { status: 400 }
       );
     }
@@ -55,20 +89,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Валідація пароля (мінімум 8 символів, має містити букви та цифри)
-    if (password.length < 8) {
+    // Валідація пароля (мінімум 6 символів для всіх типів)
+    if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Пароль має містити мінімум 8 символів' },
-        { status: 400 }
-      );
-    }
-
-    const hasLetter = /[a-zA-Z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    
-    if (!hasLetter || !hasNumber) {
-      return NextResponse.json(
-        { error: 'Пароль має містити букви та цифри' },
+        { error: 'Пароль має містити мінімум 6 символів' },
         { status: 400 }
       );
     }
@@ -88,17 +112,34 @@ export async function POST(request: NextRequest) {
     // Хешування пароля
     const passwordHash = await hashPassword(password);
 
-    // Створення користувача
+    // Створення користувача з усіма полями
     const user = await prisma.user.create({
       data: {
         role,
+        accountType,
         firstName,
         lastName,
         email,
-        phone,
-        city,
+        phone: phone || null,
+        city: city || null,
         passwordHash,
         isVerified: false,
+        // Extended fields (для extended акаунтів)
+        educationLevel: educationLevel || null,
+        educationDetails: educationDetails || null,
+        employmentStatus: employmentStatus || null,
+        industry: industry || null,
+        workExperience: workExperience || null,
+        childrenAges: childrenAges || null, // JSON
+        housingType: housingType || null,
+        hasCar: hasCar || null,
+        carInfo: carInfo || null,
+        hasPets: hasPets || null,
+        petsInfo: petsInfo || null,
+        hobbies: hobbies || null,
+        foodPreferences: foodPreferences || null,
+        shoppingPreferences: shoppingPreferences || null,
+        travelPreferences: travelPreferences || null,
       },
       select: {
         id: true,
@@ -106,9 +147,12 @@ export async function POST(request: NextRequest) {
         lastName: true,
         email: true,
         role: true,
+        accountType: true,
         city: true,
         avatarUrl: true,
         isVerified: true,
+        educationLevel: true,
+        employmentStatus: true,
         createdAt: true,
       }
     });
@@ -137,9 +181,11 @@ export async function POST(request: NextRequest) {
     // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
       success: true,
-      message: 'Реєстрація успішна!',
+      message: accountType === 'extended' 
+        ? 'Розширений акаунт успішно створено!' 
+        : 'Реєстрація успішна!',
       user,
-      token, // Повертаємо токен для localStorage (буде використовуватись в бізнес-анкеті)
+      token,
     }, { status: 201 });
 
     // ТАКОЖ зберегти токен в httpOnly cookie для безпеки

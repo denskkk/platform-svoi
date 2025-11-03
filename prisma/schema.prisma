@@ -25,6 +25,51 @@ enum UserRole {
   admin
 }
 
+enum AccountType {
+  guest           // Гість - тільки перегляд, без реєстрації
+  basic           // Звичайний - безкоштовний, базові функції
+  extended        // Розширений - платний, повний профіль + заявки + пошук
+  business        // Бізнес - платний, базова реклама
+  business_premium // Бізнес Преміум - платний, повна реклама + пропозиції
+}
+
+enum EducationLevel {
+  secondary       // Середня
+  college         // Коледж
+  bachelor        // Бакалавр
+  master          // Магістр
+  doctorate       // Аспірантура
+}
+
+enum FOPGroup {
+  group1
+  group2
+  group3
+}
+
+enum CompanyType {
+  fop             // ФОП
+  tov             // ТОВ
+  other           // Інше
+}
+
+enum RequestType {
+  job             // Пошук роботи
+  partner         // Пошук партнера
+  service         // Потрібна послуга
+  product         // Потрібен товар
+  investor        // Пошук інвестора
+  employee        // Пошук працівника
+  other           // Інше
+}
+
+enum RequestStatus {
+  active          // Активна
+  in_progress     // В процесі
+  completed       // Виконана
+  cancelled       // Скасована
+}
+
 enum Gender {
   male
   female
@@ -45,6 +90,7 @@ enum ReportStatus {
 model User {
   id           Int      @id @default(autoincrement()) @map("user_id")
   role         UserRole @default(user)
+  accountType  AccountType @default(basic) @map("account_type")
   
   // Основна інформація
   firstName    String   @map("first_name") @db.VarChar(100)
@@ -54,46 +100,76 @@ model User {
   phone        String?  @db.VarChar(30)
   passwordHash String   @map("password_hash") @db.VarChar(255)
   
+  // УЦМ (Українська Цивільна Місія)
+  ucmMember    Boolean? @map("ucm_member") // Участник команди УЦМ
+  ucmSupporter Boolean? @map("ucm_supporter") // Підтримуєш проєкти УЦМ
+  
   // Локація
   city         String?  @db.VarChar(100)
   region       String?  @db.VarChar(100)
   housingType  String?  @map("housing_type") @db.VarChar(50) // будинок / квартира / інше
+  housingDetails Json?  @map("housing_details") @default("{}") // гараж, двір, сад для будинку
   livingSituation String? @map("living_situation") @db.VarChar(100) // самостійно / з родиною
   
   // Персональна інформація
   gender       Gender?
   age          Int?
-  maritalStatus String? @map("marital_status") @db.VarChar(50) // одружений / неодружений / у стосунках / розлучений
+  maritalStatus String? @map("marital_status") @db.VarChar(50) // одружений / неодружений / у стосунках / розлучений / вдова
   familyComposition String? @map("family_composition") @db.Text // склад сім'ї
   childrenCount Int?    @map("children_count") // кількість дітей
+  childrenAges Json?   @map("children_ages") @default("[]") // вік дітей для підбору садка/школи
   bio          String?  @db.Text
   avatarUrl    String?  @map("avatar_url") @db.VarChar(255)
   
   // Транспорт
   hasCar       Boolean? @map("has_car")
-  carInfo      String?  @map("car_info") @db.VarChar(200) // марка, модель
+  carInfo      String?  @map("car_info") @db.VarChar(200) // марка, модель, рік
+  carServices  Json?    @map("car_services") @default("{}") // СТО, мийка, автосалон
   otherTransport String? @map("other_transport") @db.VarChar(200) // велосипед / самокат
   
-  // Професійна діяльність
+  // Професійна діяльність та освіта
+  educationLevel EducationLevel? @map("education_level")
+  educationDetails String? @map("education_details") @db.Text // інститут, напрямок
   profession   String?  @db.VarChar(200)
-  employmentStatus String? @map("employment_status") @db.VarChar(100) // працюю / не працюю / студент / пенсіонер
+  employmentStatus String? @map("employment_status") @db.VarChar(100) // Працюю/Ні/Власник бізнесу/Сам на себе/В пошуку
   workplace    String?  @db.VarChar(255)
-  education    String?  @db.Text // освіта, спеціальність, заклад
   privateBusinessInfo String?  @map("business_info") @db.Text // інфо про приватний бізнес
   jobSeeking   String?  @map("job_seeking") @db.Text // в якій сфері шукає роботу
+  seekingPartTime Boolean? @map("seeking_part_time") // часткова зайнятість
+  seekingFullTime Boolean? @map("seeking_full_time") // повноцінна робота
+  wantsStartBusiness Boolean? @map("wants_start_business") // бажання відкрити свою справу
+  
+  // Історія роботи (останні 2-3 місця)
+  workHistory  Json?    @map("work_history") @default("[]") // [{company, position, duration, socialLinks}]
   
   // Домашні тварини
   hasPets      Boolean? @map("has_pets")
-  petsInfo     String?  @map("pets_info") @db.VarChar(255) // які тварини
+  petsInfo     String?  @map("pets_info") @db.VarChar(255) // кіт/пес/сільськогосподарські/інше
   
   // Інтереси та стиль життя
   hobbies      String?  @db.Text // хобі, захоплення
-  outdoorActivities String? @map("outdoor_activities") @db.Text // охота, рибалка, спорт
-  lifestyle    String?  @db.Text // кафе, ресторани, подорожі
+  outdoorActivities String? @map("outdoor_activities") @db.Text // охота, рибалка
+  lifestyle    String?  @db.Text // кафе, ресторани
   sports       String?  @db.Text // спортивна активність
+  beautyServices Json?  @map("beauty_services") @default("{}") // Перукар/манікюр/СПА/масаж
+  
+  // Споживчі переваги
+  usesDelivery Boolean? @map("uses_delivery") // Користується інтернет-доставкою
+  restaurantFrequency String? @map("restaurant_frequency") @db.VarChar(50) // рідко/по бажанню/часто/не хожу
+  cuisinePreference String? @map("cuisine_preference") @db.VarChar(100) // Домашня/Китайська/Європейська
+  usesServices Json?   @map("uses_services") @default("{}") // Електрик/Сантехнік/Клінінг/Будівельник/Садовник
+  
+  // Бізнес-спеціалісти (для підприємців)
+  usesBusinessServices Json? @map("uses_business_services") @default("{}") // Бухгалтер/Юрист/СММ/Рекламщик/Веб-спеціаліст
+  readyToSwitchToUCM Boolean? @map("ready_to_switch_ucm") // Готовий перейти на спеціалістів УЦМ
   
   // Соцмережі
   socialLinks  Json?    @map("social_links") @default("{}") // Instagram, Facebook, Telegram, TikTok
+  
+  // Підписка (для платних акаунтів)
+  subscriptionActive Boolean @default(false) @map("subscription_active")
+  subscriptionExpiresAt DateTime? @map("subscription_expires_at")
+  subscriptionStartedAt DateTime? @map("subscription_started_at")
   
   // Рейтинг
   avgRating    Decimal  @default(0.00) @map("avg_rating") @db.Decimal(3, 2)
@@ -109,6 +185,8 @@ model User {
   // Зв'язки
   services           Service[]
   businessInfo       BusinessInfo?
+  requests           Request[]
+  requestResponses   RequestResponse[]
   reviewsGiven       Review[]      @relation("ReviewerRelation")
   reviewsReceived    Review[]      @relation("ReviewedRelation")
   messagesSent       Message[]     @relation("SenderRelation")
@@ -120,10 +198,14 @@ model User {
   notifications      Notification[]
   sessions           Session[]
   searchLogs         SearchLog[]
+  subscriptions      Subscription[]
   
   @@index([email])
   @@index([city])
   @@index([role])
+  @@index([accountType])
+  @@index([employmentStatus])
+  @@index([subscriptionActive])
   @@index([createdAt])
   @@map("users")
 }
@@ -201,11 +283,20 @@ model BusinessInfo {
   
   // Основна інформація
   companyName   String   @map("company_name") @db.VarChar(200)
+  companyCode   String?  @map("company_code") @db.VarChar(50) // Код ЄДРПОУ
   representativeName String? @map("representative_name") @db.VarChar(200) // ПІБ представника
   position      String?  @db.VarChar(100) // Посада (власник / менеджер)
   city          String?  @db.VarChar(100) // Місто діяльності
   region        String?  @db.VarChar(100) // Регіон діяльності
   businessType  String?  @map("business_type") @db.VarChar(200) // Тип бізнесу / сфера
+  businessCategory String? @map("business_category") @db.VarChar(100) // Освіта/Продукти/Реклама/Інтернет-продажі/СТО
+  
+  // Тип компанії
+  companyType   CompanyType? @map("company_type")
+  fopGroup      FOPGroup?    @map("fop_group") // Для ФОП - група (1/2/3)
+  
+  // Що продаєте/покупаєте
+  offerType     String?  @map("offer_type") @db.VarChar(50) // Послуга/Товар
   
   logoUrl       String?  @map("logo_url") @db.VarChar(255)
   
@@ -243,6 +334,20 @@ model BusinessInfo {
   // Відгуки (зовнішні посилання)
   externalReviews Json?  @map("external_reviews") @default("{}") // Google, Facebook links
   
+  // Пошук (для Бізнес акаунтів)
+  seekingPartner   Boolean @default(false) @map("seeking_partner")
+  seekingInvestor  Boolean @default(false) @map("seeking_investor")
+  seekingCustomer  Boolean @default(false) @map("seeking_customer")
+  seekingEmployee  Boolean @default(false) @map("seeking_employee")
+  
+  seekingCriteria  Json?   @map("seeking_criteria") @default("{}") // Критерії пошуку
+  
+  // Преміум функції (тільки для business_premium)
+  offerToCustomers Boolean @default(false) @map("offer_to_customers") // Пропонувати споживачам
+  offerToPartners  Boolean @default(false) @map("offer_to_partners") // Пропонувати партнерам
+  offerToInvestors Boolean @default(false) @map("offer_to_investors") // Пропонувати інвесторам
+  wantsUCMAnalysis Boolean @default(false) @map("wants_ucm_analysis") // Потребує аналізу від УЦМ
+  
   // Додаткова інформація
   yearFounded   Int?     @map("year_founded")
   registrationType String? @map("registration_type") @db.VarChar(50) // ФОП / ТОВ
@@ -260,6 +365,8 @@ model BusinessInfo {
   @@index([userId])
   @@index([city])
   @@index([businessType])
+  @@index([businessCategory])
+  @@index([companyType])
   @@map("business_info")
 }
 
@@ -450,6 +557,118 @@ model SearchLog {
   @@index([createdAt(sort: Desc)])
   @@index([query])
   @@map("search_logs")
+}
+
+model Request {
+  id            Int           @id @default(autoincrement()) @map("request_id")
+  userId        Int           @map("user_id")
+  
+  // Тип та статус
+  type          RequestType
+  status        RequestStatus @default(active)
+  
+  // Деталі заявки
+  title         String        @db.VarChar(200)
+  description   String        @db.Text
+  
+  // Локація
+  city          String?       @db.VarChar(100)
+  region        String?       @db.VarChar(100)
+  
+  // Категорія (для послуг/товарів)
+  categoryId    Int?          @map("category_id")
+  
+  // Бюджет
+  budgetFrom    Decimal?      @map("budget_from") @db.Decimal(10, 2)
+  budgetTo      Decimal?      @map("budget_to") @db.Decimal(10, 2)
+  
+  // Терміни
+  deadlineAt    DateTime?     @map("deadline_at")
+  
+  // Додаткові критерії (JSON)
+  criteria      Json?         @default("{}")
+  
+  // Статистика
+  viewsCount    Int           @default(0) @map("views_count")
+  responsesCount Int          @default(0) @map("responses_count")
+  
+  // Метадані
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  completedAt   DateTime?     @map("completed_at")
+  
+  // Зв'язки
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  responses     RequestResponse[]
+  
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([city])
+  @@index([categoryId])
+  @@index([createdAt(sort: Desc)])
+  @@map("requests")
+}
+
+model RequestResponse {
+  id            Int      @id @default(autoincrement()) @map("response_id")
+  requestId     Int      @map("request_id")
+  userId        Int      @map("user_id")
+  
+  // Відповідь
+  message       String   @db.Text
+  price         Decimal? @db.Decimal(10, 2)
+  timeframe     String?  @db.VarChar(100) // Терміни виконання
+  
+  // Статус
+  isAccepted    Boolean  @default(false) @map("is_accepted")
+  isViewed      Boolean  @default(false) @map("is_viewed")
+  
+  // Метадані
+  createdAt     DateTime @default(now()) @map("created_at")
+  viewedAt      DateTime? @map("viewed_at")
+  
+  // Зв'язки
+  request       Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([requestId])
+  @@index([userId])
+  @@index([isAccepted])
+  @@index([createdAt(sort: Desc)])
+  @@map("request_responses")
+}
+
+model Subscription {
+  id            Int      @id @default(autoincrement()) @map("subscription_id")
+  userId        Int      @map("user_id")
+  
+  // Тип та статус
+  accountType   AccountType
+  isActive      Boolean  @default(true) @map("is_active")
+  
+  // Період
+  startedAt     DateTime @default(now()) @map("started_at")
+  expiresAt     DateTime @map("expires_at")
+  
+  // Оплата
+  amount        Decimal  @db.Decimal(10, 2)
+  currency      String   @default("UAH") @db.VarChar(10)
+  paymentMethod String?  @map("payment_method") @db.VarChar(50)
+  transactionId String?  @map("transaction_id") @db.VarChar(100)
+  
+  // Метадані
+  createdAt     DateTime @default(now()) @map("created_at")
+  cancelledAt   DateTime? @map("cancelled_at")
+  
+  // Зв'язки
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([accountType])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("subscriptions")
 }
 
 model City {
