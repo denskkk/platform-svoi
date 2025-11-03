@@ -1,14 +1,20 @@
 // Категорії послуг
 export const categories = [
-  { id: 'home', name: 'Побут', emoji: '🏠', slug: 'pobut' },
-  { id: 'auto', name: 'Авто', emoji: '🚗', slug: 'auto' },
-  { id: 'beauty', name: 'Краса', emoji: '💇', slug: 'krasa' },
-  { id: 'education', name: 'Освіта', emoji: '🎓', slug: 'osvita' },
-  { id: 'repair', name: 'Ремонт', emoji: '🧰', slug: 'remont' },
-  { id: 'business', name: 'Бізнес', emoji: '💼', slug: 'biznes' },
-  { id: 'it', name: 'IT', emoji: '💻', slug: 'it' },
-  { id: 'health', name: 'Медицина', emoji: '⚕️', slug: 'medytsyna' },
-  { id: 'creative', name: 'Творчість', emoji: '🎨', slug: 'tvorchist' },
+  { id: 'home', name: 'Все для дому', emoji: '🏠', slug: 'vse-dlya-domu', description: 'Ремонт, прибирання, майстри' },
+  { id: 'auto', name: 'Все для Авто', emoji: '🚗', slug: 'vse-dlya-auto', description: 'Авто, мото, велосипеди, самокати' },
+  { id: 'beauty', name: 'Краса', emoji: '💇‍♀️', slug: 'krasa', description: 'Салони, перукарі, косметологи' },
+  { id: 'education', name: 'Освіта', emoji: '🎓', slug: 'osvita', description: 'Курси, репетитори, навчання' },
+  { id: 'hobby', name: 'Розваги та хоббі', emoji: '🎮', slug: 'rozvagy-ta-hobbi', description: 'Спорт, дозвілля, творчість' },
+  { id: 'children', name: 'Все для дітей', emoji: '👶', slug: 'vse-dlya-ditey', description: 'Садочки, секції, іграшки' },
+  { id: 'online-shops', name: 'Магазини онлайн', emoji: '🛒', slug: 'magazyny-online', description: 'Інтернет-магазини' },
+  { id: 'offline-shops', name: 'Магазини офлайн', emoji: '🏪', slug: 'magazyny-offline', description: 'Фізичні магазини' },
+  { id: 'pets', name: 'Все для домашніх тварин', emoji: '�', slug: 'vse-dlya-tvaryn', description: 'Ветеринари, зоомагазини' },
+  { id: 'horeca', name: 'Ресторани, готелі', emoji: '🍽️', slug: 'restorany-goteli', description: 'HoReCa, кейтеринг' },
+  { id: 'real-estate', name: 'Агенство нерухомості', emoji: '🏘️', slug: 'neruhomist', description: 'Продаж, оренда житла' },
+  { id: 'movable-property', name: 'Агенство рухомого майна', emoji: '🚙', slug: 'ruhome-mayno', description: 'Авто, техніка, обладнання' },
+  { id: 'tasks', name: 'Заявки на виконання задач', emoji: '✅', slug: 'zayavky-na-zadachi', description: 'Онлайн та офлайн послуги' },
+  { id: 'events', name: 'Дошка подій та оголошень', emoji: '📢', slug: 'podiyi-ta-ogoloshennya', description: 'Події, новини, оголошення' },
+  { id: 'b2b', name: 'Все для бізнесу', emoji: '💼', slug: 'vse-dlya-biznesu', description: 'Обслуговування та розвиток бізнесу' },
 ] as const
 
 // Типи акаунтів
