@@ -594,7 +594,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="font-semibold text-lg text-neutral-900">{service.title}</h3>
                             {service.category && (
-                              <span className="text-2xl flex-shrink-0 ml-2">{service.category.emoji}</span>
+                              <span className="text-sm font-medium text-neutral-500 flex-shrink-0 ml-2 bg-neutral-100 px-2 py-1 rounded">{service.category.name}</span>
                             )}
                           </div>
                           {service.description && (

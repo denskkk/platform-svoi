@@ -24,11 +24,10 @@ export async function GET() {
 
     // Якщо в БД немає категорій (після очищення) — ініціалізуємо дефолтні
     if (!categories || categories.length === 0) {
-      // Створюємо з constants; опис відсутній у constants — пропустимо
+      // Створюємо з constants
       const data = defaultCategories.map((c, idx) => ({
         name: c.name,
         slug: c.slug,
-        emoji: c.emoji,
         sortOrder: idx + 1,
         isActive: true,
       }));
