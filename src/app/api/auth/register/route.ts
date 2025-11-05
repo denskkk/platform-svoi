@@ -45,22 +45,6 @@ export async function POST(request: NextRequest) {
       city, 
       role = 'user',
       accountType = 'basic',
-      // Extended fields
-      educationLevel,
-      educationDetails,
-      employmentStatus,
-      industry,
-      workExperience,
-      childrenAges,
-      housingType,
-      hasCar,
-      carInfo,
-      hasPets,
-      petsInfo,
-      hobbies,
-      foodPreferences,
-      shoppingPreferences,
-      travelPreferences
     } = body;
 
     // Валідація обов'язкових полів
@@ -124,22 +108,6 @@ export async function POST(request: NextRequest) {
         city: city || null,
         passwordHash,
         isVerified: false,
-        // Extended fields (для extended акаунтів)
-        educationLevel: educationLevel || null,
-        educationDetails: educationDetails || null,
-        employmentStatus: employmentStatus || null,
-        industry: industry || null,
-        workExperience: workExperience || null,
-        childrenAges: childrenAges || null, // JSON
-        housingType: housingType || null,
-        hasCar: hasCar || null,
-        carInfo: carInfo || null,
-        hasPets: hasPets || null,
-        petsInfo: petsInfo || null,
-        hobbies: hobbies || null,
-        foodPreferences: foodPreferences || null,
-        shoppingPreferences: shoppingPreferences || null,
-        travelPreferences: travelPreferences || null,
       },
       select: {
         id: true,
@@ -151,8 +119,6 @@ export async function POST(request: NextRequest) {
         city: true,
         avatarUrl: true,
         isVerified: true,
-        educationLevel: true,
-        employmentStatus: true,
         createdAt: true,
       }
     });
