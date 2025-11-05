@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken, getTokenFromHeader } from '@/lib/auth';
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { apiCache, invalidateCache } from '@/lib/cache';
 import { getAuthCookie } from '@/lib/cookies';
 
@@ -125,29 +126,10 @@ export async function GET(request: NextRequest) {
 // POST - Створити послугу
 export async function POST(request: NextRequest) {
   try {
-    // Спочатку перевіряємо cookie, потім Authorization header
-    let token: string | undefined = getAuthCookie(request);
-    
-    if (!token) {
-      const authorization = request.headers.get('authorization');
-      if (authorization) {
-        token = getTokenFromHeader(authorization) || undefined;
-      }
-    }
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
+    // Перевіряємо авторизацію та дозволи
+    const authResult = await requireAuthWithPermission(request, 'CREATE_SERVICE');
+    if (authResult.error) {
+      return authResult.error;
     }
 
     const body = await request.json();
@@ -161,7 +143,7 @@ export async function POST(request: NextRequest) {
     }
 
     const serviceData: any = {
-      userId: payload.userId,
+      userId: authResult.user.userId,
       categoryId: body.categoryId,
       title: body.title,
       description: body.description,

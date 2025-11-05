@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X } from 'lucide-react';
+import { usePermission } from '@/hooks/usePermission';
+import { RequirePermission } from '@/components/ui/RequirePermission';
 
 export default function CreateServicePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
   const [categories, setCategories] = useState<any[]>([]);
+  const { hasAccess, errorMessage } = usePermission('CREATE_SERVICE');
   const [formData, setFormData] = useState({
     categoryId: '',
     title: '',
@@ -221,7 +224,8 @@ export default function CreateServicePage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <RequirePermission permission="CREATE_SERVICE">
+            <form onSubmit={handleSubmit} className="space-y-6">
             {/* Категорія */}
             <div>
               <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
@@ -443,6 +447,7 @@ export default function CreateServicePage() {
               </Link>
             </div>
           </form>
+          </RequirePermission>
         </div>
       </div>
     </div>
