@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { Home, Search, MessageCircle, User, UserPlus, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
+import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 
 const navItems = [
   { href: '/', icon: Home, label: 'Головна' },

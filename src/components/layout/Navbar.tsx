@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Search, User, Menu, LogOut } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 
 export function Navbar() {
   const router = useRouter()
@@ -178,7 +179,13 @@ export function Navbar() {
                   </button>
 
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-2">
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 py-2">
+                      {/* Account Type Badge */}
+                      <div className="px-4 py-3 border-b border-neutral-200">
+                        <p className="text-xs text-neutral-500 mb-2">Тип акаунту</p>
+                        <AccountTypeBadge accountType={user.accountType || 'basic'} size="sm" />
+                      </div>
+                      
                       <Link
                         href={`/profile/${user.id}`}
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"

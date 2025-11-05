@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send } from 'lucide-react';
+import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -106,12 +107,15 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="flex-grow">
                   <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
                     <div>
-                      <h1 className="text-3xl font-bold text-neutral-900 mb-1">
-                        {profile.firstName} {profile.lastName}
-                        {profile.isVerified && (
-                          <span className="ml-2 text-primary-500">✓</span>
-                        )}
-                      </h1>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h1 className="text-3xl font-bold text-neutral-900">
+                          {profile.firstName} {profile.lastName}
+                          {profile.isVerified && (
+                            <span className="ml-2 text-primary-500">✓</span>
+                          )}
+                        </h1>
+                        <AccountTypeBadge accountType={profile.accountType || 'basic'} size="sm" />
+                      </div>
                       <div className="flex items-center space-x-4 text-sm text-neutral-600 mt-2">
                         <div className="flex items-center space-x-1">
                           <MapPin className="w-4 h-4" />
