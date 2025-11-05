@@ -61,7 +61,6 @@ export async function GET(
         profession: true,
         employmentStatus: true,
         workplace: true,
-        education: true,
         privateBusinessInfo: true,
         jobSeeking: true,
         // Домашні тварини
