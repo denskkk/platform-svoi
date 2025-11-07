@@ -59,6 +59,18 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     }
   };
 
+  const asList = (val: any): string[] => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.filter(Boolean).map(String);
+    if (typeof val === 'object') {
+      return Object.entries(val)
+        .filter(([_, v]) => !!v)
+        .map(([k]) => String(k));
+    }
+    if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
@@ -110,7 +122,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     <div>
                       <div className="flex items-center gap-3 mb-2">
                         <h1 className="text-3xl font-bold text-neutral-900">
-                          {profile.firstName} {profile.lastName}
+                          {profile.firstName} {profile.middleName ? `${profile.middleName} ` : ''}{profile.lastName}
                           {profile.isVerified && (
                             <span className="ml-2 text-primary-500">✓</span>
                           )}
@@ -934,6 +946,198 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </div>
             </div>
           </div>
+
+          {/* Особиста інформація */}
+          <div className="bg-white rounded-2xl shadow-md p-6">
+            <h2 className="text-xl font-bold text-neutral-900 mb-4">Особиста інформація</h2>
+            {/* Про себе */}
+            {profile.bio && (
+              <div className="mb-4">
+                <p className="text-neutral-700 leading-relaxed whitespace-pre-line">{profile.bio}</p>
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(profile.phone || profile.email) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Контакти</p>
+                  <p className="font-medium text-neutral-900">
+                    {profile.phone || '—'}{profile.email ? ` • ${profile.email}` : ''}
+                  </p>
+                </div>
+              )}
+              {(profile.gender || profile.age) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Стать / Вік</p>
+                  <p className="font-medium text-neutral-900">{profile.gender || '—'}{profile.age ? ` • ${profile.age}` : ''}</p>
+                </div>
+              )}
+              {(profile.maritalStatus || profile.familyComposition) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Сімейний стан</p>
+                  <p className="font-medium text-neutral-900">{profile.maritalStatus || '—'}</p>
+                  {profile.familyComposition && (
+                    <p className="text-neutral-700 mt-1">{profile.familyComposition}</p>
+                  )}
+                </div>
+              )}
+              {(profile.childrenCount !== null && profile.childrenCount !== undefined) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Діти</p>
+                  <p className="font-medium text-neutral-900">{profile.childrenCount}</p>
+                </div>
+              )}
+              {(profile.city || profile.region) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Місто / Регіон</p>
+                  <p className="font-medium text-neutral-900">{profile.city || '—'}{profile.region ? `, ${profile.region}` : ''}</p>
+                </div>
+              )}
+              {(profile.education || profile.profession) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Освіта / Професія</p>
+                  <p className="font-medium text-neutral-900">{profile.education || '—'}{profile.profession ? ` • ${profile.profession}` : ''}</p>
+                </div>
+              )}
+              {(profile.employmentStatus || profile.workplace) && (
+                <div className="p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Зайнятість</p>
+                  <p className="font-medium text-neutral-900">{profile.employmentStatus || '—'}{profile.workplace ? ` • ${profile.workplace}` : ''}</p>
+                </div>
+              )}
+              {(profile.hobbies || profile.sports || profile.lifestyle || profile.outdoorActivities) && (
+                <div className="p-3 bg-neutral-50 rounded-lg md:col-span-2">
+                  <p className="text-sm text-neutral-600">Інтереси</p>
+                  <div className="text-neutral-800 space-y-1">
+                    {profile.hobbies && <p><span className="text-neutral-600">Хобі:</span> {profile.hobbies}</p>}
+                    {profile.sports && <p><span className="text-neutral-600">Спорт:</span> {profile.sports}</p>}
+                    {profile.lifestyle && <p><span className="text-neutral-600">Стиль життя:</span> {profile.lifestyle}</p>}
+                    {profile.outdoorActivities && <p><span className="text-neutral-600">Активний відпочинок:</span> {profile.outdoorActivities}</p>}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Житло та транспорт */}
+          {(asList(profile.carServices).length > 0 || profile.housingDetails) && (
+            <div className="bg-white rounded-2xl shadow-md p-6">
+              <h2 className="text-xl font-bold text-neutral-900 mb-4">Житло та транспорт</h2>
+              {asList(profile.carServices).length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm text-neutral-600 mb-2">Авто-сервіси</p>
+                  <div className="flex flex-wrap gap-2">
+                    {asList(profile.carServices).map((t, i) => (
+                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {profile.housingDetails && (
+                <div className="mb-2">
+                  <p className="text-sm text-neutral-600 mb-2">Деталі житла</p>
+                  <div className="text-neutral-800 text-sm bg-neutral-50 rounded-lg p-3">
+                    <pre className="whitespace-pre-wrap break-words">{typeof profile.housingDetails === 'string' ? profile.housingDetails : JSON.stringify(profile.housingDetails, null, 2)}</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Пошук роботи / бізнесу */}
+          {(profile.jobSeeking || profile.seekingPartTime || profile.seekingFullTime || profile.wantsStartBusiness) && (
+            <div className="bg-white rounded-2xl shadow-md p-6">
+              <h2 className="text-xl font-bold text-neutral-900 mb-4">Пошук роботи / бізнесу</h2>
+              {profile.jobSeeking && (
+                <div className="mb-3">
+                  <p className="text-sm text-neutral-600">Шукаю роботу в сфері</p>
+                  <p className="font-medium text-neutral-900">{profile.jobSeeking}</p>
+                </div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {profile.seekingPartTime !== null && profile.seekingPartTime !== undefined && (
+                  <div className="p-3 bg-neutral-50 rounded-lg">
+                    <p className="text-sm text-neutral-600">Часткова зайнятість</p>
+                    <p className="font-medium text-neutral-900">{profile.seekingPartTime ? 'Так' : 'Ні'}</p>
+                  </div>
+                )}
+                {profile.seekingFullTime !== null && profile.seekingFullTime !== undefined && (
+                  <div className="p-3 bg-neutral-50 rounded-lg">
+                    <p className="text-sm text-neutral-600">Повна зайнятість</p>
+                    <p className="font-medium text-neutral-900">{profile.seekingFullTime ? 'Так' : 'Ні'}</p>
+                  </div>
+                )}
+                {profile.wantsStartBusiness !== null && profile.wantsStartBusiness !== undefined && (
+                  <div className="p-3 bg-neutral-50 rounded-lg">
+                    <p className="text-sm text-neutral-600">Хочу почати власну справу</p>
+                    <p className="font-medium text-neutral-900">{profile.wantsStartBusiness ? 'Так' : 'Ні'}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Переваги та використання сервісів */}
+          {(profile.usesDelivery !== undefined || profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length || asList(profile.usesBusinessServices).length || asList(profile.beautyServices).length || profile.readyToSwitchToUCM !== undefined) && (
+            <div className="bg-white rounded-2xl shadow-md p-6">
+              <h2 className="text-xl font-bold text-neutral-900 mb-4">Переваги та використання сервісів</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                {profile.usesDelivery !== undefined && (
+                  <div className="p-3 bg-neutral-50 rounded-lg">
+                    <p className="text-sm text-neutral-600">Користуюсь доставкою</p>
+                    <p className="font-medium text-neutral-900">{profile.usesDelivery ? 'Так' : 'Ні'}</p>
+                  </div>
+                )}
+                {profile.restaurantFrequency && (
+                  <div className="p-3 bg-neutral-50 rounded-lg">
+                    <p className="text-sm text-neutral-600">Відвідування ресторанів</p>
+                    <p className="font-medium text-neutral-900">{profile.restaurantFrequency}</p>
+                  </div>
+                )}
+                {profile.cuisinePreference && (
+                  <div className="p-3 bg-neutral-50 rounded-lg">
+                    <p className="text-sm text-neutral-600">Улюблена кухня</p>
+                    <p className="font-medium text-neutral-900">{profile.cuisinePreference}</p>
+                  </div>
+                )}
+              </div>
+              {asList(profile.usesServices).length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm text-neutral-600 mb-2">Побутові сервіси</p>
+                  <div className="flex flex-wrap gap-2">
+                    {asList(profile.usesServices).map((t, i) => (
+                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {asList(profile.usesBusinessServices).length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm text-neutral-600 mb-2">Бізнес-сервіси</p>
+                  <div className="flex flex-wrap gap-2">
+                    {asList(profile.usesBusinessServices).map((t, i) => (
+                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {asList(profile.beautyServices).length > 0 && (
+                <div className="mb-2">
+                  <p className="text-sm text-neutral-600 mb-2">Beauty / Послуги</p>
+                  <div className="flex flex-wrap gap-2">
+                    {asList(profile.beautyServices).map((t, i) => (
+                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {profile.readyToSwitchToUCM !== undefined && (
+                <div className="mt-2 p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-sm text-neutral-600">Готовий перейти на спеціалістів УЦМ</p>
+                  <p className="font-medium text-neutral-900">{profile.readyToSwitchToUCM ? 'Так' : 'Ні'}</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

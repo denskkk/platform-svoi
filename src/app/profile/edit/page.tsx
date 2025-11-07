@@ -20,17 +20,20 @@ export default function EditProfilePage() {
     maritalStatus: '',
     familyComposition: '',
     childrenCount: '',
+  childrenAges: '',
     
     // Місце проживання
     city: '',
     region: '',
     housingType: '',
     livingSituation: '',
+  housingDetails: '',
     
     // Транспорт
     hasCar: '',
     carInfo: '',
     otherTransport: '',
+  carServices: '',
     
     // Професійна діяльність
     profession: '',
@@ -39,6 +42,11 @@ export default function EditProfilePage() {
     education: '',
     privateBusinessInfo: '',
     jobSeeking: '',
+  seekingPartTime: '',
+  seekingFullTime: '',
+  wantsStartBusiness: '',
+  ucmMember: '',
+  ucmSupporter: '',
     
     // Домашні тварини
     hasPets: '',
@@ -50,6 +58,14 @@ export default function EditProfilePage() {
     lifestyle: '',
     sports: '',
     bio: '',
+  // Переваги та використання сервісів
+  usesDelivery: '',
+  restaurantFrequency: '',
+  cuisinePreference: '',
+  usesServices: '',
+  usesBusinessServices: '',
+  beautyServices: '',
+  readyToSwitchToUCM: '',
     
     // Соцмережі
     instagram: '',
@@ -99,6 +115,19 @@ export default function EditProfilePage() {
           bio: u.bio
         });
         
+        const toListString = (val: any): string => {
+          if (!val) return '';
+          if (Array.isArray(val)) return val.join(', ');
+          if (typeof val === 'object') {
+            const entries = Object.entries(val as Record<string, any>)
+              .filter(([_, v]) => !!v)
+              .map(([k]) => k);
+            return entries.length ? entries.join(', ') : Object.keys(val).join(', ');
+          }
+          if (typeof val === 'string') return val;
+          return '';
+        };
+
         setFormData({
           firstName: u.firstName || '',
           middleName: u.middleName || '',
@@ -109,15 +138,18 @@ export default function EditProfilePage() {
           maritalStatus: u.maritalStatus || '',
           familyComposition: u.familyComposition || '',
           childrenCount: u.childrenCount?.toString() || '',
+          childrenAges: Array.isArray(u.childrenAges) ? (u.childrenAges as any[]).join(', ') : '',
           
           city: u.city || '',
           region: u.region || '',
           housingType: u.housingType || '',
           livingSituation: u.livingSituation || '',
+          housingDetails: u.housingDetails ? JSON.stringify(u.housingDetails) : '',
           
           hasCar: u.hasCar === true ? 'yes' : u.hasCar === false ? 'no' : '',
           carInfo: u.carInfo || '',
           otherTransport: u.otherTransport || '',
+          carServices: toListString(u.carServices),
           
           profession: u.profession || '',
           employmentStatus: u.employmentStatus || '',
@@ -125,6 +157,11 @@ export default function EditProfilePage() {
           education: u.education || '',
           privateBusinessInfo: u.privateBusinessInfo || '',
           jobSeeking: u.jobSeeking || '',
+          seekingPartTime: u.seekingPartTime === true ? 'yes' : u.seekingPartTime === false ? 'no' : '',
+          seekingFullTime: u.seekingFullTime === true ? 'yes' : u.seekingFullTime === false ? 'no' : '',
+          wantsStartBusiness: u.wantsStartBusiness === true ? 'yes' : u.wantsStartBusiness === false ? 'no' : '',
+          ucmMember: u.ucmMember === true ? 'yes' : u.ucmMember === false ? 'no' : '',
+          ucmSupporter: u.ucmSupporter === true ? 'yes' : u.ucmSupporter === false ? 'no' : '',
           
           hasPets: u.hasPets === true ? 'yes' : u.hasPets === false ? 'no' : '',
           petsInfo: u.petsInfo || '',
@@ -134,6 +171,14 @@ export default function EditProfilePage() {
           lifestyle: u.lifestyle || '',
           sports: u.sports || '',
           bio: u.bio || '',
+
+          usesDelivery: u.usesDelivery === true ? 'yes' : u.usesDelivery === false ? 'no' : '',
+          restaurantFrequency: u.restaurantFrequency || '',
+          cuisinePreference: u.cuisinePreference || '',
+          usesServices: toListString(u.usesServices),
+          usesBusinessServices: toListString(u.usesBusinessServices),
+          beautyServices: toListString(u.beautyServices),
+          readyToSwitchToUCM: u.readyToSwitchToUCM === true ? 'yes' : u.readyToSwitchToUCM === false ? 'no' : '',
           
           instagram: socialLinks.instagram || '',
           facebook: socialLinks.facebook || '',
@@ -242,6 +287,29 @@ export default function EditProfilePage() {
       if (formData.telegram) socialLinks.telegram = formData.telegram;
       if (formData.tiktok) socialLinks.tiktok = formData.tiktok;
 
+      const yesNoToBool = (v: string) => v === '' ? null : v === 'yes';
+      const toArray = (v: string) => {
+        if (!v) return null;
+        try {
+          // allow JSON input too
+          if (v.trim().startsWith('[')) {
+            const arr = JSON.parse(v.trim());
+            return Array.isArray(arr) ? arr : null;
+          }
+        } catch {}
+        return v.split(',').map(s => s.trim()).filter(Boolean);
+      };
+      const toChildrenAges = (v: string) => {
+        if (!v) return null;
+        try {
+          if (v.trim().startsWith('[')) {
+            const arr = JSON.parse(v.trim());
+            return Array.isArray(arr) ? arr : null;
+          }
+        } catch {}
+        return v.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !Number.isNaN(n));
+      };
+
       const requestBody = {
         firstName: formData.firstName,
         middleName: formData.middleName || null,
@@ -256,13 +324,20 @@ export default function EditProfilePage() {
         maritalStatus: formData.maritalStatus || null,
         familyComposition: formData.familyComposition || null,
         childrenCount: formData.childrenCount ? parseInt(formData.childrenCount) : null,
+        childrenAges: toChildrenAges(formData.childrenAges),
         
         housingType: formData.housingType || null,
         livingSituation: formData.livingSituation || null,
+        housingDetails: (() => {
+          if (!formData.housingDetails) return null;
+          try { return JSON.parse(formData.housingDetails); } catch {}
+          return { details: formData.housingDetails };
+        })(),
         
         hasCar: formData.hasCar ? formData.hasCar === 'yes' : null,
         carInfo: formData.carInfo || null,
         otherTransport: formData.otherTransport || null,
+        carServices: toArray(formData.carServices),
         
         profession: formData.profession || null,
         employmentStatus: formData.employmentStatus || null,
@@ -270,6 +345,11 @@ export default function EditProfilePage() {
         education: formData.education || null,
         privateBusinessInfo: formData.privateBusinessInfo || null,
         jobSeeking: formData.jobSeeking || null,
+        seekingPartTime: yesNoToBool(formData.seekingPartTime),
+        seekingFullTime: yesNoToBool(formData.seekingFullTime),
+        wantsStartBusiness: yesNoToBool(formData.wantsStartBusiness),
+        ucmMember: yesNoToBool(formData.ucmMember),
+        ucmSupporter: yesNoToBool(formData.ucmSupporter),
         
         hasPets: formData.hasPets ? formData.hasPets === 'yes' : null,
         petsInfo: formData.petsInfo || null,
@@ -279,6 +359,14 @@ export default function EditProfilePage() {
         lifestyle: formData.lifestyle || null,
         sports: formData.sports || null,
         bio: formData.bio || null,
+
+        usesDelivery: yesNoToBool(formData.usesDelivery),
+        restaurantFrequency: formData.restaurantFrequency || null,
+        cuisinePreference: formData.cuisinePreference || null,
+        usesServices: toArray(formData.usesServices),
+        usesBusinessServices: toArray(formData.usesBusinessServices),
+        beautyServices: toArray(formData.beautyServices),
+        readyToSwitchToUCM: yesNoToBool(formData.readyToSwitchToUCM),
         
         socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
       };
@@ -591,6 +679,20 @@ export default function EditProfilePage() {
                       className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Вік дітей (через кому)
+                    </label>
+                    <input
+                      type="text"
+                      name="childrenAges"
+                      value={formData.childrenAges}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="наприклад: 4, 7, 12"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -619,6 +721,39 @@ export default function EditProfilePage() {
                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                     placeholder="Розкажіть трохи про себе..."
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Учасник УЦМ
+                    </label>
+                    <select
+                      name="ucmMember"
+                      value={formData.ucmMember}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Не вказано</option>
+                      <option value="yes">Так</option>
+                      <option value="no">Ні</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Підтримую проєкти УЦМ
+                    </label>
+                    <select
+                      name="ucmSupporter"
+                      value={formData.ucmSupporter}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Не вказано</option>
+                      <option value="yes">Так</option>
+                      <option value="no">Ні</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             )}
@@ -772,6 +907,34 @@ export default function EditProfilePage() {
                     </div>
                   )}
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Деталі житла (JSON)
+                  </label>
+                  <textarea
+                    name="housingDetails"
+                    rows={3}
+                    value={formData.housingDetails}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    placeholder='Наприклад: {"garage":true, "garden":true}'
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Авто-сервіси, якими користуюсь (через кому)
+                  </label>
+                  <input
+                    type="text"
+                    name="carServices"
+                    value={formData.carServices}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="СТО, мийка, шиномонтаж..."
+                  />
+                </div>
               </div>
             )}
 
@@ -868,6 +1031,49 @@ export default function EditProfilePage() {
                     />
                   </div>
                 )}
+
+                {/* Пошук роботи/бізнесу */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Шукаю часткову зайнятість</label>
+                    <select
+                      name="seekingPartTime"
+                      value={formData.seekingPartTime}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Не вказано</option>
+                      <option value="yes">Так</option>
+                      <option value="no">Ні</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Шукаю повну зайнятість</label>
+                    <select
+                      name="seekingFullTime"
+                      value={formData.seekingFullTime}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Не вказано</option>
+                      <option value="yes">Так</option>
+                      <option value="no">Ні</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Хочу почати власну справу</label>
+                    <select
+                      name="wantsStartBusiness"
+                      value={formData.wantsStartBusiness}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Не вказано</option>
+                      <option value="yes">Так</option>
+                      <option value="no">Ні</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -924,6 +1130,100 @@ export default function EditProfilePage() {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   />
+                </div>
+
+                {/* Переваги та використання сервісів */}
+                <div className="border-t pt-6 space-y-4">
+                  <h3 className="text-lg font-semibold text-neutral-900">Переваги та використання сервісів</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Користуюсь доставкою</label>
+                      <select
+                        name="usesDelivery"
+                        value={formData.usesDelivery}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      >
+                        <option value="">Не вказано</option>
+                        <option value="yes">Так</option>
+                        <option value="no">Ні</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Частота відвідування ресторанів</label>
+                      <select
+                        name="restaurantFrequency"
+                        value={formData.restaurantFrequency}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      >
+                        <option value="">Не вказано</option>
+                        <option value="rare">Рідко</option>
+                        <option value="sometimes">По бажанню</option>
+                        <option value="often">Часто</option>
+                        <option value="never">Не ходжу</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Улюблена кухня</label>
+                      <input
+                        type="text"
+                        name="cuisinePreference"
+                        value={formData.cuisinePreference}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Домашня, Європейська, Азійська..."
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Побутові сервіси (через кому)</label>
+                      <input
+                        type="text"
+                        name="usesServices"
+                        value={formData.usesServices}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Електрик, Сантехнік, Клінінг..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Бізнес-сервіси (через кому)</label>
+                      <input
+                        type="text"
+                        name="usesBusinessServices"
+                        value={formData.usesBusinessServices}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Бухгалтер, Юрист, СММ..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Beauty / Послуги (через кому)</label>
+                      <input
+                        type="text"
+                        name="beautyServices"
+                        value={formData.beautyServices}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Перукар, Манікюр, СПА, Масаж..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Готовий перейти на спеціалістів УЦМ</label>
+                      <select
+                        name="readyToSwitchToUCM"
+                        value={formData.readyToSwitchToUCM}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      >
+                        <option value="">Не вказано</option>
+                        <option value="yes">Так</option>
+                        <option value="no">Ні</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
