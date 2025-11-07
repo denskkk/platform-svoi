@@ -40,13 +40,14 @@ export default function CreateServicePage() {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     
+    // Не залогінений → реєстрація
     if (!storedUser || !storedToken) {
-      router.push('/auth/login');
+      router.push('/auth/register');
       return;
     }
 
     const userData = JSON.parse(storedUser);
-    setUser(userData);
+  setUser(userData);
     setToken(storedToken);
     
     // Установить город пользователя по умолчанию
@@ -191,6 +192,34 @@ export default function CreateServicePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-gray-600">Завантаження...</div>
+      </div>
+    );
+  }
+
+  // Базовий акаунт: пропонуємо апгрейд на розширений для створення послуги
+  if (user && user.accountType === 'basic') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Потрібне розширення акаунту</h1>
+          <p className="text-gray-600 mb-6">
+            Щоб створювати послуги, спершу доповніть свій профіль і перейдіть на <strong>Розширений</strong> акаунт.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => router.push('/auth/upgrade?target=extended')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors"
+            >
+              Оновити до Розширеного
+            </button>
+            <button
+              onClick={() => router.push(`/profile/${user.id}`)}
+              className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-lg font-medium transition-colors"
+            >
+              Повернутися до профілю
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

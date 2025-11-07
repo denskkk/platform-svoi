@@ -46,34 +46,9 @@ export default async function ServicesPage() {
   const services = await getServices();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              Свій для Своїх
-            </Link>
-            <nav className="flex gap-4">
-              <Link href="/about" className="text-gray-600 hover:text-blue-600">
-                Про нас
-              </Link>
-              <Link href="/contacts" className="text-gray-600 hover:text-blue-600">
-                Контакти
-              </Link>
-              <Link
-                href="/auth/register/business"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Додати послугу
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
+    <div className="bg-gray-50">
+      {/* Hero (глобальний Navbar вже є у layout) */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 mt-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">Каталог послуг</h1>
           <p className="text-xl text-blue-100 mb-6">
@@ -223,16 +198,6 @@ export default async function ServicesPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-400">
-              © 2025 Свій для Своїх. Український Центр Месіанського. Всі права захищені.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
