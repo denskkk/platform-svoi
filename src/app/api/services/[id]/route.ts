@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, getTokenFromHeader } from '@/lib/auth';
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 
 interface RouteParams {
   params: {
@@ -75,23 +75,8 @@ export async function PUT(
 ) {
   try {
     const serviceId = parseInt(params.id);
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'EDIT_SERVICE');
+    if (auth.error) return auth.error;
 
     // Перевірка що послуга належить користувачу
     const service = await prisma.service.findUnique({
@@ -105,7 +90,7 @@ export async function PUT(
       );
     }
 
-    if (service.userId !== payload.userId) {
+    if (service.userId !== auth.user.userId) {
       return NextResponse.json(
         { error: 'Немає прав на оновлення цієї послуги' },
         { status: 403 }
@@ -153,23 +138,8 @@ export async function DELETE(
 ) {
   try {
     const serviceId = parseInt(params.id);
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'DELETE_SERVICE');
+    if (auth.error) return auth.error;
 
     // Перевірка що послуга належить користувачу
     const service = await prisma.service.findUnique({
@@ -183,7 +153,7 @@ export async function DELETE(
       );
     }
 
-    if (service.userId !== payload.userId) {
+    if (service.userId !== auth.user.userId) {
       return NextResponse.json(
         { error: 'Немає прав на видалення цієї послуги' },
         { status: 403 }

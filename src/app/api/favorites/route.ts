@@ -1,3 +1,4 @@
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 /**
  * GET /api/favorites
  * Отримати обрані профілі користувача
@@ -26,17 +27,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'VIEW_FAVORITES');
+    if (auth.error) return auth.error;
 
     const favorites = await prisma.favorite.findMany({
       where: {
-        userId: payload.userId
+        userId: auth.user.userId
       },
       include: {
         targetUser: {
@@ -82,13 +78,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
+    if (auth.error) return auth.error;
 
     const body = await request.json();
     const { targetUserId } = body;
@@ -104,7 +95,7 @@ export async function POST(request: NextRequest) {
     const existing = await prisma.favorite.findUnique({
       where: {
         userId_targetUserId: {
-          userId: payload.userId,
+          userId: auth.user.userId,
           targetUserId
         }
       }
@@ -119,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     const favorite = await prisma.favorite.create({
       data: {
-        userId: payload.userId,
+        userId: auth.user.userId,
         targetUserId,
       },
       include: {
@@ -162,13 +153,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+  const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
+    if (auth.error) return auth.error;
 
     const { searchParams } = new URL(request.url);
     const targetUserId = searchParams.get('targetUserId');
@@ -183,7 +169,7 @@ export async function DELETE(request: NextRequest) {
     await prisma.favorite.delete({
       where: {
         userId_targetUserId: {
-          userId: payload.userId,
+          userId: auth.user.userId,
           targetUserId: parseInt(targetUserId)
         }
       }

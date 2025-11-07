@@ -25,6 +25,7 @@ async function handler(request: AuthenticatedRequest) {
         lastName: true,
         email: true,
         role: true,
+        accountType: true,
         city: true,
         phone: true,
         avatarUrl: true,

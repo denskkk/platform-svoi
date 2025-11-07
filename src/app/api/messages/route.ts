@@ -8,28 +8,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, getTokenFromHeader } from '@/lib/auth';
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 
 // GET - Отримати повідомлення
 export async function GET(request: NextRequest) {
   try {
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'VIEW_MESSAGES');
+    if (auth.error) return auth.error;
 
     const { searchParams } = new URL(request.url);
     const withUserId = searchParams.get('withUserId');
@@ -41,8 +26,8 @@ export async function GET(request: NextRequest) {
       messages = await prisma.message.findMany({
         where: {
           OR: [
-            { senderId: payload.userId, receiverId: parseInt(withUserId) },
-            { senderId: parseInt(withUserId), receiverId: payload.userId }
+            { senderId: auth.user.userId, receiverId: parseInt(withUserId) },
+            { senderId: parseInt(withUserId), receiverId: auth.user.userId }
           ]
         },
         include: {
@@ -72,8 +57,8 @@ export async function GET(request: NextRequest) {
       messages = await prisma.message.findMany({
         where: {
           OR: [
-            { senderId: payload.userId },
-            { receiverId: payload.userId }
+            { senderId: auth.user.userId },
+            { receiverId: auth.user.userId }
           ]
         },
         include: {
@@ -114,23 +99,8 @@ export async function GET(request: NextRequest) {
 // POST - Відправити повідомлення
 export async function POST(request: NextRequest) {
   try {
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'SEND_MESSAGE');
+    if (auth.error) return auth.error;
 
     const body = await request.json();
     const { receiverId, text } = body;
@@ -144,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     const message = await prisma.message.create({
       data: {
-        senderId: payload.userId,
+        senderId: auth.user.userId,
         receiverId,
         text,
       },
@@ -174,8 +144,8 @@ export async function POST(request: NextRequest) {
         userId: receiverId,
         type: 'new_message',
         title: 'Нове повідомлення',
-        message: `${payload.email} надіслав вам повідомлення`,
-        relatedUserId: payload.userId,
+        message: `${auth.user.email} надіслав вам повідомлення`,
+        relatedUserId: auth.user.userId,
       }
     });
 

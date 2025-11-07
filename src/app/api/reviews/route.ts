@@ -8,28 +8,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, getTokenFromHeader } from '@/lib/auth';
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 
 // POST - Створити відгук
 export async function POST(request: NextRequest) {
   try {
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'LEAVE_REVIEW');
+    if (auth.error) return auth.error;
 
     const body = await request.json();
     const { reviewedId, rating, comment } = body;
@@ -49,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (payload.userId === reviewedId) {
+    if (auth.user.userId === reviewedId) {
       return NextResponse.json(
         { error: 'Неможливо залишити відгук собі' },
         { status: 400 }
@@ -60,7 +45,7 @@ export async function POST(request: NextRequest) {
     const existingReview = await prisma.review.findUnique({
       where: {
         reviewerId_reviewedId: {
-          reviewerId: payload.userId,
+          reviewerId: auth.user.userId,
           reviewedId: reviewedId
         }
       }
@@ -75,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     const review = await prisma.review.create({
       data: {
-        reviewerId: payload.userId,
+        reviewerId: auth.user.userId,
         reviewedId,
         rating,
         comment,

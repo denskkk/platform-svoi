@@ -4,6 +4,7 @@ import { Check, Crown, Sparkles, Star, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCurrentUser } from '@/hooks/usePermission';
+import { getAccountTypeName } from '@/lib/permissions';
 
 export default function PricingPage() {
   const router = useRouter();
@@ -257,13 +258,4 @@ export default function PricingPage() {
   );
 }
 
-function getAccountTypeName(type: string): string {
-  const names: Record<string, string> = {
-    guest: 'Гість',
-    basic: 'Базовий',
-    extended: 'Розширений',
-    business: 'Бізнес',
-    business_premium: 'Бізнес Преміум',
-  };
-  return names[type] || type;
-}
+// Локальна функція видалена — використовуємо єдине джерело правди з '@/lib/permissions'

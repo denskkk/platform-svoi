@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send } from 'lucide-react';
+import { PermissionButton } from '@/components/ui/RequirePermission';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
@@ -135,17 +136,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           Редагувати
                         </Link>
                       ) : (
-                        <button
-                          onClick={() => setIsFavorite(!isFavorite)}
-                          className={`p-2 rounded-lg border-2 transition-colors ${
-                            isFavorite
-                              ? 'border-red-500 bg-red-50 text-red-500'
-                              : 'border-neutral-300 hover:border-primary-500 text-neutral-600'
-                          }`}
-                          aria-label="Додати в обране"
-                        >
-                          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-                        </button>
+                          <PermissionButton
+                            permission="ADD_TO_FAVORITES"
+                            onClick={() => setIsFavorite(!isFavorite)}
+                            className={`p-2 rounded-lg border-2 transition-colors ${
+                              isFavorite
+                                ? 'border-red-500 bg-red-50 text-red-500'
+                                : 'border-neutral-300 hover:border-primary-500 text-neutral-600'
+                            }`}
+                          >
+                            <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                          </PermissionButton>
                       )}
                     </div>
                   </div>

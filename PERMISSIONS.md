@@ -31,7 +31,7 @@
 ### Заявки
 - `CREATE_REQUEST` - створення заявок (extended+)
 - `VIEW_REQUESTS` - перегляд заявок (extended+)
-- `RESPOND_TO_REQUEST` - відповідь на заявки (extended+)
+- `RESPOND_TO_REQUEST` - відповідь на заявки (business+)
 
 ### Повідомлення
 - `SEND_MESSAGE` - відправка повідомлень (extended+)
@@ -278,17 +278,19 @@ import { PermissionButton } from '@/components/ui/RequirePermission';
    ```
 3. Перезавантажте сторінку
 
-## Міграція існуючих функцій
+## Статус інтеграції
 
-Список функцій які потрібно захистити:
+Захист прав застосовано до таких функцій:
 
-- [x] Створення послуг - `CREATE_SERVICE`
-- [ ] Створення заявок - `CREATE_REQUEST`
-- [ ] Відправка повідомлень - `SEND_MESSAGE`
-- [ ] Пошук партнерів - `SEARCH_PARTNERS`
-- [ ] Пошук інвесторів - `SEARCH_INVESTORS`
-- [ ] UCM аналіз - `UCM_ANALYSIS`
-- [ ] Автоматичні пропозиції - `AUTO_PROPOSALS`
+- [x] Створення послуг (API + UI) — `CREATE_SERVICE`
+- [x] Редагування/видалення послуг (API) — `EDIT_SERVICE`, `DELETE_SERVICE`
+- [x] Повідомлення (API GET/POST) — `VIEW_MESSAGES`, `SEND_MESSAGE`
+- [x] Обране (API GET/POST/DELETE) — `VIEW_FAVORITES`, `ADD_TO_FAVORITES`
+- [x] Відгуки (API POST) — `LEAVE_REVIEW`
+- [ ] Заявки (створення/перегляд/відповідь) — `CREATE_REQUEST`, `VIEW_REQUESTS`, `RESPOND_TO_REQUEST`
+- [ ] Бізнес-пошук — `SEARCH_PARTNERS`, `SEARCH_INVESTORS`, `SEARCH_CUSTOMERS`
+- [x] Бізнес-профіль (створення/оновлення) — `EDIT_BUSINESS_PROFILE`
+- [ ] Преміум-функції — `AUTO_PROPOSALS`, `UCM_ANALYSIS`, `PRIORITY_SEARCH`, `ADVANCED_ANALYTICS`
 
 ## FAQ
 

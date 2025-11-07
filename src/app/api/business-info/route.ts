@@ -11,7 +11,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, getTokenFromHeader } from '@/lib/auth';
+import { getTokenFromHeader } from '@/lib/auth';
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getAuthCookie } from '@/lib/cookies';
 
 // GET - Отримати бізнес-профіль
@@ -52,36 +53,14 @@ export async function GET(request: NextRequest) {
 // POST - Створити бізнес-профіль
 export async function POST(request: NextRequest) {
   try {
-    // Спочатку перевіряємо cookie, потім Authorization header
-    let token: string | undefined = getAuthCookie(request);
-    
-    if (!token) {
-      const authorization = request.headers.get('authorization');
-      if (authorization) {
-        token = getTokenFromHeader(authorization) || undefined;
-      }
-    }
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'EDIT_BUSINESS_PROFILE');
+    if (auth.error) return auth.error;
 
     const body = await request.json();
 
     // Проверка что бизнес-профиль еще не создан
     const existing = await prisma.businessInfo.findUnique({
-      where: { userId: payload.userId }
+      where: { userId: auth.user.userId }
     });
 
     if (existing) {
@@ -92,11 +71,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Підтягнемо користувача для дефолтних контактів/локації
-    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+  const user = await prisma.user.findUnique({ where: { id: auth.user.userId } });
 
     // Нормалізація та маппінг полів згідно зі схемою
     const createData: any = {
-      userId: payload.userId,
+  userId: auth.user.userId,
     };
 
     if (body.companyName !== undefined) createData.companyName = body.companyName;
@@ -192,35 +171,13 @@ export async function POST(request: NextRequest) {
 // PUT - Оновити бізнес-профіль
 export async function PUT(request: NextRequest) {
   try {
-    // Спочатку перевіряємо cookie, потім Authorization header
-    let token: string | undefined = getAuthCookie(request);
-    
-    if (!token) {
-      const authorization = request.headers.get('authorization');
-      if (authorization) {
-        token = getTokenFromHeader(authorization) || undefined;
-      }
-    }
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Невірний токен' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuthWithPermission(request, 'EDIT_BUSINESS_PROFILE');
+    if (auth.error) return auth.error;
 
     const body = await request.json();
 
     // Підтягнемо користувача для дефолтів на випадок створення
-    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+  const user = await prisma.user.findUnique({ where: { id: auth.user.userId } });
 
     // Підготовка даних для оновлення (оновлюємо тільки передані поля)
     const updateData: any = {};
@@ -295,7 +252,7 @@ export async function PUT(request: NextRequest) {
 
     // Дані для створення (upsert.create) з дефолтами з профілю
     const createData: any = {
-      userId: payload.userId,
+      userId: auth.user.userId,
       ...updateData,
     };
     if (createData.city === undefined && user?.city) createData.city = user.city;
@@ -305,7 +262,7 @@ export async function PUT(request: NextRequest) {
 
     // Використовуємо upsert для створення або оновлення
     const businessInfo = await prisma.businessInfo.upsert({
-      where: { userId: payload.userId },
+      where: { userId: auth.user.userId },
       update: updateData,
       create: createData
     });
