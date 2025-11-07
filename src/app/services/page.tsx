@@ -84,7 +84,7 @@ export default async function ServicesPage() {
           <div className="text-center py-16 bg-white rounded-lg shadow-md">
             <p className="text-gray-600 text-lg mb-4">Поки що немає доступних послуг</p>
             <Link
-              href="/auth/register/business"
+              href="/auth/register"
               className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
             >
               Стати першим!

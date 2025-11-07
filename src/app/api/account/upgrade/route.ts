@@ -40,12 +40,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Simple guard: prevent downgrades via this endpoint
+    // Enforce sequential upgrade: can only upgrade to NEXT level (no skipping)
     const priority = (t: string) => (
       t === 'basic' ? 0 : t === 'extended' ? 1 : t === 'business' ? 2 : t === 'business_premium' ? 3 : 0
     );
-    if (priority(target) <= priority(user.accountType)) {
-      return NextResponse.json({ error: 'Invalid upgrade direction' }, { status: 400 });
+    const currentPriority = priority(user.accountType);
+    const targetPriority = priority(target);
+    
+    // Must be exactly one level higher
+    if (targetPriority !== currentPriority + 1) {
+      return NextResponse.json({ error: 'Апгрейд можливий лише на наступний рівень послідовно' }, { status: 400 });
     }
 
     // Trial logic: start trial for any paid tiers (extended/business*)

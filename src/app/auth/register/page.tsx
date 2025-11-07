@@ -131,11 +131,11 @@ export default function RegisterPage() {
       // Гість просто переходить на головну без реєстрації
       router.push('/');
     } else if (typeId === 'basic') {
+      // Базова реєстрація — єдина доступна для нових користувачів
       router.push('/auth/register/basic');
-    } else if (typeId === 'extended') {
-      router.push('/auth/register/extended');
-    } else if (typeId === 'business' || typeId === 'business_premium') {
-      router.push(`/auth/register/business?premium=${typeId === 'business_premium'}`);
+    } else {
+      // Розширений та Бізнес — тільки через апгрейд існуючого акаунту
+      alert('⚠️ Спочатку потрібно зареєструватися з Базовим акаунтом, а потім зможете покращити до Розширеного або Бізнес через свій профіль.');
     }
   };
 

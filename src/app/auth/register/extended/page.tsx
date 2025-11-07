@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -13,6 +13,16 @@ export default function RegisterExtendedPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('basic');
+
+  // Заборона прямого доступу: extended реєстрація можлива лише через апгрейд існуючого акаунту
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      // Немає акаунту — редирект на базову реєстрацію
+      alert('Спочатку потрібно створити Базовий акаунт, а потім покращити до Розширеного.');
+      router.push('/auth/register/basic');
+    }
+  }, [router]);
   
   const [formData, setFormData] = useState({
     // Основна інформація (з базового)

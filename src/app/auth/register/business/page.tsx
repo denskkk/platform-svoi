@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -21,6 +21,21 @@ function BusinessRegistrationForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("basic");
+
+  // Заборона прямого доступу: business реєстрація тільки через апгрейд з extended
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('Спочатку потрібно створити Базовий акаунт, потім Розширений, і тільки після цього — Бізнес.');
+      router.push('/auth/register/basic');
+      return;
+    }
+    const user = JSON.parse(storedUser);
+    if (user.accountType === 'basic') {
+      alert('Спочатку покращіть акаунт до Розширеного, а потім до Бізнес.');
+      router.push('/auth/upgrade');
+    }
+  }, [router]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

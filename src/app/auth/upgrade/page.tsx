@@ -32,7 +32,8 @@ export default function UpgradeAccountPage() {
     const order = ['basic', 'extended', 'business', 'business_premium'];
     const idx = order.indexOf(currentUser.accountType);
     const targetIdx = order.indexOf(target);
-    return targetIdx > idx;
+    // Можна апгрейдитись тільки на НАСТУПНИЙ рівень (не можна перестрибувати)
+    return targetIdx === idx + 1;
   };
 
   const handleUpgrade = async (e: React.FormEvent) => {
@@ -95,15 +96,16 @@ export default function UpgradeAccountPage() {
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 {currentUser.accountType === 'basic' && (
-                  <option value="extended">Розширений</option>
+                  <option value="extended">Розширений (наступний крок)</option>
                 )}
-                {['basic','extended'].includes(currentUser.accountType) && (
-                  <option value="business">Бізнес</option>
+                {currentUser.accountType === 'extended' && (
+                  <option value="business">Бізнес (наступний крок)</option>
                 )}
-                {['basic','extended','business'].includes(currentUser.accountType) && (
-                  <option value="business_premium">Бізнес Преміум</option>
+                {currentUser.accountType === 'business' && (
+                  <option value="business_premium">Бізнес Преміум (наступний крок)</option>
                 )}
               </select>
+              <p className="text-xs text-neutral-500 mt-1">Апгрейд можливий лише на наступний рівень послідовно.</p>
             </div>
 
             <div className="bg-neutral-50 rounded-lg p-4 text-sm text-neutral-700 space-y-2">
