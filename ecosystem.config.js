@@ -15,13 +15,17 @@ module.exports = {
       args: 'start',
       
       // Директория проекта
-      cwd: '/var/www/sviydlyasvoih',
+  // Корневая папка проекта (где лежит package.json)
+  cwd: '/var/www/sviydlyasvoih/platform-svoi',
       
       // Переменные окружения
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
       },
+      // Подключение .env файла (убедитесь что путь верный)
+      // Создайте файл /var/www/sviydlyasvoih/platform-svoi/.env если его нет
+      env_file: '/var/www/sviydlyasvoih/platform-svoi/.env',
       
       // Количество инстансов (1 = один процесс)
       // Можно указать 'max' для использования всех CPU ядер
@@ -46,8 +50,8 @@ module.exports = {
       max_memory_restart: '500M',
       
       // Логи
-      error_file: '/var/www/sviydlyasvoih/logs/pm2-error.log',
-      out_file: '/var/www/sviydlyasvoih/logs/pm2-out.log',
+  error_file: '/var/www/sviydlyasvoih/logs/pm2-error.log',
+  out_file: '/var/www/sviydlyasvoih/logs/pm2-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       
       // Объединение логов из всех инстансов

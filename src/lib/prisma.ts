@@ -9,6 +9,22 @@
 
 import { PrismaClient } from '@prisma/client';
 
+// Helper to mask sensitive parts of DATABASE_URL for logging
+function describeDatabaseUrl(raw?: string) {
+  if (!raw) return 'DATABASE_URL not set';
+  try {
+    // Prisma allows postgresql:// protocol. URL parser needs standard protocol.
+    const normalized = raw.replace(/^postgresql:\/\//, 'postgres://');
+    const u = new URL(normalized);
+    const host = u.hostname;
+    const db = u.pathname.replace(/\//, '') || '(no-db)';
+    const user = u.username || '(no-user)';
+    return `${user}@${host}/${db}`;
+  } catch (e) {
+    return 'Unparseable DATABASE_URL';
+  }
+}
+
 // Глобальний тип для Prisma в development
 declare global {
   // eslint-disable-next-line no-var
@@ -16,6 +32,13 @@ declare global {
 }
 
 // Створити один екземпляр Prisma Client з оптимізаціями
+const rawDbUrl = process.env.DATABASE_URL;
+
+if (process.env.NODE_ENV === 'production') {
+  // Log once at startup (safe, masked)
+  console.log(`[Prisma] Initializing client. Target DB: ${describeDatabaseUrl(rawDbUrl)}`);
+}
+
 export const prisma = global.prisma || new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   
@@ -44,6 +67,18 @@ export const prisma = global.prisma || new PrismaClient({
     },
   },
 });
+
+// Proactive lightweight connectivity check (only once in production)
+if (process.env.NODE_ENV === 'production') {
+  (async () => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      console.log('[Prisma] Connectivity check OK');
+    } catch (err: any) {
+      console.error('[Prisma] Connectivity check FAILED:', err?.message);
+    }
+  })();
+}
 
 // В development зберігаємо клієнт глобально для hot reload
 if (process.env.NODE_ENV !== 'production') {
