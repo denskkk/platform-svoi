@@ -121,7 +121,13 @@ export function Navbar() {
               href="/catalog" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
-              Категорії
+              Люди
+            </Link>
+            <Link 
+              href="/services" 
+              className="text-neutral-700 hover:text-primary-600 transition-colors"
+            >
+              Послуги
             </Link>
             <Link 
               href="/about" 
@@ -272,7 +278,14 @@ export function Navbar() {
               className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Категорії
+              Люди
+            </Link>
+            <Link 
+              href="/services" 
+              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Послуги
             </Link>
             <Link 
               href="/about" 

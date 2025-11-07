@@ -40,7 +40,7 @@ export const PERMISSIONS = {
   
   // Преміум функції
   AUTO_PROPOSALS: ['business_premium'] as AccountType[],
-  UCM_ANALYSIS: ['business_premium'] as AccountType[],
+  UCM_ANALYSIS: ['business_premium'] as AccountType[], // kept key for compatibility, renamed copy below
   PRIORITY_SEARCH: ['business_premium'] as AccountType[],
   ADVANCED_ANALYTICS: ['business_premium'] as AccountType[],
 };
@@ -91,7 +91,7 @@ export function getPermissionError(permission: keyof typeof PERMISSIONS): string
     CREATE_REQUEST: `Створення заявок доступне з акаунту "${minTypeName}". Оновіть свій план.`,
     SEND_MESSAGE: `Надсилання повідомлень доступне з акаунту "${minTypeName}". Оновіть свій план.`,
     AUTO_PROPOSALS: 'Автоматичні пропозиції доступні тільки для Бізнес Преміум акаунтів.',
-    UCM_ANALYSIS: 'UCM аналіз доступний тільки для Бізнес Преміум акаунтів.',
+  UCM_ANALYSIS: 'Аналіз спільноти доступний тільки для Бізнес Преміум акаунтів.',
   };
   
   return messages[permission] || `Ця функція доступна з акаунту "${minTypeName}". Оновіть свій план.`;

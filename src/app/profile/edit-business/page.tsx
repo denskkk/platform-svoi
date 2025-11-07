@@ -634,7 +634,7 @@ export default function EditBusinessProfilePage() {
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Ключові спеціалісти
+                    Ключові учасники
                   </label>
                   <textarea
                     name="keySpecialists"

@@ -66,7 +66,7 @@ export function HeroSection() {
           </h1>
 
           <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto mb-4 animate-slide-up">
-            Створено для спільноти УЦМ — місце, де підприємці та споживачі знаходять одне одного на основі довіри та спільних цінностей.
+            Створено для нашої спільноти — місце, де підприємці та споживачі знаходять одне одного на основі довіри та спільних цінностей.
           </p>
           
           <p className="text-sm md:text-base text-neutral-500 max-w-xl mx-auto animate-slide-up">

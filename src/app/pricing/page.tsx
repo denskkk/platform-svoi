@@ -119,7 +119,7 @@ export default function PricingPage() {
         'Перші 3 місяці — безкоштовно',
         'Всі функції Бізнес',
         'Автоматичні пропозиції',
-        'UCM-аналіз (User Content Monitoring)',
+  'Аналіз спільноти (контент-моніторинг)',
         'Пріоритетний пошук',
         'Розширена аналітика',
         'Персональний менеджер',
@@ -133,9 +133,13 @@ export default function PricingPage() {
       router.push('/auth/login');
       return;
     }
-
-    // TODO: Інтеграція платіжної системи
-    alert(`Оновлення до плану ${planType} буде доступне після інтеграції платіжної системи`);
+    // If user already at or above selected plan do nothing
+    const order = ['basic','extended','business','business_premium'];
+    const currentIdx = order.indexOf(user.accountType);
+    const targetIdx = order.indexOf(planType);
+    if (targetIdx <= currentIdx) return;
+    // Redirect to upgrade flow, preselect plan
+    router.push(`/auth/upgrade?target=${planType}`);
   };
 
   return (
@@ -293,9 +297,9 @@ export default function PricingPage() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Що таке UCM-аналіз?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Що таке аналіз спільноти?</h3>
               <p className="text-gray-600 text-sm">
-                User Content Monitoring - система автоматичного моніторингу контенту користувачів для виявлення потенційних клієнтів та партнерів.
+                Інструменти аналітики взаємодій та контенту користувачів для виявлення потенційних клієнтів і партнерів.
               </p>
             </div>
           </div>

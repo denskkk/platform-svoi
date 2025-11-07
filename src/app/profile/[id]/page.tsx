@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send } from 'lucide-react';
 import { PermissionButton } from '@/components/ui/RequirePermission';
+import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
@@ -1033,7 +1034,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Житло та транспорт */}
-          {(asList(profile.carServices).length > 0 || profile.housingDetails) && (
+          {(profile.accountType !== 'basic' ? (asList(profile.carServices).length > 0 || profile.housingDetails) : false) && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h2 className="text-xl font-bold text-neutral-900 mb-4">Житло та транспорт</h2>
               {asList(profile.carServices).length > 0 && (
@@ -1058,7 +1059,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           )}
 
           {/* Пошук роботи / бізнесу */}
-          {(profile.jobSeeking || profile.seekingPartTime || profile.seekingFullTime || profile.wantsStartBusiness) && (
+          {(profile.accountType !== 'basic' ? (profile.jobSeeking || profile.seekingPartTime || profile.seekingFullTime || profile.wantsStartBusiness) : false) && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h2 className="text-xl font-bold text-neutral-900 mb-4">Пошук роботи / бізнесу</h2>
               {profile.jobSeeking && (
@@ -1091,7 +1092,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           )}
 
           {/* Переваги та використання сервісів */}
-          {(profile.usesDelivery !== undefined || profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length || asList(profile.usesBusinessServices).length || asList(profile.beautyServices).length || profile.readyToSwitchToUCM !== undefined) && (
+          {(profile.accountType !== 'basic' ? (profile.usesDelivery !== undefined || profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length || asList(profile.usesBusinessServices).length || asList(profile.beautyServices).length || profile.readyToSwitchToUCM !== undefined) : false) && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h2 className="text-xl font-bold text-neutral-900 mb-4">Переваги та використання сервісів</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -1146,10 +1147,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               )}
               {profile.readyToSwitchToUCM !== undefined && (
                 <div className="mt-2 p-3 bg-neutral-50 rounded-lg">
-                  <p className="text-sm text-neutral-600">Готовий перейти на спеціалістів УЦМ</p>
+                  <p className="text-sm text-neutral-600">Готовий перейти на учасників</p>
                   <p className="font-medium text-neutral-900">{profile.readyToSwitchToUCM ? 'Так' : 'Ні'}</p>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* CTA for upgrade (visible on own profile with basic type) */}
+          {isOwnProfile && profile.accountType === 'basic' && (
+            <div className="bg-white rounded-2xl shadow-md p-6">
+              <UpgradeAccountCTA currentType={profile.accountType} />
             </div>
           )}
         </div>

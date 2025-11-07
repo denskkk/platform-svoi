@@ -511,7 +511,7 @@ export default function BusinessQuestionnairePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Ключові спеціалісти / ролі
+            Ключові учасники / ролі
           </label>
           <textarea
             name="keySpecialists"

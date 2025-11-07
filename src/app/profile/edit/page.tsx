@@ -1217,7 +1217,7 @@ export default function EditProfilePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">Готовий перейти на спеціалістів УЦМ</label>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Готовий перейти на учасників</label>
                       <select
                         name="readyToSwitchToUCM"
                         value={formData.readyToSwitchToUCM}
