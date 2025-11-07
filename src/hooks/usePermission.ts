@@ -28,6 +28,21 @@ export function useCurrentUser() {
 
     loadUser();
 
+    // Soft sync with server to avoid stale accountType/status
+    const sync = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+          try {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          } catch {}
+        }
+      } catch {}
+    };
+    sync();
+
     // Слухати зміни в інших вкладках
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'user') {

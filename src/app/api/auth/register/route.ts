@@ -140,6 +140,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       email: user.email,
       role: user.role,
+      accountType: user.accountType,
     });
 
     // Створення сесії

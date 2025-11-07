@@ -11,6 +11,7 @@ export interface AuthenticatedRequest extends NextRequest {
     userId: number;
     email: string;
     role: string;
+    accountType?: string;
   };
 }
 

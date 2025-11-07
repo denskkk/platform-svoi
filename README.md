@@ -205,3 +205,65 @@ npm run db:seed      # Завантажити тестові дані
 
 **Повна API документація:** [API.md](./API.md)
 
+## 🔁 Повний reset БД (для девелопменту)
+
+1. Переконайтесь, що PostgreSQL запущений і `.env` містить коректний `DATABASE_URL`.
+2. Очистити БД повністю:
+
+```bash
+npm run db:clear
+```
+
+3. Застосувати схему повторно:
+
+```bash
+npx prisma migrate deploy
+# або швидкий варіант
+npx prisma db push
+```
+
+4. (Опційно) Засіяти початкові дані:
+
+```bash
+npm run db:seed
+```
+
+## 🔐 Віддалене очищення (не для production)
+
+1. Додайте в `.env`:
+
+```bash
+ADMIN_SECRET="dev-admin"
+```
+
+2. Викличте endpoint (POST):
+
+```bash
+curl -X POST http://localhost:3000/api/admin/clear-db -H "X-Admin-Secret: dev-admin"
+```
+
+## ⚙️ Приклад `.env`
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/svoi?schema=public"
+JWT_SECRET="dev-jwt-secret"
+REFRESH_TOKEN_SECRET="dev-refresh-secret"
+ADMIN_SECRET="dev-admin"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+```
+
+## 🚦 Старт платформи (швидко)
+
+```bash
+npm install
+npx prisma migrate deploy  # або npx prisma db push
+npm run dev
+# браузер: http://localhost:3000
+```
+
+## 🧩 Якщо статус акаунту відображається неправильно
+
+1. Видаліть у браузері Local Storage ключі `user` і `token`.
+2. Перезавантажте сторінку — додаток підтягне свіжі дані з `/api/auth/me`.
+3. Якщо база була очищена — зареєструйтеся повторно.
+
