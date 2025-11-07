@@ -11,7 +11,9 @@ async function fetchUsers(q?: string, city?: string) {
   const params = new URLSearchParams();
   if (q) params.set('q', q);
   if (city) params.set('city', city);
-  const res = await fetch('/api/users?' + params.toString(), { cache: 'no-store' });
+  const query = params.toString();
+  const url = '/api/users' + (query ? `?${query}` : '');
+  const res = await fetch(url, { cache: 'no-store' });
   const data = await res.json();
   return data.users || [];
 }
