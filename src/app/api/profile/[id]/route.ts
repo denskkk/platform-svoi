@@ -173,7 +173,35 @@ export async function PUT(
       );
     }
 
-    const body = await request.json();
+    // Визначаємо тип контенту і парсимо тіло запиту (JSON або FormData)
+    const contentType = request.headers.get('content-type') || '';
+    let body: any = {};
+    if (contentType.includes('multipart/form-data')) {
+      const form = await request.formData();
+      body = Object.fromEntries(form.entries());
+    } else {
+      try {
+        body = await request.json();
+      } catch {
+        body = {};
+      }
+    }
+
+    // Допоміжні перетворення типів
+    const toInt = (v: any): number | null | undefined => {
+      if (v === undefined) return undefined;
+      if (v === null || v === '') return null;
+      const n = Number(v);
+      return Number.isNaN(n) ? null : n;
+    };
+    const toBool = (v: any): boolean | undefined => {
+      if (v === undefined) return undefined;
+      if (v === true || v === 'true' || v === '1') return true;
+      if (v === false || v === 'false' || v === '0') return false;
+      return undefined;
+    };
+
+    const errors: string[] = [];
 
     // Подготовка данных для обновления
     const updateData: any = {};
@@ -193,14 +221,17 @@ export async function PUT(
 
     // Персональная информация
     if (body.gender !== undefined) updateData.gender = body.gender;
-    if (body.age !== undefined) updateData.age = body.age;
-    if (body.maritalStatus !== undefined) updateData.maritalStatus = body.maritalStatus;
-    if (body.familyComposition !== undefined) updateData.familyComposition = body.familyComposition;
-    if (body.childrenCount !== undefined) updateData.childrenCount = body.childrenCount;
+  if (body.age !== undefined) updateData.age = toInt(body.age);
+  if (body.maritalStatus !== undefined) updateData.maritalStatus = body.maritalStatus;
+  if (body.familyComposition !== undefined) updateData.familyComposition = body.familyComposition;
+  if (body.childrenCount !== undefined) updateData.childrenCount = toInt(body.childrenCount);
     if (body.bio !== undefined) updateData.bio = body.bio;
 
     // Транспорт
-    if (body.hasCar !== undefined) updateData.hasCar = body.hasCar;
+    {
+      const v = toBool(body.hasCar);
+      if (v !== undefined) updateData.hasCar = v;
+    }
     if (body.carInfo !== undefined) updateData.carInfo = body.carInfo;
     if (body.otherTransport !== undefined) updateData.otherTransport = body.otherTransport;
 
@@ -208,12 +239,28 @@ export async function PUT(
     if (body.profession !== undefined) updateData.profession = body.profession;
     if (body.employmentStatus !== undefined) updateData.employmentStatus = body.employmentStatus;
     if (body.workplace !== undefined) updateData.workplace = body.workplace;
-    if (body.education !== undefined) updateData.education = body.education;
+    // Поле "education" з фронтенду не існує в моделі. В схемі є educationLevel (enum) та educationDetails (text)
+    if (body.education !== undefined) {
+      const val = body.education === '' ? null : body.education;
+      const enumValues = ['secondary','college','bachelor','master','doctorate'];
+      if (val === null) {
+        updateData.educationLevel = null;
+        updateData.educationDetails = null;
+      } else if (enumValues.includes(val)) {
+        updateData.educationLevel = val;
+      } else {
+        // Вільний текст -> в details
+        updateData.educationDetails = val;
+      }
+    }
     if (body.privateBusinessInfo !== undefined) updateData.privateBusinessInfo = body.privateBusinessInfo;
     if (body.jobSeeking !== undefined) updateData.jobSeeking = body.jobSeeking;
 
     // Домашние животные
-    if (body.hasPets !== undefined) updateData.hasPets = body.hasPets;
+    {
+      const v = toBool(body.hasPets);
+      if (v !== undefined) updateData.hasPets = v;
+    }
     if (body.petsInfo !== undefined) updateData.petsInfo = body.petsInfo;
 
     // Интересы и стиль жизни
@@ -223,7 +270,21 @@ export async function PUT(
     if (body.sports !== undefined) updateData.sports = body.sports;
 
     // Соцсети
-    if (body.socialLinks !== undefined) updateData.socialLinks = body.socialLinks;
+    if (body.socialLinks !== undefined) {
+      if (typeof body.socialLinks === 'string') {
+        try {
+          updateData.socialLinks = JSON.parse(body.socialLinks);
+        } catch {
+          errors.push('socialLinks повинні бути валідним JSON');
+        }
+      } else {
+        updateData.socialLinks = body.socialLinks;
+      }
+    }
+
+    if (errors.length) {
+      return NextResponse.json({ error: 'Невірні дані', details: errors }, { status: 400 });
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
