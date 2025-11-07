@@ -61,6 +61,8 @@ export async function GET(
         profession: true,
         employmentStatus: true,
         workplace: true,
+        educationLevel: true,
+        educationDetails: true,
         privateBusinessInfo: true,
         jobSeeking: true,
         // Домашні тварини
@@ -115,7 +117,13 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ user });
+    // Додаємо комбіноване поле education для зворотньої сумісності з фронтендом
+    const userWithEducation = {
+      ...user,
+      education: user.educationLevel || user.educationDetails || null
+    };
+
+    return NextResponse.json({ user: userWithEducation });
 
   } catch (error) {
     console.error('Get profile error:', error);
@@ -239,20 +247,24 @@ export async function PUT(
     if (body.profession !== undefined) updateData.profession = body.profession;
     if (body.employmentStatus !== undefined) updateData.employmentStatus = body.employmentStatus;
     if (body.workplace !== undefined) updateData.workplace = body.workplace;
-    // Поле "education" з фронтенду не існує в моделі. В схемі є educationLevel (enum) та educationDetails (text)
+    
+    // Освіта - приймаємо як вільний текст в educationDetails
     if (body.education !== undefined) {
       const val = body.education === '' ? null : body.education;
       const enumValues = ['secondary','college','bachelor','master','doctorate'];
+      
       if (val === null) {
         updateData.educationLevel = null;
         updateData.educationDetails = null;
       } else if (enumValues.includes(val)) {
+        // Якщо це значення enum
         updateData.educationLevel = val;
       } else {
         // Вільний текст -> в details
         updateData.educationDetails = val;
       }
     }
+    
     if (body.privateBusinessInfo !== undefined) updateData.privateBusinessInfo = body.privateBusinessInfo;
     if (body.jobSeeking !== undefined) updateData.jobSeeking = body.jobSeeking;
 
