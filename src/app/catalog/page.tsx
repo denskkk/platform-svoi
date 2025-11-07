@@ -1,236 +1,84 @@
-'use client'
+/**
+ * Публічна сторінка каталогу людей (користувачів) з пошуком та фільтрами
+ */
+import Link from 'next/link';
+import { Search, MapPin, Star, Users } from 'lucide-react';
 
-import { useState, useEffect } from 'react'
-import { Search, SlidersHorizontal, Star, MapPin } from 'lucide-react'
-import Link from 'next/link'
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-export default function CatalogPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [selectedCity, setSelectedCity] = useState('')
-  const [sortBy, setSortBy] = useState('popular')
-  const [showFilters, setShowFilters] = useState(false)
-  const [services, setServices] = useState<any[]>([])
-  const [categories, setCategories] = useState<any[]>([])
-  const [cities, setCities] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+async function fetchUsers(q?: string, city?: string) {
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (city) params.set('city', city);
+  const res = await fetch('/api/users?' + params.toString(), { cache: 'no-store' });
+  const data = await res.json();
+  return data.users || [];
+}
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  useEffect(() => {
-    loadServices()
-  }, [searchQuery, selectedCategory, selectedCity])
-
-  const loadData = async () => {
-    try {
-      const [categoriesRes, citiesRes] = await Promise.all([
-        fetch('/api/categories'),
-        fetch('/api/cities')
-      ])
-      
-      const categoriesData = await categoriesRes.json()
-      const citiesData = await citiesRes.json()
-      
-      setCategories(categoriesData.categories || [])
-      setCities(citiesData.cities || [])
-    } catch (err) {
-      console.error('Error loading data:', err)
-    }
-  }
-
-  const loadServices = async () => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (searchQuery) params.append('q', searchQuery)
-      if (selectedCategory) params.append('category', selectedCategory)
-      if (selectedCity) params.append('city', selectedCity)
-      
-      const response = await fetch(`/api/services?${params.toString()}`)
-      const data = await response.json()
-      
-      setServices(data.services || [])
-    } catch (err) {
-      console.error('Error loading services:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+// Catalog of users (discovery)
+export default async function CatalogUsersPage({ searchParams }: { searchParams?: { q?: string; city?: string } }) {
+  const q = searchParams?.q;
+  const city = searchParams?.city;
+  const users = await fetchUsers(q, city);
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Пошукова панель */}
-      <div className="bg-white border-b border-neutral-200 sticky top-16 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Пошук */}
-            <div className="flex-grow relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-neutral-400" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Що шукаєте?"
-                className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <Link href="/" className="text-2xl font-bold text-blue-600">Свій для Своїх</Link>
+          <nav className="flex gap-4">
+            <Link href="/services" className="text-gray-600 hover:text-blue-600">Послуги</Link>
+            <Link href="/pricing" className="text-gray-600 hover:text-blue-600">Тарифи</Link>
+            <Link href="/auth/login" className="text-gray-600 hover:text-blue-600">Увійти</Link>
+          </nav>
+        </div>
+      </header>
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3"><Users className="w-10 h-10" />Каталог людей</h1>
+          <p className="text-indigo-100 text-lg mb-6">Знайдіть учасників спільноти за професією, містом або ім'ям.</p>
+          <form action="/catalog" method="GET" className="bg-white rounded-lg p-4 flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input name="q" defaultValue={q} placeholder="Пошук (ім'я, професія)..." className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900" />
             </div>
-
-            {/* Фільтри кнопка (mobile) */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="md:hidden flex items-center justify-center space-x-2 px-4 py-3 border-2 border-primary-500 text-primary-600 rounded-lg font-medium"
-            >
-              <SlidersHorizontal className="w-5 w-5" />
-              <span>Фільтри</span>
-            </button>
-          </div>
-
-          {/* Фільтри (desktop) */}
-          <div className={`${showFilters ? 'block' : 'hidden'} md:block mt-4`}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Категорія */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="">Усі категорії</option>
-                {categories.map((cat: any) => (
-                  <option key={cat.id} value={cat.slug}>
-                    {cat.emoji} {cat.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Місто */}
-              <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="">Усі міста</option>
-                {cities.map((city: any) => (
-                  <option key={city.id} value={city.name}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Сортування */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="popular">🔝 Популярні</option>
-                <option value="new">🆕 Нові</option>
-                <option value="rating">⭐ За відгуками</option>
-              </select>
-            </div>
-          </div>
+            <input name="city" defaultValue={city} placeholder="Місто" className="md:w-48 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900" />
+            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold">Шукати</button>
+          </form>
         </div>
       </div>
-
-      {/* Результати */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Каталог послуг
-          </h1>
-          <p className="text-neutral-600">
-            {loading ? 'Завантаження...' : `Знайдено ${services.length} ${services.length === 1 ? 'послуга' : services.length < 5 ? 'послуги' : 'послуг'}`}
-          </p>
-        </div>
-
-        {/* Список послуг */}
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-neutral-500">Завантаження послуг...</p>
-          </div>
-        ) : services.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-neutral-500 mb-4">Послуг не знайдено</p>
-            <p className="text-sm text-neutral-400">Спробуйте змінити фільтри або пошуковий запит</p>
-          </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Знайдено: {users.length}</h2>
+        {users.length === 0 ? (
+          <div className="bg-white p-10 rounded-lg shadow text-center text-gray-600">Нічого не знайдено.</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service: any) => (
-              <Link
-                key={service.id}
-                href={`/profile/${service.user.id}`}
-                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                {/* Зображення послуги або емоджі категорії */}
-                {service.imageUrl ? (
-                  <div className="w-full h-48 overflow-hidden bg-neutral-100">
-                    <img
-                      src={service.imageUrl}
-                      alt={service.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                ) : (
-                  <div className="relative h-48 bg-gradient-to-br from-primary-200 to-accent-200">
-                    <div className="absolute inset-0 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform">
-                      {service.category?.emoji || '📦'}
-                    </div>
-                  </div>
-                )}
-
-                {/* Контент */}
-                <div className="p-5">
-                  <h3 className="font-semibold text-lg text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-primary-600 font-medium mb-3">
-                    {service.user.firstName} {service.user.lastName}
-                  </p>
-
-                  {/* Рейтинг та місто */}
-                  <div className="flex items-center justify-between mb-3 text-sm">
-                    {service.user.totalReviews > 0 && (
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 text-amber-400 fill-current" />
-                        <span className="font-medium">{Number(service.user.avgRating).toFixed(1)}</span>
-                        <span className="text-neutral-500">({service.user.totalReviews})</span>
-                      </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {users.map((u: any) => (
+              <Link key={u.id} href={`/profile/${u.id}`} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition group">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden">
+                    {u.avatarUrl ? <img src={u.avatarUrl} alt={u.firstName} className="w-full h-full object-cover" /> : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500 font-semibold text-lg">{u.firstName[0]}{u.lastName[0]}</div>
                     )}
-                    <div className="flex items-center space-x-1 text-neutral-600">
-                      <MapPin className="w-4 h-4" />
-                      <span>{service.city}</span>
-                    </div>
                   </div>
-
-                  {/* Опис */}
-                  {service.description && (
-                    <p className="text-neutral-700 text-sm mb-3 whitespace-pre-line line-clamp-4">
-                      {service.description}
-                    </p>
-                  )}
-
-                  {/* Ціна */}
-                  {(service.priceFrom || service.priceTo) && (
-                    <div className="text-primary-600 font-semibold">
-                      {service.priceFrom && service.priceTo ? (
-                        `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || 'грн'}`
-                      ) : service.priceFrom ? (
-                        `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
-                      ) : (
-                        `до ${service.priceTo} ${service.priceUnit || 'грн'}`
-                      )}
-                    </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-lg">{u.firstName} {u.lastName}{u.isVerified && <span className="text-blue-600 ml-1" title="Верифікований">✓</span>}</p>
+                    {u.city && <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3" />{u.city}</p>}
+                  </div>
+                </div>
+                {u.profession && <p className="text-sm text-gray-700 mb-3 line-clamp-2">{u.profession}</p>}
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span className="font-medium">{u.accountType}</span>
+                  {u.totalReviews > 0 && (
+                    <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{u.avgRating.toFixed(1)}</span>
                   )}
                 </div>
               </Link>
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
-  )
+  );
 }

@@ -128,6 +128,20 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           )}
                         </h1>
                         <AccountTypeBadge accountType={profile.accountType || 'basic'} size="sm" />
+                        {isOwnProfile && profile.trialStatus && profile.trialStatus !== 'none' && (
+                          <span
+                            className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                              profile.trialStatus === 'active'
+                                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : 'bg-neutral-100 text-neutral-600 border-neutral-200'
+                            }`}
+                            title={profile.trialStatus === 'active' ? 'Пробний період активний' : 'Пробний період завершено'}
+                          >
+                            {profile.trialStatus === 'active'
+                              ? `Пробний період: ${profile.trialDaysLeft} дн. залишилось`
+                              : 'Пробний період завершено'}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center space-x-4 text-sm text-neutral-600 mt-2">
                         <div className="flex items-center space-x-1">

@@ -3,12 +3,49 @@
 import { Check, Crown, Sparkles, Star, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useCurrentUser } from '@/hooks/usePermission';
 import { getAccountTypeName } from '@/lib/permissions';
 
 export default function PricingPage() {
   const router = useRouter();
   const { user } = useCurrentUser();
+  const [trialInfo, setTrialInfo] = useState<{ trialDaysLeft: number; trialStatus: string; expiresAt?: string } | null>(null);
+
+  // Завантажити оновлені дані профілю для актуального trial стану
+  useEffect(() => {
+    const loadTrial = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await fetch(`/api/profile/${user.id}`);
+        const data = await res.json();
+        if (data?.user) {
+          setTrialInfo({
+            trialDaysLeft: data.user.trialDaysLeft,
+            trialStatus: data.user.trialStatus,
+            expiresAt: data.user.subscriptionExpiresAt || undefined,
+          });
+          // Оновити localStorage користувача (наприклад, якщо trial закінчився і subscriptionActive змінився)
+          const storedRaw = localStorage.getItem('user');
+          if (storedRaw) {
+            try {
+              const stored = JSON.parse(storedRaw);
+              localStorage.setItem('user', JSON.stringify({
+                ...stored,
+                subscriptionActive: data.user.subscriptionActive,
+                subscriptionExpiresAt: data.user.subscriptionExpiresAt,
+                subscriptionStartedAt: data.user.subscriptionStartedAt,
+              }));
+              window.dispatchEvent(new Event('auth:changed'));
+            } catch {}
+          }
+        }
+      } catch (e) {
+        // Ignore trial info errors silently
+      }
+    };
+    loadTrial();
+  }, [user?.id]);
 
   const plans = [
     {
@@ -35,13 +72,14 @@ export default function PricingPage() {
     {
       name: 'Розширений',
       type: 'extended',
-      price: '199 грн/міс',
+      price: '0 грн на 3 міс, далі 199 грн/міс',
       icon: Zap,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
       popular: true,
       features: [
+        'Перші 3 місяці — безкоштовно',
         'Всі функції Базового',
         'Створення заявок',
         'Обмін повідомленнями',
@@ -52,12 +90,13 @@ export default function PricingPage() {
     {
       name: 'Бізнес',
       type: 'business',
-      price: '499 грн/міс',
+      price: '0 грн на 3 міс, далі 499 грн/міс',
       icon: Sparkles,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200',
       features: [
+        'Перші 3 місяці — безкоштовно',
         'Всі функції Розширеного',
         'Створення послуг/товарів',
         'Бізнес-профіль',
@@ -70,13 +109,14 @@ export default function PricingPage() {
     {
       name: 'Бізнес Преміум',
       type: 'business_premium',
-      price: '999 грн/міс',
+      price: '0 грн на 3 міс, далі 999 грн/міс',
       icon: Crown,
       color: 'text-yellow-600',
       bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
       borderColor: 'border-yellow-300',
       premium: true,
       features: [
+        'Перші 3 місяці — безкоштовно',
         'Всі функції Бізнес',
         'Автоматичні пропозиції',
         'UCM-аналіз (User Content Monitoring)',
@@ -110,10 +150,20 @@ export default function PricingPage() {
             Розблокуйте нові можливості для вашого бізнесу. Почніть безкоштовно або оберіть преміум план.
           </p>
           {user && (
-            <div className="mt-4 inline-block px-4 py-2 bg-white rounded-full shadow-sm">
+            <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 bg-white rounded-full shadow-sm">
               <span className="text-sm text-gray-600">
                 Поточний план: <span className="font-semibold text-blue-600">{getAccountTypeName(user.accountType)}</span>
               </span>
+              {trialInfo?.trialStatus === 'active' && (
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200" title="Пробний період активний">
+                  {trialInfo.trialDaysLeft} дн. залишилось
+                </span>
+              )}
+              {trialInfo?.trialStatus === 'expired' && (
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-neutral-100 text-neutral-600 border border-neutral-200" title="Пробний період завершено">
+                  Пробний період завершено
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -148,6 +198,16 @@ export default function PricingPage() {
                   <Icon className={`w-12 h-12 ${plan.color} mb-4`} />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                   <div className="text-3xl font-bold text-gray-900">{plan.price}</div>
+                  {isCurrentPlan && trialInfo?.trialStatus === 'active' && (
+                    <div className="mt-2 text-sm font-medium text-amber-700">
+                      Пробний період: {trialInfo.trialDaysLeft} дн. залишилось
+                    </div>
+                  )}
+                  {isCurrentPlan && trialInfo?.trialStatus === 'expired' && (
+                    <div className="mt-2 text-sm font-medium text-neutral-600">
+                      Пробний період завершено
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-6">

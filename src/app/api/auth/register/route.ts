@@ -97,6 +97,11 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashPassword(password);
 
     // Створення користувача з усіма полями
+    // Trial: first 3 months free for paid plans (extended)
+    const now = new Date();
+    const trialExpires = new Date(now);
+    trialExpires.setMonth(trialExpires.getMonth() + 3);
+
     const user = await prisma.user.create({
       data: {
         role,
@@ -108,6 +113,10 @@ export async function POST(request: NextRequest) {
         city: city || null,
         passwordHash,
         isVerified: false,
+        // apply free trial for non-basic plans
+        subscriptionActive: accountType !== 'basic',
+        subscriptionStartedAt: accountType !== 'basic' ? now : null,
+        subscriptionExpiresAt: accountType !== 'basic' ? trialExpires : null,
       },
       select: {
         id: true,
@@ -119,6 +128,9 @@ export async function POST(request: NextRequest) {
         city: true,
         avatarUrl: true,
         isVerified: true,
+        subscriptionActive: true,
+        subscriptionStartedAt: true,
+        subscriptionExpiresAt: true,
         createdAt: true,
       }
     });

@@ -36,7 +36,7 @@ export async function GET(
       );
     }
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -141,10 +141,34 @@ export async function GET(
       );
     }
 
+    // Авто-деактивація підписки, якщо пробний період завершився
+    try {
+      const now = new Date();
+      if (user.subscriptionActive && user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) < now) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: { subscriptionActive: false },
+        });
+        // Оновлюємо локального користувача, щоб повернути актуальні дані
+        user = {
+          ...user,
+          subscriptionActive: false,
+        };
+      }
+    } catch (e) {
+      console.warn('[GET /api/profile] Не вдалося авто-деактивувати підписку:', e);
+    }
+
     // Додаємо комбіноване поле education для зворотньої сумісності з фронтендом
+    const now = new Date();
+    const trialDaysLeft = user.subscriptionActive && user.subscriptionExpiresAt
+      ? Math.max(0, Math.ceil((new Date(user.subscriptionExpiresAt).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+      : 0;
     const userWithEducation = {
       ...user,
-      education: user.educationLevel || user.educationDetails || null
+      education: user.educationLevel || user.educationDetails || null,
+      trialDaysLeft,
+      trialStatus: user.subscriptionActive ? 'active' : (user.subscriptionExpiresAt ? 'expired' : 'none'),
     };
 
     return NextResponse.json({ user: userWithEducation });
@@ -290,19 +314,28 @@ export async function PUT(
     if (body.employmentStatus !== undefined) updateData.employmentStatus = body.employmentStatus;
     if (body.workplace !== undefined) updateData.workplace = body.workplace;
     
-    // Освіта - приймаємо як вільний текст в educationDetails
-    if (body.education !== undefined) {
+    // Освіта: підтримуємо як окремі поля (educationLevel, educationDetails) так і сумісне 'education'
+    const enumValues = ['secondary','college','bachelor','master','doctorate'];
+    if (body.educationLevel !== undefined) {
+      const level = body.educationLevel === '' ? null : body.educationLevel;
+      if (level && !enumValues.includes(level)) {
+        errors.push('Невірний рівень освіти');
+      } else {
+        updateData.educationLevel = level;
+      }
+    }
+    if (body.educationDetails !== undefined) {
+      updateData.educationDetails = body.educationDetails === '' ? null : body.educationDetails;
+    }
+    // Сумісність зі старим фронтом: якщо передано 'education' і не передано нових полів
+    if (body.education !== undefined && body.educationLevel === undefined && body.educationDetails === undefined) {
       const val = body.education === '' ? null : body.education;
-      const enumValues = ['secondary','college','bachelor','master','doctorate'];
-      
       if (val === null) {
         updateData.educationLevel = null;
         updateData.educationDetails = null;
       } else if (enumValues.includes(val)) {
-        // Якщо це значення enum
         updateData.educationLevel = val;
       } else {
-        // Вільний текст -> в details
         updateData.educationDetails = val;
       }
     }

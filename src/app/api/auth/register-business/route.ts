@@ -133,6 +133,10 @@ export async function POST(request: NextRequest) {
 
     // Створення користувача та бізнесу в транзакції
     const result = await prisma.$transaction(async (tx: any) => {
+      // Trial: first 3 months free for business plans
+      const trialStart = new Date();
+      const trialEnd = new Date(trialStart);
+      trialEnd.setMonth(trialEnd.getMonth() + 3);
       // Створення користувача
       const user = await tx.user.create({
         data: {
@@ -145,6 +149,10 @@ export async function POST(request: NextRequest) {
           city: city || null,
           passwordHash,
           isVerified: false,
+          // apply free trial for all business tiers
+          subscriptionActive: true,
+          subscriptionStartedAt: trialStart,
+          subscriptionExpiresAt: trialEnd,
         },
         select: {
           id: true,
@@ -156,6 +164,9 @@ export async function POST(request: NextRequest) {
           city: true,
           avatarUrl: true,
           isVerified: true,
+          subscriptionActive: true,
+          subscriptionStartedAt: true,
+          subscriptionExpiresAt: true,
           createdAt: true,
         }
       });

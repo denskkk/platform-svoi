@@ -39,7 +39,8 @@ export default function EditProfilePage() {
     profession: '',
     employmentStatus: '',
     workplace: '',
-    education: '',
+  educationLevel: '',
+  educationDetails: '',
     privateBusinessInfo: '',
     jobSeeking: '',
   seekingPartTime: '',
@@ -154,7 +155,8 @@ export default function EditProfilePage() {
           profession: u.profession || '',
           employmentStatus: u.employmentStatus || '',
           workplace: u.workplace || '',
-          education: u.education || '',
+          educationLevel: u.educationLevel || '',
+          educationDetails: u.educationDetails || '',
           privateBusinessInfo: u.privateBusinessInfo || '',
           jobSeeking: u.jobSeeking || '',
           seekingPartTime: u.seekingPartTime === true ? 'yes' : u.seekingPartTime === false ? 'no' : '',
@@ -310,7 +312,7 @@ export default function EditProfilePage() {
         return v.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !Number.isNaN(n));
       };
 
-      const requestBody = {
+  const requestBody = {
         firstName: formData.firstName,
         middleName: formData.middleName || null,
         lastName: formData.lastName,
@@ -342,7 +344,8 @@ export default function EditProfilePage() {
         profession: formData.profession || null,
         employmentStatus: formData.employmentStatus || null,
         workplace: formData.workplace || null,
-        education: formData.education || null,
+  educationLevel: formData.educationLevel || null,
+  educationDetails: formData.educationDetails || null,
         privateBusinessInfo: formData.privateBusinessInfo || null,
         jobSeeking: formData.jobSeeking || null,
         seekingPartTime: yesNoToBool(formData.seekingPartTime),
@@ -971,6 +974,7 @@ export default function EditProfilePage() {
                       <option value="looking">У пошуку роботи</option>
                       <option value="student">Студент</option>
                       <option value="retired">Пенсіонер</option>
+                      <option value="self_employed">Самозайнятий</option>
                       <option value="business">Приватний бізнес</option>
                     </select>
                   </div>
@@ -989,17 +993,34 @@ export default function EditProfilePage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Освіта
-                  </label>
-                  <textarea
-                    name="education"
-                    rows={2}
-                    value={formData.education}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Рівень освіти</label>
+                    <select
+                      name="educationLevel"
+                      value={formData.educationLevel}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Не вказано</option>
+                      <option value="secondary">Середня</option>
+                      <option value="college">Коледж</option>
+                      <option value="bachelor">Бакалавр</option>
+                      <option value="master">Магістр</option>
+                      <option value="doctorate">Аспірантура</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Заклад та напрямок</label>
+                    <input
+                      type="text"
+                      name="educationDetails"
+                      value={formData.educationDetails}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="КНУ ім. Шевченка, Економіка"
+                    />
+                  </div>
                 </div>
 
                 {formData.employmentStatus === 'business' && (
@@ -1081,9 +1102,7 @@ export default function EditProfilePage() {
             {activeTab === 'interests' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Хобі / Захоплення
-                  </label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Хобі / Захоплення</label>
                   <textarea
                     name="hobbies"
                     rows={2}
@@ -1092,11 +1111,8 @@ export default function EditProfilePage() {
                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Охота, рибалка, активний відпочинок
-                  </label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Охота, рибалка, активний відпочинок</label>
                   <textarea
                     name="outdoorActivities"
                     rows={2}
@@ -1105,11 +1121,8 @@ export default function EditProfilePage() {
                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Спортивна активність
-                  </label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Спортивна активність</label>
                   <textarea
                     name="sports"
                     rows={2}
@@ -1118,11 +1131,8 @@ export default function EditProfilePage() {
                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Стиль життя
-                  </label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Стиль життя</label>
                   <textarea
                     name="lifestyle"
                     rows={2}
@@ -1131,8 +1141,6 @@ export default function EditProfilePage() {
                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   />
                 </div>
-
-                {/* Переваги та використання сервісів */}
                 <div className="border-t pt-6 space-y-4">
                   <h3 className="text-lg font-semibold text-neutral-900">Переваги та використання сервісів</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1175,8 +1183,6 @@ export default function EditProfilePage() {
                         placeholder="Домашня, Європейська, Азійська..."
                       />
                     </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">Побутові сервіси (через кому)</label>
                       <input
