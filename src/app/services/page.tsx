@@ -6,6 +6,10 @@ import Link from 'next/link';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
+// Позначаємо сторінку як динамічну
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getServices() {
   try {
     const services = await prisma.service.findMany({
