@@ -2,17 +2,28 @@
  * Публічна сторінка каталогу людей (користувачів) з пошуком та фільтрами
  */
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { Search, MapPin, Star, Users } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+function getBaseUrl() {
+  // Prefer explicit env if provided
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  const h = headers();
+  const proto = h.get('x-forwarded-proto') || 'http';
+  const host = h.get('host') || 'localhost:3000';
+  return `${proto}://${host}`;
+}
 
 async function fetchUsers(q?: string, city?: string) {
   const params = new URLSearchParams();
   if (q) params.set('q', q);
   if (city) params.set('city', city);
   const query = params.toString();
-  const url = '/api/users' + (query ? `?${query}` : '');
+  const base = getBaseUrl();
+  const url = `${base}/api/users${query ? `?${query}` : ''}`;
   const res = await fetch(url, { cache: 'no-store' });
   const data = await res.json();
   return data.users || [];
