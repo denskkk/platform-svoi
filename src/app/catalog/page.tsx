@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { Search, MapPin, Star, Users } from 'lucide-react';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -60,27 +61,12 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
             {users.map((u: any) => (
               <Link key={u.id} href={`/profile/${u.id}`} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition group">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden">
-                    {u.avatarUrl ? (
-                      <img 
-                        src={u.avatarUrl} 
-                        alt={u.firstName} 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          const parent = e.currentTarget.parentElement;
-                          if (parent) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'w-full h-full flex items-center justify-center text-gray-500 font-semibold text-lg';
-                            fallback.textContent = `${u.firstName[0]}${u.lastName[0]}`;
-                            parent.appendChild(fallback);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 font-semibold text-lg">{u.firstName[0]}{u.lastName[0]}</div>
-                    )}
-                  </div>
+                  <UserAvatar 
+                    src={u.avatarUrl}
+                    alt={u.firstName}
+                    className="w-14 h-14 rounded-full object-cover"
+                    fallbackName={`${u.firstName} ${u.lastName}`}
+                  />
                   <div>
                     <p className="font-semibold text-gray-900 text-lg">{u.firstName} {u.lastName}{u.isVerified && <span className="text-blue-600 ml-1" title="Верифікований">✓</span>}</p>
                     {u.city && <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3" />{u.city}</p>}

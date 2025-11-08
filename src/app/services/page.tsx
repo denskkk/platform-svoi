@@ -5,6 +5,7 @@
 import Link from 'next/link';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 
 // Позначаємо сторінку як динамічну
 export const dynamic = 'force-dynamic';
@@ -130,29 +131,12 @@ export default async function ServicesPage() {
                 <div className="border-t pt-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
-                        {service.user.avatarUrl ? (
-                          <img
-                            src={service.user.avatarUrl}
-                            alt={service.user.firstName}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                              const parent = e.currentTarget.parentElement;
-                              if (parent) {
-                                const fallback = document.createElement('div');
-                                fallback.className = 'w-full h-full flex items-center justify-center text-gray-400 text-sm';
-                                fallback.textContent = `${service.user.firstName[0]}${service.user.lastName[0]}`;
-                                parent.appendChild(fallback);
-                              }
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                            {service.user.firstName[0]}{service.user.lastName[0]}
-                          </div>
-                        )}
-                      </div>
+                      <UserAvatar 
+                        src={service.user.avatarUrl}
+                        alt={service.user.firstName}
+                        className="w-10 h-10 rounded-full object-cover"
+                        fallbackName={`${service.user.firstName} ${service.user.lastName}`}
+                      />
                       <div>
                         <p className="font-semibold text-gray-900 text-sm">
                           {service.user.firstName} {service.user.lastName}
