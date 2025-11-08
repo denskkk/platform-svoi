@@ -452,11 +452,13 @@ export async function PUT(
       }
     }
 
-    // Соцсети
+    // Соцсети (об'єкт)
     if (body.socialLinks !== undefined) {
-      if (Array.isArray(body.socialLinks)) {
+      if (typeof body.socialLinks === 'object' && body.socialLinks !== null) {
+        // Якщо це вже об'єкт, використовуємо його
         updateData.socialLinks = body.socialLinks;
       } else if (typeof body.socialLinks === 'string' && body.socialLinks !== '') {
+        // Якщо це JSON-рядок, парсимо
         try {
           updateData.socialLinks = JSON.parse(body.socialLinks);
         } catch {
