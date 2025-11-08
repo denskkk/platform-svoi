@@ -101,8 +101,8 @@ model User {
   passwordHash String   @map("password_hash") @db.VarChar(255)
   
   // УЦМ (Українська Цивільна Місія)
-  ucmMember    Boolean? @map("ucm_member") // Участник команди УЦМ
-  ucmSupporter Boolean? @map("ucm_supporter") // Підтримуєш проєкти УЦМ
+  ucmMember    String? @map("ucm_member") @db.VarChar(50) // Участник команди УЦМ (так/ні/цікаво)
+  ucmSupporter String? @map("ucm_supporter") @db.VarChar(50) // Підтримуєш проєкти УЦМ (так/ні/цікаво)
   
   // Локація
   city         String?  @db.VarChar(100)
@@ -126,6 +126,9 @@ model User {
   carInfo      String?  @map("car_info") @db.VarChar(200) // марка, модель, рік
   carServices  Json?    @map("car_services") @default("{}") // СТО, мийка, автосалон
   otherTransport String? @map("other_transport") @db.VarChar(200) // велосипед / самокат
+  usesTaxi     Boolean? @map("uses_taxi") // користується таксі
+  hasBicycle   String?  @map("has_bicycle") @db.VarChar(50) // так/ні/плануємо
+  bicycleInfo  String?  @map("bicycle_info") @db.VarChar(200) // інформація про велосипед
   
   // Професійна діяльність та освіта
   educationLevel EducationLevel? @map("education_level")
@@ -137,10 +140,22 @@ model User {
   jobSeeking   String?  @map("job_seeking") @db.Text // в якій сфері шукає роботу
   seekingPartTime Boolean? @map("seeking_part_time") // часткова зайнятість
   seekingFullTime Boolean? @map("seeking_full_time") // повноцінна робота
+  seekingSpecialty String? @map("seeking_specialty") @db.VarChar(200) // спеціальність, яку шукає
   wantsStartBusiness Boolean? @map("wants_start_business") // бажання відкрити свою справу
+  
+  // Бізнес інформація (для extended)
+  businessType String? @map("business_type") @db.VarChar(100) // ФОП/ТОВ/інше
+  fopGroup     String? @map("fop_group") @db.VarChar(50) // 1/2/3 група ФОП
+  tovType      String? @map("tov_type") @db.VarChar(100) // Тип ТОВ
+  companyCode  String? @map("company_code") @db.VarChar(50) // ЄДРПОУ
+  businessCategory String? @map("business_category") @db.VarChar(100) // Категорія бізнесу
+  offerType    String? @map("offer_type") @db.VarChar(50) // послуга/товар/обидва
   
   // Історія роботи (останні 2-3 місця)
   workHistory  Json?    @map("work_history") @default("[]") // [{company, position, duration, socialLinks}]
+  
+  // Сімейні дані (extended)
+  hasChildren  String?  @map("has_children") @db.VarChar(50) // так/ні/плануємо
   
   // Домашні тварини
   hasPets      Boolean? @map("has_pets")
@@ -154,14 +169,18 @@ model User {
   beautyServices Json?  @map("beauty_services") @default("{}") // Перукар/манікюр/СПА/масаж
   
   // Споживчі переваги
-  usesDelivery Boolean? @map("uses_delivery") // Користується інтернет-доставкою
+  usesDelivery String? @map("uses_delivery") @db.VarChar(50) // Користується інтернет-доставкою
   restaurantFrequency String? @map("restaurant_frequency") @db.VarChar(50) // рідко/по бажанню/часто/не хожу
   cuisinePreference String? @map("cuisine_preference") @db.VarChar(100) // Домашня/Китайська/Європейська
   usesServices Json?   @map("uses_services") @default("{}") // Електрик/Сантехнік/Клінінг/Будівельник/Садовник
+  usesHomeServices Json? @map("uses_home_services") @default("[]") // масив домашніх сервісів
   
   // Бізнес-спеціалісти (для підприємців)
   usesBusinessServices Json? @map("uses_business_services") @default("{}") // Бухгалтер/Юрист/СММ/Рекламщик/Веб-спеціаліст
-  readyToSwitchToUCM Boolean? @map("ready_to_switch_ucm") // Готовий перейти на спеціалістів УЦМ
+  readyToSwitchToUCM String? @map("ready_to_switch_ucm") @db.VarChar(50) // Готовий перейти на спеціалістів УЦМ (так/ні/цікаво)
+  
+  // Мета використання сайту
+  siteUsageGoal Json? @map("site_usage_goal") @default("[]") // масив цілей використання платформи
   
   // Соцмережі
   socialLinks  Json?    @map("social_links") @default("{}") // Instagram, Facebook, Telegram, TikTok
