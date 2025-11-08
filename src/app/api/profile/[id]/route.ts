@@ -15,6 +15,40 @@ import { prisma } from '@/lib/prisma';
 import { verifyToken, getTokenFromHeader } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
 
+// Маппінг українських значень до enum значень бази даних
+const ukrainianToDbValue: Record<string, Record<string, string>> = {
+  gender: {
+    'Чоловік': 'male',
+    'Жінка': 'female',
+    'Інше': 'other'
+  },
+  maritalStatus: {
+    'Одружений/Заміжня': 'married',
+    'Не одружений/Не заміжня': 'single',
+    'У цивільному шлюбі': 'civil',
+    'Розлучений/Розлучена': 'divorced',
+    'Вдівець/Вдова': 'widowed'
+  },
+  employmentStatus: {
+    'Працевлаштований': 'employed',
+    'Безробітний': 'unemployed',
+    'Власник бізнесу': 'business_owner',
+    'Фрілансер': 'freelancer',
+    'Студент': 'student',
+    'Пенсіонер': 'retired'
+  }
+};
+
+// Функція для конвертації українського значення в DB enum
+function convertToDbValue(field: string, value: any): any {
+  if (!value || typeof value !== 'string') return value;
+  const mapping = ukrainianToDbValue[field];
+  if (mapping && mapping[value]) {
+    return mapping[value];
+  }
+  return value; // Якщо вже в правильному форматі або невідоме поле
+}
+
 interface RouteParams {
   params: {
     id: string;
@@ -302,9 +336,9 @@ export async function PUT(
     if (body.livingSituation !== undefined) updateData.livingSituation = body.livingSituation;
 
     // Персональная информация
-    if (body.gender !== undefined) updateData.gender = body.gender;
+    if (body.gender !== undefined) updateData.gender = convertToDbValue('gender', body.gender);
   if (body.age !== undefined) updateData.age = toInt(body.age);
-  if (body.maritalStatus !== undefined) updateData.maritalStatus = body.maritalStatus;
+  if (body.maritalStatus !== undefined) updateData.maritalStatus = convertToDbValue('maritalStatus', body.maritalStatus);
   if (body.familyComposition !== undefined) updateData.familyComposition = body.familyComposition;
   if (body.childrenCount !== undefined) updateData.childrenCount = toInt(body.childrenCount);
   if (body.childrenAges !== undefined) {
@@ -337,7 +371,7 @@ export async function PUT(
 
     // Профессиональная деятельность
     if (body.profession !== undefined) updateData.profession = body.profession;
-    if (body.employmentStatus !== undefined) updateData.employmentStatus = body.employmentStatus;
+    if (body.employmentStatus !== undefined) updateData.employmentStatus = convertToDbValue('employmentStatus', body.employmentStatus);
     if (body.workplace !== undefined) updateData.workplace = body.workplace;
     
     // Освіта: підтримуємо як окремі поля (educationLevel, educationDetails) так і сумісне 'education'
