@@ -458,9 +458,13 @@ export default function EditProfilePage() {
               <div className="relative flex-shrink-0">
                 {avatarPreview ? (
                   <img
-                    src={avatarPreview}
+                    src={avatarPreview.startsWith('http') ? avatarPreview : `${avatarPreview}`}
                     alt="Avatar"
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-200"
+                    onError={(e) => {
+                      console.error('Avatar load error:', avatarPreview);
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 ) : (
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-blue-500 flex items-center justify-center border-4 border-blue-200">
@@ -498,90 +502,90 @@ export default function EditProfilePage() {
           {/* Tabs - показувати тільки для extended */}
           {isExtended && (
             <div className="border-b border-neutral-200 overflow-x-auto">
-              <div className="px-4 md:px-8">
-                <div className="flex space-x-2 md:space-x-6 min-w-max">
+              <div className="px-2 md:px-8">
+                <div className="flex space-x-1 md:space-x-6 min-w-max">
                   <button
                     type="button"
                     onClick={() => setActiveTab('basic')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'basic'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <User className="w-4 h-4 inline mr-1" />
+                    <User className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
                     Основні дані
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('education')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'education'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <GraduationCap className="w-4 h-4 inline mr-1" />
-                    Освіта та УЦМ
+                    <GraduationCap className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                    Освіта
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('work')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'work'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <Briefcase className="w-4 h-4 inline mr-1" />
-                    Робота та бізнес
+                    <Briefcase className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                    Робота
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('family')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'family'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <Home className="w-4 h-4 inline mr-1" />
-                    Сім'я та побут
+                    <Home className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                    Сім'я
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('transport')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'transport'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <Car className="w-4 h-4 inline mr-1" />
+                    <Car className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
                     Транспорт
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('lifestyle')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'lifestyle'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <Heart className="w-4 h-4 inline mr-1" />
+                    <Heart className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
                     Стиль життя
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('goal')}
-                    className={`py-3 md:py-4 px-2 md:px-0 border-b-2 transition-colors whitespace-nowrap text-xs md:text-base touch-manipulation ${
+                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
                       activeTab === 'goal'
                         ? 'border-blue-500 text-blue-600 font-medium'
                         : 'border-transparent text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    <Target className="w-4 h-4 inline mr-1" />
+                    <Target className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
                     Мета
                   </button>
                 </div>
@@ -590,32 +594,32 @@ export default function EditProfilePage() {
           )}
 
           {/* Messages */}
-          <div className="px-4 md:px-8 pt-4 md:pt-6">
+          <div className="px-3 md:px-8 pt-3 md:pt-6">
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm">
+              <div className="mb-3 p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm">
                 {error}
               </div>
             )}
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs md:text-sm">
+              <div className="mb-3 p-2.5 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs md:text-sm">
                 {success}
               </div>
             )}
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-4 md:px-8 py-4 md:py-6">
+          <form onSubmit={handleSubmit} className="px-3 md:px-8 py-3 md:py-6">
             
             {/* Basic Tab - ЗАВЖДИ для базового, або перший таб для extended */}
             {(!isExtended || activeTab === 'basic') && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
+              <div className="space-y-4 md:space-y-6">
+                <h2 className="text-base md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
                   1-4. Основні дані
                 </h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-xs md:text-sm font-medium text-neutral-700 mb-1.5 md:mb-2">
                       Ім'я *
                     </label>
                     <input
@@ -801,10 +805,10 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть рівень</option>
-                    <option value="middle">Середня</option>
-                    <option value="bachelor">Бакалавр</option>
-                    <option value="master">Магістр</option>
-                    <option value="college">Коледж</option>
+                    <option value="Середня">Середня</option>
+                    <option value="Бакалавр">Бакалавр</option>
+                    <option value="Магістр">Магістр</option>
+                    <option value="Коледж">Коледж</option>
                   </select>
                 </div>
 
@@ -833,9 +837,9 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="yes">Так</option>
-                    <option value="no">Ні</option>
-                    <option value="planning">Планую стати</option>
+                    <option value="Так">Так</option>
+                    <option value="Ні">Ні</option>
+                    <option value="Планую стати">Планую стати</option>
                   </select>
                 </div>
 
@@ -850,9 +854,9 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="yes">Так</option>
-                    <option value="no">Ні</option>
-                    <option value="planning">Планую</option>
+                    <option value="Так">Так</option>
+                    <option value="Ні">Ні</option>
+                    <option value="Планую">Планую</option>
                   </select>
                 </div>
               </div>
@@ -876,15 +880,15 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="employed">Так</option>
-                    <option value="unemployed">Ні</option>
-                    <option value="business_owner">Власник бізнесу</option>
-                    <option value="self_employed">Сам на себе</option>
-                    <option value="job_seeking">В пошуку роботи</option>
+                    <option value="Так">Так</option>
+                    <option value="Ні">Ні</option>
+                    <option value="Власник бізнесу">Власник бізнесу</option>
+                    <option value="Сам на себе">Сам на себе</option>
+                    <option value="В пошуку роботи">В пошуку роботи</option>
                   </select>
                 </div>
 
-                {formData.employmentStatus === 'job_seeking' && (
+                {formData.employmentStatus === 'В пошуку роботи' && (
                   <div className="bg-blue-50 p-4 rounded-lg space-y-4">
                     <h3 className="font-semibold text-gray-900">💁 Якщо в пошуку роботи:</h3>
                     
@@ -936,15 +940,15 @@ export default function EditProfilePage() {
                         className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                       >
                         <option value="">Оберіть</option>
-                        <option value="yes">Так</option>
-                        <option value="no">Ні</option>
-                        <option value="considering">Розглядаю варіанти</option>
+                        <option value="Так">Так</option>
+                        <option value="Ні">Ні</option>
+                        <option value="Розглядаю варіанти">Розглядаю варіанти</option>
                       </select>
                     </div>
                   </div>
                 )}
 
-                {(formData.employmentStatus === 'business_owner' || formData.employmentStatus === 'self_employed') && (
+                {(formData.employmentStatus === 'Власник бізнесу' || formData.employmentStatus === 'Сам на себе') && (
                   <div className="bg-green-50 p-4 rounded-lg space-y-4">
                     <h3 className="font-semibold text-gray-900">💁 Якщо підприємець:</h3>
 
@@ -1066,9 +1070,9 @@ export default function EditProfilePage() {
                       className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть</option>
-                      <option value="yes">Так</option>
-                      <option value="no">Ні</option>
-                      <option value="considering">Розглядаю</option>
+                      <option value="Так">Так</option>
+                      <option value="Ні">Ні</option>
+                      <option value="Розглядаю">Розглядаю</option>
                     </select>
                   </div>
                 </div>
@@ -1108,8 +1112,8 @@ export default function EditProfilePage() {
                       className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть</option>
-                      <option value="male">Чоловік</option>
-                      <option value="female">Жінка</option>
+                      <option value="Чоловік">Чоловік</option>
+                      <option value="Жінка">Жінка</option>
                     </select>
                   </div>
 
@@ -1124,10 +1128,10 @@ export default function EditProfilePage() {
                       className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть</option>
-                      <option value="single">Одружений/Заміжня</option>
-                      <option value="searching">В пошуку</option>
-                      <option value="civil">Цивільний шлюб</option>
-                      <option value="divorced">В розводі</option>
+                      <option value="Одружений/Заміжня">Одружений/Заміжня</option>
+                      <option value="В пошуку">В пошуку</option>
+                      <option value="Цивільний шлюб">Цивільний шлюб</option>
+                      <option value="В розводі">В розводі</option>
                     </select>
                   </div>
                 </div>
@@ -1143,12 +1147,12 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="yes">Так</option>
-                    <option value="no">Ні</option>
+                    <option value="Так">Так</option>
+                    <option value="Ні">Ні</option>
                   </select>
                 </div>
 
-                {formData.hasChildren === 'yes' && (
+                {formData.hasChildren === 'Так' && (
                   <div className="bg-blue-50 p-4 rounded-lg space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -1200,15 +1204,15 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="no">Ні</option>
-                    <option value="cat">Кіт</option>
-                    <option value="dog">Пес</option>
-                    <option value="farm">Сільськогосподарські тварини</option>
-                    <option value="other">Інше</option>
+                    <option value="Ні">Ні</option>
+                    <option value="Кіт">Кіт</option>
+                    <option value="Пес">Пес</option>
+                    <option value="Сільськогосподарські тварини">Сільськогосподарські тварини</option>
+                    <option value="Інше">Інше</option>
                   </select>
                 </div>
 
-                {formData.hasPets && formData.hasPets !== 'no' && (
+                {formData.hasPets && formData.hasPets !== 'Ні' && (
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-2">
                       Деталі (хто саме)
@@ -1301,12 +1305,12 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="yes">Так</option>
-                    <option value="no">Ні</option>
+                    <option value="Так">Так</option>
+                    <option value="Ні">Ні</option>
                   </select>
                 </div>
 
-                {formData.hasCar === 'no' && (
+                {formData.hasCar === 'Ні' && (
                   <label className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -1319,7 +1323,7 @@ export default function EditProfilePage() {
                   </label>
                 )}
 
-                {formData.hasCar === 'yes' && (
+                {formData.hasCar === 'Так' && (
                   <div className="bg-blue-50 p-4 rounded-lg space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -1367,12 +1371,12 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="yes">Так</option>
-                    <option value="no">Ні</option>
+                    <option value="Так">Так</option>
+                    <option value="Ні">Ні</option>
                   </select>
                 </div>
 
-                {formData.hasBicycle === 'yes' && (
+                {formData.hasBicycle === 'Так' && (
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-2">
                       Що саме та марка
