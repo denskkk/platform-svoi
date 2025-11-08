@@ -79,6 +79,10 @@ export async function POST(request: NextRequest) {
     };
 
     if (body.companyName !== undefined) createData.companyName = body.companyName;
+    if (body.companyCode !== undefined) createData.companyCode = body.companyCode;
+    if (body.companyType !== undefined) createData.companyType = body.companyType;
+    if (body.businessCategory !== undefined) createData.businessCategory = body.businessCategory;
+    if (body.offerType !== undefined) createData.offerType = body.offerType;
     if (body.representativeName !== undefined) createData.representativeName = body.representativeName;
     if (body.position !== undefined) createData.position = body.position;
     if (body.city !== undefined) createData.city = body.city; else if (user?.city) createData.city = user.city;
@@ -149,6 +153,12 @@ export async function POST(request: NextRequest) {
     if (body.certificatesInfo !== undefined) createData.certificatesInfo = body.certificatesInfo;
     if (body.partners !== undefined) createData.partners = body.partners;
 
+    // Пошук (для Бізнес акаунтів)
+    if (body.seekingPartner !== undefined) createData.seekingPartner = body.seekingPartner;
+    if (body.seekingInvestor !== undefined) createData.seekingInvestor = body.seekingInvestor;
+    if (body.seekingCustomer !== undefined) createData.seekingCustomer = body.seekingCustomer;
+    if (body.seekingEmployee !== undefined) createData.seekingEmployee = body.seekingEmployee;
+
     const businessInfo = await prisma.businessInfo.create({
       data: createData
     });
@@ -183,6 +193,10 @@ export async function PUT(request: NextRequest) {
     const updateData: any = {};
 
     if (body.companyName !== undefined) updateData.companyName = body.companyName;
+    if (body.companyCode !== undefined) updateData.companyCode = body.companyCode;
+    if (body.companyType !== undefined) updateData.companyType = body.companyType;
+    if (body.businessCategory !== undefined) updateData.businessCategory = body.businessCategory;
+    if (body.offerType !== undefined) updateData.offerType = body.offerType;
     if (body.representativeName !== undefined) updateData.representativeName = body.representativeName;
     if (body.position !== undefined) updateData.position = body.position;
     if (body.city !== undefined) updateData.city = body.city;
@@ -249,6 +263,12 @@ export async function PUT(request: NextRequest) {
     if (body.hasCertificates !== undefined) updateData.hasCertificates = body.hasCertificates;
     if (body.certificatesInfo !== undefined) updateData.certificatesInfo = body.certificatesInfo;
     if (body.partners !== undefined) updateData.partners = body.partners;
+
+    // Пошук (для Бізнес акаунтів)
+    if (body.seekingPartner !== undefined) updateData.seekingPartner = body.seekingPartner;
+    if (body.seekingInvestor !== undefined) updateData.seekingInvestor = body.seekingInvestor;
+    if (body.seekingCustomer !== undefined) updateData.seekingCustomer = body.seekingCustomer;
+    if (body.seekingEmployee !== undefined) updateData.seekingEmployee = body.seekingEmployee;
 
     // Дані для створення (upsert.create) з дефолтами з профілю
     const createData: any = {

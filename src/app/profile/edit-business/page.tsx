@@ -15,10 +15,15 @@ export default function EditBusinessProfilePage() {
     position: '',
     city: '',
     businessType: '',
+    companyCode: '',
+    businessCategory: '',
+    companyType: '',
+    offerType: '',
     
     shortDescription: '',
     mission: '',
     uniqueValue: '',
+    description: '',
     
     servicesList: '',
     priceRange: '',
@@ -35,6 +40,9 @@ export default function EditBusinessProfilePage() {
     telegram: '',
     website: '',
     socialLinks: '',
+    facebook: '',
+    instagram: '',
+    linkedin: '',
     
     yearFounded: '',
     registrationType: '',
@@ -42,6 +50,11 @@ export default function EditBusinessProfilePage() {
     certificatesInfo: '',
     partnersInfo: '',
     externalReviews: '',
+    
+    seekingPartner: false,
+    seekingInvestor: false,
+    seekingCustomer: false,
+    seekingEmployee: false,
   });
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -80,16 +93,29 @@ export default function EditBusinessProfilePage() {
         const b = data.businessInfo;
         setLogoPreview(b.logoUrl || '');
         
+        // Parse social links if it's JSON
+        let parsedSocialLinks: any = {};
+        try {
+          parsedSocialLinks = typeof b.socialLinks === 'string' ? JSON.parse(b.socialLinks) : (b.socialLinks || {});
+        } catch {
+          parsedSocialLinks = {};
+        }
+        
         setFormData({
           companyName: b.companyName || '',
           representativeName: b.representativeName || '',
           position: b.position || '',
           city: b.city || '',
           businessType: b.businessType || '',
+          companyCode: b.companyCode || '',
+          businessCategory: b.businessCategory || '',
+          companyType: b.companyType || '',
+          offerType: b.offerType || '',
           
           shortDescription: b.shortDescription || b.description || '',
           mission: b.mission || '',
           uniqueValue: b.uniqueValue || '',
+          description: b.description || b.shortDescription || '',
           
           servicesList: b.servicesList || '',
           priceRange: b.priceRange || '',
@@ -106,6 +132,9 @@ export default function EditBusinessProfilePage() {
           telegram: b.telegram || '',
           website: b.website || '',
           socialLinks: typeof b.socialLinks === 'string' ? b.socialLinks : JSON.stringify(b.socialLinks || {}, null, 2),
+          facebook: parsedSocialLinks.facebook || '',
+          instagram: parsedSocialLinks.instagram || '',
+          linkedin: parsedSocialLinks.linkedin || '',
           
           yearFounded: b.yearFounded?.toString() || '',
           registrationType: b.registrationType || '',
@@ -113,6 +142,11 @@ export default function EditBusinessProfilePage() {
           certificatesInfo: b.certificatesInfo || '',
           partnersInfo: b.partnersInfo || b.partners || '',
           externalReviews: typeof b.externalReviews === 'string' ? b.externalReviews : JSON.stringify(b.externalReviews || {}, null, 2),
+          
+          seekingPartner: b.seekingPartner || false,
+          seekingInvestor: b.seekingInvestor || false,
+          seekingCustomer: b.seekingCustomer || false,
+          seekingEmployee: b.seekingEmployee || false,
         });
       }
     } catch (err) {
@@ -203,6 +237,12 @@ export default function EditBusinessProfilePage() {
         }
       }
 
+      // Prepare social links object
+      const socialLinksObj: any = {};
+      if (formData.facebook) socialLinksObj.facebook = formData.facebook;
+      if (formData.instagram) socialLinksObj.instagram = formData.instagram;
+      if (formData.linkedin) socialLinksObj.linkedin = formData.linkedin;
+      
       const response = await fetch('/api/business-info', {
         method: 'PUT',
         headers: {
@@ -211,6 +251,10 @@ export default function EditBusinessProfilePage() {
         },
         body: JSON.stringify({
           companyName: formData.companyName || null,
+          companyCode: formData.companyCode || null,
+          companyType: formData.companyType || null,
+          businessCategory: formData.businessCategory || null,
+          offerType: formData.offerType || null,
           representativeName: formData.representativeName || null,
           position: formData.position || null,
           city: formData.city || null,
@@ -218,6 +262,7 @@ export default function EditBusinessProfilePage() {
           logoUrl: logoUrl || null,
           
           shortDescription: formData.shortDescription || null,
+          description: formData.description || formData.shortDescription || null,
           mission: formData.mission || null,
           uniqueValue: formData.uniqueValue || null,
           
@@ -235,7 +280,7 @@ export default function EditBusinessProfilePage() {
           viber: formData.viber || null,
           telegram: formData.telegram || null,
           website: formData.website || null,
-          socialLinks: formData.socialLinks || null,
+          socialLinks: Object.keys(socialLinksObj).length > 0 ? JSON.stringify(socialLinksObj) : null,
           
           yearFounded: formData.yearFounded ? parseInt(formData.yearFounded) : null,
           registrationType: formData.registrationType || null,
@@ -243,6 +288,11 @@ export default function EditBusinessProfilePage() {
           certificatesInfo: formData.certificatesInfo || null,
           partners: formData.partnersInfo || null,
           externalReviews: formData.externalReviews || null,
+          
+          seekingPartner: formData.seekingPartner || false,
+          seekingInvestor: formData.seekingInvestor || false,
+          seekingCustomer: formData.seekingCustomer || false,
+          seekingEmployee: formData.seekingEmployee || false,
         }),
       });
 
@@ -273,33 +323,33 @@ export default function EditBusinessProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-50 to-primary-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-accent-50 to-primary-50 py-4 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-accent-500 to-primary-500 px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">🏢 Редагувати бізнес-профіль</h1>
-            <p className="text-accent-100 mt-2">Оновіть інформацію про вашу компанію</p>
+          <div className="bg-gradient-to-r from-accent-500 to-primary-500 px-4 md:px-8 py-4 md:py-6">
+            <h1 className="text-xl md:text-3xl font-bold text-white">🏢 Редагувати бізнес-профіль</h1>
+            <p className="text-accent-100 mt-1 md:mt-2 text-sm md:text-base">Оновіть інформацію про вашу компанію</p>
           </div>
 
           {/* Logo Upload */}
-          <div className="px-8 py-6 border-b border-neutral-200">
-            <div className="flex items-center space-x-6">
-              <div className="relative">
+          <div className="px-4 md:px-8 py-4 md:py-6 border-b border-neutral-200">
+            <div className="flex items-center space-x-4 md:space-x-6">
+              <div className="relative flex-shrink-0">
                 {logoPreview ? (
                   <img
                     src={logoPreview}
                     alt="Company logo"
-                    className="w-24 h-24 rounded-lg object-contain bg-neutral-100 p-2 border-4 border-accent-200"
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-lg object-contain bg-neutral-100 p-2 border-4 border-accent-200"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-lg bg-accent-500 flex items-center justify-center border-4 border-accent-200">
-                    <Building2 className="w-12 h-12 text-white" />
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg bg-accent-500 flex items-center justify-center border-4 border-accent-200">
+                    <Building2 className="w-10 h-10 md:w-12 md:h-12 text-white" />
                   </div>
                 )}
                 <label
                   htmlFor="logo-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-accent-500"
+                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-accent-500 touch-manipulation"
                 >
                   <Camera className="w-4 h-4 text-accent-600" />
                 </label>
@@ -311,14 +361,14 @@ export default function EditBusinessProfilePage() {
                   className="hidden"
                 />
               </div>
-              <div>
-                <h3 className="font-semibold text-neutral-900">Лого компанії</h3>
-                <p className="text-sm text-neutral-600 mt-1">
-                  PNG, JPG або HEIC (бажано з прозорим фоном). Максимум 10MB
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-neutral-900 text-sm md:text-base">Лого компанії</h3>
+                <p className="text-xs md:text-sm text-neutral-600 mt-1">
+                  PNG, JPG або HEIC (бажано з прозорим фоном). Макс 10MB
                 </p>
                 {logoFile && (
-                  <p className="text-sm text-accent-600 mt-1">
-                    ✓ Нове лого вибрано: {logoFile.name}
+                  <p className="text-xs md:text-sm text-accent-600 mt-1 truncate">
+                    ✓ Нове лого: {logoFile.name}
                   </p>
                 )}
               </div>
@@ -326,95 +376,106 @@ export default function EditBusinessProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-neutral-200">
-            <div className="px-8">
-              <div className="flex space-x-8 overflow-x-auto">
+          <div className="border-b border-neutral-200 overflow-x-auto">
+            <div className="px-4 md:px-8">
+              <div className="flex space-x-2 md:space-x-8 min-w-max">
                 <button
+                  type="button"
                   onClick={() => setActiveTab('basic')}
-                  className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'basic'
                       ? 'border-accent-500 text-accent-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <Building2 className="w-5 h-5 inline mr-2" />
-                  Основне
+                  <Building2 className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Основне</span>
+                  <span className="sm:hidden">Основ.</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('description')}
-                  className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'description'
                       ? 'border-accent-500 text-accent-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <FileText className="w-5 h-5 inline mr-2" />
+                  <FileText className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
                   Опис
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('services')}
-                  className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'services'
                       ? 'border-accent-500 text-accent-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <FileText className="w-5 h-5 inline mr-2" />
-                  Послуги
+                  <FileText className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Послуги</span>
+                  <span className="sm:hidden">Посл.</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('team')}
-                  className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'team'
                       ? 'border-accent-500 text-accent-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <Users className="w-5 h-5 inline mr-2" />
-                  Команда
+                  <Users className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Команда</span>
+                  <span className="sm:hidden">Ком.</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('contacts')}
-                  className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'contacts'
                       ? 'border-accent-500 text-accent-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <Phone className="w-5 h-5 inline mr-2" />
-                  Контакти
+                  <Phone className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Контакти</span>
+                  <span className="sm:hidden">Конт.</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('additional')}
-                  className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'additional'
                       ? 'border-accent-500 text-accent-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <Award className="w-5 h-5 inline mr-2" />
-                  Додатково
+                  <Award className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Додатково</span>
+                  <span className="sm:hidden">Дод.</span>
                 </button>
               </div>
             </div>
           </div>
 
           {/* Messages */}
-          <div className="px-8 pt-6">
+          <div className="px-4 md:px-8 pt-4 md:pt-6">
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm">
                 {error}
               </div>
             )}
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs md:text-sm">
                 {success}
               </div>
             )}
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-8 py-6">
+          <form onSubmit={handleSubmit} className="px-4 md:px-8 py-4 md:py-6">
             {/* Basic Tab */}
             {activeTab === 'basic' && (
               <div className="space-y-6">
@@ -429,9 +490,40 @@ export default function EditBusinessProfilePage() {
                       required
                       value={formData.companyName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="ТОВ 'Будівельна компанія'"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Код ЄДРПОУ
+                    </label>
+                    <input
+                      type="text"
+                      name="companyCode"
+                      value={formData.companyCode}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                      placeholder="12345678"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Тип компанії
+                    </label>
+                    <select
+                      name="companyType"
+                      value={formData.companyType}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                    >
+                      <option value="">Оберіть тип</option>
+                      <option value="fop">ФОП</option>
+                      <option value="tov">ТОВ</option>
+                      <option value="other">Інше</option>
+                    </select>
                   </div>
 
                   <div>
@@ -444,7 +536,7 @@ export default function EditBusinessProfilePage() {
                       required
                       value={formData.representativeName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -457,7 +549,7 @@ export default function EditBusinessProfilePage() {
                       name="position"
                       value={formData.position}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="Директор, Власник..."
                     />
                   </div>
@@ -471,12 +563,35 @@ export default function EditBusinessProfilePage() {
                       required
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть місто</option>
                       {cities.map(city => (
                         <option key={city} value={city}>{city}</option>
                       ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Категорія діяльності
+                    </label>
+                    <select
+                      name="businessCategory"
+                      value={formData.businessCategory}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                    >
+                      <option value="">Оберіть категорію</option>
+                      <option value="education">Освіта</option>
+                      <option value="products">Продукти харчування</option>
+                      <option value="advertising">Реклама та маркетинг</option>
+                      <option value="online_sales">Інтернет-продажі</option>
+                      <option value="offline_sales">Офлайн-торгівля</option>
+                      <option value="auto_service">СТО та автосервіс</option>
+                      <option value="construction">Будівництво та ремонт</option>
+                      <option value="it">IT та розробка</option>
+                      <option value="other">Інше</option>
                     </select>
                   </div>
 
@@ -488,7 +603,7 @@ export default function EditBusinessProfilePage() {
                       name="businessType"
                       value={formData.businessType}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть тип</option>
                       <option value="Виробництво">Виробництво</option>
@@ -502,6 +617,93 @@ export default function EditBusinessProfilePage() {
                       <option value="Інше">Інше</option>
                     </select>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Що пропонуєте?
+                    </label>
+                    <select
+                      name="offerType"
+                      value={formData.offerType}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                    >
+                      <option value="">Оберіть</option>
+                      <option value="service">Послуга</option>
+                      <option value="product">Товар</option>
+                      <option value="both">Послуги та товари</option>
+                    </select>
+                  </div>
+                </div>
+
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mt-6 pt-6 border-t border-gray-200">
+                  Кого/що шукаєте?
+                </h3>
+
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
+                    <input
+                      type="checkbox"
+                      name="seekingPartner"
+                      checked={formData.seekingPartner}
+                      onChange={(e) => setFormData({ ...formData, seekingPartner: e.target.checked })}
+                      className="w-5 h-5 text-accent-600 min-w-[20px]"
+                    />
+                    <div>
+                      <div className="font-medium text-sm md:text-base">Партнера</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Пошук ділових партнерів для співпраці
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
+                    <input
+                      type="checkbox"
+                      name="seekingInvestor"
+                      checked={formData.seekingInvestor}
+                      onChange={(e) => setFormData({ ...formData, seekingInvestor: e.target.checked })}
+                      className="w-5 h-5 text-accent-600 min-w-[20px]"
+                    />
+                    <div>
+                      <div className="font-medium text-sm md:text-base">Інвестора</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Залучення інвестицій для розвитку
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
+                    <input
+                      type="checkbox"
+                      name="seekingCustomer"
+                      checked={formData.seekingCustomer}
+                      onChange={(e) => setFormData({ ...formData, seekingCustomer: e.target.checked })}
+                      className="w-5 h-5 text-accent-600 min-w-[20px]"
+                    />
+                    <div>
+                      <div className="font-medium text-sm md:text-base">Споживача</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Розширення клієнтської бази
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
+                    <input
+                      type="checkbox"
+                      name="seekingEmployee"
+                      checked={formData.seekingEmployee}
+                      onChange={(e) => setFormData({ ...formData, seekingEmployee: e.target.checked })}
+                      className="w-5 h-5 text-accent-600 min-w-[20px]"
+                    />
+                    <div>
+                      <div className="font-medium text-sm md:text-base">Працівника</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Пошук співробітників у команду
+                      </div>
+                    </div>
+                  </label>
                 </div>
               </div>
             )}
@@ -518,7 +720,7 @@ export default function EditBusinessProfilePage() {
                     rows={3}
                     value={formData.shortDescription}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     placeholder="Що ви пропонуєте?"
                   />
                 </div>
@@ -532,7 +734,7 @@ export default function EditBusinessProfilePage() {
                     rows={3}
                     value={formData.mission}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     placeholder="Ваша місія та цілі"
                   />
                 </div>
@@ -546,7 +748,7 @@ export default function EditBusinessProfilePage() {
                     rows={3}
                     value={formData.uniqueValue}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     placeholder="Чому клієнти обирають саме вас?"
                   />
                 </div>
@@ -565,7 +767,7 @@ export default function EditBusinessProfilePage() {
                     rows={5}
                     value={formData.servicesList}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     placeholder="- Послуга 1&#10;- Послуга 2&#10;- Послуга 3"
                   />
                 </div>
@@ -580,7 +782,7 @@ export default function EditBusinessProfilePage() {
                       name="priceRange"
                       value={formData.priceRange}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="від 500 до 5000 грн"
                     />
                   </div>
@@ -594,7 +796,7 @@ export default function EditBusinessProfilePage() {
                       name="workingHours"
                       value={formData.workingHours}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="Пн-Пт: 9:00-18:00"
                     />
                   </div>
@@ -609,7 +811,7 @@ export default function EditBusinessProfilePage() {
                     rows={2}
                     value={formData.locationDetails}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
               </div>
@@ -628,7 +830,7 @@ export default function EditBusinessProfilePage() {
                     min="1"
                     value={formData.employeeCount}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                   />
                 </div>
 
@@ -641,7 +843,7 @@ export default function EditBusinessProfilePage() {
                     rows={3}
                     value={formData.keySpecialists}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     placeholder="Хто працює у вашій команді?"
                   />
                 </div>
@@ -655,7 +857,7 @@ export default function EditBusinessProfilePage() {
                     rows={3}
                     value={formData.teamDescription}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
               </div>
@@ -674,7 +876,7 @@ export default function EditBusinessProfilePage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="+380 XX XXX XX XX"
                     />
                   </div>
@@ -688,7 +890,7 @@ export default function EditBusinessProfilePage() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -701,7 +903,7 @@ export default function EditBusinessProfilePage() {
                       name="viber"
                       value={formData.viber}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="+380 XX XXX XX XX"
                     />
                   </div>
@@ -715,7 +917,7 @@ export default function EditBusinessProfilePage() {
                       name="telegram"
                       value={formData.telegram}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="@username"
                     />
                   </div>
@@ -729,23 +931,59 @@ export default function EditBusinessProfilePage() {
                       name="website"
                       value={formData.website}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                       placeholder="https://yourcompany.com"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Соціальні мережі (Facebook, Instagram, тощо)
-                  </label>
-                  <textarea
-                    name="socialLinks"
-                    rows={2}
-                    value={formData.socialLinks}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
-                  />
+                <div className="pt-4">
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
+                    📱 Соціальні мережі
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Facebook
+                      </label>
+                      <input
+                        type="url"
+                        name="facebook"
+                        value={formData.facebook}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                        placeholder="https://facebook.com/yourpage"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Instagram
+                      </label>
+                      <input
+                        type="url"
+                        name="instagram"
+                        value={formData.instagram}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                        placeholder="https://instagram.com/yourpage"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        LinkedIn
+                      </label>
+                      <input
+                        type="url"
+                        name="linkedin"
+                        value={formData.linkedin}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                        placeholder="https://linkedin.com/company/yourcompany"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -765,7 +1003,7 @@ export default function EditBusinessProfilePage() {
                       max={new Date().getFullYear()}
                       value={formData.yearFounded}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -777,7 +1015,7 @@ export default function EditBusinessProfilePage() {
                       name="registrationType"
                       value={formData.registrationType}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть тип</option>
                       <option value="ФОП">ФОП</option>
@@ -795,7 +1033,7 @@ export default function EditBusinessProfilePage() {
                       name="hasCertificates"
                       value={formData.hasCertificates}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -814,7 +1052,7 @@ export default function EditBusinessProfilePage() {
                       rows={2}
                       value={formData.certificatesInfo}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     />
                   </div>
                 )}
@@ -828,7 +1066,7 @@ export default function EditBusinessProfilePage() {
                     rows={2}
                     value={formData.partnersInfo}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
 
@@ -841,7 +1079,7 @@ export default function EditBusinessProfilePage() {
                     rows={2}
                     value={formData.externalReviews}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
                     placeholder="Посилання на відгуки"
                   />
                 </div>
@@ -849,11 +1087,11 @@ export default function EditBusinessProfilePage() {
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-4 mt-8 pt-6 border-t border-neutral-200">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 pt-6 border-t border-neutral-200">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-accent-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-accent-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-accent-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-accent-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-base"
               >
                 {loading ? 'Зберігаємо...' : 'Зберегти зміни'}
               </button>
@@ -861,7 +1099,7 @@ export default function EditBusinessProfilePage() {
                 type="button"
                 onClick={() => router.push(`/profile/${user.id}`)}
                 disabled={loading}
-                className="px-6 py-3 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                className="sm:w-auto py-3 px-6 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50 touch-manipulation text-base"
               >
                 Скасувати
               </button>

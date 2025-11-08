@@ -426,36 +426,47 @@ export default function EditProfilePage() {
     );
   }
 
+  // Определяем доступные вкладки по типу аккаунта
+  const getAvailableTabs = () => {
+    const tabs = ['basic', 'social']; // Базовые + соцсети доступны всем
+    
+    if (user?.accountType === 'extended' || user?.accountType === 'business' || user?.accountType === 'business_premium') {
+      tabs.splice(1, 0, 'location', 'work', 'interests'); // Вставляем расширенные вкладки
+    }
+    
+    return tabs;
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 py-4 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8 pb-24 md:pb-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary-500 to-accent-500 px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">Редагувати профіль</h1>
-            <p className="text-primary-100 mt-2">Дозаповніть або оновіть вашу інформацію</p>
+          <div className="bg-gradient-to-r from-primary-500 to-accent-500 px-4 md:px-8 py-4 md:py-6">
+            <h1 className="text-xl md:text-3xl font-bold text-white">Редагувати профіль</h1>
+            <p className="text-primary-100 mt-1 md:mt-2 text-sm md:text-base">Дозаповніть або оновіть вашу інформацію</p>
           </div>
 
           {/* Avatar Upload */}
-          <div className="px-8 py-6 border-b border-neutral-200">
-            <div className="flex items-center space-x-6">
-              <div className="relative">
+          <div className="px-4 md:px-8 py-4 md:py-6 border-b border-neutral-200">
+            <div className="flex items-center space-x-4 md:space-x-6">
+              <div className="relative flex-shrink-0">
                 {avatarPreview ? (
                   <img
                     src={avatarPreview}
                     alt="Avatar"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-primary-200"
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-primary-200"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-primary-500 flex items-center justify-center border-4 border-primary-200">
-                    <span className="text-white font-bold text-3xl">
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary-500 flex items-center justify-center border-4 border-primary-200">
+                    <span className="text-white font-bold text-2xl md:text-3xl">
                       {formData.firstName?.[0]}{formData.lastName?.[0]}
                     </span>
                   </div>
                 )}
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-primary-500"
+                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-primary-500 touch-manipulation"
                 >
                   <Camera className="w-4 h-4 text-primary-600" />
                 </label>
@@ -467,14 +478,14 @@ export default function EditProfilePage() {
                   className="hidden"
                 />
               </div>
-              <div>
-                <h3 className="font-semibold text-neutral-900">Фото профілю</h3>
-                <p className="text-sm text-neutral-600 mt-1">
-                  JPG, PNG, GIF або HEIC. Максимум 10MB
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-neutral-900 text-sm md:text-base">Фото профілю</h3>
+                <p className="text-xs md:text-sm text-neutral-600 mt-1">
+                  JPG, PNG, GIF або HEIC. Макс 10MB
                 </p>
                 {avatarFile && (
-                  <p className="text-sm text-primary-600 mt-1">
-                    ✓ Нове фото вибрано: {avatarFile.name}
+                  <p className="text-xs md:text-sm text-primary-600 mt-1 truncate">
+                    ✓ Нове фото: {avatarFile.name}
                   </p>
                 )}
               </div>
@@ -482,84 +493,97 @@ export default function EditProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-neutral-200">
-            <div className="px-8">
-              <div className="flex space-x-8">
+          <div className="border-b border-neutral-200 overflow-x-auto">
+            <div className="px-4 md:px-8">
+              <div className="flex space-x-2 md:space-x-8 min-w-max">
                 <button
+                  type="button"
                   onClick={() => setActiveTab('basic')}
-                  className={`py-4 border-b-2 transition-colors ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'basic'
                       ? 'border-primary-500 text-primary-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <User className="w-5 h-5 inline mr-2" />
-                  Основне
+                  <User className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Основне</span>
+                  <span className="sm:hidden">Основ.</span>
                 </button>
+                {(user?.accountType === 'extended' || user?.accountType === 'business' || user?.accountType === 'business_premium') && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('location')}
+                      className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
+                        activeTab === 'location'
+                          ? 'border-primary-500 text-primary-600 font-medium'
+                          : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                      }`}
+                    >
+                      <MapPin className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                      <span className="hidden sm:inline">Локація</span>
+                      <span className="sm:hidden">Лок.</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('work')}
+                      className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
+                        activeTab === 'work'
+                          ? 'border-primary-500 text-primary-600 font-medium'
+                          : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                      }`}
+                    >
+                      <Briefcase className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                      Робота
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('interests')}
+                      className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
+                        activeTab === 'interests'
+                          ? 'border-primary-500 text-primary-600 font-medium'
+                          : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                      }`}
+                    >
+                      <Heart className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                      <span className="hidden sm:inline">Інтереси</span>
+                      <span className="sm:hidden">Інтер.</span>
+                    </button>
+                  </>
+                )}
                 <button
-                  onClick={() => setActiveTab('location')}
-                  className={`py-4 border-b-2 transition-colors ${
-                    activeTab === 'location'
-                      ? 'border-primary-500 text-primary-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <MapPin className="w-5 h-5 inline mr-2" />
-                  Локація
-                </button>
-                <button
-                  onClick={() => setActiveTab('work')}
-                  className={`py-4 border-b-2 transition-colors ${
-                    activeTab === 'work'
-                      ? 'border-primary-500 text-primary-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Briefcase className="w-5 h-5 inline mr-2" />
-                  Робота
-                </button>
-                <button
-                  onClick={() => setActiveTab('interests')}
-                  className={`py-4 border-b-2 transition-colors ${
-                    activeTab === 'interests'
-                      ? 'border-primary-500 text-primary-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Heart className="w-5 h-5 inline mr-2" />
-                  Інтереси
-                </button>
-                <button
+                  type="button"
                   onClick={() => setActiveTab('social')}
-                  className={`py-4 border-b-2 transition-colors ${
+                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
                     activeTab === 'social'
                       ? 'border-primary-500 text-primary-600 font-medium'
                       : 'border-transparent text-neutral-600 hover:text-neutral-900'
                   }`}
                 >
-                  <Globe className="w-5 h-5 inline mr-2" />
-                  Соцмережі
+                  <Globe className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Соцмережі</span>
+                  <span className="sm:hidden">Соцм.</span>
                 </button>
               </div>
             </div>
           </div>
 
           {/* Messages */}
-          <div className="px-8 pt-6">
+          <div className="px-4 md:px-8 pt-4 md:pt-6">
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm">
                 {error}
               </div>
             )}
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs md:text-sm">
                 {success}
               </div>
             )}
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-8 py-6">
+          <form onSubmit={handleSubmit} className="px-4 md:px-8 py-4 md:py-6">
             {/* Basic Tab */}
             {activeTab === 'basic' && (
               <div className="space-y-6">
@@ -574,7 +598,7 @@ export default function EditProfilePage() {
                       required
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -588,7 +612,7 @@ export default function EditProfilePage() {
                       required
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -601,7 +625,7 @@ export default function EditProfilePage() {
                       name="middleName"
                       value={formData.middleName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -614,7 +638,7 @@ export default function EditProfilePage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       placeholder="+380 XX XXX XX XX"
                     />
                   </div>
@@ -630,7 +654,7 @@ export default function EditProfilePage() {
                       max="120"
                       value={formData.age}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -642,7 +666,7 @@ export default function EditProfilePage() {
                       name="gender"
                       value={formData.gender}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="male">Чоловіча</option>
@@ -658,7 +682,7 @@ export default function EditProfilePage() {
                       name="maritalStatus"
                       value={formData.maritalStatus}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="single">Неодружений/неодружена</option>
@@ -679,7 +703,7 @@ export default function EditProfilePage() {
                       max="20"
                       value={formData.childrenCount}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -692,7 +716,7 @@ export default function EditProfilePage() {
                       name="childrenAges"
                       value={formData.childrenAges}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       placeholder="наприклад: 4, 7, 12"
                     />
                   </div>
@@ -707,7 +731,7 @@ export default function EditProfilePage() {
                     rows={2}
                     value={formData.familyComposition}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                     placeholder="Наприклад: дружина, двоє дітей, батьки..."
                   />
                 </div>
@@ -721,7 +745,7 @@ export default function EditProfilePage() {
                     rows={4}
                     value={formData.bio}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                     placeholder="Розкажіть трохи про себе..."
                   />
                 </div>
@@ -735,7 +759,7 @@ export default function EditProfilePage() {
                       name="ucmMember"
                       value={formData.ucmMember}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -750,7 +774,7 @@ export default function EditProfilePage() {
                       name="ucmSupporter"
                       value={formData.ucmSupporter}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -774,7 +798,7 @@ export default function EditProfilePage() {
                       required
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Оберіть місто</option>
                       {cities.map(city => (
@@ -792,7 +816,7 @@ export default function EditProfilePage() {
                       name="region"
                       value={formData.region}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -804,7 +828,7 @@ export default function EditProfilePage() {
                       name="housingType"
                       value={formData.housingType}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="house">Будинок</option>
@@ -821,7 +845,7 @@ export default function EditProfilePage() {
                       name="livingSituation"
                       value={formData.livingSituation}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="alone">Самостійно</option>
@@ -838,7 +862,7 @@ export default function EditProfilePage() {
                       name="hasCar"
                       value={formData.hasCar}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -856,7 +880,7 @@ export default function EditProfilePage() {
                         name="carInfo"
                         value={formData.carInfo}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                         placeholder="Наприклад: Toyota Camry 2020"
                       />
                       <p className="mt-1 text-xs text-neutral-500">Не вказуйте державний номер авто з міркувань конфіденційності.</p>
@@ -872,7 +896,7 @@ export default function EditProfilePage() {
                       name="otherTransport"
                       value={formData.otherTransport}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       placeholder="Велосипед, самокат..."
                     />
                   </div>
@@ -887,7 +911,7 @@ export default function EditProfilePage() {
                       name="hasPets"
                       value={formData.hasPets}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -905,7 +929,7 @@ export default function EditProfilePage() {
                         name="petsInfo"
                         value={formData.petsInfo}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       />
                     </div>
                   )}
@@ -920,7 +944,7 @@ export default function EditProfilePage() {
                     rows={3}
                     value={formData.housingDetails}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                     placeholder='Наприклад: {"garage":true, "garden":true}'
                   />
                 </div>
@@ -934,7 +958,7 @@ export default function EditProfilePage() {
                     name="carServices"
                     value={formData.carServices}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     placeholder="СТО, мийка, шиномонтаж..."
                   />
                 </div>
@@ -954,7 +978,7 @@ export default function EditProfilePage() {
                       name="profession"
                       value={formData.profession}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
 
@@ -966,7 +990,7 @@ export default function EditProfilePage() {
                       name="employmentStatus"
                       value={formData.employmentStatus}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="employed">Працюю</option>
@@ -988,7 +1012,7 @@ export default function EditProfilePage() {
                       name="workplace"
                       value={formData.workplace}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     />
                   </div>
                 </div>
@@ -1000,7 +1024,7 @@ export default function EditProfilePage() {
                       name="educationLevel"
                       value={formData.educationLevel}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="secondary">Середня</option>
@@ -1017,7 +1041,7 @@ export default function EditProfilePage() {
                       name="educationDetails"
                       value={formData.educationDetails}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       placeholder="КНУ ім. Шевченка, Економіка"
                     />
                   </div>
@@ -1033,7 +1057,7 @@ export default function EditProfilePage() {
                       rows={2}
                       value={formData.privateBusinessInfo}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                     />
                   </div>
                 )}
@@ -1048,7 +1072,7 @@ export default function EditProfilePage() {
                       rows={2}
                       value={formData.jobSeeking}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                     />
                   </div>
                 )}
@@ -1061,7 +1085,7 @@ export default function EditProfilePage() {
                       name="seekingPartTime"
                       value={formData.seekingPartTime}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -1074,7 +1098,7 @@ export default function EditProfilePage() {
                       name="seekingFullTime"
                       value={formData.seekingFullTime}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -1087,7 +1111,7 @@ export default function EditProfilePage() {
                       name="wantsStartBusiness"
                       value={formData.wantsStartBusiness}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     >
                       <option value="">Не вказано</option>
                       <option value="yes">Так</option>
@@ -1108,7 +1132,7 @@ export default function EditProfilePage() {
                     rows={2}
                     value={formData.hobbies}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
                 <div>
@@ -1118,7 +1142,7 @@ export default function EditProfilePage() {
                     rows={2}
                     value={formData.outdoorActivities}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
                 <div>
@@ -1128,7 +1152,7 @@ export default function EditProfilePage() {
                     rows={2}
                     value={formData.sports}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
                 <div>
@@ -1138,7 +1162,7 @@ export default function EditProfilePage() {
                     rows={2}
                     value={formData.lifestyle}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-base"
                   />
                 </div>
                 <div className="border-t pt-6 space-y-4">
@@ -1150,7 +1174,7 @@ export default function EditProfilePage() {
                         name="usesDelivery"
                         value={formData.usesDelivery}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       >
                         <option value="">Не вказано</option>
                         <option value="yes">Так</option>
@@ -1163,7 +1187,7 @@ export default function EditProfilePage() {
                         name="restaurantFrequency"
                         value={formData.restaurantFrequency}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       >
                         <option value="">Не вказано</option>
                         <option value="rare">Рідко</option>
@@ -1179,7 +1203,7 @@ export default function EditProfilePage() {
                         name="cuisinePreference"
                         value={formData.cuisinePreference}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                         placeholder="Домашня, Європейська, Азійська..."
                       />
                     </div>
@@ -1190,7 +1214,7 @@ export default function EditProfilePage() {
                         name="usesServices"
                         value={formData.usesServices}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                         placeholder="Електрик, Сантехнік, Клінінг..."
                       />
                     </div>
@@ -1201,7 +1225,7 @@ export default function EditProfilePage() {
                         name="usesBusinessServices"
                         value={formData.usesBusinessServices}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                         placeholder="Бухгалтер, Юрист, СММ..."
                       />
                     </div>
@@ -1212,7 +1236,7 @@ export default function EditProfilePage() {
                         name="beautyServices"
                         value={formData.beautyServices}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                         placeholder="Перукар, Манікюр, СПА, Масаж..."
                       />
                     </div>
@@ -1222,7 +1246,7 @@ export default function EditProfilePage() {
                         name="readyToSwitchToUCM"
                         value={formData.readyToSwitchToUCM}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                       >
                         <option value="">Не вказано</option>
                         <option value="yes">Так</option>
@@ -1246,7 +1270,7 @@ export default function EditProfilePage() {
                     name="instagram"
                     value={formData.instagram}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     placeholder="https://instagram.com/username"
                   />
                 </div>
@@ -1260,7 +1284,7 @@ export default function EditProfilePage() {
                     name="facebook"
                     value={formData.facebook}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     placeholder="https://facebook.com/username"
                   />
                 </div>
@@ -1274,7 +1298,7 @@ export default function EditProfilePage() {
                     name="telegram"
                     value={formData.telegram}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     placeholder="@username"
                   />
                 </div>
@@ -1288,7 +1312,7 @@ export default function EditProfilePage() {
                     name="tiktok"
                     value={formData.tiktok}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
                     placeholder="https://tiktok.com/@username"
                   />
                 </div>
@@ -1296,11 +1320,11 @@ export default function EditProfilePage() {
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-4 mt-8 pt-6 border-t border-neutral-200">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 pt-6 border-t border-neutral-200">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-base"
               >
                 {loading ? 'Зберігаємо...' : 'Зберегти зміни'}
               </button>
@@ -1308,7 +1332,7 @@ export default function EditProfilePage() {
                 type="button"
                 onClick={() => router.push(`/profile/${user.id}`)}
                 disabled={loading}
-                className="px-6 py-3 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                className="sm:w-auto py-3 px-6 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50 touch-manipulation text-base"
               >
                 Скасувати
               </button>
