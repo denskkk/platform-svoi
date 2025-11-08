@@ -16,6 +16,10 @@ git pull origin main
 echo "📝 Applying database migration..."
 npx prisma db push --accept-data-loss
 
+# Застосовуємо SQL міграції для категорій
+echo "📝 Updating categories..."
+PGPASSWORD=admin123 psql -h localhost -U admin -d sviydliasvoyikh -f database/migrations/003_update_categories.sql
+
 # Генеруємо Prisma Client
 echo "🔄 Generating Prisma Client..."
 npx prisma generate

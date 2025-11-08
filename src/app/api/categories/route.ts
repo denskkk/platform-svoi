@@ -30,6 +30,8 @@ export async function GET() {
       const data = defaultCategories.map((c, idx) => ({
         name: c.name,
         slug: c.slug,
+        emoji: c.emoji || null,
+        description: c.description || null,
         sortOrder: idx + 1,
         isActive: true,
       }));
@@ -38,6 +40,38 @@ export async function GET() {
       await prisma.category.createMany({ data, skipDuplicates: true });
 
       // Перечитаємо з БД щоб отримати id та лічильники
+      categories = await prisma.category.findMany({
+        orderBy: { sortOrder: 'asc' },
+        include: {
+          _count: { select: { services: true } }
+        }
+      });
+    }
+    
+    // Якщо категорій менше ніж 15, оновлюємо їх з constants
+    if (categories.length < 15) {
+      for (let i = 0; i < defaultCategories.length; i++) {
+        const c = defaultCategories[i];
+        await prisma.category.upsert({
+          where: { slug: c.slug },
+          update: {
+            name: c.name,
+            emoji: c.emoji || null,
+            description: c.description || null,
+            sortOrder: i + 1,
+          },
+          create: {
+            name: c.name,
+            slug: c.slug,
+            emoji: c.emoji || null,
+            description: c.description || null,
+            sortOrder: i + 1,
+            isActive: true,
+          }
+        });
+      }
+      
+      // Перечитаємо оновлені категорії
       categories = await prisma.category.findMany({
         orderBy: { sortOrder: 'asc' },
         include: {
