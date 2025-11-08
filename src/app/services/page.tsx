@@ -136,6 +136,16 @@ export default async function ServicesPage() {
                             src={service.user.avatarUrl}
                             alt={service.user.firstName}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                const fallback = document.createElement('div');
+                                fallback.className = 'w-full h-full flex items-center justify-center text-gray-400 text-sm';
+                                fallback.textContent = `${service.user.firstName[0]}${service.user.lastName[0]}`;
+                                parent.appendChild(fallback);
+                              }
+                            }}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">

@@ -61,7 +61,23 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
               <Link key={u.id} href={`/profile/${u.id}`} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition group">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden">
-                    {u.avatarUrl ? <img src={u.avatarUrl} alt={u.firstName} className="w-full h-full object-cover" /> : (
+                    {u.avatarUrl ? (
+                      <img 
+                        src={u.avatarUrl} 
+                        alt={u.firstName} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-full h-full flex items-center justify-center text-gray-500 font-semibold text-lg';
+                            fallback.textContent = `${u.firstName[0]}${u.lastName[0]}`;
+                            parent.appendChild(fallback);
+                          }
+                        }}
+                      />
+                    ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-500 font-semibold text-lg">{u.firstName[0]}{u.lastName[0]}</div>
                     )}
                   </div>

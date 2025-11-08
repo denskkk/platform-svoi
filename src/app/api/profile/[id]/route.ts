@@ -160,6 +160,9 @@ export async function GET(
       );
     }
 
+    // Логування аватара для діагностики
+    console.log(`[GET /api/profile/${userId}] Avatar URL:`, user.avatarUrl);
+
     // Авто-деактивація підписки, якщо пробний період завершився
     try {
       const now = new Date();
@@ -287,7 +290,10 @@ export async function PUT(
     if (body.lastName !== undefined) updateData.lastName = body.lastName;
     if (body.email !== undefined) updateData.email = body.email;
     if (body.phone !== undefined) updateData.phone = body.phone;
-    if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
+    if (body.avatarUrl !== undefined) {
+      updateData.avatarUrl = body.avatarUrl;
+      console.log(`[PUT /api/profile/${userId}] Updating avatar URL to:`, body.avatarUrl);
+    }
 
     // Локация
     if (body.city !== undefined) updateData.city = body.city;

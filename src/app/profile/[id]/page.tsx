@@ -110,6 +110,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     src={profile.avatarUrl} 
                     alt={`${profile.firstName} ${profile.lastName}`}
                     className="w-32 h-32 rounded-2xl object-cover flex-shrink-0"
+                    onError={(e) => {
+                      console.error('Failed to load avatar:', profile.avatarUrl);
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        const fallback = document.createElement('div');
+                        fallback.className = 'w-32 h-32 bg-gradient-to-br from-primary-200 to-accent-200 rounded-2xl flex items-center justify-center text-6xl flex-shrink-0';
+                        fallback.textContent = `${profile.firstName?.[0] || ''}${profile.lastName?.[0] || ''}`;
+                        parent.appendChild(fallback);
+                      }
+                    }}
                   />
                 ) : (
                   <div className="w-32 h-32 bg-gradient-to-br from-primary-200 to-accent-200 rounded-2xl flex items-center justify-center text-6xl flex-shrink-0">
