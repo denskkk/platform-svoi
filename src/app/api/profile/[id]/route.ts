@@ -383,40 +383,46 @@ export async function PUT(
   // Діти
   if (body.hasChildren !== undefined) updateData.hasChildren = body.hasChildren;
   if (body.childrenAges !== undefined) {
-    try {
-      updateData.childrenAges = Array.isArray(body.childrenAges)
-        ? body.childrenAges
-        : typeof body.childrenAges === 'string'
-        ? JSON.parse(body.childrenAges)
-        : body.childrenAges;
-    } catch {
-      errors.push('childrenAges повинні бути валідним масивом');
+    if (Array.isArray(body.childrenAges)) {
+      updateData.childrenAges = body.childrenAges;
+    } else if (typeof body.childrenAges === 'string' && body.childrenAges !== '') {
+      try {
+        updateData.childrenAges = JSON.parse(body.childrenAges);
+      } catch {
+        updateData.childrenAges = null;
+      }
+    } else {
+      updateData.childrenAges = null;
     }
   }
   
   // Проживання
   if (body.housingDetails !== undefined) {
-    try {
-      updateData.housingDetails = Array.isArray(body.housingDetails)
-        ? body.housingDetails
-        : typeof body.housingDetails === 'string'
-        ? JSON.parse(body.housingDetails)
-        : body.housingDetails;
-    } catch {
-      errors.push('housingDetails повинні бути валідним масивом');
+    if (Array.isArray(body.housingDetails)) {
+      updateData.housingDetails = body.housingDetails;
+    } else if (typeof body.housingDetails === 'string' && body.housingDetails !== '') {
+      try {
+        updateData.housingDetails = JSON.parse(body.housingDetails);
+      } catch {
+        updateData.housingDetails = null;
+      }
+    } else {
+      updateData.housingDetails = null;
     }
   }
   
   // Побутові послуги
   if (body.usesHomeServices !== undefined) {
-    try {
-      updateData.usesHomeServices = Array.isArray(body.usesHomeServices)
-        ? body.usesHomeServices
-        : typeof body.usesHomeServices === 'string'
-        ? JSON.parse(body.usesHomeServices)
-        : body.usesHomeServices;
-    } catch {
-      errors.push('usesHomeServices повинні бути валідним масивом');
+    if (Array.isArray(body.usesHomeServices)) {
+      updateData.usesHomeServices = body.usesHomeServices;
+    } else if (typeof body.usesHomeServices === 'string' && body.usesHomeServices !== '') {
+      try {
+        updateData.usesHomeServices = JSON.parse(body.usesHomeServices);
+      } catch {
+        updateData.usesHomeServices = null;
+      }
+    } else {
+      updateData.usesHomeServices = null;
     }
   }
   
@@ -430,26 +436,34 @@ export async function PUT(
     if (body.outdoorActivities !== undefined) updateData.outdoorActivities = body.outdoorActivities;
     if (body.lifestyle !== undefined) updateData.lifestyle = body.lifestyle;
     if (body.sports !== undefined) updateData.sports = body.sports;
+    
+    // beautyServices масив
     if (body.beautyServices !== undefined) {
-      try {
-        updateData.beautyServices = typeof body.beautyServices === 'string'
-          ? JSON.parse(body.beautyServices)
-          : body.beautyServices;
-      } catch {
-        errors.push('beautyServices повинні бути валідним JSON');
+      if (Array.isArray(body.beautyServices)) {
+        updateData.beautyServices = body.beautyServices;
+      } else if (typeof body.beautyServices === 'string' && body.beautyServices !== '') {
+        try {
+          updateData.beautyServices = JSON.parse(body.beautyServices);
+        } catch {
+          updateData.beautyServices = null;
+        }
+      } else {
+        updateData.beautyServices = null;
       }
     }
 
     // Соцсети
     if (body.socialLinks !== undefined) {
-      if (typeof body.socialLinks === 'string') {
+      if (Array.isArray(body.socialLinks)) {
+        updateData.socialLinks = body.socialLinks;
+      } else if (typeof body.socialLinks === 'string' && body.socialLinks !== '') {
         try {
           updateData.socialLinks = JSON.parse(body.socialLinks);
         } catch {
-          errors.push('socialLinks повинні бути валідним JSON');
+          updateData.socialLinks = null;
         }
       } else {
-        updateData.socialLinks = body.socialLinks;
+        updateData.socialLinks = null;
       }
     }
 
@@ -458,34 +472,46 @@ export async function PUT(
     if (body.restaurantFrequency !== undefined) updateData.restaurantFrequency = body.restaurantFrequency;
     if (body.cuisinePreference !== undefined) updateData.cuisinePreference = body.cuisinePreference;
   
-  // Мета використання сайту
+  // Мета використання сайту (масив)
   if (body.siteUsageGoal !== undefined) {
-    try {
-      updateData.siteUsageGoal = Array.isArray(body.siteUsageGoal)
-        ? body.siteUsageGoal
-        : typeof body.siteUsageGoal === 'string'
-        ? JSON.parse(body.siteUsageGoal)
-        : body.siteUsageGoal;
-    } catch {
-      errors.push('siteUsageGoal повинні бути валідним масивом');
+    if (Array.isArray(body.siteUsageGoal)) {
+      updateData.siteUsageGoal = body.siteUsageGoal;
+    } else if (typeof body.siteUsageGoal === 'string' && body.siteUsageGoal !== '') {
+      try {
+        updateData.siteUsageGoal = JSON.parse(body.siteUsageGoal);
+      } catch {
+        updateData.siteUsageGoal = null;
+      }
+    } else {
+      updateData.siteUsageGoal = null;
     }
   }
+    // usesServices масив (бізнес сервіси)
     if (body.usesServices !== undefined) {
-      try {
-        updateData.usesServices = typeof body.usesServices === 'string'
-          ? JSON.parse(body.usesServices)
-          : body.usesServices;
-      } catch {
-        errors.push('usesServices повинні бути валідним JSON');
+      if (Array.isArray(body.usesServices)) {
+        updateData.usesServices = body.usesServices;
+      } else if (typeof body.usesServices === 'string' && body.usesServices !== '') {
+        try {
+          updateData.usesServices = JSON.parse(body.usesServices);
+        } catch {
+          updateData.usesServices = null;
+        }
+      } else {
+        updateData.usesServices = null;
       }
     }
+    // usesBusinessServices масив
     if (body.usesBusinessServices !== undefined) {
-      try {
-        updateData.usesBusinessServices = typeof body.usesBusinessServices === 'string'
-          ? JSON.parse(body.usesBusinessServices)
-          : body.usesBusinessServices;
-      } catch {
-        errors.push('usesBusinessServices повинні бути валідним JSON');
+      if (Array.isArray(body.usesBusinessServices)) {
+        updateData.usesBusinessServices = body.usesBusinessServices;
+      } else if (typeof body.usesBusinessServices === 'string' && body.usesBusinessServices !== '') {
+        try {
+          updateData.usesBusinessServices = JSON.parse(body.usesBusinessServices);
+        } catch {
+          updateData.usesBusinessServices = null;
+        }
+      } else {
+        updateData.usesBusinessServices = null;
       }
     }
     if (body.readyToSwitchToUCM !== undefined) updateData.readyToSwitchToUCM = body.readyToSwitchToUCM;
