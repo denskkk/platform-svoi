@@ -4,6 +4,54 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, GraduationCap, Briefcase, Home, Car, Heart, Target, Camera } from 'lucide-react';
 
+// Маппінг українських значень до enum значень бази даних
+const toDbValue = {
+  gender: {
+    'Чоловік': 'male',
+    'Жінка': 'female',
+    'Інше': 'other'
+  },
+  maritalStatus: {
+    'Одружений/Заміжня': 'married',
+    'Не одружений/Не заміжня': 'single',
+    'У цивільному шлюбі': 'civil',
+    'Розлучений/Розлучена': 'divorced',
+    'Вдівець/Вдова': 'widowed'
+  },
+  employmentStatus: {
+    'Працевлаштований': 'employed',
+    'Безробітний': 'unemployed',
+    'Власник бізнесу': 'business_owner',
+    'Фрілансер': 'freelancer',
+    'Студент': 'student',
+    'Пенсіонер': 'retired'
+  }
+};
+
+// Зворотній маппінг для відображення в UI
+const toUiValue = {
+  gender: {
+    'male': 'Чоловік',
+    'female': 'Жінка',
+    'other': 'Інше'
+  },
+  maritalStatus: {
+    'married': 'Одружений/Заміжня',
+    'single': 'Не одружений/Не заміжня',
+    'civil': 'У цивільному шлюбі',
+    'divorced': 'Розлучений/Розлучена',
+    'widowed': 'Вдівець/Вдова'
+  },
+  employmentStatus: {
+    'employed': 'Працевлаштований',
+    'unemployed': 'Безробітний',
+    'business_owner': 'Власник бізнесу',
+    'freelancer': 'Фрілансер',
+    'student': 'Студент',
+    'retired': 'Пенсіонер'
+  }
+};
+
 export default function EditProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -169,7 +217,7 @@ export default function EditProfilePage() {
           ucmMember: u.ucmMember || '',
           ucmSupporter: u.ucmSupporter || '',
           
-          employmentStatus: u.employmentStatus || '',
+          employmentStatus: u.employmentStatus ? (toUiValue.employmentStatus[u.employmentStatus as keyof typeof toUiValue.employmentStatus] || u.employmentStatus) : '',
           workplace: u.workplace || '',
           profession: u.profession || '',
           seekingPartTime: u.seekingPartTime === true,
@@ -189,8 +237,8 @@ export default function EditProfilePage() {
           
           workHistory: u.workHistory || '',
           
-          gender: u.gender || '',
-          maritalStatus: u.maritalStatus || '',
+          gender: u.gender ? (toUiValue.gender[u.gender as keyof typeof toUiValue.gender] || u.gender) : '',
+          maritalStatus: u.maritalStatus ? (toUiValue.maritalStatus[u.maritalStatus as keyof typeof toUiValue.maritalStatus] || u.maritalStatus) : '',
           hasChildren: u.hasChildren || '',
           childrenCount: u.childrenCount?.toString() || '',
           childrenAges: toArray(u.childrenAges),
@@ -377,8 +425,8 @@ export default function EditProfilePage() {
         ucmMember: formData.ucmMember || null,
         ucmSupporter: formData.ucmSupporter || null,
         
-        gender: formData.gender || null,
-        employmentStatus: formData.employmentStatus || null,
+        gender: formData.gender ? (toDbValue.gender[formData.gender as keyof typeof toDbValue.gender] || formData.gender) : null,
+        employmentStatus: formData.employmentStatus ? (toDbValue.employmentStatus[formData.employmentStatus as keyof typeof toDbValue.employmentStatus] || formData.employmentStatus) : null,
         workplace: formData.workplace || null,
         profession: formData.profession || null,
         
@@ -399,7 +447,7 @@ export default function EditProfilePage() {
         
         workHistory: formData.workHistory || null,
         
-        maritalStatus: formData.maritalStatus || null,
+        maritalStatus: formData.maritalStatus ? (toDbValue.maritalStatus[formData.maritalStatus as keyof typeof toDbValue.maritalStatus] || formData.maritalStatus) : null,
         hasChildren: formData.hasChildren || null,
         childrenCount: formData.childrenCount ? parseInt(formData.childrenCount) : null,
         childrenAges: formData.childrenAges.length > 0 ? formData.childrenAges : null,
