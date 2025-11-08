@@ -365,7 +365,7 @@ export async function PUT(
   if (body.seekingPartTime !== undefined) updateData.seekingPartTime = toBool(body.seekingPartTime);
   if (body.seekingFullTime !== undefined) updateData.seekingFullTime = toBool(body.seekingFullTime);
   if (body.seekingSpecialty !== undefined) updateData.seekingSpecialty = body.seekingSpecialty;
-  if (body.wantsStartBusiness !== undefined) updateData.wantsStartBusiness = body.wantsStartBusiness;
+  if (body.wantsStartBusiness !== undefined) updateData.wantsStartBusiness = toBool(body.wantsStartBusiness);
   
   // Підприємництво
   if (body.businessType !== undefined) updateData.businessType = body.businessType;
@@ -377,7 +377,7 @@ export async function PUT(
   if (body.workHistory !== undefined) updateData.workHistory = body.workHistory;
 
     // Домашние животные
-    if (body.hasPets !== undefined) updateData.hasPets = body.hasPets;
+    if (body.hasPets !== undefined) updateData.hasPets = toBool(body.hasPets);
     if (body.petsInfo !== undefined) updateData.petsInfo = body.petsInfo;
   
   // Діти
