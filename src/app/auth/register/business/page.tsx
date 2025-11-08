@@ -22,20 +22,7 @@ function BusinessRegistrationForm() {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("basic");
 
-  // Заборона прямого доступу: business реєстрація тільки через апгрейд з extended
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      alert('Спочатку потрібно створити Базовий акаунт, потім Розширений, і тільки після цього — Бізнес.');
-      router.push('/auth/register/basic');
-      return;
-    }
-    const user = JSON.parse(storedUser);
-    if (user.accountType === 'basic') {
-      alert('Спочатку покращіть акаунт до Розширеного, а потім до Бізнес.');
-      router.push('/auth/upgrade');
-    }
-  }, [router]);
+  // Дозволено пряму реєстрацію як бізнес-акаунт
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

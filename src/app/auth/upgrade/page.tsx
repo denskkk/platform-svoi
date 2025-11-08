@@ -20,8 +20,8 @@ export default function UpgradeAccountPage() {
       if (stored) {
         const parsed = JSON.parse(stored);
         setCurrentUser(parsed);
-        // If already higher than basic suggest next tier
-        if (parsed.accountType === 'extended') setTarget('business');
+        // basic → extended, business → business_premium
+        if (parsed.accountType === 'basic') setTarget('extended');
         if (parsed.accountType === 'business') setTarget('business_premium');
       }
     } catch {}
@@ -29,11 +29,11 @@ export default function UpgradeAccountPage() {
 
   const canUpgrade = () => {
     if (!currentUser) return false;
-    const order = ['basic', 'extended', 'business', 'business_premium'];
-    const idx = order.indexOf(currentUser.accountType);
-    const targetIdx = order.indexOf(target);
-    // Можна апгрейдитись тільки на НАСТУПНИЙ рівень (не можна перестрибувати)
-    return targetIdx === idx + 1;
+    // basic → extended, business → business_premium
+    if (currentUser.accountType === 'basic' && target === 'extended') return true;
+    if (currentUser.accountType === 'business' && target === 'business_premium') return true;
+    // extended і business_premium не можуть далі апгрейдитись
+    return false;
   };
 
   const handleUpgrade = async (e: React.FormEvent) => {
@@ -105,18 +105,24 @@ export default function UpgradeAccountPage() {
                 value={target}
                 onChange={e => setTarget(e.target.value as UpgradeTarget)}
                 className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base"
+                disabled={currentUser.accountType === 'extended' || currentUser.accountType === 'business_premium'}
               >
                 {currentUser.accountType === 'basic' && (
-                  <option value="extended">Розширений (наступний крок)</option>
-                )}
-                {currentUser.accountType === 'extended' && (
-                  <option value="business">Бізнес (наступний крок)</option>
+                  <option value="extended">Розширений</option>
                 )}
                 {currentUser.accountType === 'business' && (
-                  <option value="business_premium">Бізнес Преміум (наступний крок)</option>
+                  <option value="business_premium">Бізнес Преміум</option>
+                )}
+                {(currentUser.accountType === 'extended' || currentUser.accountType === 'business_premium') && (
+                  <option value="">Максимальний рівень досягнуто</option>
                 )}
               </select>
-              <p className="text-xs text-neutral-500 mt-1">Апгрейд можливий лише на наступний рівень послідовно.</p>
+              <p className="text-xs text-neutral-500 mt-1">
+                {currentUser.accountType === 'basic' && 'Базовий акаунт → Розширений'}
+                {currentUser.accountType === 'business' && 'Бізнес акаунт → Бізнес Преміум'}
+                {currentUser.accountType === 'extended' && 'Ви вже маєте Розширений акаунт (максимальний для особистого користування)'}
+                {currentUser.accountType === 'business_premium' && 'Ви вже маєте найвищий рівень!'}
+              </p>
             </div>
 
             <div className="bg-neutral-50 rounded-lg p-3 md:p-4 text-xs md:text-sm text-neutral-700 space-y-2">
