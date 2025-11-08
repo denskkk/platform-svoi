@@ -110,6 +110,8 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showEmptyFieldsModal, setShowEmptyFieldsModal] = useState(false);
+  const [emptyFieldsList, setEmptyFieldsList] = useState<string[]>([]);
 
   const cities = [
     'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
@@ -332,16 +334,16 @@ export default function EditProfilePage() {
     // Перевірка незаповнених полів для extended акаунтів
     const emptyFields = checkEmptyFields();
     if (emptyFields.length > 0 && user?.accountType === 'extended') {
-      const fieldsList = emptyFields.join('\n• ');
-      const confirmed = window.confirm(
-        `⚠️ Ви не заповнили наступні поля:\n\n• ${fieldsList}\n\nБажаєте зберегти профіль без цих даних?\n\n✅ ТАК - зберегти як є\n❌ НІ - повернутися до заповнення`
-      );
-      
-      if (!confirmed) {
-        return; // Користувач відмовився, залишаємося на формі
-      }
+      setEmptyFieldsList(emptyFields);
+      setShowEmptyFieldsModal(true);
+      return; // Показуємо модалку і чекаємо рішення
     }
     
+    // Якщо все ОК або підтверджено - продовжуємо збереження
+    await saveProfile();
+  };
+  
+  const saveProfile = async () => {
     setLoading(true);
     
     try {
@@ -1649,6 +1651,63 @@ export default function EditProfilePage() {
           </form>
         </div>
       </div>
+
+      {/* Modal для незаповнених полів */}
+      {showEmptyFieldsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl">⚠️</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Незаповнені поля</h3>
+              </div>
+              
+              <p className="text-gray-600 mb-4">
+                Ви не заповнили наступні поля анкети:
+              </p>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <ul className="space-y-2">
+                  {emptyFieldsList.map((field, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-red-800">
+                      <span className="text-red-500 mt-0.5">•</span>
+                      <span>{field}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-6">
+                💡 Заповнена анкета допоможе іншим користувачам краще вас знайти та зрозуміти ваші інтереси.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => {
+                    setShowEmptyFieldsModal(false);
+                    setEmptyFieldsList([]);
+                  }}
+                  className="flex-1 py-3 px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-colors"
+                >
+                  ← Повернутися до заповнення
+                </button>
+                <button
+                  onClick={() => {
+                    setShowEmptyFieldsModal(false);
+                    setEmptyFieldsList([]);
+                    saveProfile();
+                  }}
+                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Зберегти як є →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
