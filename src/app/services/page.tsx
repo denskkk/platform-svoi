@@ -95,7 +95,7 @@ export default async function ServicesPage() {
             {services.map((service: any) => (
               <Link
                 key={service.id}
-                href={`/user/${service.user.id}`}
+                href={`/profile/${service.user.id}`}
                 className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6 group"
               >
                 {/* Category */}
