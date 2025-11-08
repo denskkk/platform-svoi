@@ -77,10 +77,29 @@ export async function GET(
         jobSeeking: true,
         seekingPartTime: true,
         seekingFullTime: true,
+        seekingSpecialty: true,
         wantsStartBusiness: true,
+        // Підприємництво
+        businessType: true,
+        fopGroup: true,
+        tovType: true,
+        companyCode: true,
+        businessCategory: true,
+        offerType: true,
+        workHistory: true,
+        // Діти
+        hasChildren: true,
         // Домашні тварини
         hasPets: true,
         petsInfo: true,
+        // Транспорт
+        usesTaxi: true,
+        hasBicycle: true,
+        bicycleInfo: true,
+        // Побутові послуги
+        usesHomeServices: true,
+        // Мета
+        siteUsageGoal: true,
         // Інтереси та стиль життя
         hobbies: true,
         outdoorActivities: true,
@@ -266,6 +285,7 @@ export async function PUT(
     if (body.firstName !== undefined) updateData.firstName = body.firstName;
     if (body.middleName !== undefined) updateData.middleName = body.middleName;
     if (body.lastName !== undefined) updateData.lastName = body.lastName;
+    if (body.email !== undefined) updateData.email = body.email;
     if (body.phone !== undefined) updateData.phone = body.phone;
     if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
 
@@ -344,14 +364,66 @@ export async function PUT(
     if (body.jobSeeking !== undefined) updateData.jobSeeking = body.jobSeeking;
   if (body.seekingPartTime !== undefined) updateData.seekingPartTime = toBool(body.seekingPartTime);
   if (body.seekingFullTime !== undefined) updateData.seekingFullTime = toBool(body.seekingFullTime);
-  if (body.wantsStartBusiness !== undefined) updateData.wantsStartBusiness = toBool(body.wantsStartBusiness);
+  if (body.seekingSpecialty !== undefined) updateData.seekingSpecialty = body.seekingSpecialty;
+  if (body.wantsStartBusiness !== undefined) updateData.wantsStartBusiness = body.wantsStartBusiness;
+  
+  // Підприємництво
+  if (body.businessType !== undefined) updateData.businessType = body.businessType;
+  if (body.fopGroup !== undefined) updateData.fopGroup = body.fopGroup;
+  if (body.tovType !== undefined) updateData.tovType = body.tovType;
+  if (body.companyCode !== undefined) updateData.companyCode = body.companyCode;
+  if (body.businessCategory !== undefined) updateData.businessCategory = body.businessCategory;
+  if (body.offerType !== undefined) updateData.offerType = body.offerType;
+  if (body.workHistory !== undefined) updateData.workHistory = body.workHistory;
 
     // Домашние животные
-    {
-      const v = toBool(body.hasPets);
-      if (v !== undefined) updateData.hasPets = v;
-    }
+    if (body.hasPets !== undefined) updateData.hasPets = body.hasPets;
     if (body.petsInfo !== undefined) updateData.petsInfo = body.petsInfo;
+  
+  // Діти
+  if (body.hasChildren !== undefined) updateData.hasChildren = body.hasChildren;
+  if (body.childrenAges !== undefined) {
+    try {
+      updateData.childrenAges = Array.isArray(body.childrenAges)
+        ? body.childrenAges
+        : typeof body.childrenAges === 'string'
+        ? JSON.parse(body.childrenAges)
+        : body.childrenAges;
+    } catch {
+      errors.push('childrenAges повинні бути валідним масивом');
+    }
+  }
+  
+  // Проживання
+  if (body.housingDetails !== undefined) {
+    try {
+      updateData.housingDetails = Array.isArray(body.housingDetails)
+        ? body.housingDetails
+        : typeof body.housingDetails === 'string'
+        ? JSON.parse(body.housingDetails)
+        : body.housingDetails;
+    } catch {
+      errors.push('housingDetails повинні бути валідним масивом');
+    }
+  }
+  
+  // Побутові послуги
+  if (body.usesHomeServices !== undefined) {
+    try {
+      updateData.usesHomeServices = Array.isArray(body.usesHomeServices)
+        ? body.usesHomeServices
+        : typeof body.usesHomeServices === 'string'
+        ? JSON.parse(body.usesHomeServices)
+        : body.usesHomeServices;
+    } catch {
+      errors.push('usesHomeServices повинні бути валідним масивом');
+    }
+  }
+  
+  // Автомобіль та транспорт
+  if (body.usesTaxi !== undefined) updateData.usesTaxi = toBool(body.usesTaxi);
+  if (body.hasBicycle !== undefined) updateData.hasBicycle = body.hasBicycle;
+  if (body.bicycleInfo !== undefined) updateData.bicycleInfo = body.bicycleInfo;
 
     // Интересы и стиль жизни
     if (body.hobbies !== undefined) updateData.hobbies = body.hobbies;
@@ -382,9 +454,22 @@ export async function PUT(
     }
 
     // Споживчі та сервісні переваги
-    if (body.usesDelivery !== undefined) updateData.usesDelivery = toBool(body.usesDelivery);
+    if (body.usesDelivery !== undefined) updateData.usesDelivery = body.usesDelivery;
     if (body.restaurantFrequency !== undefined) updateData.restaurantFrequency = body.restaurantFrequency;
     if (body.cuisinePreference !== undefined) updateData.cuisinePreference = body.cuisinePreference;
+  
+  // Мета використання сайту
+  if (body.siteUsageGoal !== undefined) {
+    try {
+      updateData.siteUsageGoal = Array.isArray(body.siteUsageGoal)
+        ? body.siteUsageGoal
+        : typeof body.siteUsageGoal === 'string'
+        ? JSON.parse(body.siteUsageGoal)
+        : body.siteUsageGoal;
+    } catch {
+      errors.push('siteUsageGoal повинні бути валідним масивом');
+    }
+  }
     if (body.usesServices !== undefined) {
       try {
         updateData.usesServices = typeof body.usesServices === 'string'
@@ -403,9 +488,9 @@ export async function PUT(
         errors.push('usesBusinessServices повинні бути валідним JSON');
       }
     }
-    if (body.readyToSwitchToUCM !== undefined) updateData.readyToSwitchToUCM = toBool(body.readyToSwitchToUCM);
-    if (body.ucmMember !== undefined) updateData.ucmMember = toBool(body.ucmMember);
-    if (body.ucmSupporter !== undefined) updateData.ucmSupporter = toBool(body.ucmSupporter);
+    if (body.readyToSwitchToUCM !== undefined) updateData.readyToSwitchToUCM = body.readyToSwitchToUCM;
+    if (body.ucmMember !== undefined) updateData.ucmMember = body.ucmMember;
+    if (body.ucmSupporter !== undefined) updateData.ucmSupporter = body.ucmSupporter;
 
     if (errors.length) {
       return NextResponse.json({ error: 'Невірні дані', details: errors }, { status: 400 });
