@@ -15,9 +15,9 @@ export const PERMISSIONS = {
   VIEW_FAVORITES: ['basic', 'extended', 'business', 'business_premium'] as AccountType[],
   
   // Послуги
-  CREATE_SERVICE: ['business', 'business_premium'] as AccountType[],
-  EDIT_SERVICE: ['business', 'business_premium'] as AccountType[],
-  DELETE_SERVICE: ['business', 'business_premium'] as AccountType[],
+  CREATE_SERVICE: ['extended', 'business', 'business_premium'] as AccountType[],
+  EDIT_SERVICE: ['extended', 'business', 'business_premium'] as AccountType[],
+  DELETE_SERVICE: ['extended', 'business', 'business_premium'] as AccountType[],
   
   // Заявки (requests)
   CREATE_REQUEST: ['extended', 'business', 'business_premium'] as AccountType[],
@@ -87,7 +87,7 @@ export function getPermissionError(permission: keyof typeof PERMISSIONS): string
   const minTypeName = getAccountTypeName(minType);
   
   const messages: Partial<Record<keyof typeof PERMISSIONS, string>> = {
-    CREATE_SERVICE: `Створення послуг доступне тільки для бізнес акаунтів. Оновіть свій акаунт до "${minTypeName}".`,
+    CREATE_SERVICE: `Створення послуг доступне з акаунту "${minTypeName}". Оновіть свій акаунт.`,
     CREATE_REQUEST: `Створення заявок доступне з акаунту "${minTypeName}". Оновіть свій план.`,
     SEND_MESSAGE: `Надсилання повідомлень доступне з акаунту "${minTypeName}". Оновіть свій план.`,
     AUTO_PROPOSALS: 'Автоматичні пропозиції доступні тільки для Бізнес Преміум акаунтів.',
