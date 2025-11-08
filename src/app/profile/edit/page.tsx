@@ -304,10 +304,44 @@ export default function EditProfilePage() {
     }
   };
 
+  const checkEmptyFields = () => {
+    const emptyFields: string[] = [];
+    
+    // Перевірка основних полів для extended акаунтів
+    if (user?.accountType === 'extended') {
+      if (!formData.educationLevel) emptyFields.push('Освіта');
+      if (!formData.gender) emptyFields.push('Стать');
+      if (!formData.maritalStatus) emptyFields.push('Сімейний стан');
+      if (!formData.employmentStatus) emptyFields.push('Статус працевлаштування');
+      if (!formData.hasPets) emptyFields.push('Домашні тварини');
+      if (!formData.housingType) emptyFields.push('Тип житла');
+      if (!formData.hasCar) emptyFields.push('Наявність автомобіля');
+      if (!formData.usesDelivery) emptyFields.push('Ставлення до доставки');
+      if (!formData.restaurantFrequency) emptyFields.push('Відвідування кафе/ресторанів');
+      if (formData.siteUsageGoal.length === 0) emptyFields.push('Мета використання сайту');
+    }
+    
+    return emptyFields;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    
+    // Перевірка незаповнених полів для extended акаунтів
+    const emptyFields = checkEmptyFields();
+    if (emptyFields.length > 0 && user?.accountType === 'extended') {
+      const fieldsList = emptyFields.join('\n• ');
+      const confirmed = window.confirm(
+        `⚠️ Ви не заповнили наступні поля:\n\n• ${fieldsList}\n\nБажаєте зберегти профіль без цих даних?\n\n✅ ТАК - зберегти як є\n❌ НІ - повернутися до заповнення`
+      );
+      
+      if (!confirmed) {
+        return; // Користувач відмовився, залишаємося на формі
+      }
+    }
+    
     setLoading(true);
     
     try {
