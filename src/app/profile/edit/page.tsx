@@ -25,6 +25,13 @@ const toDbValue = {
     'Фрілансер': 'freelancer',
     'Студент': 'student',
     'Пенсіонер': 'retired'
+  },
+  educationLevel: {
+    'Середня': 'secondary',
+    'Коледж': 'college',
+    'Бакалавр': 'bachelor',
+    'Магістр': 'master',
+    'Аспірантура': 'doctorate'
   }
 };
 
@@ -49,6 +56,13 @@ const toUiValue = {
     'freelancer': 'Фрілансер',
     'student': 'Студент',
     'retired': 'Пенсіонер'
+  },
+  educationLevel: {
+    'secondary': 'Середня',
+    'college': 'Коледж',
+    'bachelor': 'Бакалавр',
+    'master': 'Магістр',
+    'doctorate': 'Аспірантура'
   }
 };
 
@@ -211,7 +225,7 @@ export default function EditProfilePage() {
           email: u.email || '',
           city: u.city || '',
           
-          educationLevel: u.educationLevel || '',
+          educationLevel: u.educationLevel ? (toUiValue.educationLevel[u.educationLevel as keyof typeof toUiValue.educationLevel] || u.educationLevel) : '',
           educationDetails: u.educationDetails || '',
           
           ucmMember: u.ucmMember || '',
@@ -419,7 +433,7 @@ export default function EditProfilePage() {
         city: formData.city,
         avatarUrl: avatarUrl || null,
         
-        educationLevel: formData.educationLevel || null,
+        educationLevel: formData.educationLevel ? (toDbValue.educationLevel[formData.educationLevel as keyof typeof toDbValue.educationLevel] || formData.educationLevel) : null,
         educationDetails: formData.educationDetails || null,
         
         ucmMember: formData.ucmMember || null,

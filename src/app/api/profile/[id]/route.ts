@@ -36,6 +36,13 @@ const ukrainianToDbValue: Record<string, Record<string, string>> = {
     'Фрілансер': 'freelancer',
     'Студент': 'student',
     'Пенсіонер': 'retired'
+  },
+  educationLevel: {
+    'Середня': 'secondary',
+    'Коледж': 'college',
+    'Бакалавр': 'bachelor',
+    'Магістр': 'master',
+    'Аспірантура': 'doctorate'
   }
 };
 
@@ -377,7 +384,11 @@ export async function PUT(
     // Освіта: підтримуємо як окремі поля (educationLevel, educationDetails) так і сумісне 'education'
     const enumValues = ['secondary','college','bachelor','master','doctorate'];
     if (body.educationLevel !== undefined) {
-      const level = body.educationLevel === '' ? null : body.educationLevel;
+      let level = body.educationLevel === '' ? null : body.educationLevel;
+      // Конвертуємо українське значення в DB enum
+      if (level) {
+        level = convertToDbValue('educationLevel', level);
+      }
       if (level && !enumValues.includes(level)) {
         errors.push('Невірний рівень освіти');
       } else {
