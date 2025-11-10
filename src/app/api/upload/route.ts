@@ -163,29 +163,46 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const optimizedBuffer = await pipeline.webp({ quality: 85 }).toBuffer();
+    // Генеруємо обидва формати: WebP (сучасний) + JPEG (сумісність зі старими пристроями)
+    const optimizedWebp = await pipeline.webp({ quality: 85 }).toBuffer();
+    // Для JPEG трішки нижча якість для розміру, без прозорості
+    const optimizedJpeg = await pipeline.jpeg({ quality: 85 }).toBuffer();
 
     // Сохраняем оптимізований файл
-  const filepath = join(uploadsDir, filename);
-    await writeFile(filepath, optimizedBuffer);
+  const filepathWebp = join(uploadsDir, filename);
+    await writeFile(filepathWebp, optimizedWebp);
+    
+    // Додаємо JPEG-файл з тим самим ім'ям (інша розширення)
+    const filenameJpg = filename.replace(/\.webp$/i, '.jpg');
+    const filepathJpg = join(uploadsDir, filenameJpg);
+    await writeFile(filepathJpg, optimizedJpeg);
     
     // Лог розміру до/після оптимізації
     const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
-    const optimizedSizeMB = (optimizedBuffer.length / 1024 / 1024).toFixed(2);
-  console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → ${optimizedSizeMB}MB (dir: ${safeDir})`);
+    const optimizedSizeMBWebp = (optimizedWebp.length / 1024 / 1024).toFixed(2);
+    const optimizedSizeMBJpg = (optimizedJpeg.length / 1024 / 1024).toFixed(2);
+  console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → WebP ${optimizedSizeMBWebp}MB / JPEG ${optimizedSizeMBJpg}MB (dir: ${safeDir})`);
     
     // Возвращаем URL файла
-  const url = `/uploads/${safeDir}/${filename}`;
+  const urlWebp = `/uploads/${safeDir}/${filename}`;
+    const urlJpg = `/uploads/${safeDir}/${filenameJpg}`;
     
     return NextResponse.json({
       success: true,
-      url: url,
+      // Зворотна сумісність: основний url як WebP
+      url: urlWebp,
       filename: filename,
+      alternates: {
+        webp: urlWebp,
+        jpg: urlJpg,
+      },
       optimized: {
         originalSize: file.size,
-        optimizedSize: optimizedBuffer.length,
-        savings: `${((1 - optimizedBuffer.length / file.size) * 100).toFixed(1)}%`
-      }
+        webpSize: optimizedWebp.length,
+        jpgSize: optimizedJpeg.length,
+        webpSavings: `${((1 - optimizedWebp.length / file.size) * 100).toFixed(1)}%`,
+        jpgSavings: `${((1 - optimizedJpeg.length / file.size) * 100).toFixed(1)}%`,
+      },
     });
   } catch (error: any) {
     console.error('Upload error:', error);
