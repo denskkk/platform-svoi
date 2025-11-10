@@ -973,9 +973,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Бічна панель */}
-          <div className="space-y-6">
+          <div className="space-y-6 static">
             {/* Контакти */}
-            <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-2xl shadow-lg border border-neutral-100 p-6">
+            <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-2xl shadow-lg border border-neutral-100 p-6 static">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                   <Phone className="w-5 h-5 text-white" />
