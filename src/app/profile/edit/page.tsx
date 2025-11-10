@@ -978,15 +978,16 @@ export default function EditProfilePage() {
                     className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                   >
                     <option value="">Оберіть</option>
-                    <option value="Так">Так</option>
-                    <option value="Ні">Ні</option>
+                    <option value="Працевлаштований">Працевлаштований</option>
+                    <option value="Безробітний">Безробітний</option>
                     <option value="Власник бізнесу">Власник бізнесу</option>
-                    <option value="Сам на себе">Сам на себе</option>
-                    <option value="В пошуку роботи">В пошуку роботи</option>
+                    <option value="Фрілансер">Фрілансер</option>
+                    <option value="Студент">Студент</option>
+                    <option value="Пенсіонер">Пенсіонер</option>
                   </select>
                 </div>
 
-                {formData.employmentStatus === 'В пошуку роботи' && (
+                {(formData.employmentStatus === 'Безробітний' || formData.employmentStatus === 'Студент') && (
                   <div className="bg-blue-50 p-4 rounded-lg space-y-4">
                     <h3 className="font-semibold text-gray-900">💁 Якщо в пошуку роботи:</h3>
                     
@@ -1227,9 +1228,10 @@ export default function EditProfilePage() {
                     >
                       <option value="">Оберіть</option>
                       <option value="Одружений/Заміжня">Одружений/Заміжня</option>
-                      <option value="В пошуку">В пошуку</option>
-                      <option value="Цивільний шлюб">Цивільний шлюб</option>
-                      <option value="В розводі">В розводі</option>
+                      <option value="Не одружений/Не заміжня">Не одружений/Не заміжня</option>
+                      <option value="У цивільному шлюбі">У цивільному шлюбі</option>
+                      <option value="Розлучений/Розлучена">Розлучений/Розлучена</option>
+                      <option value="Вдівець/Вдова">Вдівець/Вдова</option>
                     </select>
                   </div>
                 </div>
