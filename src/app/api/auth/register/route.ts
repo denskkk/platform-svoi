@@ -108,6 +108,17 @@ export async function POST(request: NextRequest) {
     const trialExpires = new Date(now);
     trialExpires.setMonth(trialExpires.getMonth() + 3);
 
+    // Convert boolean values to strings for ucmMember and ucmSupporter
+    const convertToYesNo = (value: any): string | null => {
+      if (value === undefined || value === null) return null;
+      if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
+      if (typeof value === 'string') {
+        if (value.toLowerCase() === 'yes' || value === 'Так') return 'Так';
+        if (value.toLowerCase() === 'no' || value === 'Ні') return 'Ні';
+      }
+      return null;
+    };
+
     const user = await prisma.user.create({
       data: {
         role,
@@ -122,8 +133,8 @@ export async function POST(request: NextRequest) {
         isVerified: false,
         educationLevel: educationLevel || null,
         educationDetails: educationDetails || null,
-        ucmMember: ucmMember !== undefined ? (typeof ucmMember === 'boolean' ? ucmMember : ucmMember === 'yes') : null,
-        ucmSupporter: ucmSupporter !== undefined ? (typeof ucmSupporter === 'boolean' ? ucmSupporter : ucmSupporter === 'yes') : null,
+        ucmMember: convertToYesNo(ucmMember),
+        ucmSupporter: convertToYesNo(ucmSupporter),
         employmentStatus: employmentStatus || null,
         // apply free trial for non-basic plans
         subscriptionActive: accountType !== 'basic',
