@@ -325,6 +325,8 @@ export async function PUT(
     // Подготовка данных для обновления
     const updateData: any = {};
 
+    console.log('[PUT /api/profile] Received body:', JSON.stringify(body, null, 2));
+
     // Основная информация
     if (body.firstName !== undefined) updateData.firstName = body.firstName;
     if (body.middleName !== undefined) updateData.middleName = body.middleName;
@@ -574,6 +576,8 @@ export async function PUT(
     if (errors.length) {
       return NextResponse.json({ error: 'Невірні дані', details: errors }, { status: 400 });
     }
+
+    console.log('[PUT /api/profile] Updating user with data:', JSON.stringify(updateData, null, 2));
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
