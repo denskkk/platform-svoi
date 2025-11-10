@@ -72,6 +72,61 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     return [];
   };
 
+  // Функції перекладу
+  const translateCategory = (category: string): string => {
+    const translations: Record<string, string> = {
+      'auto_service': 'Автосервіс',
+      'beauty': 'Краса',
+      'food': 'Їжа',
+      'education': 'Освіта',
+      'health': 'Здоров\'я',
+      'sport': 'Спорт',
+      'entertainment': 'Розваги',
+      'repair': 'Ремонт',
+      'construction': 'Будівництво',
+      'cleaning': 'Прибирання',
+      'transport': 'Транспорт',
+      'finance': 'Фінанси',
+      'law': 'Право',
+      'it': 'ІТ',
+      'marketing': 'Маркетинг',
+      'real_estate': 'Нерухомість',
+      'retail': 'Роздрібна торгівля',
+      'wholesale': 'Оптова торгівля',
+      'manufacturing': 'Виробництво',
+      'agriculture': 'Сільське господарство',
+      'tourism': 'Туризм',
+      'hospitality': 'Готельний бізнес',
+      'logistics': 'Логістика',
+      'consulting': 'Консалтинг',
+      'design': 'Дизайн',
+      'photo_video': 'Фото/Відео',
+      'events': 'Організація подій',
+      'other': 'Інше'
+    };
+    return translations[category] || category;
+  };
+
+  const translateOfferType = (offerType: string): string => {
+    const translations: Record<string, string> = {
+      'service': 'Послуги',
+      'product': 'Товари',
+      'both': 'Товари та послуги'
+    };
+    return translations[offerType] || offerType;
+  };
+
+  const translateEmploymentType = (type: string): string => {
+    const translations: Record<string, string> = {
+      'full-time': 'Повна зайнятість',
+      'part-time': 'Часткова зайнятість',
+      'contract': 'Контракт',
+      'freelance': 'Фріланс',
+      'internship': 'Стажування'
+    };
+    return translations[type] || type;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
@@ -256,13 +311,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   {profile.businessInfo.businessCategory && (
                     <div>
                       <div className="text-sm text-neutral-500">Категорія</div>
-                      <div className="font-medium">{profile.businessInfo.businessCategory}</div>
+                      <div className="font-medium">{translateCategory(profile.businessInfo.businessCategory)}</div>
                     </div>
                   )}
                   {profile.businessInfo.offerType && (
                     <div>
                       <div className="text-sm text-neutral-500">Що пропонує</div>
-                      <div className="font-medium">{profile.businessInfo.offerType}</div>
+                      <div className="font-medium">{translateOfferType(profile.businessInfo.offerType)}</div>
                     </div>
                   )}
                   {profile.businessInfo.website && (
@@ -294,7 +349,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           <div><span className="text-neutral-500">Зарплата: </span><span className="font-medium">{v.salary}</span></div>
                         )}
                         {v.employmentType && (
-                          <div><span className="text-neutral-500">Тип: </span><span className="font-medium">{v.employmentType}</span></div>
+                          <div><span className="text-neutral-500">Тип: </span><span className="font-medium">{translateEmploymentType(v.employmentType)}</span></div>
                         )}
                         {v.experience && (
                           <div className="md:col-span-2"><span className="text-neutral-500">Досвід: </span><span className="font-medium">{v.experience}</span></div>
@@ -1202,8 +1257,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             </div>
           )}
 
-          {/* Переваги та використання сервісів */}
-          {(profile.accountType !== 'basic' ? (profile.usesDelivery !== undefined || profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length || asList(profile.usesBusinessServices).length || asList(profile.beautyServices).length || profile.readyToSwitchToUCM !== undefined) : false) && (
+          {/* Переваги та використання сервісів - тільки для звичайних користувачів, не для бізнесу */}
+          {(!profile.businessInfo && profile.accountType !== 'basic' && (profile.usesDelivery !== undefined || profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length || asList(profile.usesBusinessServices).length || asList(profile.beautyServices).length || profile.readyToSwitchToUCM !== undefined)) && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h2 className="text-xl font-bold text-neutral-900 mb-4">Переваги та використання сервісів</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
