@@ -208,6 +208,7 @@ export default function EditProfilePage() {
       
       if (data.user) {
         const u = data.user;
+        console.log('Loaded profile data:', u);
         const socialLinks = u.socialLinks || {};
         
         const toArray = (val: any): string[] => {
@@ -292,6 +293,9 @@ export default function EditProfilePage() {
           
           bio: u.bio || '',
         });
+        
+        // Оновлюємо user state з повними даними
+        setUser(u);
       }
     } catch (err) {
       console.error('Помилка завантаження профілю:', err);
