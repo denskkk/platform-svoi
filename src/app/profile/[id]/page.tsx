@@ -107,7 +107,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               className="w-full h-48 md:h-64 object-cover"
               onError={(e) => {
                 console.warn('Failed to load banner:', profile.businessInfo.bannerUrl);
-                (e.currentTarget as HTMLImageElement).style.display = 'none';
+                // Залишаємо місце під банер, навіть якщо зображення не завантажилось
               }}
             />
           </div>

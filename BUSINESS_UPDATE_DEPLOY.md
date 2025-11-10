@@ -10,7 +10,7 @@
 - `employee_vacancies` (JSONB) - массив вакансий
 - `banner_url` (VARCHAR) - URL банера компании
 
-### 2. Форма регистрации бизнеса
+### 2. Форма регистрации и редактирования бизнеса
 Обновлена `src/app/auth/register/business/page.tsx`:
 - Добавлены условные поля для каждого типа поиска:
   - **Партнер**: тип партнера, сфера сотрудничества, условия
@@ -22,6 +22,8 @@
 ### 3. API
 - Обновлен `/api/auth/register-business` для обработки новых полей
 - Создан `/api/upload/business-images` для загрузки изображений
+- Универсальный загрузчик `/api/upload` теперь поддерживает `type=banners` (оптимизация до ~1920×480, WebP)
+- В `/api/business-info` добавлена поддержка `bannerUrl` (создание и обновление)
 
 ## Шаги для развертывания на production
 
@@ -58,13 +60,18 @@ chmod -R 755 public/uploads
 # 5. Обновить Prisma Client
 npx prisma generate
 
-# 6. Пересобрать приложение
+# 6. Задать корневую директорию загрузок (важно)
+# Nginx отдаёт /uploads/ из /var/www/sviydlyasvoih/platform-svoi/public/uploads/
+# Чтобы загруженные файлы появлялись там же, укажите переменную окружения UPLOADS_DIR
+export UPLOADS_DIR=/var/www/sviydlyasvoih/platform-svoi/public/uploads
+
+# 7. Пересобрать приложение
 npm run build
 
-# 7. Перезапустить приложение
+# 8. Перезапустить приложение
 pm2 restart sviy-web
 
-# 8. Проверить логи
+# 9. Проверить логи
 pm2 logs sviy-web --lines 50
 ```
 
@@ -140,7 +147,7 @@ psql -U sviy_user -d sviy_db -c "SELECT 1"
 psql -U sviy_user -d sviy_db < database/migrations/004_add_business_details.sql
 ```
 
-### Проблема 3: Изображения не загружаются
+### Проблема 3: Изображения не загружаются / банер пропадает
 ```bash
 # Проверить существование директорий
 ls -la public/uploads/
@@ -148,7 +155,23 @@ ls -la public/uploads/
 # Создать если нужно
 mkdir -p public/uploads/{logos,banners}
 chmod -R 755 public/uploads
+
+# Если баннеры загружаются, но не открываются по URL /uploads/... (404)
+# Проверьте соответствие пути alias в nginx и фактического места записи файлов.
+# Решение 1: выставить UPLOADS_DIR равным пути из nginx alias
+echo $UPLOADS_DIR
+export UPLOADS_DIR=/var/www/sviydlyasvoih/platform-svoi/public/uploads
+pm2 restart sviy-web
+
+# Решение 2: скорректировать alias в nginx под фактический путь проекта
+sudo nano /etc/nginx/sites-available/sviydlyasvoih.conf
+sudo nginx -t && sudo systemctl reload nginx
 ```
+
+### Проблема 5: TLS/доменная ошибка при серверном fetch (ERR_TLS_CERT_ALTNAME_INVALID)
+Каталог сервером мог обращаться к домену с несовпадающим сертификатом.
+Исправлено в `src/app/catalog/page.tsx`: базовый URL берётся из заголовков, добавлен try/catch.
+Для деплоя — просто обновите код, пересоберите и перезапустите приложение.
 
 ### Проблема 4: Prisma Client не обновился
 ```bash
@@ -186,7 +209,8 @@ pm2 restart sviy-web
 ## Примечания
 
 - Логотип рекомендуется 400x400px, максимум 5MB
-- Банер рекомендуется 1200x400px, максимум 10MB
+- Банер рекомендуется 1920×480px (широкий), максимум 10MB
 - Поддерживаемые форматы: JPG, PNG, GIF, WebP
+- В проде загрузчик конвертирует в WebP для экономии трафика
 - Вакансии можно добавлять и удалять динамически
 - Детальные поля появляются только при выборе соответствующего типа поиска

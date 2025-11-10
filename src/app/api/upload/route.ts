@@ -119,7 +119,8 @@ export async function POST(request: NextRequest) {
   const filename = `${safeDir.slice(0, -1)}-${timestamp}.webp`; // name prefix from type; зберігаємо як WebP
     
     // Путь к папке uploads
-  const uploadsDir = join(process.cwd(), 'public', 'uploads', safeDir);
+  const baseUploadsRoot = process.env.UPLOADS_DIR || join(process.cwd(), 'public', 'uploads');
+  const uploadsDir = join(baseUploadsRoot, safeDir);
     
     // Создаем папку если не существует
     if (!existsSync(uploadsDir)) {
@@ -165,7 +166,7 @@ export async function POST(request: NextRequest) {
     const optimizedBuffer = await pipeline.webp({ quality: 85 }).toBuffer();
 
     // Сохраняем оптимізований файл
-    const filepath = join(uploadsDir, filename);
+  const filepath = join(uploadsDir, filename);
     await writeFile(filepath, optimizedBuffer);
     
     // Лог розміру до/після оптимізації
