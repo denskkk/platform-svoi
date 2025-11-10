@@ -31,6 +31,14 @@ async function handler(request: AuthenticatedRequest) {
         avatarUrl: true,
         isVerified: true,
         createdAt: true,
+        businessInfo: {
+          select: {
+            companyName: true,
+            logoUrl: true,
+            bannerUrl: true,
+            city: true,
+          }
+        }
       }
     });
 

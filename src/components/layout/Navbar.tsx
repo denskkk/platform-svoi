@@ -172,16 +172,51 @@ export function Navbar() {
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                     className="flex items-center space-x-2 px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
                   >
-                    {user.avatarUrl ? (
-                      <img src={user.avatarUrl} alt={user.firstName} className="w-8 h-8 rounded-full" />
-                    ) : (
-                      <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-medium text-sm">
-                          {user.firstName?.[0]}{user.lastName?.[0]}
-                        </span>
-                      </div>
-                    )}
-                    <span className="font-medium text-neutral-700">{user.firstName}</span>
+                    {(() => {
+                      const displayImage = user?.businessInfo?.logoUrl || user?.avatarUrl;
+                      const displayName = user?.businessInfo?.companyName || user?.firstName || '';
+                      if (displayImage) {
+                        return (
+                          <img
+                            src={`${displayImage}${displayImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                            alt={displayName}
+                            className="w-8 h-8 rounded-full object-cover"
+                            onError={(e) => {
+                              const img = e.currentTarget as HTMLImageElement;
+                              // First retry without cache-busting param
+                              if (!img.dataset.retried) {
+                                img.dataset.retried = 'true';
+                                img.src = displayImage;
+                              } else {
+                                // Fallback to initials bubble
+                                const parent = img.parentElement;
+                                if (parent) {
+                                  img.style.display = 'none';
+                                  const fallback = document.createElement('div');
+                                  fallback.className = 'w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center';
+                                  const firstInitial = (user?.businessInfo?.companyName || user?.firstName || '')[0] || '';
+                                  const secondInitial = user?.businessInfo?.companyName ? '' : (user?.lastName || '')[0] || '';
+                                  fallback.innerHTML = `<span class="text-white font-medium text-sm">${firstInitial}${secondInitial}</span>`;
+                                  parent.appendChild(fallback);
+                                }
+                              }
+                            }}
+                          />
+                        );
+                      }
+                      // No image at all – render initials directly
+                      return (
+                        <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                          <span className="text-white font-medium text-sm">
+                            {(user?.businessInfo?.companyName || user?.firstName || '')[0]}
+                            {user?.businessInfo?.companyName ? '' : (user?.lastName || '')[0]}
+                          </span>
+                        </div>
+                      );
+                    })()}
+                    <span className="font-medium text-neutral-700">
+                      {user?.businessInfo?.companyName || user?.firstName}
+                    </span>
                   </button>
 
                   {showProfileMenu && (
