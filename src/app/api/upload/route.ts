@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get('file') as File;
   const rawType = (formData.get('type') as string) || 'avatars';
-  const allowedDirs = new Set(['avatars', 'logos', 'services', 'misc']);
+  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc']);
   const safeDir = allowedDirs.has(rawType) ? rawType : 'avatars';
     
     if (!file) {
@@ -130,8 +130,9 @@ export async function POST(request: NextRequest) {
     // - avatars/logos: 400x400
     // - services: до 1200x800 (cover)
     // - misc: до 800x800 (cover)
-    const isAvatar = safeDir === 'avatars' || safeDir === 'logos';
-    const isService = safeDir === 'services';
+  const isAvatar = safeDir === 'avatars' || safeDir === 'logos';
+  const isService = safeDir === 'services';
+  const isBanner = safeDir === 'banners';
 
     let pipeline = sharp(buffer);
 
@@ -142,6 +143,13 @@ export async function POST(request: NextRequest) {
       });
     } else if (isService) {
       pipeline = pipeline.resize(1200, 800, {
+        fit: 'cover',
+        position: 'center',
+        withoutEnlargement: true,
+      });
+    } else if (isBanner) {
+      // Широкий банер: оптимізуємо під ширину до 1920px і висоту 480px (cover)
+      pipeline = pipeline.resize(1920, 480, {
         fit: 'cover',
         position: 'center',
         withoutEnlargement: true,

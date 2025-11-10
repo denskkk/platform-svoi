@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
     if (body.businessType !== undefined) createData.businessType = body.businessType;
 
     if (body.logoUrl !== undefined) createData.logoUrl = body.logoUrl;
+  if (body.bannerUrl !== undefined) createData.bannerUrl = body.bannerUrl;
 
     // Опис: shortDescription -> description
     if (body.shortDescription !== undefined) createData.description = body.shortDescription;
@@ -242,6 +243,7 @@ export async function PUT(request: NextRequest) {
       }
     }
     if (body.logoUrl !== undefined) updateData.logoUrl = body.logoUrl;
+  if (body.bannerUrl !== undefined) updateData.bannerUrl = body.bannerUrl;
     if (body.videoUrl !== undefined) updateData.videoUrl = body.videoUrl;
 
     // Зовнішні відгуки

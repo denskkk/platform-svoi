@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, User, FileText, Users, Phone, Award, Upload, Camera } from 'lucide-react';
+import { Building2, User, FileText, Users, Phone, Award, Upload, Camera, Image as ImageIcon } from 'lucide-react';
 
 export default function EditBusinessProfilePage() {
   const router = useRouter();
@@ -58,6 +58,8 @@ export default function EditBusinessProfilePage() {
   });
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string>('');
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -91,7 +93,8 @@ export default function EditBusinessProfilePage() {
       
       if (data.businessInfo) {
         const b = data.businessInfo;
-        setLogoPreview(b.logoUrl || '');
+  setLogoPreview(b.logoUrl || '');
+  setBannerPreview(b.bannerUrl || '');
         
         // Parse social links if it's JSON
         let parsedSocialLinks: any = {};
@@ -221,6 +224,57 @@ export default function EditBusinessProfilePage() {
     }
   };
 
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Файл банера занадто великий. Максимум 10MB');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError('Будь ласка, оберіть зображення для банера');
+        return;
+      }
+
+      setBannerFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadBanner = async (): Promise<string | null> => {
+    if (!bannerFile) return null;
+
+    const formData = new FormData();
+    formData.append('file', bannerFile);
+    formData.append('type', 'banners');
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        return data.url;
+      }
+
+      throw new Error(data.error || 'Помилка завантаження банера');
+    } catch (err: any) {
+      console.error('Upload banner error:', err);
+      throw err;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -229,11 +283,19 @@ export default function EditBusinessProfilePage() {
     
     try {
       let logoUrl = logoPreview;
+      let bannerUrl = bannerPreview;
       
       if (logoFile) {
         const uploadedUrl = await uploadLogo();
         if (uploadedUrl) {
           logoUrl = uploadedUrl;
+        }
+      }
+
+      if (bannerFile) {
+        const uploadedBannerUrl = await uploadBanner();
+        if (uploadedBannerUrl) {
+          bannerUrl = uploadedBannerUrl;
         }
       }
 
@@ -260,6 +322,7 @@ export default function EditBusinessProfilePage() {
           city: formData.city || null,
           businessType: formData.businessType || null,
           logoUrl: logoUrl || null,
+          bannerUrl: bannerUrl || null,
           
           shortDescription: formData.shortDescription || null,
           description: formData.description || formData.shortDescription || null,
@@ -330,6 +393,34 @@ export default function EditBusinessProfilePage() {
           <div className="bg-gradient-to-r from-accent-500 to-primary-500 px-4 md:px-8 py-4 md:py-6">
             <h1 className="text-xl md:text-3xl font-bold text-white">🏢 Редагувати бізнес-профіль</h1>
             <p className="text-accent-100 mt-1 md:mt-2 text-sm md:text-base">Оновіть інформацію про вашу компанію</p>
+          </div>
+
+          {/* Banner Upload */}
+          <div className="px-4 md:px-8 pt-4 md:pt-6">
+            <div className="mb-4">
+              <h3 className="font-semibold text-neutral-900 text-sm md:text-base mb-2 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-accent-600" /> Банер компанії
+              </h3>
+              <div className="relative w-full h-28 sm:h-36 md:h-44 lg:h-52 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200">
+                {bannerPreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={bannerPreview} alt="Company banner" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-neutral-500 text-sm">Немає банера</div>
+                )}
+                <label
+                  htmlFor="banner-upload"
+                  className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 backdrop-blur rounded-full shadow border border-neutral-200 cursor-pointer hover:bg-white transition-colors text-xs md:text-sm"
+                >
+                  Завантажити банер
+                </label>
+                <input id="banner-upload" type="file" accept="image/*" onChange={handleBannerChange} className="hidden" />
+              </div>
+              {bannerFile && (
+                <p className="text-xs md:text-sm text-accent-600 mt-2 truncate">✓ Новий банер: {bannerFile.name}</p>
+              )}
+              <p className="text-xs md:text-[13px] text-neutral-600 mt-1">Рекомендовано 1920×480 (широкий). PNG/JPG/WebP/HEIC. Макс 10MB</p>
+            </div>
           </div>
 
           {/* Logo Upload */}
