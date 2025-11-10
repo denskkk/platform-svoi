@@ -98,6 +98,20 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-neutral-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Банер компанії (для бізнес акаунтів) */}
+        {profile?.businessInfo?.bannerUrl && (
+          <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
+            <img
+              src={profile.businessInfo.bannerUrl}
+              alt="Банер компанії"
+              className="w-full h-48 md:h-64 object-cover"
+              onError={(e) => {
+                console.warn('Failed to load banner:', profile.businessInfo.bannerUrl);
+                (e.currentTarget as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          </div>
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Основна інформація */}
           <div className="lg:col-span-2 space-y-6">
@@ -105,15 +119,25 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             <div className="bg-white rounded-2xl shadow-md p-6">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Фото */}
-                {profile.avatarUrl ? (
+                {profile?.businessInfo?.logoUrl ? (
+                  <img
+                    src={profile.businessInfo.logoUrl}
+                    alt="Логотип компанії"
+                    className="w-32 h-32 rounded-2xl object-cover flex-shrink-0 bg-white"
+                    onError={(e) => {
+                      console.warn('Failed to load company logo:', profile.businessInfo.logoUrl);
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                ) : profile.avatarUrl ? (
                   <img 
                     src={profile.avatarUrl} 
                     alt={`${profile.firstName} ${profile.lastName}`}
                     className="w-32 h-32 rounded-2xl object-cover flex-shrink-0"
                     onError={(e) => {
                       console.error('Failed to load avatar:', profile.avatarUrl);
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                      const parent = (e.currentTarget as HTMLImageElement).parentElement;
                       if (parent) {
                         const fallback = document.createElement('div');
                         fallback.className = 'w-32 h-32 bg-gradient-to-br from-primary-200 to-accent-200 rounded-2xl flex items-center justify-center text-6xl flex-shrink-0';
@@ -211,6 +235,82 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 </div>
               </div>
             </div>
+
+            {/* Блок компанії (для бізнес акаунтів) */}
+            {String(profile.accountType || '').startsWith('business') && profile.businessInfo && (
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">Інформація про компанію</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profile.businessInfo.companyName && (
+                    <div>
+                      <div className="text-sm text-neutral-500">Назва компанії</div>
+                      <div className="font-medium">{profile.businessInfo.companyName}</div>
+                    </div>
+                  )}
+                  {profile.businessInfo.companyCode && (
+                    <div>
+                      <div className="text-sm text-neutral-500">Код ЄДРПОУ</div>
+                      <div className="font-medium">{profile.businessInfo.companyCode}</div>
+                    </div>
+                  )}
+                  {profile.businessInfo.businessCategory && (
+                    <div>
+                      <div className="text-sm text-neutral-500">Категорія</div>
+                      <div className="font-medium">{profile.businessInfo.businessCategory}</div>
+                    </div>
+                  )}
+                  {profile.businessInfo.offerType && (
+                    <div>
+                      <div className="text-sm text-neutral-500">Що пропонує</div>
+                      <div className="font-medium">{profile.businessInfo.offerType}</div>
+                    </div>
+                  )}
+                  {profile.businessInfo.website && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-neutral-500">Веб-сайт</div>
+                      <a href={profile.businessInfo.website} target="_blank" className="font-medium text-primary-600 hover:underline">{profile.businessInfo.website}</a>
+                    </div>
+                  )}
+                  {profile.businessInfo.description && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-neutral-500">Опис</div>
+                      <div className="font-medium whitespace-pre-wrap">{profile.businessInfo.description}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Вакансії */}
+            {profile?.businessInfo?.seekingEmployee && Array.isArray(profile.businessInfo.employeeVacancies) && profile.businessInfo.employeeVacancies.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">Вакансії</h3>
+                <div className="space-y-4">
+                  {profile.businessInfo.employeeVacancies.map((v: any, idx: number) => (
+                    <div key={idx} className="border border-neutral-200 rounded-xl p-4">
+                      {v.position && <div className="text-base font-semibold mb-2">{v.position}</div>}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-neutral-700">
+                        {v.salary && (
+                          <div><span className="text-neutral-500">Зарплата: </span><span className="font-medium">{v.salary}</span></div>
+                        )}
+                        {v.employmentType && (
+                          <div><span className="text-neutral-500">Тип: </span><span className="font-medium">{v.employmentType}</span></div>
+                        )}
+                        {v.experience && (
+                          <div className="md:col-span-2"><span className="text-neutral-500">Досвід: </span><span className="font-medium">{v.experience}</span></div>
+                        )}
+                        {v.responsibilities && (
+                          <div className="md:col-span-2"><span className="text-neutral-500">Обов'язки: </span><span className="font-medium whitespace-pre-wrap">{v.responsibilities}</span></div>
+                        )}
+                        {v.requirements && (
+                          <div className="md:col-span-2"><span className="text-neutral-500">Вимоги: </span><span className="font-medium whitespace-pre-wrap">{v.requirements}</span></div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Бізнес-інформація (якщо є) */}
             {profile.businessInfo && (
