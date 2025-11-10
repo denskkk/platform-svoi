@@ -894,7 +894,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               {profile.services && profile.services.length > 0 ? (
                 <div className="space-y-4">
                   {profile.services.map((service: any) => (
-                    <div key={service.id} className="border border-neutral-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                    <Link 
+                      key={service.id} 
+                      href={`/services/${service.id}`}
+                      className="block border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 hover:border-primary-300 cursor-pointer"
+                    >
                       <div className="flex flex-col sm:flex-row">
                         {/* Фото послуги */}
                         {service.imageUrl && (
@@ -919,7 +923,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         {/* Контент */}
                         <div className="flex-1 p-4">
                           <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-semibold text-lg text-neutral-900">{service.title}</h3>
+                            <h3 className="font-semibold text-lg text-neutral-900 hover:text-primary-600 transition-colors">{service.title}</h3>
                             {service.category && (
                               <span className="text-sm font-medium text-neutral-500 flex-shrink-0 ml-2 bg-neutral-100 px-2 py-1 rounded">{service.category.name}</span>
                             )}
@@ -946,7 +950,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               ) : (

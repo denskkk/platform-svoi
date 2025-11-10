@@ -94,85 +94,102 @@ export default async function ServicesPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service: any) => (
-              <Link
-                key={service.id}
-                href={`/profile/${service.user.id}`}
-                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6 group"
-              >
-                {/* Category */}
-                <div className="text-sm text-blue-600 mb-2 font-semibold">
-                  {service.category?.name || 'Інше'}
-                </div>
-
-                {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition">
-                  {service.title}
-                </h3>
-
-                {/* Description */}
-                {service.description && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {service.description}
-                  </p>
+              <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden group">
+                {/* Изображение услуги */}
+                {service.imageUrl && (
+                  <Link href={`/services/${service.id}`} className="block">
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={service.imageUrl}
+                        alt={service.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      />
+                    </div>
+                  </Link>
                 )}
 
-                {/* Price */}
-                <div className="text-lg font-semibold text-gray-900 mb-4">
-                  {service.priceFrom && service.priceTo
-                    ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
-                    : service.priceFrom
-                    ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
-                    : service.priceTo
-                    ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
-                    : 'За домовленістю'}
-                </div>
+                <div className="p-6">
+                  {/* Category */}
+                  <div className="text-sm text-blue-600 mb-2 font-semibold">
+                    {service.category?.name || 'Інше'}
+                  </div>
 
-                {/* Provider */}
-                <div className="border-t pt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <UserAvatar 
-                        src={service.user.avatarUrl}
-                        alt={service.user.firstName}
-                        className="w-10 h-10 rounded-full object-cover"
-                        fallbackName={`${service.user.firstName} ${service.user.lastName}`}
-                      />
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">
-                          {service.user.firstName} {service.user.lastName}
-                          {service.user.isVerified && (
-                            <span className="ml-1 text-blue-600" title="Верифікований">✓</span>
-                          )}
-                        </p>
-                        {service.user.city && (
-                          <p className="text-xs text-gray-500 flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {service.user.city}
-                          </p>
+                  {/* Title */}
+                  <Link href={`/services/${service.id}`}>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition cursor-pointer">
+                      {service.title}
+                    </h3>
+                  </Link>
+
+                  {/* Description */}
+                  {service.description && (
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {service.description}
+                    </p>
+                  )}
+
+                  {/* Price */}
+                  <div className="text-lg font-semibold text-gray-900 mb-4">
+                    {service.priceFrom && service.priceTo
+                      ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
+                      : service.priceFrom
+                      ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
+                      : service.priceTo
+                      ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
+                      : 'За домовленістю'}
+                  </div>
+
+                  {/* Provider */}
+                  <div className="border-t pt-4">
+                    <Link href={`/profile/${service.user.id}`} className="block">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <UserAvatar 
+                            src={service.user.avatarUrl}
+                            alt={service.user.firstName}
+                            className="w-10 h-10 rounded-full object-cover"
+                            fallbackName={`${service.user.firstName} ${service.user.lastName}`}
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm hover:text-blue-600 transition">
+                              {service.user.firstName} {service.user.lastName}
+                              {service.user.isVerified && (
+                                <span className="ml-1 text-blue-600" title="Верифікований">✓</span>
+                              )}
+                            </p>
+                            {service.user.city && (
+                              <p className="text-xs text-gray-500 flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                {service.user.city}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Rating */}
+                        {service.user.totalReviews > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="font-semibold text-gray-900 text-sm">
+                              {service.user.avgRating.toFixed(1)}
+                            </span>
+                          </div>
                         )}
                       </div>
-                    </div>
+                    </Link>
+                  </div>
 
-                    {/* Rating */}
-                    {service.user.totalReviews > 0 && (
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="font-semibold text-gray-900 text-sm">
-                          {service.user.avgRating.toFixed(1)}
-                        </span>
+                  {/* View Button */}
+                  <div className="mt-4">
+                    <Link href={`/services/${service.id}`} className="block">
+                      <div className="flex items-center justify-center text-blue-600 hover:text-blue-700 text-sm font-semibold py-2 px-4 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
+                        Детальніше
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                       </div>
-                    )}
+                    </Link>
                   </div>
                 </div>
-
-                {/* View Button */}
-                <div className="mt-4">
-                  <div className="flex items-center text-blue-600 group-hover:text-blue-700 text-sm font-semibold">
-                    Переглянути профіль
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
