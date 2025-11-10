@@ -53,78 +53,100 @@ export function PopularProfiles() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {profiles.map((profile) => (
-            <div
-              key={profile.id}
-              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
-            >
-              {/* Фото */}
-              <div className="relative h-48 bg-gradient-to-br from-primary-200 to-accent-200">
-                {profile.avatarUrl ? (
-                  <img
-                    src={profile.avatarUrl}
-                    alt={`${profile.firstName} ${profile.lastName}`}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-6xl text-white font-bold">
-                    {profile.firstName?.[0]}{profile.lastName?.[0]}
-                  </div>
-                )}
-              </div>
-
-              {/* Контент */}
-              <div className="p-5">
-                <h3 className="font-semibold text-lg text-neutral-900 mb-1">
-                  {profile.firstName} {profile.lastName}
-                </h3>
-                {profile.profession && (
-                  <p className="text-primary-600 font-medium mb-2">
-                    {profile.profession}
-                  </p>
-                )}
-
-                {/* Рейтинг та місто */}
-                <div className="flex items-center justify-between mb-3 text-sm">
-                  {profile.totalReviews > 0 ? (
-                    <div className="flex items-center space-x-1 text-amber-500">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="font-medium">{Number(profile.avgRating).toFixed(1)}</span>
-                      <span className="text-neutral-500">({profile.totalReviews})</span>
-                    </div>
+          {profiles.map((profile) => {
+            // Для бізнес користувачів показуємо логотип компанії, якщо він є
+            const displayImage = profile.businessInfo?.logoUrl || profile.avatarUrl;
+            const displayName = profile.businessInfo?.companyName || `${profile.firstName} ${profile.lastName}`;
+            
+            return (
+              <div
+                key={profile.id}
+                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+              >
+                {/* Фото */}
+                <div className="relative h-48 bg-gradient-to-br from-primary-200 to-accent-200">
+                  {displayImage ? (
+                    <img
+                      src={`${displayImage}${displayImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                      alt={displayName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (!img.dataset.retried) {
+                          img.dataset.retried = 'true';
+                          img.src = displayImage;
+                        } else {
+                          img.style.display = 'none';
+                          const parent = img.parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'absolute inset-0 flex items-center justify-center text-6xl text-white font-bold';
+                            fallback.textContent = `${profile.firstName?.[0] || ''}${profile.lastName?.[0] || ''}`;
+                            parent.appendChild(fallback);
+                          }
+                        }
+                      }}
+                    />
                   ) : (
-                    <div className="text-sm text-neutral-500">Новий користувач</div>
+                    <div className="absolute inset-0 flex items-center justify-center text-6xl text-white font-bold">
+                      {profile.firstName?.[0]}{profile.lastName?.[0]}
+                    </div>
                   )}
-                  <div className="flex items-center space-x-1 text-neutral-600">
-                    <MapPin className="w-4 h-4" />
-                    <span>{profile.city}</span>
-                  </div>
                 </div>
 
-                {/* Опис */}
-                {profile.bio && (
-                  <p className="text-sm text-neutral-600 mb-4 line-clamp-2">
-                    {profile.bio}
-                  </p>
-                )}
+                {/* Контент */}
+                <div className="p-5">
+                  <h3 className="font-semibold text-lg text-neutral-900 mb-1">
+                    {displayName}
+                  </h3>
+                  {profile.profession && (
+                    <p className="text-primary-600 font-medium mb-2">
+                      {profile.profession}
+                    </p>
+                  )}
 
-                {/* Кількість послуг */}
-                {profile._count?.services > 0 && (
-                  <p className="text-sm text-neutral-500 mb-4">
-                    {profile._count.services} {profile._count.services === 1 ? 'послуга' : 'послуг'}
-                  </p>
-                )}
+                  {/* Рейтинг та місто */}
+                  <div className="flex items-center justify-between mb-3 text-sm">
+                    {profile.totalReviews > 0 ? (
+                      <div className="flex items-center space-x-1 text-amber-500">
+                        <Star className="w-4 h-4 fill-current" />
+                        <span className="font-medium">{Number(profile.avgRating).toFixed(1)}</span>
+                        <span className="text-neutral-500">({profile.totalReviews})</span>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-neutral-500">Новий користувач</div>
+                    )}
+                    <div className="flex items-center space-x-1 text-neutral-600">
+                      <MapPin className="w-4 h-4" />
+                      <span>{profile.city}</span>
+                    </div>
+                  </div>
 
-                {/* Кнопка */}
-                <Link
-                  href={`/profile/${profile.id}`}
-                  className="block w-full text-center py-2 px-4 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-lg transition-colors"
-                >
-                  Детальніше
-                </Link>
+                  {/* Опис */}
+                  {profile.bio && (
+                    <p className="text-sm text-neutral-600 mb-4 line-clamp-2">
+                      {profile.bio}
+                    </p>
+                  )}
+
+                  {/* Кількість послуг */}
+                  {profile._count?.services > 0 && (
+                    <p className="text-sm text-neutral-500 mb-4">
+                      {profile._count.services} {profile._count.services === 1 ? 'послуга' : 'послуг'}
+                    </p>
+                  )}
+
+                  {/* Кнопка */}
+                  <Link
+                    href={`/profile/${profile.id}`}
+                    className="block w-full text-center py-2 px-4 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-lg transition-colors"
+                  >
+                    Детальніше
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Кнопка "Показати більше" */}

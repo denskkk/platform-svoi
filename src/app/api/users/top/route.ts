@@ -26,6 +26,14 @@ export async function GET(request: NextRequest) {
       avgRating: true,
       totalReviews: true,
       isVerified: true,
+      role: true,
+      accountType: true,
+      businessInfo: {
+        select: {
+          companyName: true,
+          logoUrl: true,
+        }
+      },
       _count: {
         select: {
           services: true

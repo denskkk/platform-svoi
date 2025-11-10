@@ -41,15 +41,22 @@ export async function GET(request: NextRequest) {
         where,
         select: {
           id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-            city: true,
-            profession: true,
-            avgRating: true,
-            totalReviews: true,
-            isVerified: true,
-            accountType: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+          city: true,
+          profession: true,
+          avgRating: true,
+          totalReviews: true,
+          isVerified: true,
+          accountType: true,
+          role: true,
+          businessInfo: {
+            select: {
+              companyName: true,
+              logoUrl: true,
+            }
+          },
         },
         orderBy: [
           { avgRating: 'desc' },

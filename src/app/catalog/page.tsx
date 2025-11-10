@@ -66,29 +66,42 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
           <div className="bg-white p-10 rounded-lg shadow text-center text-gray-600">Нічого не знайдено.</div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {users.map((u: any) => (
-              <Link key={u.id} href={`/profile/${u.id}`} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition group">
-                <div className="flex items-center gap-4 mb-4">
-                  <UserAvatar 
-                    src={u.avatarUrl}
-                    alt={u.firstName}
-                    className="w-14 h-14 rounded-full object-cover"
-                    fallbackName={`${u.firstName} ${u.lastName}`}
-                  />
-                  <div>
-                    <p className="font-semibold text-gray-900 text-lg">{u.firstName} {u.lastName}{u.isVerified && <span className="text-blue-600 ml-1" title="Верифікований">✓</span>}</p>
-                    {u.city && <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3" />{u.city}</p>}
+            {users.map((u: any) => {
+              // Для бізнес користувачів показуємо логотип компанії, якщо він є
+              const displayImage = u.businessInfo?.logoUrl || u.avatarUrl;
+              const displayName = u.businessInfo?.companyName || `${u.firstName} ${u.lastName}`;
+              const isBusiness = u.role === 'business' || u.accountType?.includes('business');
+              
+              return (
+                <Link key={u.id} href={`/profile/${u.id}`} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition group">
+                  <div className="flex items-center gap-4 mb-4">
+                    <UserAvatar 
+                      src={displayImage}
+                      alt={displayName}
+                      className="w-14 h-14 rounded-full object-cover"
+                      fallbackName={displayName}
+                    />
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-lg">
+                        {displayName}
+                        {u.isVerified && <span className="text-blue-600 ml-1" title="Верифікований">✓</span>}
+                      </p>
+                      {isBusiness && !u.businessInfo?.companyName && (
+                        <p className="text-xs text-gray-500">{u.firstName} {u.lastName}</p>
+                      )}
+                      {u.city && <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3" />{u.city}</p>}
+                    </div>
                   </div>
-                </div>
-                {u.profession && <p className="text-sm text-gray-700 mb-3 line-clamp-2">{u.profession}</p>}
-                <div className="flex items-center justify-between text-sm text-gray-600">
-                  <span className="font-medium">{u.accountType}</span>
-                  {u.totalReviews > 0 && (
-                    <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{u.avgRating.toFixed(1)}</span>
-                  )}
-                </div>
-              </Link>
-            ))}
+                  {u.profession && <p className="text-sm text-gray-700 mb-3 line-clamp-2">{u.profession}</p>}
+                  <div className="flex items-center justify-between text-sm text-gray-600">
+                    <span className="font-medium capitalize">{u.accountType?.replace('_', ' ')}</span>
+                    {u.totalReviews > 0 && (
+                      <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{u.avgRating.toFixed(1)}</span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </main>
