@@ -31,7 +31,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const uploadResults: { logoUrl?: string; bannerUrl?: string } = {};
+    const uploadResults: { 
+      logoUrl?: string; 
+      bannerUrl?: string; 
+      logoAlternates?: { webp: string; jpg: string };
+      bannerAlternates?: { webp: string; jpg: string };
+    } = {};
 
     // Створити директорії, якщо їх не існує
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
@@ -68,27 +73,34 @@ export async function POST(request: NextRequest) {
 
       // Генерація унікального імені файлу
       const timestamp = Date.now();
-      const fileName = `logo_${timestamp}.webp`;
-      const filePath = path.join(logosDir, fileName);
+  const fileNameWebp = `logo_${timestamp}.webp`;
+  const fileNameJpg = `logo_${timestamp}.jpg`;
+  const filePathWebp = path.join(logosDir, fileNameWebp);
+  const filePathJpg = path.join(logosDir, fileNameJpg);
 
       // Оптимізація та збереження файлу
       const bytes = await logo.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
       // Оптимізуємо логотип: 400x400, cover
-      const optimizedBuffer = await sharp(buffer)
+      const pipelineLogo = sharp(buffer)
         .resize(400, 400, {
           fit: 'cover',
           position: 'center',
         })
-        .webp({ quality: 85 })
-        .toBuffer();
+      const optimizedWebp = await pipelineLogo.clone().webp({ quality: 85 }).toBuffer();
+      const optimizedJpg = await pipelineLogo.clone().jpeg({ quality: 85 }).toBuffer();
 
-      await writeFile(filePath, optimizedBuffer);
+      await writeFile(filePathWebp, optimizedWebp);
+      await writeFile(filePathJpg, optimizedJpg);
       
-      console.log(`[Upload Business Images] Логотип оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → ${(optimizedBuffer.length / 1024).toFixed(2)}KB`);
+      console.log(`[Upload Business Images] Логотип оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → WebP ${(optimizedWebp.length / 1024).toFixed(2)}KB / JPG ${(optimizedJpg.length / 1024).toFixed(2)}KB`);
 
-      uploadResults.logoUrl = `/uploads/logos/${fileName}`;
+      uploadResults.logoUrl = `/uploads/logos/${fileNameWebp}`;
+      uploadResults.logoAlternates = {
+        webp: `/uploads/logos/${fileNameWebp}`,
+        jpg: `/uploads/logos/${fileNameJpg}`,
+      };
     }
 
     // Обробка банера
@@ -111,28 +123,35 @@ export async function POST(request: NextRequest) {
 
       // Генерація унікального імені файлу
       const timestamp = Date.now();
-      const fileName = `banner_${timestamp}.webp`;
-      const filePath = path.join(bannersDir, fileName);
+  const fileNameWebp = `banner_${timestamp}.webp`;
+  const fileNameJpg = `banner_${timestamp}.jpg`;
+  const filePathWebp = path.join(bannersDir, fileNameWebp);
+  const filePathJpg = path.join(bannersDir, fileNameJpg);
 
       // Оптимізація та збереження файлу
       const bytes = await banner.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
       // Оптимізуємо банер: 1920x480, cover
-      const optimizedBuffer = await sharp(buffer)
+      const pipelineBanner = sharp(buffer)
         .resize(1920, 480, {
           fit: 'cover',
           position: 'center',
           withoutEnlargement: true,
         })
-        .webp({ quality: 85 })
-        .toBuffer();
+      const optimizedWebp = await pipelineBanner.clone().webp({ quality: 85 }).toBuffer();
+      const optimizedJpg = await pipelineBanner.clone().jpeg({ quality: 85 }).toBuffer();
 
-      await writeFile(filePath, optimizedBuffer);
+      await writeFile(filePathWebp, optimizedWebp);
+      await writeFile(filePathJpg, optimizedJpg);
       
-      console.log(`[Upload Business Images] Банер оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → ${(optimizedBuffer.length / 1024).toFixed(2)}KB`);
+      console.log(`[Upload Business Images] Банер оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → WebP ${(optimizedWebp.length / 1024).toFixed(2)}KB / JPG ${(optimizedJpg.length / 1024).toFixed(2)}KB`);
 
-      uploadResults.bannerUrl = `/uploads/banners/${fileName}`;
+      uploadResults.bannerUrl = `/uploads/banners/${fileNameWebp}`;
+      uploadResults.bannerAlternates = {
+        webp: `/uploads/banners/${fileNameWebp}`,
+        jpg: `/uploads/banners/${fileNameJpg}`,
+      };
     }
 
     console.log('[Upload Business Images] Успішно завантажено:', uploadResults);
