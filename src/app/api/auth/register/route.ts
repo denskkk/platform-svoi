@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { 
-      firstName, 
+      firstName,
+      middleName,
       lastName, 
       email, 
       password, 
@@ -45,6 +46,11 @@ export async function POST(request: NextRequest) {
       city, 
       role = 'user',
       accountType = 'basic',
+      educationLevel,
+      educationDetails,
+      ucmMember,
+      ucmSupporter,
+      employmentStatus,
     } = body;
 
     // Валідація обов'язкових полів
@@ -107,12 +113,18 @@ export async function POST(request: NextRequest) {
         role,
         accountType,
         firstName,
+        middleName: middleName || null,
         lastName,
         email,
         phone: phone || null,
         city: city || null,
         passwordHash,
         isVerified: false,
+        educationLevel: educationLevel || null,
+        educationDetails: educationDetails || null,
+        ucmMember: ucmMember !== undefined ? (typeof ucmMember === 'boolean' ? ucmMember : ucmMember === 'yes') : null,
+        ucmSupporter: ucmSupporter !== undefined ? (typeof ucmSupporter === 'boolean' ? ucmSupporter : ucmSupporter === 'yes') : null,
+        employmentStatus: employmentStatus || null,
         // apply free trial for non-basic plans
         subscriptionActive: accountType !== 'basic',
         subscriptionStartedAt: accountType !== 'basic' ? now : null,
