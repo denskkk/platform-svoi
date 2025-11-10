@@ -116,10 +116,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Конфігурація для Next.js 14
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
