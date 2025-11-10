@@ -201,8 +201,15 @@ export async function GET(
       );
     }
 
-    // Логування аватара для діагностики
+    // Логування аватара та бізнес інформації для діагностики
     console.log(`[GET /api/profile/${userId}] Avatar URL:`, user.avatarUrl);
+    if (user.businessInfo) {
+      console.log(`[GET /api/profile/${userId}] Business Info:`, {
+        logoUrl: user.businessInfo.logoUrl,
+        bannerUrl: user.businessInfo.bannerUrl,
+        companyName: user.businessInfo.companyName,
+      });
+    }
 
     // Авто-деактивація підписки, якщо пробний період завершився
     try {

@@ -7,12 +7,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
+import sharp from 'sharp';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[Upload Business Images] Отримано запит на завантаження зображень');
+    
     const formData = await request.formData();
     const logo = formData.get('logo') as File | null;
     const banner = formData.get('banner') as File | null;
+
+    console.log('[Upload Business Images] Файли:', {
+      hasLogo: !!logo,
+      hasBanner: !!banner,
+      logoName: logo?.name,
+      bannerName: banner?.name,
+    });
 
     if (!logo && !banner) {
       return NextResponse.json(
@@ -58,14 +68,25 @@ export async function POST(request: NextRequest) {
 
       // Генерація унікального імені файлу
       const timestamp = Date.now();
-      const ext = logo.name.split('.').pop();
-      const fileName = `logo_${timestamp}.${ext}`;
+      const fileName = `logo_${timestamp}.webp`;
       const filePath = path.join(logosDir, fileName);
 
-      // Збереження файлу
+      // Оптимізація та збереження файлу
       const bytes = await logo.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      await writeFile(filePath, buffer);
+      
+      // Оптимізуємо логотип: 400x400, cover
+      const optimizedBuffer = await sharp(buffer)
+        .resize(400, 400, {
+          fit: 'cover',
+          position: 'center',
+        })
+        .webp({ quality: 85 })
+        .toBuffer();
+
+      await writeFile(filePath, optimizedBuffer);
+      
+      console.log(`[Upload Business Images] Логотип оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → ${(optimizedBuffer.length / 1024).toFixed(2)}KB`);
 
       uploadResults.logoUrl = `/uploads/logos/${fileName}`;
     }
@@ -90,17 +111,31 @@ export async function POST(request: NextRequest) {
 
       // Генерація унікального імені файлу
       const timestamp = Date.now();
-      const ext = banner.name.split('.').pop();
-      const fileName = `banner_${timestamp}.${ext}`;
+      const fileName = `banner_${timestamp}.webp`;
       const filePath = path.join(bannersDir, fileName);
 
-      // Збереження файлу
+      // Оптимізація та збереження файлу
       const bytes = await banner.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      await writeFile(filePath, buffer);
+      
+      // Оптимізуємо банер: 1920x480, cover
+      const optimizedBuffer = await sharp(buffer)
+        .resize(1920, 480, {
+          fit: 'cover',
+          position: 'center',
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 85 })
+        .toBuffer();
+
+      await writeFile(filePath, optimizedBuffer);
+      
+      console.log(`[Upload Business Images] Банер оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → ${(optimizedBuffer.length / 1024).toFixed(2)}KB`);
 
       uploadResults.bannerUrl = `/uploads/banners/${fileName}`;
     }
+
+    console.log('[Upload Business Images] Успішно завантажено:', uploadResults);
 
     return NextResponse.json({
       success: true,

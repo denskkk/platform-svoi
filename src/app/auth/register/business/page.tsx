@@ -211,6 +211,11 @@ function BusinessRegistrationForm() {
       let bannerUrl = null;
 
       if (logoFile || bannerFile) {
+        console.log('[Business Registration] Завантаження зображень...', { 
+          hasLogo: !!logoFile, 
+          hasBanner: !!bannerFile 
+        });
+        
         const formDataImages = new FormData();
         if (logoFile) formDataImages.append('logo', logoFile);
         if (bannerFile) formDataImages.append('banner', bannerFile);
@@ -224,6 +229,10 @@ function BusinessRegistrationForm() {
           const uploadData = await uploadResponse.json();
           logoUrl = uploadData.logoUrl;
           bannerUrl = uploadData.bannerUrl;
+          console.log('[Business Registration] Зображення завантажені:', { logoUrl, bannerUrl });
+        } else {
+          const errorData = await uploadResponse.json();
+          console.error('[Business Registration] Помилка завантаження зображень:', errorData);
         }
       }
 
