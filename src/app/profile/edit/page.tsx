@@ -1548,24 +1548,45 @@ export default function EditProfilePage() {
                   >
                     <option value="">Оберіть</option>
                     <option value="home">Домашню</option>
-                    <option value="chinese">Китайську</option>
+                    <option value="ukrainian">Українську</option>
                     <option value="european">Європейську</option>
-                    <option value="street">Звичайні вуличні (шаурма, хот-доги)</option>
+                    <option value="italian">Італійську</option>
+                    <option value="chinese">Китайську</option>
+                    <option value="japanese">Японську</option>
+                    <option value="georgian">Грузинську</option>
+                    <option value="asian">Азіатську</option>
+                    <option value="american">Американську</option>
+                    <option value="mexican">Мексиканську</option>
+                    <option value="turkish">Турецьку</option>
+                    <option value="street">Вуличну (шаурма, хот-доги)</option>
+                    <option value="fastfood">Фастфуд</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    21. Активний відпочинок
+                    21. Активний відпочинок (оберіть що подобається)
                   </label>
-                  <textarea
-                    name="outdoorActivities"
-                    rows={2}
-                    value={formData.outdoorActivities}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
-                    placeholder="Охота / Рибалка / Природа та інше..."
-                  />
+                  <div className="space-y-2">
+                    {['Охота', 'Рибалка', 'Походи', 'Кемпінг', 'Велосипед', 'Пікніки на природі'].map(activity => (
+                      <label key={activity} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={formData.outdoorActivities.includes(activity)}
+                          onChange={(e) => {
+                            const current = formData.outdoorActivities.split(',').map(s => s.trim()).filter(Boolean);
+                            if (e.target.checked) {
+                              setFormData({...formData, outdoorActivities: [...current, activity].join(', ')});
+                            } else {
+                              setFormData({...formData, outdoorActivities: current.filter(a => a !== activity).join(', ')});
+                            }
+                          }}
+                          className="w-5 h-5 text-blue-600 rounded"
+                        />
+                        <span className="text-sm md:text-base">{activity}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
