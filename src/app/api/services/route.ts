@@ -82,6 +82,12 @@ export async function GET(request: NextRequest) {
               avgRating: true,
               totalReviews: true,
               isVerified: true,
+              businessInfo: {
+                select: {
+                  companyName: true,
+                  logoUrl: true,
+                }
+              },
             }
           },
           category: true,
@@ -167,6 +173,12 @@ export async function POST(request: NextRequest) {
             firstName: true,
             lastName: true,
             avatarUrl: true,
+            businessInfo: {
+              select: {
+                companyName: true,
+                logoUrl: true,
+              }
+            },
           }
         },
         category: true,

@@ -44,6 +44,12 @@ export async function GET(
             avgRating: true,
             totalReviews: true,
             isVerified: true,
+            businessInfo: {
+              select: {
+                companyName: true,
+                logoUrl: true,
+              }
+            },
           }
         },
         category: true,

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { ServiceImage } from '@/components/ui/ServiceImage';
 
 // Позначаємо сторінку як динамічну
 export const dynamic = 'force-dynamic';
@@ -96,40 +97,14 @@ export default async function ServicesPage() {
             {services.map((service: any) => (
               <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden group">
                 {/* Изображение услуги */}
-                {service.imageUrl ? (
-                  <Link href={`/services/${service.id}`} className="block">
-                    <div className="h-48 overflow-hidden bg-neutral-100 relative">
-                      <img
-                        src={`${service.imageUrl}${service.imageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                        alt={service.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                        onError={(e) => {
-                          const img = e.currentTarget as HTMLImageElement;
-                          if (!img.dataset.retried) {
-                            img.dataset.retried = 'true';
-                            img.src = service.imageUrl;
-                          } else {
-                            // fallback placeholder
-                            const parent = img.parentElement;
-                            if (parent) {
-                              img.style.display = 'none';
-                              const fallback = document.createElement('div');
-                              fallback.className = 'absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-200 to-accent-200 text-neutral-800 font-bold text-xl';
-                              fallback.textContent = service.title?.slice(0, 1) || 'S';
-                              parent.appendChild(fallback);
-                            }
-                          }
-                        }}
-                      />
-                    </div>
-                  </Link>
-                ) : (
-                  <Link href={`/services/${service.id}`} className="block">
-                    <div className="h-48 overflow-hidden bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center">
-                      <span className="text-4xl font-bold text-neutral-500">{service.title?.slice(0,1) || 'S'}</span>
-                    </div>
-                  </Link>
-                )}
+                <Link href={`/services/${service.id}`} className="block">
+                  <ServiceImage
+                    src={service.imageUrl}
+                    alt={service.title}
+                    fallbackLetter={service.title?.slice(0,1) || 'S'}
+                    className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-200 rounded-none"
+                  />
+                </Link>
 
                 <div className="p-6">
                   {/* Category */}

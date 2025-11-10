@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Phone, Mail, MessageCircle, User, Edit, Trash2, Star } from 'lucide-react';
+import { ServiceImage } from '@/components/ui/ServiceImage';
+import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
 
 interface Service {
   id: number;
@@ -34,6 +36,10 @@ interface Service {
     avgRating: number | null;
     totalReviews: number;
     isVerified: boolean;
+    businessInfo?: {
+      companyName?: string | null;
+      logoUrl?: string | null;
+    } | null;
   };
 }
 
@@ -140,24 +146,14 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
           {/* Основна інформація */}
           <div className="lg:col-span-2 space-y-6">
             {/* Зображення послуги */}
-            {service.imageUrl && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <img
-                  src={`${service.imageUrl}${service.imageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                  alt={service.title}
-                  className="w-full h-96 object-cover"
-                  onError={(e) => {
-                    const img = e.currentTarget as HTMLImageElement;
-                    if (!img.dataset.retried) {
-                      img.dataset.retried = 'true';
-                      img.src = service.imageUrl!;
-                    } else {
-                      img.style.display = 'none';
-                    }
-                  }}
-                />
-              </div>
-            )}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <ServiceImage
+                src={service.imageUrl}
+                alt={service.title}
+                fallbackLetter={service.title?.slice(0,1) || 'S'}
+                className="w-full h-96 object-cover"
+              />
+            </div>
 
             {/* Деталі послуги */}
             <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
@@ -249,37 +245,11 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
               {/* Аватар і ім'я */}
               <Link href={`/profile/${service.user.id}`} className="block mb-4">
                 <div className="flex items-center space-x-3">
-                  {service.user.avatarUrl ? (
-                    <img
-                      src={`${service.user.avatarUrl}${service.user.avatarUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                      alt={`${service.user.firstName} ${service.user.lastName}`}
-                      className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        const img = e.currentTarget as HTMLImageElement;
-                        if (!img.dataset.retried) {
-                          img.dataset.retried = 'true';
-                          img.src = service.user.avatarUrl!;
-                        } else {
-                          img.style.display = 'none';
-                          const parent = img.parentElement;
-                          if (parent) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'w-16 h-16 bg-gradient-to-br from-primary-400 to-accent-400 rounded-full flex items-center justify-center text-xl font-bold text-white';
-                            fallback.textContent = `${service.user.firstName[0]}${service.user.lastName[0]}`;
-                            parent.appendChild(fallback);
-                          }
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-accent-400 rounded-full flex items-center justify-center text-xl font-bold text-white">
-                      {service.user.firstName[0]}{service.user.lastName[0]}
-                    </div>
-                  )}
+                  <UserOrCompanyAvatar user={service.user as any} className="w-16 h-16 rounded-full object-cover" />
                   <div>
                     <div className="flex items-center">
                       <p className="font-bold text-neutral-900">
-                        {service.user.firstName} {service.user.lastName}
+                        {service.user?.businessInfo?.companyName || `${service.user.firstName} ${service.user.lastName}`}
                       </p>
                       {service.user.isVerified && (
                         <span className="ml-2 text-primary-500" title="Верифікований">✓</span>

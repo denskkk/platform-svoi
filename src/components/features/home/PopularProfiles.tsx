@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Star, MapPin } from 'lucide-react'
+import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
 
 export function PopularProfiles() {
   const [profiles, setProfiles] = useState<any[]>([])
@@ -65,33 +66,10 @@ export function PopularProfiles() {
               >
                 {/* Фото */}
                 <div className="relative h-48 bg-gradient-to-br from-primary-200 to-accent-200">
-                  {displayImage ? (
-                    <img
-                      src={`${displayImage}${displayImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                      alt={displayName}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const img = e.currentTarget as HTMLImageElement;
-                        if (!img.dataset.retried) {
-                          img.dataset.retried = 'true';
-                          img.src = displayImage;
-                        } else {
-                          img.style.display = 'none';
-                          const parent = img.parentElement;
-                          if (parent) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'absolute inset-0 flex items-center justify-center text-6xl text-white font-bold';
-                            fallback.textContent = `${profile.firstName?.[0] || ''}${profile.lastName?.[0] || ''}`;
-                            parent.appendChild(fallback);
-                          }
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-6xl text-white font-bold">
-                      {profile.firstName?.[0]}{profile.lastName?.[0]}
-                    </div>
-                  )}
+                  <UserOrCompanyAvatar
+                    user={profile}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 {/* Контент */}

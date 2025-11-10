@@ -5,6 +5,7 @@ import { Search, User, Menu, LogOut } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
+import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
 
 export function Navbar() {
   const router = useRouter()
@@ -41,7 +42,6 @@ export function Navbar() {
             localStorage.setItem('user', JSON.stringify(data.user))
           } catch {}
         } else {
-          // Якщо сесії нема — прибираємо потенційно застарілі localStorage дані
           try {
             localStorage.removeItem('user')
             localStorage.removeItem('token')
@@ -49,35 +49,31 @@ export function Navbar() {
           setUser(null)
         }
       } catch {
-        // Не блокуємо UI у випадку помилки мережі
+        // ignore network errors for navbar
       } finally {
         setIsLoading(false)
       }
     }
 
-    // Initial read with tiny delay to avoid flash, потім валідація на сервері
     const timer = setTimeout(() => {
       readUser()
       syncWithServer()
     }, 100)
 
-    // React to cross-tab/local updates
     const onStorage = (e: StorageEvent) => {
       if (e.key === 'user') readUser()
     }
     window.addEventListener('storage', onStorage)
 
-    // React to explicit auth change events
     const onAuthChanged = () => readUser()
     window.addEventListener('auth:changed', onAuthChanged as EventListener)
 
-    // Refresh when tab gains focus
     const onFocus = () => readUser()
     window.addEventListener('visibilitychange', onFocus)
     window.addEventListener('focus', onFocus)
 
     return () => {
-  clearTimeout(timer)
+      clearTimeout(timer)
       window.removeEventListener('storage', onStorage)
       window.removeEventListener('auth:changed', onAuthChanged as EventListener)
       window.removeEventListener('visibilitychange', onFocus)
@@ -172,48 +168,7 @@ export function Navbar() {
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                     className="flex items-center space-x-2 px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
                   >
-                    {(() => {
-                      const displayImage = user?.businessInfo?.logoUrl || user?.avatarUrl;
-                      const displayName = user?.businessInfo?.companyName || user?.firstName || '';
-                      if (displayImage) {
-                        return (
-                          <img
-                            src={`${displayImage}${displayImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                            alt={displayName}
-                            className="w-8 h-8 rounded-full object-cover"
-                            onError={(e) => {
-                              const img = e.currentTarget as HTMLImageElement;
-                              // First retry without cache-busting param
-                              if (!img.dataset.retried) {
-                                img.dataset.retried = 'true';
-                                img.src = displayImage;
-                              } else {
-                                // Fallback to initials bubble
-                                const parent = img.parentElement;
-                                if (parent) {
-                                  img.style.display = 'none';
-                                  const fallback = document.createElement('div');
-                                  fallback.className = 'w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center';
-                                  const firstInitial = (user?.businessInfo?.companyName || user?.firstName || '')[0] || '';
-                                  const secondInitial = user?.businessInfo?.companyName ? '' : (user?.lastName || '')[0] || '';
-                                  fallback.innerHTML = `<span class="text-white font-medium text-sm">${firstInitial}${secondInitial}</span>`;
-                                  parent.appendChild(fallback);
-                                }
-                              }
-                            }}
-                          />
-                        );
-                      }
-                      // No image at all – render initials directly
-                      return (
-                        <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                          <span className="text-white font-medium text-sm">
-                            {(user?.businessInfo?.companyName || user?.firstName || '')[0]}
-                            {user?.businessInfo?.companyName ? '' : (user?.lastName || '')[0]}
-                          </span>
-                        </div>
-                      );
-                    })()}
+                    <UserOrCompanyAvatar user={user} className="w-8 h-8 rounded-full object-cover" />
                     <span className="font-medium text-neutral-700">
                       {user?.businessInfo?.companyName || user?.firstName}
                     </span>

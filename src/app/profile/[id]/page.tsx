@@ -7,6 +7,7 @@ import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, 
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
+import { ServiceImage } from '@/components/ui/ServiceImage';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -901,24 +902,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     >
                       <div className="flex flex-col sm:flex-row">
                         {/* Фото послуги */}
-                        {service.imageUrl && (
-                          <div className="w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
-                            <img
-                              src={`${service.imageUrl}${service.imageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                              alt={service.title}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                const img = e.currentTarget as HTMLImageElement;
-                                if (!img.dataset.retried) {
-                                  img.dataset.retried = 'true';
-                                  img.src = service.imageUrl;
-                                } else {
-                                  img.style.display = 'none';
-                                }
-                              }}
-                            />
-                          </div>
-                        )}
+                        <div className="w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
+                          <ServiceImage
+                            src={service.imageUrl}
+                            alt={service.title}
+                            fallbackLetter={service.title?.slice(0,1) || 'S'}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         
                         {/* Контент */}
                         <div className="flex-1 p-4">
