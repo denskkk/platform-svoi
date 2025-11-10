@@ -120,16 +120,36 @@ export default function RegisterBasicPage() {
         throw new Error(data.error || "Помилка реєстрації");
       }
 
-      // Зберегти користувача та токен
+      // Зберегти користувача та токен (з кеш-бастингом для аватара)
       if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        const ts = Date.now();
+        const appendTs = (url?: string) => {
+          if (!url) return url;
+          try {
+            const u = new URL(url, typeof window !== "undefined" ? window.location.origin : undefined);
+            u.searchParams.set("t", String(ts));
+            return u.pathname + (u.search ? `?${u.searchParams.toString()}` : "");
+          } catch {
+            // Якщо це відносний шлях без домену або некоректний URL
+            const hasQuery = url.includes("?");
+            return url + (hasQuery ? `&t=${ts}` : `?t=${ts}`);
+          }
+        };
+
+        const userWithBustedImages = {
+          ...data.user,
+          avatarUrl: appendTs(data.user.avatarUrl),
+        };
+
+        localStorage.setItem("user", JSON.stringify(userWithBustedImages));
       }
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
-      // Перенаправити на профіль
-      router.push(`/profile/${data.user.id}`);
+  // Перенаправити на профіль з кеш-бастингом (щоб аватар одразу відобразився)
+  const redirectTs = Date.now();
+  router.push(`/profile/${data.user.id}?t=${redirectTs}`);
     } catch (err: any) {
       setError(err.message || "Помилка реєстрації");
     } finally {

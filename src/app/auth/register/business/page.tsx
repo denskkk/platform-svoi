@@ -307,16 +307,29 @@ function BusinessRegistrationForm() {
         throw new Error(data.error || "Помилка реєстрації");
       }
 
-      // Зберегти користувача та токен
+      // Зберегти користувача та токен (додаємо cache-busting для логотипа/банера на клієнті)
       if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        const enriched = { ...data.user };
+        if (enriched.businessInfo) {
+          const b = { ...enriched.businessInfo } as any;
+          if (b.logoUrl) {
+            const cb = b.logoUrl.includes('?') ? '&' : '?';
+            b.logoUrl = `${b.logoUrl}${cb}t=${Date.now()}`;
+          }
+          if (b.bannerUrl) {
+            const cb2 = b.bannerUrl.includes('?') ? '&' : '?';
+            b.bannerUrl = `${b.bannerUrl}${cb2}t=${Date.now()}`;
+          }
+          enriched.businessInfo = b;
+        }
+        localStorage.setItem("user", JSON.stringify(enriched));
       }
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
       // Перенаправити на профіль
-      router.push(`/profile/${data.user.id}`);
+  router.push(`/profile/${data.user.id}?t=${Date.now()}`);
     } catch (err: any) {
       setError(err.message || "Помилка реєстрації");
     } finally {
