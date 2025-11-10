@@ -213,11 +213,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         {profile?.businessInfo?.bannerUrl && (
           <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
             <img
-              src={profile.businessInfo.bannerUrl}
+              src={`${profile.businessInfo.bannerUrl}${profile.businessInfo.bannerUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
               alt="Банер компанії"
               className="w-full h-48 md:h-64 object-cover"
               onError={(e) => {
                 console.warn('Failed to load banner:', profile.businessInfo.bannerUrl);
+                const img = e.currentTarget as HTMLImageElement;
+                if (!img.dataset.retried) {
+                  img.dataset.retried = 'true';
+                  img.src = profile.businessInfo.bannerUrl;
+                }
                 // Залишаємо місце під банер, навіть якщо зображення не завантажилось
               }}
             />
@@ -233,28 +238,41 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="relative">
                   {profile?.businessInfo?.logoUrl ? (
                     <img
-                      src={profile.businessInfo.logoUrl}
+                      src={`${profile.businessInfo.logoUrl}${profile.businessInfo.logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt="Логотип компанії"
                       className="w-32 h-32 rounded-2xl object-cover flex-shrink-0 bg-white shadow-md ring-4 ring-white"
                       onError={(e) => {
                         console.warn('Failed to load company logo:', profile.businessInfo.logoUrl);
-                        (e.currentTarget as HTMLImageElement).style.display = 'none';
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (!img.dataset.retried) {
+                          img.dataset.retried = 'true';
+                          img.src = profile.businessInfo.logoUrl;
+                        } else {
+                          img.style.display = 'none';
+                        }
                       }}
                     />
                   ) : profile.avatarUrl ? (
                     <img 
-                      src={profile.avatarUrl} 
+                      src={`${profile.avatarUrl}${profile.avatarUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt={`${profile.firstName} ${profile.lastName}`}
                       className="w-32 h-32 rounded-2xl object-cover flex-shrink-0 shadow-md ring-4 ring-white"
                       onError={(e) => {
                         console.error('Failed to load avatar:', profile.avatarUrl);
-                        (e.currentTarget as HTMLImageElement).style.display = 'none';
-                        const parent = (e.currentTarget as HTMLImageElement).parentElement;
-                        if (parent) {
-                          const fallback = document.createElement('div');
-                          fallback.className = 'w-32 h-32 bg-gradient-to-br from-primary-400 to-accent-400 rounded-2xl flex items-center justify-center text-5xl font-bold text-white flex-shrink-0 shadow-md ring-4 ring-white';
-                          fallback.textContent = `${profile.firstName?.[0] || ''}${profile.lastName?.[0] || ''}`;
-                          parent.appendChild(fallback);
+                        // Пробуємо завантажити без timestamp
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (!img.dataset.retried) {
+                          img.dataset.retried = 'true';
+                          img.src = profile.avatarUrl;
+                        } else {
+                          img.style.display = 'none';
+                          const parent = img.parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-32 h-32 bg-gradient-to-br from-primary-400 to-accent-400 rounded-2xl flex items-center justify-center text-5xl font-bold text-white flex-shrink-0 shadow-md ring-4 ring-white';
+                            fallback.textContent = `${profile.firstName?.[0] || ''}${profile.lastName?.[0] || ''}`;
+                            parent.appendChild(fallback);
+                          }
                         }
                       }}
                     />
@@ -469,9 +487,18 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   {/* Лого компанії */}
                   {profile.businessInfo.logoUrl && (
                     <img 
-                      src={profile.businessInfo.logoUrl} 
+                      src={`${profile.businessInfo.logoUrl}${profile.businessInfo.logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt={`${profile.businessInfo.companyName} logo`}
                       className="w-20 h-20 object-contain rounded-lg bg-white p-2 shadow-sm"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (!img.dataset.retried) {
+                          img.dataset.retried = 'true';
+                          img.src = profile.businessInfo.logoUrl;
+                        } else {
+                          img.style.display = 'none';
+                        }
+                      }}
                     />
                   )}
                 </div>
@@ -873,9 +900,18 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         {service.imageUrl && (
                           <div className="w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
                             <img
-                              src={service.imageUrl}
+                              src={`${service.imageUrl}${service.imageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                               alt={service.title}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const img = e.currentTarget as HTMLImageElement;
+                                if (!img.dataset.retried) {
+                                  img.dataset.retried = 'true';
+                                  img.src = service.imageUrl;
+                                } else {
+                                  img.style.display = 'none';
+                                }
+                              }}
                             />
                           </div>
                         )}

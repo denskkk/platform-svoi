@@ -351,6 +351,7 @@ export default function EditProfilePage() {
     uploadFormData.append('type', 'avatars');
 
     try {
+      console.log('[Upload Avatar] Початок завантаження аватара...');
       const response = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -360,14 +361,16 @@ export default function EditProfilePage() {
       });
 
       const data = await response.json();
+      console.log('[Upload Avatar] Відповідь від сервера:', data);
       
       if (response.ok && data.url) {
+        console.log('[Upload Avatar] Аватар успішно завантажено:', data.url);
         return data.url;
       }
       
       throw new Error(data.error || 'Помилка завантаження фото');
     } catch (err: any) {
-      console.error('Upload error:', err);
+      console.error('[Upload Avatar] Помилка завантаження:', err);
       throw err;
     }
   };
@@ -416,10 +419,14 @@ export default function EditProfilePage() {
       let avatarUrl = avatarPreview;
       
       if (avatarFile) {
+        console.log('[Save Profile] Завантаження нового аватара...');
         const uploadedUrl = await uploadAvatar();
         if (uploadedUrl) {
           avatarUrl = uploadedUrl;
+          console.log('[Save Profile] Новий URL аватара:', avatarUrl);
         }
+      } else {
+        console.log('[Save Profile] Використовуємо існуючий аватар:', avatarUrl);
       }
 
       const socialLinks: any = {};
@@ -518,10 +525,21 @@ export default function EditProfilePage() {
         throw new Error(data.error || 'Помилка збереження');
       }
 
+      // Оновлюємо дані користувача в localStorage
+      if (data.user) {
+        const updatedUser = {
+          ...user,
+          ...data.user,
+          avatarUrl: avatarUrl || user.avatarUrl,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+
       setSuccess('Профіль успішно оновлено!');
       
       setTimeout(() => {
-        router.push(`/profile/${user.id}`);
+        // Додаємо timestamp до URL для примусової перезагрузки
+        router.push(`/profile/${user.id}?t=${Date.now()}`);
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'Помилка збереження');
@@ -560,12 +578,21 @@ export default function EditProfilePage() {
               <div className="relative flex-shrink-0">
                 {avatarPreview ? (
                   <img
-                    src={avatarPreview.startsWith('http') ? avatarPreview : `${avatarPreview}`}
+                    src={avatarPreview.startsWith('data:') ? avatarPreview : 
+                         avatarPreview.startsWith('http') || avatarPreview.startsWith('/') ? 
+                         `${avatarPreview}${avatarPreview.includes('?') ? '&' : '?'}t=${Date.now()}` : 
+                         avatarPreview}
                     alt="Avatar"
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-200"
                     onError={(e) => {
                       console.error('Avatar load error:', avatarPreview);
-                      e.currentTarget.style.display = 'none';
+                      const img = e.currentTarget as HTMLImageElement;
+                      if (!img.dataset.retried && !avatarPreview.startsWith('data:')) {
+                        img.dataset.retried = 'true';
+                        img.src = avatarPreview;
+                      } else {
+                        img.style.display = 'none';
+                      }
                     }}
                   />
                 ) : (
