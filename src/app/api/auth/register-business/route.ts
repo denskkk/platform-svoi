@@ -72,7 +72,14 @@ export async function POST(request: NextRequest) {
       offerToCustomers,
       offerToPartners,
       offerToInvestors,
-      wantsUCMAnalysis
+      wantsUCMAnalysis,
+      // Нові детальні поля
+      partnerSearchDetails,
+      investorSearchDetails,
+      customerSearchDetails,
+      employeeVacancies,
+      logoUrl,
+      bannerUrl
     } = businessData;
 
     // Валідація обов'язкових полів користувача
@@ -194,6 +201,14 @@ export async function POST(request: NextRequest) {
           offerToPartners: accountType === 'business_premium' ? (offerToPartners || false) : false,
           offerToInvestors: accountType === 'business_premium' ? (offerToInvestors || false) : false,
           wantsUCMAnalysis: accountType === 'business_premium' ? (wantsUCMAnalysis || false) : false,
+          // Детальна інформація пошуку
+          partnerSearchDetails: partnerSearchDetails || {},
+          investorSearchDetails: investorSearchDetails || {},
+          customerSearchDetails: customerSearchDetails || {},
+          employeeVacancies: employeeVacancies || [],
+          // Зображення
+          logoUrl: logoUrl || null,
+          bannerUrl: bannerUrl || null,
         },
         select: {
           id: true,

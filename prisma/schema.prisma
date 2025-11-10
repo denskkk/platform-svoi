@@ -361,6 +361,15 @@ model BusinessInfo {
   
   seekingCriteria  Json?   @map("seeking_criteria") @default("{}") // Критерії пошуку
   
+  // Детальні пошуки
+  partnerSearchDetails Json? @map("partner_search_details") @default("{}") // Деталі пошуку партнера: тип, сфера, умови співпраці
+  investorSearchDetails Json? @map("investor_search_details") @default("{}") // Деталі пошуку інвестора: сума, строк, цілі інвестицій, що пропонується
+  customerSearchDetails Json? @map("customer_search_details") @default("{}") // Деталі пошуку споживачів: цільова аудиторія, що пропонується
+  employeeVacancies Json? @map("employee_vacancies") @default("[]") // Вакансії: [{посада, обов'язки, вимоги, зарплата, тип_зайнятості, досвід}]
+  
+  // Візуальні матеріали компанії
+  bannerUrl     String? @map("banner_url") @db.VarChar(255) // Банер компанії
+  
   // Преміум функції (тільки для business_premium)
   offerToCustomers Boolean @default(false) @map("offer_to_customers") // Пропонувати споживачам
   offerToPartners  Boolean @default(false) @map("offer_to_partners") // Пропонувати партнерам
