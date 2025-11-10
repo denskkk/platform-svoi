@@ -10,8 +10,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 function getBaseUrl() {
-  // Prefer explicit env if provided
-  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  // Always compute from incoming request headers to avoid TLS mismatches
   const h = headers();
   const proto = h.get('x-forwarded-proto') || 'http';
   const host = h.get('host') || 'localhost:3000';
@@ -25,9 +24,18 @@ async function fetchUsers(q?: string, city?: string) {
   const query = params.toString();
   const base = getBaseUrl();
   const url = `${base}/api/users${query ? `?${query}` : ''}`;
-  const res = await fetch(url, { cache: 'no-store' });
-  const data = await res.json();
-  return data.users || [];
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) {
+      console.error('[catalog] /api/users responded with', res.status);
+      return [];
+    }
+    const data = await res.json();
+    return data.users || [];
+  } catch (e) {
+    console.error('[catalog] fetch failed for', url, e);
+    return [];
+  }
 }
 
 // Catalog of users (discovery)
