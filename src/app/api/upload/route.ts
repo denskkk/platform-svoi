@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
     // Лог розміру до/після оптимізації
     const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
     const optimizedSizeMB = (optimizedBuffer.length / 1024 / 1024).toFixed(2);
-    console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → ${optimizedSizeMB}MB`);
+  console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → ${optimizedSizeMB}MB (dir: ${safeDir})`);
     
     // Возвращаем URL файла
   const url = `/uploads/${safeDir}/${filename}`;

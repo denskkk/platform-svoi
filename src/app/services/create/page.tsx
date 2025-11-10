@@ -124,7 +124,10 @@ export default function CreateServicePage() {
       const data = await response.json();
       
       if (response.ok && data.url) {
-        return data.url;
+        // Повертаємо URL з cache-busting параметром, щоб одразу з'явився після створення
+        const baseUrl = data.url as string;
+        const cacheBuster = baseUrl.includes('?') ? '&' : '?';
+        return `${baseUrl}${cacheBuster}t=${Date.now()}`;
       }
       
       throw new Error(data.error || 'Помилка завантаження фото');
@@ -146,7 +149,7 @@ export default function CreateServicePage() {
     setLoading(true);
 
     try {
-      let imageUrl = null;
+  let imageUrl = null;
       
       // Завантажити фото якщо вибрано
       if (imageFile) {
@@ -163,7 +166,8 @@ export default function CreateServicePage() {
           categoryId: parseInt(formData.categoryId),
           title: formData.title,
           description: formData.description,
-          imageUrl: imageUrl,
+          // Зберігаємо оригінальний без cache-busting (API /upload вже оптимізував файл)
+          imageUrl: imageUrl ? imageUrl.split('?')[0] : null,
           priceFrom: formData.priceFrom ? parseFloat(formData.priceFrom) : null,
           priceTo: formData.priceTo ? parseFloat(formData.priceTo) : null,
           priceUnit: formData.priceUnit,
@@ -179,8 +183,9 @@ export default function CreateServicePage() {
         throw new Error(data.error || 'Помилка створення послуги');
       }
 
-      // Перейти к профилю
-      router.push(`/profile/${user.id}`);
+  // Примусово оновити профіль з cache-busting, щоб фото послуги з'явилось миттєво
+  const redirectTs = Date.now();
+  router.push(`/profile/${user.id}?t=${redirectTs}`);
     } catch (err: any) {
       setError(err.message || 'Помилка створення послуги');
     } finally {
