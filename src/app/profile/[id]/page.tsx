@@ -975,7 +975,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           {/* Бічна панель */}
           <div className="space-y-6">
             {/* Контакти */}
-            <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-2xl shadow-lg border border-neutral-100 p-6 sticky top-24">
+            <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-2xl shadow-lg border border-neutral-100 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                   <Phone className="w-5 h-5 text-white" />
@@ -1345,24 +1345,21 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Житло та транспорт */}
-          {(profile.accountType !== 'basic' ? (asList(profile.carServices).length > 0 || profile.housingDetails) : false) && (
-            <div className="bg-white rounded-2xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Житло та транспорт</h2>
+          {(profile.accountType !== 'basic' && asList(profile.carServices).length > 0) && (
+            <div className="bg-gradient-to-br from-white to-accent-50/20 rounded-2xl shadow-lg border border-neutral-100 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-xl">🚗</span>
+                </div>
+                <h2 className="text-xl font-bold text-neutral-900">Житло та транспорт</h2>
+              </div>
               {asList(profile.carServices).length > 0 && (
-                <div className="mb-4">
-                  <p className="text-sm text-neutral-600 mb-2">Авто-сервіси</p>
+                <div>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Авто-сервіси</p>
                   <div className="flex flex-wrap gap-2">
                     {asList(profile.carServices).map((t, i) => (
-                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
                     ))}
-                  </div>
-                </div>
-              )}
-              {profile.housingDetails && (
-                <div className="mb-2">
-                  <p className="text-sm text-neutral-600 mb-2">Деталі житла</p>
-                  <div className="text-neutral-800 text-sm bg-neutral-50 rounded-lg p-3">
-                    <pre className="whitespace-pre-wrap break-words">{typeof profile.housingDetails === 'string' ? profile.housingDetails : JSON.stringify(profile.housingDetails, null, 2)}</pre>
                   </div>
                 </div>
               )}
@@ -1403,63 +1400,62 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           )}
 
           {/* Переваги та використання сервісів - тільки для звичайних користувачів, не для бізнесу */}
-          {(!profile.businessInfo && profile.accountType !== 'basic' && (profile.usesDelivery !== undefined || profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length || asList(profile.usesBusinessServices).length || asList(profile.beautyServices).length || profile.readyToSwitchToUCM !== undefined)) && (
-            <div className="bg-white rounded-2xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Переваги та використання сервісів</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                {profile.usesDelivery !== undefined && (
-                  <div className="p-3 bg-neutral-50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Користуюсь доставкою</p>
-                    <p className="font-medium text-neutral-900">{profile.usesDelivery ? 'Так' : 'Ні'}</p>
-                  </div>
-                )}
+          {(!profile.businessInfo && profile.accountType !== 'basic' && (profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length > 0 || asList(profile.usesBusinessServices).length > 0 || asList(profile.beautyServices).length > 0 || profile.readyToSwitchToUCM === true)) && (
+            <div className="bg-gradient-to-br from-white to-primary-50/20 rounded-2xl shadow-lg border border-neutral-100 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-xl">⭐</span>
+                </div>
+                <h2 className="text-xl font-bold text-neutral-900">Переваги та використання сервісів</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 {profile.restaurantFrequency && (
-                  <div className="p-3 bg-neutral-50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Відвідування ресторанів</p>
+                  <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Відвідування ресторанів</p>
                     <p className="font-medium text-neutral-900">{profile.restaurantFrequency}</p>
                   </div>
                 )}
                 {profile.cuisinePreference && (
-                  <div className="p-3 bg-neutral-50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Улюблена кухня</p>
+                  <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Улюблена кухня</p>
                     <p className="font-medium text-neutral-900">{profile.cuisinePreference}</p>
+                  </div>
+                )}
+                {profile.readyToSwitchToUCM === true && (
+                  <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Готовий перейти на учасників</p>
+                    <p className="font-medium text-neutral-900">Так</p>
                   </div>
                 )}
               </div>
               {asList(profile.usesServices).length > 0 && (
                 <div className="mb-4">
-                  <p className="text-sm text-neutral-600 mb-2">Побутові сервіси</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Побутові сервіси</p>
                   <div className="flex flex-wrap gap-2">
                     {asList(profile.usesServices).map((t, i) => (
-                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
                     ))}
                   </div>
                 </div>
               )}
               {asList(profile.usesBusinessServices).length > 0 && (
                 <div className="mb-4">
-                  <p className="text-sm text-neutral-600 mb-2">Бізнес-сервіси</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Бізнес-сервіси</p>
                   <div className="flex flex-wrap gap-2">
                     {asList(profile.usesBusinessServices).map((t, i) => (
-                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
                     ))}
                   </div>
                 </div>
               )}
               {asList(profile.beautyServices).length > 0 && (
-                <div className="mb-2">
-                  <p className="text-sm text-neutral-600 mb-2">Beauty / Послуги</p>
+                <div>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Beauty / Послуги краси</p>
                   <div className="flex flex-wrap gap-2">
                     {asList(profile.beautyServices).map((t, i) => (
-                      <span key={i} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-800 text-sm">{t}</span>
+                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
                     ))}
                   </div>
-                </div>
-              )}
-              {profile.readyToSwitchToUCM !== undefined && (
-                <div className="mt-2 p-3 bg-neutral-50 rounded-lg">
-                  <p className="text-sm text-neutral-600">Готовий перейти на учасників</p>
-                  <p className="font-medium text-neutral-900">{profile.readyToSwitchToUCM ? 'Так' : 'Ні'}</p>
                 </div>
               )}
             </div>
