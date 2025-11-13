@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Search, User, Menu, LogOut } from 'lucide-react'
+import { Search, User, Menu, LogOut, MessageCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
@@ -196,6 +196,25 @@ export function Navbar() {
               <Search className="w-5 h-5 text-neutral-600" />
             </Link>
 
+              {/* Mobile messages icon with unread badge */}
+              {user && (
+                <Link
+                  href="/chat"
+                  className="relative md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                  aria-label="Повідомлення"
+                >
+                  <MessageCircle className="w-5 h-5 text-neutral-600" />
+                  {unreadCount > 0 && (
+                    <span
+                      className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] leading-none rounded-full bg-primary-600 text-white border-2 border-white"
+                      title={`${unreadCount} непрочитаних`}
+                    >
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
             {isLoading ? (
               // Показываем загрузку
               <div className="hidden md:flex items-center space-x-3">
@@ -383,10 +402,15 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/chat"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors flex items-center justify-between"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Повідомлення
+                    <span>Повідомлення</span>
+                    {unreadCount > 0 && (
+                      <span className="ml-2 bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
                   </Link>
                   <button
                     onClick={async () => { await handleLogout(); setIsMenuOpen(false) }}
