@@ -208,8 +208,10 @@ model User {
   requestResponses   RequestResponse[]
   reviewsGiven       Review[]      @relation("ReviewerRelation")
   reviewsReceived    Review[]      @relation("ReviewedRelation")
-  messagesSent       Message[]     @relation("SenderRelation")
-  messagesReceived   Message[]     @relation("ReceiverRelation")
+  messagesSent       Message[]     @relation("SentMessages")
+  messagesReceived   Message[]     @relation("ReceivedMessages")
+  conversationsAsUser1 Conversation[] @relation("ConversationUser1")
+  conversationsAsUser2 Conversation[] @relation("ConversationUser2")
   favorites          Favorite[]    @relation("UserFavorites")
   favoritedBy        Favorite[]    @relation("TargetUser")
   reportsCreated     Report[]      @relation("Reporter")
@@ -718,4 +720,64 @@ model City {
   @@index([name])
   @@index([region])
   @@map("cities")
+}
+
+// ========================================
+// MESSAGING SYSTEM (Система сообщений)
+// ========================================
+
+model Conversation {
+  id              Int       @id @default(autoincrement()) @map("conversation_id")
+  
+  // Участники (2 пользователя)
+  user1Id         Int       @map("user1_id")
+  user2Id         Int       @map("user2_id")
+  user1           User      @relation("ConversationUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2           User      @relation("ConversationUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  
+  // Сообщения
+  messages        Message[]
+  
+  // Метаданные
+  lastMessageAt   DateTime? @map("last_message_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  @@unique([user1Id, user2Id])
+  @@index([user1Id])
+  @@index([user2Id])
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+model Message {
+  id              Int          @id @default(autoincrement()) @map("message_id")
+  conversationId  Int          @map("conversation_id")
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  // Отправитель
+  senderId        Int          @map("sender_id")
+  sender          User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  // Получатель
+  receiverId      Int          @map("receiver_id")
+  receiver        User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  // Содержимое
+  content         String       @db.Text
+  
+  // Статус
+  isRead          Boolean      @default(false) @map("is_read")
+  readAt          DateTime?    @map("read_at")
+  
+  // Метаданные
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("messages")
 }
