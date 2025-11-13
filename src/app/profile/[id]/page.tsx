@@ -1053,7 +1053,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               {!isOwnProfile && (
                 <>
                   <Link
-                    href={`/messages?with=${profile.id}`}
+                    href={`/chat?with=${profile.id}`}
                     className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg mb-3"
                   >
                     <MessageCircle className="w-5 h-5" />

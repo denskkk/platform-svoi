@@ -303,7 +303,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                   )}
                   
                   <Link
-                    href={`/messages?with=${service.user.id}`}
+                    href={`/chat?with=${service.user.id}`}
                     className="flex items-center justify-center gap-2 w-full border-2 border-primary-500 text-primary-600 hover:bg-primary-50 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
                   >
                     <MessageCircle className="w-5 h-5" />
