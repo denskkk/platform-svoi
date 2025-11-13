@@ -427,37 +427,6 @@ model Review {
   @@map("reviews")
 }
 
-model Message {
-  id                   Int      @id @default(autoincrement()) @map("message_id")
-  senderId             Int      @map("sender_id")
-  receiverId           Int      @map("receiver_id")
-  
-  // Контент
-  text                 String   @db.Text
-  attachmentUrl        String?  @map("attachment_url") @db.VarChar(255)
-  attachmentType       String?  @map("attachment_type") @db.VarChar(50)
-  
-  // Статус
-  isRead               Boolean  @default(false) @map("is_read")
-  isDeletedBySender    Boolean  @default(false) @map("is_deleted_by_sender")
-  isDeletedByReceiver  Boolean  @default(false) @map("is_deleted_by_receiver")
-  
-  // Метадані
-  createdAt            DateTime @default(now()) @map("created_at")
-  readAt               DateTime? @map("read_at")
-  
-  // Зв'язки
-  sender               User     @relation("SenderRelation", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver             User     @relation("ReceiverRelation", fields: [receiverId], references: [id], onDelete: Cascade)
-  
-  @@index([senderId])
-  @@index([receiverId])
-  @@index([createdAt(sort: Desc)])
-  @@index([receiverId, isRead])
-  @@index([senderId, receiverId, createdAt(sort: Desc)])
-  @@map("messages")
-}
-
 model Favorite {
   id           Int      @id @default(autoincrement()) @map("favorite_id")
   userId       Int      @map("user_id")
