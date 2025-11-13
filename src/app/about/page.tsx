@@ -6,31 +6,9 @@ import Link from 'next/link';
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              Свій для Своїх
-            </Link>
-            <nav className="flex gap-6">
-              <Link href="/" className="text-gray-600 hover:text-blue-600">
-                Головна
-              </Link>
-              <Link href="/about" className="text-blue-600 font-semibold">
-                Про нас
-              </Link>
-              <Link href="/contacts" className="text-gray-600 hover:text-blue-600">
-                Контакти
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="bg-neutral-50">
+      {/* Основной контент. Хедер и футер приходят из глобального layout.tsx */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">
             Про платформу &quot;Свій для Своїх&quot;
@@ -169,7 +147,7 @@ export default function AboutPage() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link
-                  href="/register"
+                  href="/auth/register"
                   className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
                 >
                   Зареєструватися
@@ -184,18 +162,7 @@ export default function AboutPage() {
             </section>
           </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-400">
-              © 2025 Свій для Своїх. Український Центр Месіанського. Всі права захищені.
-            </p>
-          </div>
-        </div>
-      </footer>
+      </section>
     </div>
   );
 }

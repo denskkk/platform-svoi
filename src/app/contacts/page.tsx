@@ -7,31 +7,9 @@ import { Mail, Phone, MapPin, Clock, Send, Facebook, Instagram } from 'lucide-re
 
 export default function ContactsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              Свій для Своїх
-            </Link>
-            <nav className="flex gap-6">
-              <Link href="/" className="text-gray-600 hover:text-blue-600">
-                Головна
-              </Link>
-              <Link href="/about" className="text-gray-600 hover:text-blue-600">
-                Про нас
-              </Link>
-              <Link href="/contacts" className="text-blue-600 font-semibold">
-                Контакти
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="bg-neutral-50">
+      {/* Основний контент. Хедер і футер рендеряться глобальним layout.tsx */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Зв&apos;яжіться з нами
@@ -323,18 +301,7 @@ export default function ContactsPage() {
             Написати на email
           </a>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-400">
-              © 2025 Свій для Своїх. Український Центр Месіанського. Всі права захищені.
-            </p>
-          </div>
-        </div>
-      </footer>
+      </section>
     </div>
   );
 }
