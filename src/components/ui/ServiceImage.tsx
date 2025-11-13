@@ -21,8 +21,16 @@ export function ServiceImage({ src, alt, className = "", fallbackLetter }: Servi
     triedJpegRef.current = false;
     setFailed(false);
     if (src) {
-      const ts = Date.now();
-      const addTs = (u: string) => `${u}${u.includes("?") ? "&" : "?"}t=${ts}`;
+      // Функція для додавання timestamp тільки якщо його ще немає
+      const addTs = (u: string) => {
+        // Якщо URL вже містить timestamp, використовуємо як є
+        if (u.includes('?t=') || u.includes('&t=')) {
+          return u;
+        }
+        const ts = Date.now();
+        return `${u}${u.includes("?") ? "&" : "?"}t=${ts}`;
+      };
+      
       // Якщо маємо webp → генеруємо jpeg fallback
       if (src.endsWith('.webp')) {
         const jpegBase = src.replace(/\.webp$/i, '.jpg');

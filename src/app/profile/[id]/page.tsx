@@ -44,7 +44,15 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const loadProfile = async () => {
     try {
       console.log('Завантаження профілю:', params.id);
-      const response = await fetch(`/api/profile/${params.id}`);
+      // Додаємо cache-busting параметр для отримання свіжих даних
+      const cacheBuster = `t=${Date.now()}`;
+      const response = await fetch(`/api/profile/${params.id}?${cacheBuster}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       const data = await response.json();
 
       console.log('Отримано дані профілю:', data);

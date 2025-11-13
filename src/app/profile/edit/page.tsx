@@ -364,8 +364,10 @@ export default function EditProfilePage() {
       console.log('[Upload Avatar] Відповідь від сервера:', data);
       
       if (response.ok && data.url) {
-        console.log('[Upload Avatar] Аватар успішно завантажено:', data.url);
-        return data.url;
+        // Додаємо timestamp до URL для примусового оновлення зображення
+        const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
+        console.log('[Upload Avatar] Аватар успішно завантажено:', urlWithTimestamp);
+        return urlWithTimestamp;
       }
       
       throw new Error(data.error || 'Помилка завантаження фото');
@@ -525,7 +527,7 @@ export default function EditProfilePage() {
         throw new Error(data.error || 'Помилка збереження');
       }
 
-      // Оновлюємо дані користувача в localStorage
+      // Оновлюємо дані користувача в localStorage з новим аватаром
       if (data.user) {
         const updatedUser = {
           ...user,
@@ -533,6 +535,12 @@ export default function EditProfilePage() {
           avatarUrl: avatarUrl || user.avatarUrl,
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // Також оновлюємо стан user для миттєвого відображення в UI
+        setUser(updatedUser);
+        
+        // Відправляємо подію для оновлення аватара в інших компонентах
+        window.dispatchEvent(new Event('userUpdated'));
       }
 
       setSuccess('Профіль успішно оновлено!');
@@ -540,7 +548,7 @@ export default function EditProfilePage() {
       setTimeout(() => {
         // Додаємо timestamp до URL для примусової перезагрузки
         router.push(`/profile/${user.id}?t=${Date.now()}`);
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Помилка збереження');
     } finally {

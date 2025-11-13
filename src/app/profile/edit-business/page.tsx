@@ -214,7 +214,10 @@ export default function EditBusinessProfilePage() {
       const data = await response.json();
       
       if (response.ok && data.url) {
-        return data.url;
+        // Додаємо timestamp для миттєвого відображення
+        const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
+        console.log('[Upload Logo] Лого успішно завантажено:', urlWithTimestamp);
+        return urlWithTimestamp;
       }
       
       throw new Error(data.error || 'Помилка завантаження лого');
@@ -265,7 +268,10 @@ export default function EditBusinessProfilePage() {
       const data = await response.json();
 
       if (response.ok && data.url) {
-        return data.url;
+        // Додаємо timestamp для миттєвого відображення
+        const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
+        console.log('[Upload Banner] Банер успішно завантажено:', urlWithTimestamp);
+        return urlWithTimestamp;
       }
 
       throw new Error(data.error || 'Помилка завантаження банера');
@@ -305,6 +311,9 @@ export default function EditBusinessProfilePage() {
       if (formData.instagram) socialLinksObj.instagram = formData.instagram;
       if (formData.linkedin) socialLinksObj.linkedin = formData.linkedin;
       
+      // Видаляємо timestamp з URL перед збереженням в БД
+      const cleanUrl = (url: string | null) => url ? url.split('?')[0] : null;
+      
       const response = await fetch('/api/business-info', {
         method: 'PUT',
         headers: {
@@ -321,8 +330,8 @@ export default function EditBusinessProfilePage() {
           position: formData.position || null,
           city: formData.city || null,
           businessType: formData.businessType || null,
-          logoUrl: logoUrl || null,
-          bannerUrl: bannerUrl || null,
+          logoUrl: cleanUrl(logoUrl),
+          bannerUrl: cleanUrl(bannerUrl),
           
           shortDescription: formData.shortDescription || null,
           description: formData.description || formData.shortDescription || null,

@@ -124,10 +124,10 @@ export default function CreateServicePage() {
       const data = await response.json();
       
       if (response.ok && data.url) {
-        // Повертаємо URL з cache-busting параметром, щоб одразу з'явився після створення
-        const baseUrl = data.url as string;
-        const cacheBuster = baseUrl.includes('?') ? '&' : '?';
-        return `${baseUrl}${cacheBuster}t=${Date.now()}`;
+        // Повертаємо URL з cache-busting параметром для миттєвого відображення
+        const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
+        console.log('[Upload Service Image] Зображення успішно завантажено:', urlWithTimestamp);
+        return urlWithTimestamp;
       }
       
       throw new Error(data.error || 'Помилка завантаження фото');

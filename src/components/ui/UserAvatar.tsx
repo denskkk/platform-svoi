@@ -48,8 +48,15 @@ export function UserAvatar({ src, alt, className = '', fallbackName }: UserAvata
   // Додаємо cache-busting до URL
   useEffect(() => {
     setImageError(false);
+    setRetried(false);
     if (src && !src.startsWith('data:')) {
-      setImageSrc(withCacheBuster(src));
+      // Якщо URL вже містить timestamp (свіжозавантажений), використовуємо як є
+      // Інакше додаємо cache-busting для старих URL
+      if (src.includes('?t=') || src.includes('&t=')) {
+        setImageSrc(src);
+      } else {
+        setImageSrc(withCacheBuster(src));
+      }
     } else {
       setImageSrc(src || null);
     }
