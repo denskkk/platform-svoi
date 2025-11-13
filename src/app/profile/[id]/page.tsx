@@ -360,6 +360,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           Редагувати
                         </Link>
                       ) : (
+                        <>
+                          <Link
+                            href={`/chat?with=${profile.id}`}
+                            className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+                          >
+                            <MessageCircle className="w-4 h-4 mr-2" />
+                            Написати
+                          </Link>
                           <PermissionButton
                             permission="ADD_TO_FAVORITES"
                             onClick={() => setIsFavorite(!isFavorite)}
@@ -371,6 +379,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           >
                             <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
                           </PermissionButton>
+                        </>
                       )}
                     </div>
                   </div>

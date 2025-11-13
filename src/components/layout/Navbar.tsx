@@ -13,6 +13,7 @@ export function Navbar() {
   const [user, setUser] = useState<any>(null)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     const readUser = () => {
@@ -41,6 +42,21 @@ export function Navbar() {
           try {
             localStorage.setItem('user', JSON.stringify(data.user))
           } catch {}
+          
+          // Загрузка непрочитанных сообщений
+          if (token) {
+            try {
+              const unreadRes = await fetch('/api/conversations/unread-count', {
+                headers: { 'Authorization': `Bearer ${token}` },
+              })
+              if (unreadRes.ok) {
+                const unreadData = await unreadRes.json()
+                setUnreadCount(unreadData.unreadCount || 0)
+              }
+            } catch {
+              // ignore
+            }
+          }
         } else {
           try {
             localStorage.removeItem('user')
@@ -197,11 +213,16 @@ export function Navbar() {
                         Редагувати профіль
                       </Link>
                       <Link
-                        href="/messages"
-                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        href="/chat"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        Повідомлення
+                        <span>Повідомлення</span>
+                        {unreadCount > 0 && (
+                          <span className="bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
+                            {unreadCount}
+                          </span>
+                        )}
                       </Link>
                       <Link
                         href="/favorites"
