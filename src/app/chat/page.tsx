@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { MessageCircle, Send, ArrowLeft } from 'lucide-react';
@@ -40,7 +40,7 @@ interface Message {
   isRead: boolean;
 }
 
-export default function ChatPage() {
+function ChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const withUserId = searchParams.get('with');
@@ -411,5 +411,17 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="text-neutral-600">Завантаження чату...</div>
+      </div>
+    }>
+      <ChatPageContent />
+    </Suspense>
   );
 }
