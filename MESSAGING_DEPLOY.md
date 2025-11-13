@@ -42,6 +42,9 @@ npx prisma generate
 # Собрать проект
 npm run build
 
+# Применить патч миграции (если раньше была старая таблица messages)
+psql -U postgres -d sviydlyasvoyikh -f database/migrations/20251113_fix_messages_add_conversations.sql
+
 # Перезапустить PM2
 pm2 restart sviy-web
 ```
