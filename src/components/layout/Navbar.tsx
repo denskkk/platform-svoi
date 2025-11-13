@@ -97,6 +97,37 @@ export function Navbar() {
     }
   }, [])
 
+  // Poll unread counter periodically so the badge updates without reload
+  useEffect(() => {
+    let timer: any;
+    const fetchUnread = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) return
+        const res = await fetch('/api/conversations/unread-count', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadCount(data.unreadCount || 0)
+        }
+      } catch {}
+    }
+    // start polling only when user is logged in
+    if (user) {
+      fetchUnread()
+      timer = setInterval(fetchUnread, 10000) // every 10s
+      const onFocus = () => fetchUnread()
+      window.addEventListener('focus', onFocus)
+      document.addEventListener('visibilitychange', onFocus)
+      return () => {
+        clearInterval(timer)
+        window.removeEventListener('focus', onFocus)
+        document.removeEventListener('visibilitychange', onFocus)
+      }
+    }
+  }, [user])
+
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })

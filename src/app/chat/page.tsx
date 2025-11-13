@@ -99,6 +99,37 @@ function ChatPageContent() {
     }
   }, [selectedConversation, token]);
 
+  // Poll new messages periodically to simulate real-time updates
+  useEffect(() => {
+    if (!selectedConversation || !token) return;
+
+    let cancelled = false;
+    const interval = setInterval(async () => {
+      if (cancelled) return;
+      try {
+        await loadMessages(selectedConversation);
+        // Also refresh conversations to keep preview/unread in sync
+        await loadConversations();
+      } catch {}
+    }, 3000); // every 3s
+
+    const onFocus = async () => {
+      try {
+        await loadMessages(selectedConversation);
+        await loadConversations();
+      } catch {}
+    };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, [selectedConversation, token]);
+
   const loadConversations = async () => {
     try {
       setLoading(true);
