@@ -36,6 +36,9 @@ git pull origin main
 # Установить зависимости (если нужно)
 npm install
 
+# ВАЖНО! Сгенерировать Prisma Client с новыми моделями
+npx prisma generate
+
 # Собрать проект
 npm run build
 
