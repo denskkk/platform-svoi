@@ -54,6 +54,8 @@ function ChatPageContent() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  // Чтобы обработать ?with=... один раз и не зациклиться
+  const [handledWithParam, setHandledWithParam] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -75,19 +77,21 @@ function ChatPageContent() {
   }, [user, token]);
 
   useEffect(() => {
-    if (withUserId && user && token && conversations.length > 0) {
-      // Создаем или находим диалог с указанным пользователем
-      const existingConv = conversations.find(
-        c => c.otherUser.id === parseInt(withUserId)
-      );
-      
-      if (existingConv) {
-        setSelectedConversation(existingConv.id);
-      } else {
-        createConversation(parseInt(withUserId));
-      }
+    if (!withUserId || !user || !token || handledWithParam) return;
+
+    const otherId = parseInt(withUserId);
+    if (Number.isNaN(otherId)) return;
+
+    // Если список диалогов уже загружен — пробуем найти, иначе сразу создаем
+    const existingConv = conversations.find(c => c.otherUser.id === otherId);
+    if (existingConv) {
+      setSelectedConversation(existingConv.id);
+      setHandledWithParam(true);
+    } else {
+      // Создаем диалог, если его нет
+      createConversation(otherId).finally(() => setHandledWithParam(true));
     }
-  }, [withUserId, conversations, user, token]);
+  }, [withUserId, user, token, conversations, handledWithParam]);
 
   useEffect(() => {
     if (selectedConversation && token) {
