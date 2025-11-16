@@ -7,6 +7,7 @@ import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ServiceImage } from '@/components/ui/ServiceImage';
+import { expandSearchQuery, detectCategoryFromQuery, calculateRelevance } from '@/lib/searchKeywords';
 
 // Позначаємо сторінку як динамічну
 export const dynamic = 'force-dynamic';
@@ -18,13 +19,31 @@ async function getServices(q?: string, city?: string, category?: string) {
       isActive: true,
     };
 
-    // Пошук по назві послуги, опису або професії виконавця
+    // Розумний пошук з синонімами та пов'язаними термінами
     if (q) {
-      where.OR = [
-        { title: { contains: q, mode: 'insensitive' } },
-        { description: { contains: q, mode: 'insensitive' } },
-        { user: { profession: { contains: q, mode: 'insensitive' } } },
-      ];
+      const expandedTerms = expandSearchQuery(q);
+      
+      // Автоматично визначаємо категорію за запитом, якщо не вказана
+      if (!category) {
+        const detectedCategory = detectCategoryFromQuery(q);
+        if (detectedCategory) {
+          category = detectedCategory;
+        }
+      }
+      
+      // Створюємо умови пошуку для всіх розширених термінів
+      const orConditions: any[] = [];
+      expandedTerms.forEach(term => {
+        orConditions.push(
+          { title: { contains: term, mode: 'insensitive' } },
+          { description: { contains: term, mode: 'insensitive' } },
+          { user: { profession: { contains: term, mode: 'insensitive' } } },
+          { user: { businessInfo: { businessType: { contains: term, mode: 'insensitive' } } } },
+          { user: { businessInfo: { businessCategory: { contains: term, mode: 'insensitive' } } } },
+        );
+      });
+      
+      where.OR = orConditions;
     }
 
     if (city) {
@@ -37,7 +56,7 @@ async function getServices(q?: string, city?: string, category?: string) {
 
     const services = await prisma.service.findMany({
       where,
-      take: 50,
+      take: 100,
       orderBy: [
         { user: { avgRating: 'desc' } },
         { createdAt: 'desc' }
@@ -54,11 +73,33 @@ async function getServices(q?: string, city?: string, category?: string) {
             avgRating: true,
             totalReviews: true,
             isVerified: true,
+            businessInfo: {
+              select: {
+                businessType: true,
+                businessCategory: true,
+              }
+            }
           }
         },
         category: true,
       }
     });
+
+    // Якщо є пошуковий запит, сортуємо за релевантністю
+    if (q) {
+      return services
+        .map((service: any) => ({
+          ...service,
+          relevance: calculateRelevance(q, 
+            `${service.title} ${service.description} ${service.user.profession || ''} ${service.user.businessInfo?.businessType || ''} ${service.user.businessInfo?.businessCategory || ''}`
+          )
+        }))
+        .sort((a: any, b: any) => {
+          // Спочатку за релевантністю, потім за рейтингом
+          if (b.relevance !== a.relevance) return b.relevance - a.relevance;
+          return Number(b.user.avgRating) - Number(a.user.avgRating);
+        });
+    }
 
     return services;
   } catch (error) {
@@ -95,7 +136,7 @@ export default async function ServicesPage({
                 type="text"
                 name="q"
                 defaultValue={q}
-                placeholder="Що ви шукаєте? (наприклад: сантехнік, ремонт, електрик)"
+                placeholder="Що ви шукаєте? (сантехнік, прораб, ремонт...)"
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
@@ -110,6 +151,11 @@ export default async function ServicesPage({
               Знайти
             </button>
           </form>
+          {q && (
+            <div className="mt-3 text-sm text-blue-100">
+              💡 Розумний пошук: знаходимо схожі послуги та споріднені категорії
+            </div>
+          )}
         </div>
       </div>
 
