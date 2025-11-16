@@ -46,7 +46,7 @@ export function HeroSection() {
     if (searchQuery) params.set('q', searchQuery)
     if (category) params.set('category', category)
     if (city) params.set('city', city)
-    router.push(`/catalog?${params.toString()}`)
+    router.push(`/services?${params.toString()}`)
   }
 
   return (

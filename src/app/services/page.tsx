@@ -12,10 +12,32 @@ import { ServiceImage } from '@/components/ui/ServiceImage';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-async function getServices() {
+async function getServices(q?: string, city?: string, category?: string) {
   try {
+    const where: any = {
+      isActive: true,
+    };
+
+    // Пошук по назві послуги, опису або професії виконавця
+    if (q) {
+      where.OR = [
+        { title: { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
+        { user: { profession: { contains: q, mode: 'insensitive' } } },
+      ];
+    }
+
+    if (city) {
+      where.city = { contains: city, mode: 'insensitive' };
+    }
+
+    if (category) {
+      where.category = { slug: category };
+    }
+
     const services = await prisma.service.findMany({
-      take: 20,
+      where,
+      take: 50,
       orderBy: [
         { user: { avgRating: 'desc' } },
         { createdAt: 'desc' }
@@ -28,6 +50,7 @@ async function getServices() {
             lastName: true,
             avatarUrl: true,
             city: true,
+            profession: true,
             avgRating: true,
             totalReviews: true,
             isVerified: true,
@@ -44,8 +67,15 @@ async function getServices() {
   }
 }
 
-export default async function ServicesPage() {
-  const services = await getServices();
+export default async function ServicesPage({ 
+  searchParams 
+}: { 
+  searchParams?: { q?: string; city?: string; category?: string } 
+}) {
+  const q = searchParams?.q;
+  const city = searchParams?.city;
+  const category = searchParams?.category;
+  const services = await getServices(q, city, category);
 
   return (
     <div className="bg-gray-50">
@@ -58,19 +88,28 @@ export default async function ServicesPage() {
           </p>
 
           {/* Search */}
-          <div className="bg-white rounded-lg p-4 flex gap-4">
+          <form action="/services" method="GET" className="bg-white rounded-lg p-4 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Що ви шукаєте? (наприклад: сантехнік)"
+                name="q"
+                defaultValue={q}
+                placeholder="Що ви шукаєте? (наприклад: сантехнік, ремонт, електрик)"
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold">
+            <input
+              type="text"
+              name="city"
+              defaultValue={city}
+              placeholder="Місто"
+              className="md:w-48 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+            />
+            <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold">
               Знайти
             </button>
-          </div>
+          </form>
         </div>
       </div>
 
@@ -78,7 +117,7 @@ export default async function ServicesPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
-            Доступні послуги ({services.length})
+            {q ? `Результати пошуку "${q}"` : 'Доступні послуги'} ({services.length})
           </h2>
         </div>
 

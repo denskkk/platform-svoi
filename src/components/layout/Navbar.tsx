@@ -14,6 +14,7 @@ export function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [balance, setBalance] = useState<number | null>(null)
 
   useEffect(() => {
     const readUser = () => {
@@ -39,6 +40,12 @@ export function Navbar() {
         if (res.ok) {
           const data = await res.json()
           setUser(data.user)
+          if (typeof data.user?.balanceUcm === 'number') {
+            setBalance(data.user.balanceUcm)
+          } else if (data.user?.balanceUcm) {
+            const n = Number(data.user.balanceUcm)
+            if (!Number.isNaN(n)) setBalance(n)
+          }
           try {
             localStorage.setItem('user', JSON.stringify(data.user))
           } catch {}
@@ -189,9 +196,10 @@ export function Navbar() {
           {/* Права частина */}
           <div className="flex items-center space-x-4">
             <Link 
-              href="/catalog"
+              href="/services"
               className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
               aria-label="Пошук"
+              title="Пошук послуг"
             >
               <Search className="w-5 h-5 text-neutral-600" />
             </Link>
@@ -235,8 +243,11 @@ export function Navbar() {
                     className="flex items-center space-x-2 px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
                   >
                     <UserOrCompanyAvatar user={user} className="w-8 h-8 rounded-full object-cover" />
-                    <span className="font-medium text-neutral-700">
-                      {user?.businessInfo?.companyName || user?.firstName}
+                    <span className="font-medium text-neutral-700 flex flex-col items-start leading-tight">
+                      <span>{user?.businessInfo?.companyName || user?.firstName}</span>
+                      {balance !== null && (
+                        <span className="text-[11px] text-neutral-500 font-normal">{balance.toFixed(2)} уцмка</span>
+                      )}
                     </span>
                   </button>
 
@@ -255,6 +266,12 @@ export function Navbar() {
                       >
                         Мій профіль
                       </Link>
+                      {balance !== null && (
+                        <div className="px-4 py-2 text-neutral-700 flex items-center justify-between">
+                          <span>Баланс</span>
+                          <span className="font-medium">{balance.toFixed(2)} уцмка</span>
+                        </div>
+                      )}
                       <Link
                         href="/profile/edit"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
@@ -379,6 +396,12 @@ export function Navbar() {
                   >
                     Мій профіль
                   </Link>
+                  {balance !== null && (
+                    <div className="px-4 py-2 text-neutral-700 rounded-lg flex items-center justify-between">
+                      <span>Баланс</span>
+                      <span className="font-medium">{balance.toFixed(2)} уцмка</span>
+                    </div>
+                  )}
                   <Link
                     href="/profile/edit"
                     className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"

@@ -220,6 +220,8 @@ model User {
   sessions           Session[]
   searchLogs         SearchLog[]
   subscriptions      Subscription[]
+  payments           Payment[]
+  balanceUcm         Decimal  @default(0.00) @map("balance_ucm") @db.Decimal(12, 2) // Баланс у внутрішній валюті «уцмка»
   
   @@index([email])
   @@index([city])
@@ -749,4 +751,29 @@ model Message {
   @@index([isRead])
   @@index([createdAt])
   @@map("messages")
+}
+
+// ========================================
+// PAYMENTS (WayForPay)
+// ========================================
+
+model Payment {
+  id              Int       @id @default(autoincrement()) @map("payment_id")
+  userId          Int       @map("user_id")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider        String    @default("wayforpay") @db.VarChar(50)
+  orderReference  String    @unique @map("order_reference") @db.VarChar(100)
+  amount          Decimal   @db.Decimal(12, 2)
+  currency        String    @default("UAH") @db.VarChar(10)
+  description     String?   @db.Text
+  status          String    @default("new") @db.VarChar(30)
+  invoiceUrl      String?   @map("invoice_url") @db.VarChar(255)
+  rawRequest      Json?     @map("raw_request")
+  rawResponse     Json?     @map("raw_response")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
 }
