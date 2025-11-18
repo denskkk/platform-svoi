@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/api-middleware'
-import { UCM_COSTS, chargeForAction } from '@/lib/ucm'
+import { chargePaidAction, PAID_ACTION_COSTS } from '@/lib/ucm'
 
 export async function POST(request: NextRequest) {
   const { user, error } = await requireAuth(request)
@@ -27,21 +27,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Заповніть обовʼязкові поля (type, title, description)' }, { status: 400 })
     }
 
-    // Define pricing: currently charge only for partner searches
-    const cost = String(type) === 'partner' ? UCM_COSTS.partnerRequest : 0
+    // Define pricing based on request type
+    let actionType: keyof typeof PAID_ACTION_COSTS | null = null
+    
+    if (type === 'partner') {
+      actionType = 'partner_search'
+    } else if (type === 'job') {
+      actionType = 'job_request'
+    } else if (type === 'service') {
+      actionType = 'service_request'
+    } else if (type === 'employee') {
+      actionType = 'employee_search'
+    } else if (type === 'investor') {
+      actionType = 'investor_search'
+    }
 
     // If cost > 0: try to charge before creating
-    if (cost > 0) {
+    if (actionType) {
       try {
-        await chargeForAction({ userId, amount: cost, reason: 'request_partner' })
+        await chargePaidAction({ 
+          userId, 
+          actionType,
+          description: `Заявка: ${title}`
+        })
       } catch (e: any) {
-        if (e && e.message === 'INSUFFICIENT_UCM') {
-          return NextResponse.json({
-            error: 'Недостатньо уцмок на балансі. Поповніть баланс, щоб створити заявку.',
-            required: cost,
-          }, { status: 402 })
-        }
-        throw e
+        return NextResponse.json({
+          error: e.message || 'Недостатньо уцмок на балансі',
+          required: PAID_ACTION_COSTS[actionType],
+        }, { status: 402 })
       }
     }
 
@@ -62,6 +75,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    const cost = actionType ? PAID_ACTION_COSTS[actionType] : 0
     return NextResponse.json({ success: true, requestId: created.id, cost })
   } catch (e: any) {
     console.error('[requests/create] error', e)
