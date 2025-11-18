@@ -241,6 +241,8 @@ model User {
   ucmTransactions    UcmTransaction[]
   paidActions        PaidAction[]
   referralsInvited   User[]   @relation("ReferredBy")
+  referralsAsInviter Referral[] @relation("RefInviter")
+  referralsAsInvitee Referral[] @relation("RefInvitee")
   
   @@index([email])
   @@index([city])
