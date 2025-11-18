@@ -4,13 +4,13 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone } from 'lucide-react';
 import { saveUser, saveToken } from '@/lib/client-auth';
 
-export default function ViewerRegisterPage() {
+function ViewerRegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({

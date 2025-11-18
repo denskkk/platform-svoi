@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff } from 'lucide-react'
 import { cities } from '@/lib/constants'
 
-export default function RegisterIndividualPage() {
+function RegisterIndividualForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
@@ -267,5 +267,21 @@ export default function RegisterIndividualPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function RegisterIndividualPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Завантаження...</div>}>
+      <RegisterIndividualForm />
+    </Suspense>
+  )
+}
+
+export default function RegisterIndividualPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Завантаження...</div>}>
+      <RegisterIndividualForm />
+    </Suspense>
   )
 }
