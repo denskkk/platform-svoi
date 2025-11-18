@@ -5,13 +5,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone } from 'lucide-react';
 import { saveUser, saveToken } from '@/lib/client-auth';
 
 export default function ViewerRegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -57,6 +58,7 @@ export default function ViewerRegisterPage() {
           phone: formData.phone || undefined,
           city: formData.city || undefined, // Не відправляти порожній рядок
           role: 'user', // Глядач = звичайний користувач
+          ref: searchParams?.get('ref') || undefined,
         }),
       });
 

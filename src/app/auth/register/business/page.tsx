@@ -22,6 +22,7 @@ function BusinessRegistrationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isPremium = searchParams?.get("premium") === "true";
+  const refCode = searchParams?.get('ref') || undefined;
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -270,7 +271,8 @@ function BusinessRegistrationForm() {
             phone: formData.phone,
             city: formData.city,
             role: "business",
-            accountType: isPremium ? "business_premium" : "business",
+            accountType: "business",
+            ref: refCode,
           },
           business: {
             companyName: formData.companyName,

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { ensureUserReferralCode, awardReferral } from '@/lib/ucm';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
@@ -54,7 +55,9 @@ export async function POST(request: NextRequest) {
       phone, 
       city, 
       role = 'business',
-      accountType = 'business'
+      accountType = 'business',
+      ref,
+      referralCode,
     } = userData;
 
     const {
@@ -98,12 +101,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Валідація accountType
-    if (accountType !== 'business' && accountType !== 'business_premium') {
-      return NextResponse.json(
-        { error: 'Невірний тип бізнес акаунту' },
-        { status: 400 }
-      );
+    // Дозволяємо тільки звичайний бізнес акаунт (преміум прибрано)
+    if (accountType !== 'business') {
+      return NextResponse.json({ error: 'Невірний тип бізнес акаунту' }, { status: 400 });
     }
 
     // Валідація email формату
@@ -140,10 +140,10 @@ export async function POST(request: NextRequest) {
 
     // Створення користувача та бізнесу в транзакції
     const result = await prisma.$transaction(async (tx: any) => {
-      // Trial: first 3 months free for business plans
-      const trialStart = new Date();
-      const trialEnd = new Date(trialStart);
-      trialEnd.setMonth(trialEnd.getMonth() + 3);
+      const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || undefined;
+      const inviter = refCode 
+        ? await tx.user.findFirst({ where: { referralCode: String(refCode) }, select: { id: true, email: true } })
+        : null;
       // Створення користувача
       const user = await tx.user.create({
         data: {
@@ -156,10 +156,11 @@ export async function POST(request: NextRequest) {
           city: city || null,
           passwordHash,
           isVerified: false,
-          // apply free trial for all business tiers
-          subscriptionActive: true,
-          subscriptionStartedAt: trialStart,
-          subscriptionExpiresAt: trialEnd,
+          // підписка вимкнена — оплата лише за внутрішні функції
+          subscriptionActive: false,
+          subscriptionStartedAt: null,
+          subscriptionExpiresAt: null,
+          referredById: inviter && inviter.email !== email ? inviter.id : null,
         },
         select: {
           id: true,
@@ -177,6 +178,9 @@ export async function POST(request: NextRequest) {
           createdAt: true,
         }
       });
+
+      // Генеруємо власний реф-код
+      await ensureUserReferralCode(user.id)
 
       // Створення бізнес інформації
       console.log('[Register Business API] Створення бізнес профілю з даними:', {
@@ -202,11 +206,11 @@ export async function POST(request: NextRequest) {
           seekingInvestor: seekingInvestor || false,
           seekingCustomer: seekingCustomer || false,
           seekingEmployee: seekingEmployee || false,
-          // Преміум функції тільки для business_premium
-          offerToCustomers: accountType === 'business_premium' ? (offerToCustomers || false) : false,
-          offerToPartners: accountType === 'business_premium' ? (offerToPartners || false) : false,
-          offerToInvestors: accountType === 'business_premium' ? (offerToInvestors || false) : false,
-          wantsUCMAnalysis: accountType === 'business_premium' ? (wantsUCMAnalysis || false) : false,
+          // Преміум функції вимкнено
+          offerToCustomers: false,
+          offerToPartners: false,
+          offerToInvestors: false,
+          wantsUCMAnalysis: false,
           // Детальна інформація пошуку
           partnerSearchDetails: partnerSearchDetails || {},
           investorSearchDetails: investorSearchDetails || {},
@@ -233,6 +237,11 @@ export async function POST(request: NextRequest) {
           createdAt: true,
         }
       });
+
+      // Нарахувати реф-бонус після створення всього
+      if (inviter && inviter.email !== email) {
+        await awardReferral({ inviterId: inviter.id, inviteeId: user.id, code: String(refCode) })
+      }
 
       return { user, business };
     });
@@ -262,9 +271,7 @@ export async function POST(request: NextRequest) {
     // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
       success: true,
-      message: accountType === 'business_premium' 
-        ? 'Бізнес Преміум акаунт успішно створено!' 
-        : 'Бізнес акаунт успішно створено!',
+      message: 'Бізнес акаунт успішно створено!',
       user: {
         ...result.user,
         businessInfo: result.business

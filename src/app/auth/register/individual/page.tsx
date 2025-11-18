@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff } from 'lucide-react'
 import { cities } from '@/lib/constants'
 
 export default function RegisterIndividualPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,6 +57,7 @@ export default function RegisterIndividualPage() {
           password: formData.password,
           city: formData.city,
           role: 'user',
+          ref: searchParams?.get('ref') || undefined,
         }),
       })
 

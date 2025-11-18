@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { ensureUserReferralCode, awardReferral } from '@/lib/ucm';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
@@ -51,6 +52,8 @@ export async function POST(request: NextRequest) {
       ucmMember,
       ucmSupporter,
       employmentStatus,
+      ref,
+      referralCode,
     } = body;
 
     // Валідація обов'язкових полів
@@ -61,13 +64,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Валідація accountType
-    const validAccountTypes = ['guest', 'basic', 'extended'];
+    // Дозволяємо тільки базовий безкоштовний акаунт (розширені та преміум прибрані)
+    const validAccountTypes = ['basic'];
     if (!validAccountTypes.includes(accountType)) {
-      return NextResponse.json(
-        { error: 'Невірний тип акаунту' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Невірний тип акаунту' }, { status: 400 });
     }
 
     // Валідація email формату
@@ -102,11 +102,8 @@ export async function POST(request: NextRequest) {
     // Хешування пароля
     const passwordHash = await hashPassword(password);
 
-    // Створення користувача з усіма полями
-    // Trial: first 3 months free for paid plans (extended)
-    const now = new Date();
-    const trialExpires = new Date(now);
-    trialExpires.setMonth(trialExpires.getMonth() + 3);
+  // Створення користувача з усіма полями
+  const now = new Date();
 
     // Convert boolean values to strings for ucmMember and ucmSupporter
     const convertToYesNo = (value: any): string | null => {
@@ -119,51 +116,71 @@ export async function POST(request: NextRequest) {
       return null;
     };
 
-    const user = await prisma.user.create({
-      data: {
-        role,
-        accountType,
-        firstName,
-        middleName: middleName || null,
-        lastName,
-        email,
-        phone: phone || null,
-        city: city || null,
-        passwordHash,
-        isVerified: false,
-        educationLevel: educationLevel || null,
-        educationDetails: educationDetails || null,
-        ucmMember: convertToYesNo(ucmMember),
-        ucmSupporter: convertToYesNo(ucmSupporter),
-        employmentStatus: employmentStatus || null,
-        // apply free trial for non-basic plans
-        subscriptionActive: accountType !== 'basic',
-        subscriptionStartedAt: accountType !== 'basic' ? now : null,
-        subscriptionExpiresAt: accountType !== 'basic' ? trialExpires : null,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        role: true,
-        accountType: true,
-        city: true,
-        avatarUrl: true,
-        isVerified: true,
-        subscriptionActive: true,
-        subscriptionStartedAt: true,
-        subscriptionExpiresAt: true,
-        createdAt: true,
+    // Визначимо інвайтера за рефкодом, якщо передано
+    const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || undefined as any;
+    const inviter = refCode
+      ? await prisma.user.findFirst({ where: { referralCode: String(refCode) }, select: { id: true, email: true } })
+      : null;
+
+    // Створимо користувача та обробимо реферал у транзакції
+    const created = await prisma.$transaction(async (tx: typeof prisma) => {
+      const newUser = await tx.user.create({
+        data: {
+          role,
+          accountType,
+          firstName,
+          middleName: middleName || null,
+          lastName,
+          email,
+          phone: phone || null,
+          city: city || null,
+          passwordHash,
+          isVerified: false,
+          educationLevel: educationLevel || null,
+          educationDetails: educationDetails || null,
+          ucmMember: convertToYesNo(ucmMember),
+          ucmSupporter: convertToYesNo(ucmSupporter),
+          employmentStatus: employmentStatus || null,
+          // Підписки немає, все безкоштовно, оплата лише за внутрішні функції
+          subscriptionActive: false,
+          subscriptionStartedAt: null,
+          subscriptionExpiresAt: null,
+          referredById: inviter && inviter.email !== email ? inviter.id : null,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          role: true,
+          accountType: true,
+          city: true,
+          avatarUrl: true,
+          isVerified: true,
+          subscriptionActive: true,
+          subscriptionStartedAt: true,
+          subscriptionExpiresAt: true,
+          createdAt: true,
+        }
+      });
+
+      // Згенерувати власний рефкод
+      await ensureUserReferralCode(newUser.id)
+
+      // Нарахувати реф-нагороду, якщо є валідний інвайтер
+      if (inviter && inviter.email !== email) {
+        await awardReferral({ inviterId: inviter.id, inviteeId: newUser.id, code: String(refCode) })
       }
+
+      return newUser
     });
 
     // Генерація JWT токена
     const token = generateToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      accountType: user.accountType,
+      userId: created.id,
+      email: created.email,
+      role: created.role,
+      accountType: created.accountType,
     });
 
     // Створення сесії
@@ -172,7 +189,7 @@ export async function POST(request: NextRequest) {
 
     await prisma.session.create({
       data: {
-        userId: user.id,
+        userId: created.id,
         tokenHash: token,
         expiresAt,
         ipAddress: request.ip || 'unknown',
@@ -183,10 +200,8 @@ export async function POST(request: NextRequest) {
     // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
       success: true,
-      message: accountType === 'extended' 
-        ? 'Розширений акаунт успішно створено!' 
-        : 'Реєстрація успішна!',
-      user,
+      message: 'Реєстрація успішна!',
+      user: created,
       token,
     }, { status: 201 });
 

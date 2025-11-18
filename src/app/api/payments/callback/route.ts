@@ -47,6 +47,16 @@ export async function POST(request: NextRequest) {
           where: { id: payment.userId },
           data: { balanceUcm: { increment: payment.amount } }
         })
+        await tx.ucmTransaction.create({
+          data: {
+            userId: payment.userId,
+            kind: 'credit',
+            amount: payment.amount,
+            reason: 'topup',
+            relatedEntityType: 'payment',
+            relatedEntityId: payment.id,
+          }
+        })
       }
     })
 
