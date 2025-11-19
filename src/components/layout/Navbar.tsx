@@ -281,7 +281,7 @@ export function Navbar() {
                 <Link href="/services/create" className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium">
                   + Створити послугу
                 </Link>
-                <Link href="/services/create?mode=request" className="px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium">
+                <Link href="/requests/create" className="px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium">
                   + Створити заявку
                 </Link>
                 <div className="relative">
@@ -515,7 +515,7 @@ export function Navbar() {
                     + Додати послугу
                   </Link>
                   <Link
-                    href="/services/create?mode=request"
+                    href="/requests/create"
                     className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
