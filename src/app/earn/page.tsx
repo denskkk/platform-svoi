@@ -29,6 +29,17 @@ interface EarningProgress {
   isRepeatable: boolean;
 }
 
+interface EarningStats {
+  referralsCount: number;
+  servicesCount: number;
+  reviewsGivenCount: number;
+  reviewsReceivedCount: number;
+  avgRating: number;
+  totalReviews: number;
+  daysSinceRegistration: number;
+  balanceUcm: number;
+}
+
 const ACTION_ICONS: Record<string, any> = {
   REFERRAL_INVITER: Users,
   REFERRAL_INVITEE: Gift,
@@ -55,6 +66,9 @@ export default function EarnPage() {
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [totalEarned, setTotalEarned] = useState<number>(0);
+  const [stats, setStats] = useState<EarningStats | null>(null);
+  const [taskFilter, setTaskFilter] = useState<'all'|'incomplete'|'completed'|'repeatable'|'one-time'>('all');
+  const [taskSort, setTaskSort] = useState<'default'|'amount-desc'|'amount-asc'|'progress-desc'|'progress-asc'|'name-asc'>('default');
 
   useEffect(() => {
     loadData();
@@ -89,6 +103,15 @@ export default function EarnPage() {
         setProgress(progressData.progress || []);
         setTotalEarned(progressData.totalEarned || 0);
       }
+
+      // Загрузить агреговану статистику
+      const statsResponse = await fetch('/api/earning/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setStats(statsData);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -117,6 +140,17 @@ export default function EarnPage() {
 
   const completedTasks = progress.filter(p => p.completed).length;
   const totalTasks = progress.filter(p => !p.isRepeatable).length;
+  let visibleTasks = progress.slice();
+  if (taskFilter === 'incomplete') visibleTasks = visibleTasks.filter(t => !t.completed);
+  else if (taskFilter === 'completed') visibleTasks = visibleTasks.filter(t => t.completed);
+  else if (taskFilter === 'repeatable') visibleTasks = visibleTasks.filter(t => t.isRepeatable);
+  else if (taskFilter === 'one-time') visibleTasks = visibleTasks.filter(t => !t.isRepeatable);
+
+  if (taskSort === 'amount-desc') visibleTasks.sort((a,b)=>b.amount - a.amount);
+  else if (taskSort === 'amount-asc') visibleTasks.sort((a,b)=>a.amount - b.amount);
+  else if (taskSort === 'progress-desc') visibleTasks.sort((a,b)=> (b.progress/b.progressMax) - (a.progress/a.progressMax));
+  else if (taskSort === 'progress-asc') visibleTasks.sort((a,b)=> (a.progress/a.progressMax) - (b.progress/b.progressMax));
+  else if (taskSort === 'name-asc') visibleTasks.sort((a,b)=> a.description.localeCompare(b.description));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
@@ -169,6 +203,47 @@ export default function EarnPage() {
           </div>
         </div>
 
+        {/* Detailed Stats */}
+        {stats && (
+          <div className="grid md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-neutral-200">
+              <div className="flex items-center gap-3 mb-2">
+                <Users className="w-6 h-6 text-indigo-600" />
+                <h4 className="font-semibold text-neutral-800">Реферали</h4>
+              </div>
+              <div className="text-3xl font-bold text-indigo-600">{stats.referralsCount}</div>
+              <p className="text-xs text-neutral-500 mt-1">Зареєстрованих по вашому коду</p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-neutral-200">
+              <div className="flex items-center gap-3 mb-2">
+                <Zap className="w-6 h-6 text-yellow-600" />
+                <h4 className="font-semibold text-neutral-800">Сервіси</h4>
+              </div>
+              <div className="text-3xl font-bold text-yellow-600">{stats.servicesCount}</div>
+              <p className="text-xs text-neutral-500 mt-1">Опублікованих вами</p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-neutral-200">
+              <div className="flex items-center gap-3 mb-2">
+                <Star className="w-6 h-6 text-amber-500" />
+                <h4 className="font-semibold text-neutral-800">Рейтинг</h4>
+              </div>
+              <div className="flex items-end gap-2">
+                <span className="text-3xl font-bold text-amber-600">{stats.avgRating.toFixed(1)}</span>
+                <span className="text-sm text-neutral-500">({stats.totalReviews})</span>
+              </div>
+              <p className="text-xs text-neutral-500 mt-1">Середній бал та кількість відгуків</p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-neutral-200">
+              <div className="flex items-center gap-3 mb-2">
+                <Calendar className="w-6 h-6 text-green-600" />
+                <h4 className="font-semibold text-neutral-800">Днів на платформі</h4>
+              </div>
+              <div className="text-3xl font-bold text-green-600">{stats.daysSinceRegistration}</div>
+              <p className="text-xs text-neutral-500 mt-1">Активність та досвід</p>
+            </div>
+          </div>
+        )}
+
         {/* Referral Section */}
         {user?.referralCode && (
           <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl shadow-2xl p-8 mb-12 text-white">
@@ -206,8 +281,43 @@ export default function EarnPage() {
         )}
 
         {/* Tasks Grid */}
+        {/* Task Controls */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              ['all','Всі'],
+              ['incomplete','Невиконані'],
+              ['completed','Виконані'],
+              ['repeatable','Багаторазові'],
+              ['one-time','Одноразові']
+            ].map(([val,label]) => (
+              <button
+                key={val}
+                onClick={()=>setTaskFilter(val as any)}
+                className={`px-3 py-1.5 text-sm rounded-full border transition ${taskFilter===val ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-neutral-700 border-neutral-300 hover:border-indigo-400'}`}
+              >{label}</button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-neutral-600">Сортування:</label>
+            <select
+              value={taskSort}
+              onChange={e=>setTaskSort(e.target.value as any)}
+              className="text-sm px-3 py-1.5 border border-neutral-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="default">Стандартно</option>
+              <option value="amount-desc">Нагорода ↓</option>
+              <option value="amount-asc">Нагорода ↑</option>
+              <option value="progress-desc">Прогрес ↓</option>
+              <option value="progress-asc">Прогрес ↑</option>
+              <option value="name-asc">Назва А→Я</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Tasks Grid */}
         <div className="grid md:grid-cols-2 gap-6">
-          {progress.map((task) => {
+          {visibleTasks.map((task) => {
             const Icon = ACTION_ICONS[task.action] || Gift;
             const progressPercent = (task.progress / task.progressMax) * 100;
 

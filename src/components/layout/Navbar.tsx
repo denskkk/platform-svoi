@@ -15,6 +15,7 @@ export function Navbar() {
   const [isLoading, setIsLoading] = useState(true)
   const [unreadCount, setUnreadCount] = useState(0)
   const [balance, setBalance] = useState<number | null>(null)
+  const [earnIncompleteCount, setEarnIncompleteCount] = useState(0)
 
   useEffect(() => {
     const readUser = () => {
@@ -133,6 +134,28 @@ export function Navbar() {
         document.removeEventListener('visibilitychange', onFocus)
       }
     }
+  }, [user])
+
+  // Fetch earning progress to show badge with remaining unique tasks
+  useEffect(() => {
+    const fetchEarn = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) return
+        const res = await fetch('/api/earning/progress', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        if (!res.ok) return
+        const data = await res.json()
+        if (Array.isArray(data.progress)) {
+          const count = data.progress.filter((t: any) => !t.completed && !t.isRepeatable).length
+          setEarnIncompleteCount(count)
+        }
+      } catch {
+        // silent
+      }
+    }
+    if (user) fetchEarn()
   }, [user])
 
   const handleLogout = async () => {
@@ -285,6 +308,14 @@ export function Navbar() {
                         onClick={() => setShowProfileMenu(false)}
                       >
                         💰 Як заробити уцмки
+                        {earnIncompleteCount > 0 && (
+                          <span
+                            className="ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[11px] leading-none rounded-full bg-green-600 text-white font-semibold"
+                            title={`${earnIncompleteCount} невиконаних завдань`}
+                          >
+                            {earnIncompleteCount}
+                          </span>
+                        )}
                       </Link>
                       <Link
                         href="/upgrade"
@@ -423,6 +454,11 @@ export function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     💰 Як заробити уцмки
+                    {earnIncompleteCount > 0 && (
+                      <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[11px] leading-none rounded-full bg-green-600 text-white font-semibold" title={`${earnIncompleteCount} невиконаних завдань`}>
+                        {earnIncompleteCount}
+                      </span>
+                    )}
                   </Link>
                   <Link
                     href="/upgrade"

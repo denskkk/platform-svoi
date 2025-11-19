@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send } from 'lucide-react';
+import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift } from 'lucide-react';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 import { ServiceImage } from '@/components/ui/ServiceImage';
+import { EarnQuickList } from '@/components/ui/EarnQuickList';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -1542,6 +1543,22 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               <UpgradeAccountCTA currentType={profile.accountType} />
             </div>
           )}
+        </div>
+        {/* Бокова панель: баланс та швидкі завдання */}
+        <div className="space-y-4">
+          <div className="p-4 rounded-2xl border bg-white shadow-sm">
+            <div className="text-sm text-neutral-500 mb-1">Баланс</div>
+            <div className="text-2xl font-semibold">{profile.balanceUcm ?? 0} <span className="text-xs font-medium text-neutral-500">уцм</span></div>
+            <div className="mt-3 flex gap-2">
+              <Link href="/upgrade" className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-700 transition">
+                <Gift className="w-3 h-3 mr-1" /> Апгрейд
+              </Link>
+              <Link href="/earn" className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition">
+                Заробити
+              </Link>
+            </div>
+          </div>
+          <EarnQuickList />
         </div>
       </div>
     </div>
