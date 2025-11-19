@@ -53,6 +53,13 @@ export default function CreateServicePage() {
     const userData = JSON.parse(storedUser);
   setUser(userData);
     setToken(storedToken);
+
+    // If basic account, open request modal immediately so user can create a request with photo/price
+    try {
+      if (userData && userData.accountType === 'basic') {
+        setOpenModal(true);
+      }
+    } catch {}
     
     // Установить город пользователя по умолчанию
     setFormData(prev => ({

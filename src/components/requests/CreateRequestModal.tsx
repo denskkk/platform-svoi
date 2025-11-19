@@ -31,6 +31,10 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
   const [type, setType] = useState('partner');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [budgetFrom, setBudgetFrom] = useState<string>('');
+  const [budgetTo, setBudgetTo] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
   const [paid, setPaid] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +94,24 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       const token = localStorage.getItem('token');
       const body: any = { type, title, description };
       if (paid) body.paid = true;
+      if (budgetFrom) body.budgetFrom = parseFloat(budgetFrom);
+      if (budgetTo) body.budgetTo = parseFloat(budgetTo);
+
+      // If an image was selected, upload it first
+      if (imageFile) {
+        try {
+          const form = new FormData();
+          form.append('file', imageFile);
+          form.append('type', 'requests');
+          const upRes = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: form });
+          const upData = await upRes.json();
+          if (upRes.ok && upData.url) {
+            body.imageUrl = upData.url.split('?')[0];
+          }
+        } catch (ue) {
+          console.warn('[CreateRequestModal] image upload failed', ue);
+        }
+      }
 
       const res = await fetch('/api/requests/create', {
         method: 'POST',
@@ -116,6 +138,23 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Оберіть зображення');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Файл занадто великий. Максимум 10MB');
+      return;
+    }
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(String(reader.result || ''));
+    reader.readAsDataURL(file);
   };
 
   if (!open) return null;
@@ -145,6 +184,24 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Опис</label>
             <textarea value={description} onChange={e=>setDescription(e.target.value)} rows={5} className="w-full p-2 border rounded" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Ціна (необов'язково)</label>
+            <div className="grid grid-cols-2 gap-2">
+              <input value={budgetFrom} onChange={e=>setBudgetFrom(e.target.value)} placeholder="від" className="p-2 border rounded" />
+              <input value={budgetTo} onChange={e=>setBudgetTo(e.target.value)} placeholder="до" className="p-2 border rounded" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Фото (необов'язково)</label>
+            {imagePreview ? (
+              <div className="relative inline-block">
+                <img src={imagePreview} alt="preview" className="w-full max-w-xs h-40 object-cover rounded" />
+              </div>
+            ) : null}
+            <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
           </div>
 
           <div className="flex items-center justify-between">

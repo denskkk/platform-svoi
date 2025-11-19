@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       budgetTo,
       deadlineAt,
       criteria,
+      imageUrl,
     } = body || {}
 
     if (!type || !title || !description) {
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
         priceUcm: paidAmount ?? null,
         promoted: paid,
         expiresAt: paid ? defaultExpiry : null,
-        metadata: {},
+        metadata: imageUrl ? { imageUrl } : {},
       }
       })
     } catch (createErr: any) {
