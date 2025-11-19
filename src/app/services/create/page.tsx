@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -32,7 +32,6 @@ export default function CreateServicePage() {
   const [error, setError] = useState('');
   const [openModal, setOpenModal] = useState(false);
 
-  const searchParams = useSearchParams();
 
   const cities = [
     'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
@@ -63,8 +62,11 @@ export default function CreateServicePage() {
 
     // If URL contains ?mode=request, open the request modal automatically
     try {
-      const mode = searchParams?.get('mode')
-      if (mode === 'request') setOpenModal(true)
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('mode');
+        if (mode === 'request') setOpenModal(true);
+      }
     } catch {}
 
     // Загрузить категории
