@@ -280,7 +280,15 @@ export function Navbar() {
             ) : user ? (
               <div className="hidden md:flex items-center space-x-3">
                 <button
-                  onClick={() => setShowCreateModal(true)}
+                  onClick={() => {
+                    try {
+                      if (!user) {
+                        router.push('/auth/register');
+                        return;
+                      }
+                    } catch {}
+                    setShowCreateModal(true);
+                  }}
                   className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium"
                 >
                   + Створити заявку

@@ -14,8 +14,10 @@ const REQUEST_TYPES: { key: string; label: string; priceKey?: string }[] = [
   { key: 'other', label: 'Розширений пошук', priceKey: 'advanced_search' },
 ];
 
-// Client-side mirror of server pricing (уцмки)
-const PAID_ACTION_COSTS: Record<string, number> = {
+// Server-driven prices will be fetched from /api/ucm/costs
+type CostsMap = Record<string, number>;
+
+const FALLBACK_COSTS: CostsMap = {
   partner_search: 5,
   job_request: 3,
   service_request: 3,
@@ -37,7 +39,7 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
   useEffect(()=>{
     const token = localStorage.getItem('token');
     if (!token) return;
-    fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` } })
+    fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` }, credentials: 'include' })
       .then(r=>r.json())
       .then(d=>{
         if (d?.user) setBalance(Number(d.user.balanceUcm) || 0);
@@ -45,12 +47,27 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       .catch(()=>{});
   }, [open]);
 
+  const [serverCosts, setServerCosts] = useState<CostsMap | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    let canceled = false;
+    fetch('/api/ucm/costs')
+      .then(r => r.json())
+      .then(d => {
+        if (canceled) return;
+        if (d?.costs) setServerCosts(d.costs as CostsMap);
+      }).catch(() => {});
+    return () => { canceled = true };
+  }, [open]);
+
     useEffect(()=>{
-      // ensure paid checkbox default for selected type
+      // ensure paid checkbox default for selected type (use server costs if available)
       const entry = REQUEST_TYPES.find(r => r.key === type);
-      const price = entry?.priceKey ? PAID_ACTION_COSTS[entry.priceKey] ?? 0 : 0;
+      const priceKey = entry?.priceKey;
+      const price = priceKey ? (serverCosts ? (serverCosts[priceKey] ?? 0) : (FALLBACK_COSTS[priceKey] ?? 0)) : 0;
       setPaid(price > 0);
-    }, [type]);
+    }, [type, serverCosts]);
 
   const submit = async () => {
     setError(null);
@@ -59,9 +76,10 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       return;
     }
 
-    // Check balance if paid
+    // Check balance if paid (use server costs if available)
     const entry = REQUEST_TYPES.find(r => r.key === type);
-    const price = entry?.priceKey ? (PAID_ACTION_COSTS[entry.priceKey] ?? 0) : 0;
+    const priceKey = entry?.priceKey;
+    const price = priceKey ? (serverCosts ? (serverCosts[priceKey] ?? 0) : /*fallback*/ 0) : 0;
     if (paid && (balance === null || balance < price)) {
       setError('Недостатньо уцмок на балансі для обраного типу заявки');
       return;
@@ -130,11 +148,29 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
               <input id="paid" type="checkbox" checked={paid} onChange={e=>setPaid(e.target.checked)} />
               <label htmlFor="paid" className="text-sm text-gray-700">Заплатити уцмки за підвищену видимість</label>
               {REQUEST_TYPES.map(r=> r.key === type && r.priceKey ? (
-                <span key={r.key} className="text-sm text-gray-600">({PAID_ACTION_COSTS[r.priceKey]} уцм)</span>
+                <span key={r.key} className="text-sm text-gray-600">({serverCosts ? `${serverCosts[r.priceKey] ?? 0} уцм` : 'завантаження...'})</span>
               ) : null)}
             </div>
             <div className="text-sm text-gray-600">Баланс: {balance !== null ? balance.toFixed(2) : '—'}</div>
           </div>
+
+          {/* If user lacks funds, show top-up CTA */}
+          {paid && serverCosts && (() => {
+            const entry = REQUEST_TYPES.find(r=> r.key === type);
+            const price = entry?.priceKey ? (serverCosts[entry.priceKey] ?? 0) : 0;
+            if (balance !== null && balance < price) {
+              return (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">Недостатньо уцмок: потрібно {price} уцм.</p>
+                  <div className="mt-2">
+                    <a href="/payments/checkout" className="inline-block px-4 py-2 bg-yellow-600 text-white rounded">Додати уцмок</a>
+                    <button onClick={()=>setPaid(false)} className="ml-3 px-3 py-2 border rounded">Створити без оплати</button>
+                  </div>
+                </div>
+              )
+            }
+            return null
+          })()}
 
           {error && <div className="text-sm text-red-600">{error}</div>}
 
