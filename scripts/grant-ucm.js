@@ -20,7 +20,8 @@ async function main() {
 
   // Check whether ledger table exists. If it doesn't, we'll skip creating ucmTransaction rows
   // to avoid Prisma P2021 errors on databases where migrations haven't been applied yet.
-  const tableCheck = await prisma.$queryRaw`SELECT to_regclass('public.ucm_transactions') as reg`;
+  // Cast regclass to text so Prisma can deserialize the result safely
+  const tableCheck = await prisma.$queryRaw`SELECT to_regclass('public.ucm_transactions')::text as reg`;
   const hasUcmTransactions = Array.isArray(tableCheck) && tableCheck[0] && tableCheck[0].reg !== null;
   console.log('ucm_transactions table present:', hasUcmTransactions);
 
