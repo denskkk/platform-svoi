@@ -14,6 +14,16 @@ const REQUEST_TYPES: { key: string; label: string; priceKey?: string }[] = [
   { key: 'other', label: 'Розширений пошук', priceKey: 'advanced_search' },
 ];
 
+// Client-side mirror of server pricing (уцмки)
+const PAID_ACTION_COSTS: Record<string, number> = {
+  partner_search: 5,
+  job_request: 3,
+  service_request: 3,
+  employee_search: 4,
+  investor_search: 5,
+  advanced_search: 2,
+};
+
 export default function CreateRequestModal({ open, onClose }: { open: boolean; onClose: ()=>void }) {
   const router = useRouter();
   const [type, setType] = useState('partner');
@@ -35,10 +45,25 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       .catch(()=>{});
   }, [open]);
 
+    useEffect(()=>{
+      // ensure paid checkbox default for selected type
+      const entry = REQUEST_TYPES.find(r => r.key === type);
+      const price = entry?.priceKey ? PAID_ACTION_COSTS[entry.priceKey] ?? 0 : 0;
+      setPaid(price > 0);
+    }, [type]);
+
   const submit = async () => {
     setError(null);
     if (!title || !description) {
       setError('Будь ласка, заповніть заголовок та опис');
+      return;
+    }
+
+    // Check balance if paid
+    const entry = REQUEST_TYPES.find(r => r.key === type);
+    const price = entry?.priceKey ? (PAID_ACTION_COSTS[entry.priceKey] ?? 0) : 0;
+    if (paid && (balance === null || balance < price)) {
+      setError('Недостатньо уцмок на балансі для обраного типу заявки');
       return;
     }
 
@@ -101,9 +126,12 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <input id="paid" type="checkbox" checked={paid} onChange={e=>setPaid(e.target.checked)} />
               <label htmlFor="paid" className="text-sm text-gray-700">Заплатити уцмки за підвищену видимість</label>
+              {REQUEST_TYPES.map(r=> r.key === type && r.priceKey ? (
+                <span key={r.key} className="text-sm text-gray-600">({PAID_ACTION_COSTS[r.priceKey]} уцм)</span>
+              ) : null)}
             </div>
             <div className="text-sm text-gray-600">Баланс: {balance !== null ? balance.toFixed(2) : '—'}</div>
           </div>

@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { usePermission } from '@/hooks/usePermission';
+const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
 import { RequirePermission } from '@/components/ui/RequirePermission';
 
 export default function CreateServicePage() {
@@ -28,6 +30,7 @@ export default function CreateServicePage() {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [openModal, setOpenModal] = useState(false);
 
   const cities = [
     'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
@@ -203,19 +206,20 @@ export default function CreateServicePage() {
 
   // Базовий акаунт: пропонуємо апгрейд на розширений для створення послуги
   if (user && user.accountType === 'basic') {
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Потрібне розширення акаунту</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Створити заявку</h1>
           <p className="text-gray-600 mb-6">
-            Щоб створювати послуги, спершу доповніть свій профіль і перейдіть на <strong>Розширений</strong> акаунт.
+            Для створення заявки не потрібно оновлювати акаунт — оберіть тип заявки нижче.
           </p>
           <div className="space-y-3">
             <button
-              onClick={() => router.push('/auth/upgrade?target=extended')}
+              onClick={() => setOpenModal(true)}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors"
             >
-              Оновити до Розширеного
+              Обрати тип заявки
             </button>
             <button
               onClick={() => router.push(`/profile/${user.id}`)}
@@ -224,6 +228,8 @@ export default function CreateServicePage() {
               Повернутися до профілю
             </button>
           </div>
+
+          <CreateRequestModal open={openModal} onClose={() => setOpenModal(false)} />
         </div>
       </div>
     );
