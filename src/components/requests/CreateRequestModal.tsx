@@ -104,9 +104,13 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
         return;
       }
 
-      // On success, close and redirect to services (so it appears in list)
+      // On success, close and redirect to the created request detail
       onClose();
-      router.push('/services');
+      if (data?.requestId) {
+        router.push(`/requests/${data.requestId}`);
+      } else {
+        router.push('/services');
+      }
     } catch (e: any) {
       setError(e.message || 'Помилка');
     } finally {

@@ -291,8 +291,15 @@ export default async function ServicesPage({
                 <div className="p-6">
                   {/* Category */}
                     <div className="text-sm text-blue-600 mb-2 font-semibold">
-                      {service.kind === 'request' ? (service.requestType ? service.requestType : 'Запит') : (service.category?.name || 'Інше')}
-                    </div>
+                          {service.kind === 'request' ? (service.requestType ? service.requestType : 'Запит') : (service.category?.name || 'Інше')}
+                        </div>
+
+                        {/* Badge for requests to make them visually distinct */}
+                        {service.kind === 'request' && (
+                          <div className="absolute top-3 left-3 px-2 py-1 bg-yellow-50 text-yellow-800 text-xs font-semibold rounded-md">
+                            Запит
+                          </div>
+                        )}
 
                   {/* Title */}
                     <Link href={service.kind === 'request' ? `/requests/${service.id}` : `/services/${service.id}`}>
