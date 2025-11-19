@@ -63,6 +63,13 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
 
             <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">{req.title}</h1>
 
+            {/* Image (if provided in metadata) */}
+            {req.metadata && req.metadata.imageUrl ? (
+              <div className="mb-6">
+                <img src={req.metadata.imageUrl} alt={req.title} className="w-full max-h-96 object-cover rounded-lg mb-4" />
+              </div>
+            ) : null}
+
             {req.description && (
               <div className="mb-6 text-neutral-700 whitespace-pre-line">{req.description}</div>
             )}

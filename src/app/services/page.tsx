@@ -125,7 +125,7 @@ async function getServices(q?: string, city?: string, category?: string) {
         requestType: r.type,
         title: r.title,
         description: r.description,
-        imageUrl: null,
+        imageUrl: r.metadata && r.metadata.imageUrl ? r.metadata.imageUrl : null,
         category: null,
         priceFrom: r.priceUcm ? Number(r.priceUcm) : null,
         priceTo: null,
