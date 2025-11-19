@@ -145,7 +145,7 @@ export function HeroSection() {
           </button>
         </form>
 
-        {/* Прямий заклик до дії: реєстрація/вхід видно одразу на головній (тільки якщо не залогінений) */}
+        {/* Прямий заклик до дії */}
         {isAuthed === false && (
           <div className="max-w-4xl mx-auto mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 justify-center animate-slide-up">
             <Link
@@ -160,6 +160,26 @@ export function HeroSection() {
             >
               Увійти
             </Link>
+          </div>
+        )}
+
+        {/* Заклик до покращення для залогінених */}
+        {isAuthed === true && (
+          <div className="max-w-4xl mx-auto mt-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl shadow-2xl p-6 animate-slide-up">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white">
+              <div className="text-center sm:text-left">
+                <h3 className="text-2xl font-bold mb-2">⚡ Покращіть свій профіль</h3>
+                <p className="text-yellow-50">
+                  Змініть тип акаунту або купіть доступ до платних функцій
+                </p>
+              </div>
+              <Link
+                href="/upgrade"
+                className="w-full sm:w-auto bg-white text-orange-600 font-bold px-8 py-3 rounded-xl hover:bg-yellow-50 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
+              >
+                Переглянути можливості
+              </Link>
+            </div>
           </div>
         )}
       </div>

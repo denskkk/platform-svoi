@@ -1022,6 +1022,33 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
           {/* Бічна панель */}
           <div className="space-y-6 static">
+            {/* Баланс і покращення - тільки для власного профілю */}
+            {isOwnProfile && (
+              <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-xl p-6 text-white">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                    <span className="text-2xl">💰</span>
+                  </div>
+                  <h3 className="text-xl font-bold">Баланс</h3>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="text-4xl font-bold mb-1">
+                    {Number(profile.balanceUcm || 0).toFixed(2)}
+                  </div>
+                  <div className="text-yellow-100 text-sm">уцмок</div>
+                </div>
+
+                <Link
+                  href="/upgrade"
+                  className="flex items-center justify-center gap-2 w-full bg-white text-orange-600 font-bold py-3 px-4 rounded-xl hover:bg-yellow-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <span className="text-lg">⚡</span>
+                  <span>Покращити профіль</span>
+                </Link>
+              </div>
+            )}
+
             {/* Контакти */}
             <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-2xl shadow-lg border border-neutral-100 p-6 static">
               <div className="flex items-center gap-2 mb-4">

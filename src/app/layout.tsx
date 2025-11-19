@@ -4,6 +4,7 @@ import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { MobileNav } from '@/components/layout/MobileNav'
+import { UpgradeBanner } from '@/components/ui/UpgradeBanner'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html lang="uk">
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
         <Navbar />
+        <UpgradeBanner />
         <main className="min-h-screen pb-20 md:pb-0">
           {children}
         </main>
