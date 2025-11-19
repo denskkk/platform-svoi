@@ -48,7 +48,7 @@ export function ServiceImage({ src, alt, className = "", fallbackLetter }: Servi
     }
   }, [src]);
 
-  if (!webpSrc || failed) {
+  if ((!webpSrc && !jpegSrc) || failed) {
     const letter = (fallbackLetter || alt || 'S').slice(0, 1).toUpperCase();
     return (
       <div className={`relative ${className}`} aria-label={alt} role="img">
