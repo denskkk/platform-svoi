@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const totalEarned = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
+    const totalEarned = transactions.reduce((sum: number, t) => sum + Number(t.amount), 0);
 
     return NextResponse.json({
       progress,
