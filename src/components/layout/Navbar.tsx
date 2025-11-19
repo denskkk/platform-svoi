@@ -515,6 +515,13 @@ export function Navbar() {
                     + Додати послугу
                   </Link>
                   <Link
+                    href="/services/create?mode=request"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    + Створити заявку
+                  </Link>
+                  <Link
                     href="/favorites"
                     className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
                     onClick={() => setIsMenuOpen(false)}
