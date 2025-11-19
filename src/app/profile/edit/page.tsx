@@ -191,12 +191,8 @@ export default function EditProfilePage() {
     
     if (!storedUser || !storedToken) {
       router.push('/auth/login');
-      return (
+      return;
     }
-
-            <div className="mb-4">
-              <ProfileCompletionHint />
-            </div>
     const userData = JSON.parse(storedUser);
     setUser(userData);
     setToken(storedToken);
