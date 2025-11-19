@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
         });
 
         // Attach requests separately so client can merge them into listing
-        (result as any).requests = requests.map(r => ({
+        (result as any).requests = requests.map((r: any) => ({
           id: r.id,
           kind: 'request',
           requestType: r.type,
