@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/api-middleware'
 import { prisma } from '@/lib/prisma'
+import { hasUcmTransactionsTable } from '@/lib/ucm'
 
 export async function GET(request: NextRequest) {
   const { user, error } = await requireAuth(request)
@@ -31,21 +32,24 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Отримуємо транзакції бонусів за рефералів
-    const referralTransactions = await prisma.ucmTransaction.findMany({
-      where: {
-        userId: userId,
-        reason: 'referral_inviter'
-      },
-      select: {
-        amount: true,
-        createdAt: true
-      }
-    })
+    // Отримуємо транзакції бонусів за рефералів (якщо таблиця ledger доступна)
+    let totalEarned = 0
+    if (await hasUcmTransactionsTable()) {
+      const referralTransactions = await prisma.ucmTransaction.findMany({
+        where: {
+          userId: userId,
+          reason: 'referral_inviter'
+        },
+        select: {
+          amount: true,
+          createdAt: true
+        }
+      })
 
-    const totalEarned = referralTransactions.reduce((sum: number, tx: any) => {
-      return sum + Number(tx.amount)
-    }, 0)
+      totalEarned = referralTransactions.reduce((sum: number, tx: any) => {
+        return sum + Number(tx.amount)
+      }, 0)
+    }
 
     const activeReferrals = referrals.filter((r: any) => r.isActive).length
 

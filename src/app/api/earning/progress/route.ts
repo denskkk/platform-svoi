@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api-middleware';
 import { getUserEarningProgress, EARNING_REWARDS, EARNING_DESCRIPTIONS } from '@/lib/earning';
 import { prisma } from '@/lib/prisma';
+import { hasUcmTransactionsTable } from '@/lib/ucm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,15 +22,18 @@ export async function GET(request: NextRequest) {
     const userRecord = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, accountType: true } });
     console.log(`[earning/progress] user=${userId} found=${!!userRecord} progressCount=${progress.length}`);
 
-    // Получить общую сумму заработанного
-    const transactions = await prisma.ucmTransaction.findMany({
-      where: {
-        userId,
-        kind: 'credit'
-      }
-    });
+    // Получить общую сумму заработанного, если ledger доступен
+    let totalEarned = 0;
+    if (await hasUcmTransactionsTable()) {
+      const transactions = await prisma.ucmTransaction.findMany({
+        where: {
+          userId,
+          kind: 'credit'
+        }
+      });
 
-    const totalEarned = transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
+      totalEarned = transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
+    }
 
     return NextResponse.json({
       progress,

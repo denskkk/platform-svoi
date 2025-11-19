@@ -86,17 +86,19 @@ export async function awardUcmForAction(
     ];
 
     if (uniqueActions.includes(action)) {
-      const existing = await prisma.ucmTransaction.findFirst({
-        where: {
-          userId,
-          reason: description,
-          kind: 'credit'
+      // Guard queries against missing ledger table on older or partially migrated DBs
+      if (await hasUcmTransactionsTable()) {
+        const existing = await prisma.ucmTransaction.findFirst({
+          where: {
+            userId,
+            reason: description,
+            kind: 'credit'
+          }
+        });
+        if (existing) {
+          console.log(`[awardUcmForAction] User ${userId} already received reward for ${action}`);
+          return null;
         }
-      });
-
-      if (existing) {
-        console.log(`[awardUcmForAction] User ${userId} already received reward for ${action}`);
-        return null;
       }
     }
 
@@ -105,7 +107,10 @@ export async function awardUcmForAction(
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const todayReward = await prisma.ucmTransaction.findFirst({
+      // Check ledger exists first; we can skip daily limit check if ledger missing
+      let todayReward = null;
+      if (await hasUcmTransactionsTable()) {
+        todayReward = await prisma.ucmTransaction.findFirst({
         where: {
           userId,
           reason: description,
@@ -115,6 +120,7 @@ export async function awardUcmForAction(
           }
         }
       });
+      }
 
       if (todayReward) {
         console.log(`[awardUcmForAction] User ${userId} already received daily login reward today`);
