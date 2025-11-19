@@ -42,8 +42,10 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     console.error('[earning/progress] Error:', error);
+    // In non-production expose minimal error message to help debugging
+    const devInfo = process.env.NODE_ENV === 'production' ? undefined : { message: error?.message, stack: error?.stack };
     return NextResponse.json(
-      { error: 'Помилка отримання прогресу' },
+      { error: 'Помилка отримання прогресу', ...(devInfo ? { debugError: devInfo } : {}) },
       { status: 500 }
     );
   }

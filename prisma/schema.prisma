@@ -618,6 +618,12 @@ model Request {
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
   completedAt   DateTime?     @map("completed_at")
+  // Платні опції
+  isPaid        Boolean       @default(false) @map("is_paid")
+  priceUcm      Decimal?      @map("price_ucm") @db.Decimal(12, 2)
+  promoted      Boolean       @default(false) @map("promoted")
+  expiresAt     DateTime?     @map("expires_at")
+  metadata      Json?         @default("{}")
   
   // Зв'язки
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)

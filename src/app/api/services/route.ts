@@ -105,6 +105,8 @@ export async function GET(request: NextRequest) {
 
     const result = {
       services,
+      // optionally include requests (promoted or public)
+      requests: [] as any[],
       pagination: {
         page,
         limit,
@@ -112,6 +114,33 @@ export async function GET(request: NextRequest) {
         pages: Math.ceil(total / limit),
       }
     };
+
+    // If client asked to include requests (e.g. includeRequests=1), fetch active requests
+    if (searchParams.get('includeRequests') === '1') {
+      try {
+        const requests = await prisma.request.findMany({
+          where: { status: 'active' },
+          orderBy: { createdAt: 'desc' },
+          take: limit,
+          skip,
+        });
+
+        // Attach requests separately so client can merge them into listing
+        (result as any).requests = requests.map(r => ({
+          id: r.id,
+          kind: 'request',
+          requestType: r.type,
+          title: r.title,
+          description: r.description,
+          city: r.city,
+          createdAt: r.createdAt,
+          isPaid: r.isPaid,
+          priceUcm: r.priceUcm,
+        }));
+      } catch (err) {
+        console.warn('Failed to load requests for services listing:', err);
+      }
+    }
 
     // Зберегти в кеш на 5 хвилин (300 секунд)
     apiCache.set(cacheKey, result, 300);

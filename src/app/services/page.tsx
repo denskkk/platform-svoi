@@ -85,6 +85,65 @@ async function getServices(q?: string, city?: string, category?: string) {
       }
     });
 
+    // Also fetch active requests (promoted or public) and map to service-like shape
+    try {
+      const requestWhere: any = { status: 'active' };
+      if (q) {
+        requestWhere.OR = [
+          { title: { contains: q, mode: 'insensitive' } },
+          { description: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+      if (city) requestWhere.city = { contains: city, mode: 'insensitive' };
+      if (category) requestWhere.categoryId = undefined; // keep category filtering for services only
+
+      const requests = await prisma.request.findMany({
+        where: requestWhere,
+        take: 100,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+              city: true,
+              profession: true,
+              avgRating: true,
+              totalReviews: true,
+              isVerified: true,
+            }
+          }
+        }
+      });
+
+      // Map requests to a unified shape and merge with services
+      const mappedRequests = requests.map((r: any) => ({
+        id: r.id,
+        kind: 'request',
+        requestType: r.type,
+        title: r.title,
+        description: r.description,
+        imageUrl: null,
+        category: null,
+        priceFrom: r.priceUcm ? Number(r.priceUcm) : null,
+        priceTo: null,
+        priceUnit: r.priceUcm ? 'уцмок' : undefined,
+        city: r.city,
+        createdAt: r.createdAt,
+        user: r.user,
+      }));
+
+      // Combine services and requests then sort by createdAt (newest first)
+      const combined = [...services.map((s: any) => ({ ...s, kind: 'service' })), ...mappedRequests];
+      combined.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      return combined;
+    } catch (err) {
+      console.warn('Failed to load requests to merge into services listing:', err);
+    }
+
     // Якщо є пошуковий запит, сортуємо за релевантністю
     if (q) {
       return services
@@ -163,7 +222,7 @@ export default async function ServicesPage({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
-            {q ? `Результати пошуку "${q}"` : 'Доступні послуги'} ({services.length})
+            {q ? `Результати пошуку "${q}"` : 'Доступні послуги та заявки'} ({services.length})
           </h2>
         </div>
 
@@ -180,25 +239,25 @@ export default async function ServicesPage({
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service: any) => (
-              <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden group">
-                {/* Изображение услуги */}
-                <Link href={`/services/${service.id}`} className="block">
-                  <ServiceImage
-                    src={service.imageUrl}
-                    alt={service.title}
-                    fallbackLetter={service.title?.slice(0,1) || 'S'}
-                    className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-200 rounded-none"
-                  />
-                </Link>
+                <div key={`${service.kind || 'service'}-${service.id}`} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden group">
+                  {/* Изображение услуги / заявки */}
+                  <Link href={service.kind === 'request' ? `/requests/${service.id}` : `/services/${service.id}`} className="block">
+                    <ServiceImage
+                      src={service.imageUrl}
+                      alt={service.title}
+                      fallbackLetter={service.title?.slice(0,1) || (service.kind === 'request' ? 'R' : 'S')}
+                      className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-200 rounded-none"
+                    />
+                  </Link>
 
                 <div className="p-6">
                   {/* Category */}
-                  <div className="text-sm text-blue-600 mb-2 font-semibold">
-                    {service.category?.name || 'Інше'}
-                  </div>
+                    <div className="text-sm text-blue-600 mb-2 font-semibold">
+                      {service.kind === 'request' ? (service.requestType ? service.requestType : 'Запит') : (service.category?.name || 'Інше')}
+                    </div>
 
                   {/* Title */}
-                  <Link href={`/services/${service.id}`}>
+                    <Link href={service.kind === 'request' ? `/requests/${service.id}` : `/services/${service.id}`}>
                     <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition cursor-pointer">
                       {service.title}
                     </h3>
@@ -213,13 +272,17 @@ export default async function ServicesPage({
 
                   {/* Price */}
                   <div className="text-lg font-semibold text-gray-900 mb-4">
-                    {service.priceFrom && service.priceTo
-                      ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
-                      : service.priceFrom
-                      ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
-                      : service.priceTo
-                      ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
-                      : 'За домовленістю'}
+                    {service.kind === 'request' ? (
+                      service.priceFrom ? `${service.priceFrom} ${service.priceUnit || 'уцмок'}` : 'За домовленістю'
+                    ) : (
+                      service.priceFrom && service.priceTo
+                        ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
+                        : service.priceFrom
+                        ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
+                        : service.priceTo
+                        ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
+                        : 'За домовленістю'
+                    )}
                   </div>
 
                   {/* Provider */}
@@ -264,7 +327,7 @@ export default async function ServicesPage({
 
                   {/* View Button */}
                   <div className="mt-4">
-                    <Link href={`/services/${service.id}`} className="block">
+                    <Link href={service.kind === 'request' ? `/requests/${service.id}` : `/services/${service.id}`} className="block">
                       <div className="flex items-center justify-center text-blue-600 hover:text-blue-700 text-sm font-semibold py-2 px-4 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
                         Детальніше
                         <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />

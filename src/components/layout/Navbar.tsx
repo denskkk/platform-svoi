@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
+import dynamic from 'next/dynamic'
+const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false })
 
 export function Navbar() {
   const router = useRouter()
@@ -17,6 +19,7 @@ export function Navbar() {
   const [balance, setBalance] = useState<number | null>(null)
   const [earnIncompleteCount, setEarnIncompleteCount] = useState(0)
   const [profileCompletionPct, setProfileCompletionPct] = useState<number | null>(null)
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     const readUser = () => {
@@ -276,12 +279,13 @@ export function Navbar() {
               </div>
             ) : user ? (
               <div className="hidden md:flex items-center space-x-3">
-                <Link
-                  href="/services/create"
+                <button
+                  onClick={() => setShowCreateModal(true)}
                   className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium"
                 >
-                  + Додати послугу
-                </Link>
+                  + Створити заявку
+                </button>
+                <CreateRequestModal open={showCreateModal} onClose={()=>setShowCreateModal(false)} />
                 <div className="relative">
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}

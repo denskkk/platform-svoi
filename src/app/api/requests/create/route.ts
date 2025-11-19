@@ -43,13 +43,17 @@ export async function POST(request: NextRequest) {
     }
 
     // If cost > 0: try to charge before creating
+    let paid = false
+    let paidAmount: number | null = null
     if (actionType) {
       try {
-        await chargePaidAction({ 
+        const chargeResult = await chargePaidAction({ 
           userId, 
           actionType,
           description: `Заявка: ${title}`
         })
+        paid = true
+        paidAmount = chargeResult.amount
       } catch (e: any) {
         return NextResponse.json({
           error: e.message || 'Недостатньо уцмок на балансі',
@@ -58,7 +62,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create request
+    // Create request (store paid metadata if any)
+    const now = new Date()
+    const defaultExpiry = new Date(now)
+    defaultExpiry.setDate(defaultExpiry.getDate() + 14) // paid requests promoted for 14 days
+
     const created = await prisma.request.create({
       data: {
         userId,
@@ -72,10 +80,15 @@ export async function POST(request: NextRequest) {
         budgetTo: budgetTo ?? null,
         deadlineAt: deadlineAt ? new Date(deadlineAt) : null,
         criteria: criteria ?? {},
+        isPaid: paid,
+        priceUcm: paidAmount ?? null,
+        promoted: paid,
+        expiresAt: paid ? defaultExpiry : null,
+        metadata: {},
       }
     })
 
-    const cost = actionType ? PAID_ACTION_COSTS[actionType] : 0
+    const cost = paidAmount || 0
     return NextResponse.json({ success: true, requestId: created.id, cost })
   } catch (e: any) {
     console.error('[requests/create] error', e)

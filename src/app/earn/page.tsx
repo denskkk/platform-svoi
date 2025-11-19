@@ -66,6 +66,7 @@ export default function EarnPage() {
   const [progress, setProgress] = useState<EarningProgress[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [totalEarned, setTotalEarned] = useState<number>(0);
   const [stats, setStats] = useState<EarningStats | null>(null);
   const [taskFilter, setTaskFilter] = useState<'all'|'incomplete'|'completed'|'repeatable'|'one-time'>('all');
@@ -92,6 +93,7 @@ export default function EarnPage() {
         router.push('/auth/login');
         return;
       }
+      setFetchError(null);
 
       // Загрузить пользователя
       const userResponse = await fetch('/api/auth/me', {
@@ -113,6 +115,23 @@ export default function EarnPage() {
         const progressData = await progressResponse.json();
         setProgress(progressData.progress || []);
         setTotalEarned(progressData.totalEarned || 0);
+      } else {
+        // Try to parse error body to show helpful message
+        let errMsg = 'Помилка при завантаженні завдань.';
+        try {
+          const errBody = await progressResponse.json();
+          if (errBody) {
+            errMsg = errBody.error || errBody.message || JSON.stringify(errBody);
+            // include debugError.message if present (non-production)
+            if (errBody.debugError && errBody.debugError.message) {
+              errMsg += ` — ${errBody.debugError.message}`;
+            }
+          }
+        } catch (e) {
+          // ignore JSON parse errors
+        }
+        setFetchError(errMsg);
+        setProgress([]);
       }
 
       // Загрузить агреговану статистику
@@ -128,6 +147,11 @@ export default function EarnPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const retryLoad = () => {
+    setLoading(true);
+    loadData().finally(()=>setLoading(false));
   };
 
   const copyReferralLink = () => {
@@ -354,9 +378,20 @@ export default function EarnPage() {
 
         {/* Tasks Grid */}
         {visibleTasks.length === 0 ? (
-          <div className="p-6 bg-white border border-neutral-200 rounded-xl text-center text-sm text-neutral-600">
-            Завдання наразі не завантажені. Спробуйте оновити сторінку або перевірити авторизацію.
-          </div>
+          fetchError ? (
+            <div className="p-6 bg-white border border-red-200 rounded-xl text-center text-sm text-red-600">
+              <div className="font-medium mb-2">Не вдалося завантажити завдання</div>
+              <div className="whitespace-pre-wrap text-xs text-red-600 mb-4">{fetchError}</div>
+              <div className="flex items-center justify-center gap-2">
+                <button onClick={retryLoad} className="px-4 py-2 bg-red-600 text-white rounded-lg">Повторити</button>
+                <button onClick={()=>router.refresh()} className="px-4 py-2 border rounded-lg">Оновити сторінку</button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 bg-white border border-neutral-200 rounded-xl text-center text-sm text-neutral-600">
+              Завдання наразі не завантажені. Спробуйте оновити сторінку або перевірити авторизацію.
+            </div>
+          )
         ) : taskFilter === 'all' ? (
           <div className="space-y-10">
             <div>
