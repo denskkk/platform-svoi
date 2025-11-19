@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/api-middleware'
-import { chargePaidAction, PAID_ACTION_COSTS } from '@/lib/ucm'
+import { chargePaidAction, PAID_ACTION_COSTS, hasUcmTransactionsTable } from '@/lib/ucm'
 
 export async function POST(request: NextRequest) {
   const { user, error } = await requireAuth(request)
@@ -67,7 +67,9 @@ export async function POST(request: NextRequest) {
     const defaultExpiry = new Date(now)
     defaultExpiry.setDate(defaultExpiry.getDate() + 14) // paid requests promoted for 14 days
 
-    const created = await prisma.request.create({
+    let created
+    try {
+      created = await prisma.request.create({
       data: {
         userId,
         type,
@@ -86,7 +88,36 @@ export async function POST(request: NextRequest) {
         expiresAt: paid ? defaultExpiry : null,
         metadata: {},
       }
-    })
+      })
+    } catch (createErr: any) {
+      console.error('[requests/create] failed to create request after charging:', createErr)
+      // Attempt to refund the user if we already charged
+      if (paid && paidAmount && paidAmount > 0) {
+        try {
+          const hasLedger = await hasUcmTransactionsTable()
+          await prisma.$transaction(async (tx: typeof prisma) => {
+            await tx.user.update({ where: { id: userId }, data: { balanceUcm: { increment: paidAmount } } })
+            if (hasLedger) {
+              await tx.ucmTransaction.create({
+                data: {
+                  userId,
+                  kind: 'credit',
+                  amount: paidAmount,
+                  reason: 'refund_request_failure',
+                  relatedEntityType: 'request',
+                  relatedEntityId: null,
+                }
+              })
+            }
+          })
+          console.log(`[requests/create] refunded ${paidAmount} to user ${userId} after failed request creation`)
+        } catch (refundErr: any) {
+          console.error('[requests/create] failed to refund user after request creation error:', refundErr)
+        }
+      }
+
+      return NextResponse.json({ error: 'Помилка створення заявки' }, { status: 500 })
+    }
 
     const cost = paidAmount || 0
     return NextResponse.json({ success: true, requestId: created.id, cost })

@@ -135,18 +135,24 @@ async function getServices(q?: string, city?: string, category?: string) {
         user: r.user,
       }));
 
-      // Combine services and requests then sort by createdAt (newest first)
-      const combined = [...services.map((s: any) => ({ ...s, kind: 'service' })), ...mappedRequests];
-      combined.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      // Group requests by type for separate subsections (employers can browse requests by purpose)
+      const requestsByType = mappedRequests.reduce((acc: any, r: any) => {
+        const t = r.requestType || 'other'
+        if (!acc[t]) acc[t] = []
+        acc[t].push(r)
+        return acc
+      }, {})
 
-      return combined;
+      // Combine services (only) and return both structures
+      const servicesOnly = services.map((s: any) => ({ ...s, kind: 'service' }))
+      return { services: servicesOnly, requestsByType };
     } catch (err) {
       console.warn('Failed to load requests to merge into services listing:', err);
     }
 
     // Якщо є пошуковий запит, сортуємо за релевантністю
     if (q) {
-      return services
+      const sorted = services
         .map((service: any) => ({
           ...service,
           relevance: calculateRelevance(q, 
@@ -158,12 +164,14 @@ async function getServices(q?: string, city?: string, category?: string) {
           if (b.relevance !== a.relevance) return b.relevance - a.relevance;
           return Number(b.user.avgRating) - Number(a.user.avgRating);
         });
+
+      return { services: sorted, requestsByType: {} };
     }
 
-    return services;
+    return { services, requestsByType: {} };
   } catch (error) {
     console.error('Error loading services:', error);
-    return [];
+    return { services: [], requestsByType: {} };
   }
 }
 
@@ -175,7 +183,7 @@ export default async function ServicesPage({
   const q = searchParams?.q;
   const city = searchParams?.city;
   const category = searchParams?.category;
-  const services = await getServices(q, city, category);
+  const { services, requestsByType } = await getServices(q, city, category) as any;
 
   return (
     <div className="bg-gray-50">
@@ -226,7 +234,7 @@ export default async function ServicesPage({
           </h2>
         </div>
 
-        {services.length === 0 ? (
+        {services.length === 0 && Object.keys(requestsByType).length === 0 ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md">
             <p className="text-gray-600 text-lg mb-4">Поки що немає доступних послуг</p>
             <Link
@@ -237,8 +245,36 @@ export default async function ServicesPage({
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service: any) => (
+          <>
+            {/* Requests subsections */}
+            {Object.keys(requestsByType).length > 0 && (
+              <div className="mb-8 w-full">
+                <h3 className="text-xl font-bold mb-4">Запити від користувачів</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Object.entries(requestsByType).map(([type, items]: any) => (
+                    <div key={type} className="col-span-1">
+                      <div className="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 className="font-semibold text-gray-800 mb-2">{type === 'job' ? 'Робота' : type}</h4>
+                        <ul className="space-y-2">
+                          {items.slice(0,5).map((r: any) => (
+                            <li key={r.id} className="text-sm">
+                              <Link href={`/requests/${r.id}`} className="text-blue-600 hover:underline">{r.title}</Link>
+                              <div className="text-xs text-gray-500">{r.user.firstName} {r.user.lastName} — {r.city || 'не вказано'}</div>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-3">
+                          <Link href={`/services?q=${type}`} className="text-sm text-blue-600">Показати всі</Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((service: any) => (
                 <div key={`${service.kind || 'service'}-${service.id}`} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden group">
                   {/* Изображение услуги / заявки */}
                   <Link href={service.kind === 'request' ? `/requests/${service.id}` : `/services/${service.id}`} className="block">
@@ -336,8 +372,9 @@ export default async function ServicesPage({
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* CTA */}
