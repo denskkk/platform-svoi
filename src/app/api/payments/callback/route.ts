@@ -34,6 +34,17 @@ export async function POST(request: NextRequest) {
     const newStatus = statusMap[(body.transactionStatus || '').toString()] || 'pending'
 
     // Транзакція: оновити платіж, за потреби зарахувати баланс
+  const hasLedger = await (async () => {
+    try {
+      const r: any = await prisma.$queryRaw`SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='ucm_transactions') as exists`;
+      if (Array.isArray(r) && r[0] && typeof r[0].exists === 'boolean') return r[0].exists
+      if (r && typeof r.exists === 'boolean') return r.exists
+    } catch (e) {
+      return false
+    }
+    return false
+  })()
+
   await prisma.$transaction(async (tx: typeof prisma) => {
       await tx.payment.update({
         where: { id: payment.id },
@@ -47,16 +58,18 @@ export async function POST(request: NextRequest) {
           where: { id: payment.userId },
           data: { balanceUcm: { increment: payment.amount } }
         })
-        await tx.ucmTransaction.create({
-          data: {
-            userId: payment.userId,
-            kind: 'credit',
-            amount: payment.amount,
-            reason: 'topup',
-            relatedEntityType: 'payment',
-            relatedEntityId: payment.id,
-          }
-        })
+        if (hasLedger) {
+          await tx.ucmTransaction.create({
+            data: {
+              userId: payment.userId,
+              kind: 'credit',
+              amount: payment.amount,
+              reason: 'topup',
+              relatedEntityType: 'payment',
+              relatedEntityId: payment.id,
+            }
+          })
+        }
       }
     })
 

@@ -18,11 +18,15 @@ async function main() {
   const users = await prisma.user.findMany({ select: { id: true, email: true, balanceUcm: true } });
   console.log(`Found ${users.length} users`);
 
-  // Check whether ledger table exists. If it doesn't, we'll skip creating ucmTransaction rows
-  // to avoid Prisma P2021 errors on databases where migrations haven't been applied yet.
-  // Cast regclass to text so Prisma can deserialize the result safely
-  const tableCheck = await prisma.$queryRaw`SELECT to_regclass('public.ucm_transactions')::text as reg`;
-  const hasUcmTransactions = Array.isArray(tableCheck) && tableCheck[0] && tableCheck[0].reg !== null;
+  // Check whether ledger table exists using information_schema (safer for Prisma)
+  // If it doesn't, we'll skip creating ucmTransaction rows to avoid Prisma P2021 errors.
+  const existsResult = await prisma.$queryRaw`SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='ucm_transactions') as exists`;
+  let hasUcmTransactions = false;
+  if (Array.isArray(existsResult) && existsResult[0] && typeof existsResult[0].exists === 'boolean') {
+    hasUcmTransactions = existsResult[0].exists;
+  } else if (existsResult && typeof existsResult.exists === 'boolean') {
+    hasUcmTransactions = existsResult.exists;
+  }
   console.log('ucm_transactions table present:', hasUcmTransactions);
 
   const appliedChanges = [];
@@ -48,23 +52,39 @@ async function main() {
       }
 
       if (hasUcmTransactions) {
-        await prisma.$transaction(async (tx) => {
-          await tx.user.update({ where: { id: u.id }, data: { balanceUcm: { increment: delta } } });
-          await tx.ucmTransaction.create({
-            data: {
-              userId: u.id,
-              kind: 'credit',
-              amount: delta,
-              reason: 'admin_grant',
-              relatedEntityType: null,
-              relatedEntityId: null,
-              meta: {},
-            }
+        try {
+          await prisma.$transaction(async (tx) => {
+            await tx.user.update({ where: { id: u.id }, data: { balanceUcm: { increment: delta } } });
+            await tx.ucmTransaction.create({
+              data: {
+                userId: u.id,
+                kind: 'credit',
+                amount: delta,
+                reason: 'admin_grant',
+                relatedEntityType: null,
+                relatedEntityId: null,
+                meta: {},
+              }
+            });
           });
-        });
 
-        console.log(`Topped-up user ${u.id} (${u.email || 'no-email'}) by ${delta} to reach ${AMOUNT}`);
-        success++;
+          console.log(`Topped-up user ${u.id} (${u.email || 'no-email'}) by ${delta} to reach ${AMOUNT}`);
+          success++;
+        } catch (e) {
+          // If ledger write fails unexpectedly, fall back to update-only and record for reconciliation
+          console.warn(`Ledger write failed for user ${u.id}, falling back to balance-only update:`, e && e.message ? e.message : e);
+          await prisma.user.update({ where: { id: u.id }, data: { balanceUcm: { increment: delta } } });
+          appliedChanges.push({
+            userId: u.id,
+            email: u.email || null,
+            previous: current,
+            delta,
+            new: current + delta,
+            note: 'ledger_write_failed_fallback'
+          });
+          console.log(`Topped-up (fallback no ledger) user ${u.id} (${u.email || 'no-email'}) by ${delta} to reach ${AMOUNT}`);
+          success++;
+        }
       } else {
         // Ledger table missing — update balance only and record change to JSON for later reconciliation
         await prisma.user.update({ where: { id: u.id }, data: { balanceUcm: { increment: delta } } });

@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { hasUcmTransactionsTable } from './ucm';
 
 /**
  * Способы заработать уцмки на платформе
@@ -122,29 +123,35 @@ export async function awardUcmForAction(
     }
 
     // Начисляем уцмки
-    await prisma.$transaction([
-      // Увеличиваем баланс
-      prisma.user.update({
-        where: { id: userId },
-        data: {
-          balanceUcm: {
-            increment: amount
+    const hasLedger = await hasUcmTransactionsTable();
+    if (hasLedger) {
+      await prisma.$transaction([
+        // Увеличиваем баланс
+        prisma.user.update({
+          where: { id: userId },
+          data: {
+            balanceUcm: {
+              increment: amount
+            }
           }
-        }
-      }),
-      // Создаем транзакцию
-      prisma.ucmTransaction.create({
-        data: {
-          userId,
-          kind: 'credit',
-          amount,
-          reason: description,
-          relatedEntityType: 'earning',
-          relatedEntityId: userId,
-          metadata: metadata ? JSON.stringify(metadata) : null
-        }
-      })
-    ]);
+        }),
+        // Создаем транзакцию
+        prisma.ucmTransaction.create({
+          data: {
+            userId,
+            kind: 'credit',
+            amount,
+            reason: description,
+            relatedEntityType: 'earning',
+            relatedEntityId: userId,
+            metadata: metadata ? JSON.stringify(metadata) : null
+          }
+        })
+      ]);
+    } else {
+      // Ledger table missing — just update balance
+      await prisma.user.update({ where: { id: userId }, data: { balanceUcm: { increment: amount } } });
+    }
 
     console.log(`[awardUcmForAction] Awarded ${amount} ucm to user ${userId} for ${action}`);
     
@@ -282,15 +289,21 @@ export async function getUserEarningProgress(userId: number) {
       }));
     }
 
-    const transactions = await prisma.ucmTransaction.findMany({
-      where: {
-        userId,
-        kind: 'credit'
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+    let transactions: any[] = [];
+    const hasLedger = await hasUcmTransactionsTable();
+    if (hasLedger) {
+      transactions = await prisma.ucmTransaction.findMany({
+        where: {
+          userId,
+          kind: 'credit'
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+    } else {
+      transactions = [];
+    }
 
     // Тип для транзакции (минимально необходимое поле)
     interface CreditTx { reason: string; }

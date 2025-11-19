@@ -1,5 +1,25 @@
 import { prisma } from '@/lib/prisma'
 
+// Cache for whether ucm_transactions table exists to avoid repeated queries
+let _hasUcmTransactionsCache: boolean | null = null
+
+export async function hasUcmTransactionsTable(): Promise<boolean> {
+  if (typeof _hasUcmTransactionsCache === 'boolean') return _hasUcmTransactionsCache
+  try {
+    const res: any = await prisma.$queryRaw`SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='ucm_transactions') as exists`
+    if (Array.isArray(res) && res[0] && typeof res[0].exists === 'boolean') {
+      _hasUcmTransactionsCache = res[0].exists
+    } else if (res && typeof res.exists === 'boolean') {
+      _hasUcmTransactionsCache = res.exists
+    } else {
+      _hasUcmTransactionsCache = false
+    }
+  } catch (e) {
+    _hasUcmTransactionsCache = false
+  }
+  return _hasUcmTransactionsCache ?? false
+}
+
 // Ціни платних дій (в уцмках)
 export const PAID_ACTION_COSTS = {
   partner_search: 5,     // Пошук пари/партнера - 5 уцмок
@@ -77,32 +97,36 @@ export async function awardReferral(opts: { inviterId: number; inviteeId: number
       where: { id: inviterId },
       data: { balanceUcm: { increment: REFERRAL_BONUS.inviter } }
     })
-    await tx.ucmTransaction.create({
-      data: {
-        userId: inviterId,
-        kind: 'credit',
-        amount: REFERRAL_BONUS.inviter,
-        reason: 'referral_inviter',
-        relatedEntityType: 'referral',
-        relatedEntityId: referral.id,
-      }
-    })
+    if (await hasUcmTransactionsTable()) {
+      await tx.ucmTransaction.create({
+        data: {
+          userId: inviterId,
+          kind: 'credit',
+          amount: REFERRAL_BONUS.inviter,
+          reason: 'referral_inviter',
+          relatedEntityType: 'referral',
+          relatedEntityId: referral.id,
+        }
+      })
+    }
 
     // Credit invitee
     await tx.user.update({
       where: { id: inviteeId },
       data: { balanceUcm: { increment: REFERRAL_BONUS.invitee } }
     })
-    await tx.ucmTransaction.create({
-      data: {
-        userId: inviteeId,
-        kind: 'credit',
-        amount: REFERRAL_BONUS.invitee,
-        reason: 'referral_invitee',
-        relatedEntityType: 'referral',
-        relatedEntityId: referral.id,
-      }
-    })
+    if (await hasUcmTransactionsTable()) {
+      await tx.ucmTransaction.create({
+        data: {
+          userId: inviteeId,
+          kind: 'credit',
+          amount: REFERRAL_BONUS.invitee,
+          reason: 'referral_invitee',
+          relatedEntityType: 'referral',
+          relatedEntityId: referral.id,
+        }
+      })
+    }
 
     return referral
   })
@@ -114,6 +138,7 @@ export async function awardReferral(opts: { inviterId: number; inviteeId: number
 export async function chargeForAction(opts: { userId: number; amount: number; reason: string; related?: { type?: string; id?: number } }) {
   const { userId, amount, reason, related } = opts
   if (amount <= 0) return
+  const hasLedger = await hasUcmTransactionsTable()
 
   return prisma.$transaction(async (tx: typeof prisma) => {
     const user = await tx.user.findUnique({ where: { id: userId }, select: { balanceUcm: true } })
@@ -122,16 +147,18 @@ export async function chargeForAction(opts: { userId: number; amount: number; re
       throw new Error('INSUFFICIENT_UCM')
     }
     await tx.user.update({ where: { id: userId }, data: { balanceUcm: { decrement: amount } } })
-    await tx.ucmTransaction.create({
-      data: {
-        userId,
-        kind: 'debit',
-        amount,
-        reason,
-        relatedEntityType: related?.type,
-        relatedEntityId: related?.id,
-      }
-    })
+    if (hasLedger) {
+      await tx.ucmTransaction.create({
+        data: {
+          userId,
+          kind: 'debit',
+          amount,
+          reason,
+          relatedEntityType: related?.type,
+          relatedEntityId: related?.id,
+        }
+      })
+    }
   })
 }
 
@@ -147,6 +174,8 @@ export async function chargePaidAction(opts: {
   const amount = PAID_ACTION_COSTS[actionType]
 
   try {
+    const hasLedger = await hasUcmTransactionsTable()
+
     await prisma.$transaction(async (tx: typeof prisma) => {
       // Перевіряємо баланс
       const user = await tx.user.findUnique({
@@ -169,16 +198,18 @@ export async function chargePaidAction(opts: {
       })
 
       // Створюємо транзакцію
-      await tx.ucmTransaction.create({
-        data: {
-          userId,
-          kind: 'debit',
-          amount,
-          reason: actionType,
-          relatedEntityType,
-          relatedEntityId,
-        }
-      })
+      if (hasLedger) {
+        await tx.ucmTransaction.create({
+          data: {
+            userId,
+            kind: 'debit',
+            amount,
+            reason: actionType,
+            relatedEntityType,
+            relatedEntityId,
+          }
+        })
+      }
 
       // Логуємо платну дію
       await tx.paidAction.create({

@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { ensureUserReferralCode, awardReferral } from '@/lib/ucm';
+import { ensureUserReferralCode, awardReferral, hasUcmTransactionsTable } from '@/lib/ucm';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
@@ -181,19 +181,22 @@ export async function POST(request: NextRequest) {
     // Нарахувати стартовий бонус користувачу (наприклад 5 уцмок) та записати транзакцію
     const START_BONUS = 5;
     try {
+      const hasLedger = await hasUcmTransactionsTable();
       await prisma.$transaction(async (tx: typeof prisma) => {
         await tx.user.update({ where: { id: created.id }, data: { balanceUcm: { increment: START_BONUS } } });
-        await tx.ucmTransaction.create({
-          data: {
-            userId: created.id,
-            kind: 'credit',
-            amount: START_BONUS,
-            reason: 'signup_bonus',
-            relatedEntityType: null,
-            relatedEntityId: null,
-            meta: {},
-          }
-        });
+        if (hasLedger) {
+          await tx.ucmTransaction.create({
+            data: {
+              userId: created.id,
+              kind: 'credit',
+              amount: START_BONUS,
+              reason: 'signup_bonus',
+              relatedEntityType: null,
+              relatedEntityId: null,
+              meta: {},
+            }
+          });
+        }
       });
     } catch (e) {
       console.warn('[register] failed to apply start bonus', e);

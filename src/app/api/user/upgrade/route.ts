@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasUcmTransactionsTable } from '@/lib/ucm';
 import { requireAuth } from '@/lib/api-middleware';
 
 export async function POST(request: NextRequest) {
@@ -72,17 +73,19 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Логуємо транзакцію
-    await prisma.ucmTransaction.create({
-      data: {
-        userId: userId,
-        kind: 'info',
-        amount: 0,
-        reason: `Зміна типу акаунту з ${currentUser.accountType} на ${accountType}`,
-        relatedEntityType: 'account_upgrade',
-        relatedEntityId: userId
-      }
-    });
+    // Логуємо транзакцію (якщо таблиця леджера доступна)
+    if (await hasUcmTransactionsTable()) {
+      await prisma.ucmTransaction.create({
+        data: {
+          userId: userId,
+          kind: 'info',
+          amount: 0,
+          reason: `Зміна типу акаунту з ${currentUser.accountType} на ${accountType}`,
+          relatedEntityType: 'account_upgrade',
+          relatedEntityId: userId
+        }
+      });
+    }
 
     return NextResponse.json({
       success: true,
