@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api-middleware';
-import { getUserEarningProgress } from '@/lib/earning';
+import { getUserEarningProgress, EARNING_REWARDS, EARNING_DESCRIPTIONS } from '@/lib/earning';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
@@ -42,11 +42,23 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     console.error('[earning/progress] Error:', error);
-    // In non-production expose minimal error message to help debugging
+    // Try to return a safe fallback so UI can render tasks instead of showing a 500
     const devInfo = process.env.NODE_ENV === 'production' ? undefined : { message: error?.message, stack: error?.stack };
+
+    const fallback = Object.entries(EARNING_REWARDS).map(([action, amount]) => ({
+      action,
+      description: EARNING_DESCRIPTIONS[action as keyof typeof EARNING_DESCRIPTIONS],
+      amount,
+      completed: false,
+      canEarn: false,
+      progress: 0,
+      progressMax: 1,
+      isRepeatable: ['DAILY_LOGIN', 'GIVE_REVIEW', 'SERVICE_COMPLETED'].includes(action),
+    }));
+
     return NextResponse.json(
-      { error: 'Помилка отримання прогресу', ...(devInfo ? { debugError: devInfo } : {}) },
-      { status: 500 }
+      { progress: fallback, totalEarned: 0, ...(devInfo ? { debugError: devInfo } : {}) },
+      { status: 200 }
     );
   }
 }
