@@ -150,7 +150,7 @@ export async function awardUcmForAction(
             reason: description,
             relatedEntityType: 'earning',
             relatedEntityId: userId,
-            metadata: metadata ? JSON.stringify(metadata) : null
+            meta: metadata ? JSON.stringify(metadata) : null
           }
         })
       ]);
