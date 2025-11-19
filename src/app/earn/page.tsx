@@ -14,7 +14,8 @@ import {
   Calendar,
   Zap,
   Target,
-  Lock
+  Lock,
+  Crown
 } from 'lucide-react';
 
 interface EarningProgress {
