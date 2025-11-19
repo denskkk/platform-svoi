@@ -118,8 +118,7 @@ async function getServices(q?: string, city?: string, category?: string) {
         }
       });
 
-      // Map requests to a unified shape and merge with services so requests
-      // appear as service-like cards in the main grid.
+      // Map requests to a unified shape so they can be rendered similarly to services
       const mappedRequests = requests.map((r: any) => ({
         id: r.id,
         kind: 'request',
@@ -136,18 +135,9 @@ async function getServices(q?: string, city?: string, category?: string) {
         user: r.user,
       }));
 
-      // Keep requestsByType in case UI needs grouped sidebars, but to avoid
-      // duplication we'll return requests merged into the main `services`
-      // array and provide an empty requestsByType so subsections don't
-      // duplicate the cards. If you prefer both, change this behavior.
-      const requestsByType: any = {}
-
-      // Combine services and requests into a single list and sort by date
+      // Return services and requests separately so we can render distinct sections
       const servicesOnly = services.map((s: any) => ({ ...s, kind: 'service' }));
-      const merged = [...mappedRequests, ...servicesOnly]
-        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-      return { services: merged, requestsByType };
+      return { services: servicesOnly, requests: mappedRequests };
     } catch (err) {
       console.warn('Failed to load requests to merge into services listing:', err);
     }
@@ -167,13 +157,13 @@ async function getServices(q?: string, city?: string, category?: string) {
           return Number(b.user.avgRating) - Number(a.user.avgRating);
         });
 
-      return { services: sorted, requestsByType: {} };
+      return { services: sorted, requests: [] };
     }
 
-    return { services, requestsByType: {} };
+    return { services, requests: [] };
   } catch (error) {
     console.error('Error loading services:', error);
-    return { services: [], requestsByType: {} };
+    return { services: [], requests: [] };
   }
 }
 
@@ -185,7 +175,8 @@ export default async function ServicesPage({
   const q = searchParams?.q;
   const city = searchParams?.city;
   const category = searchParams?.category;
-  const { services, requestsByType } = await getServices(q, city, category) as any;
+  const { services, requests } = await getServices(q, city, category) as any;
+  const totalCount = (services?.length || 0) + (requests?.length || 0);
 
   return (
     <div className="bg-gray-50">
@@ -232,11 +223,11 @@ export default async function ServicesPage({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
-            {q ? `Результати пошуку "${q}"` : 'Доступні послуги та заявки'} ({services.length})
+            {q ? `Результати пошуку "${q}"` : 'Доступні послуги та заявки'} ({totalCount})
           </h2>
         </div>
 
-        {services.length === 0 && Object.keys(requestsByType).length === 0 ? (
+        {services.length === 0 && (!requests || requests.length === 0) ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md">
             <p className="text-gray-600 text-lg mb-4">Поки що немає доступних послуг</p>
             <Link
@@ -248,25 +239,27 @@ export default async function ServicesPage({
           </div>
         ) : (
           <>
-            {/* Requests subsections */}
-            {Object.keys(requestsByType).length > 0 && (
+            {/* Requests section (distinct from services) */}
+            {requests && requests.length > 0 && (
               <div className="mb-8 w-full">
                 <h3 className="text-xl font-bold mb-4">Запити від користувачів</h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Object.entries(requestsByType).map(([type, items]: any) => (
-                    <div key={type} className="col-span-1">
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <h4 className="font-semibold text-gray-800 mb-2">{type === 'job' ? 'Робота' : type}</h4>
-                        <ul className="space-y-2">
-                          {items.slice(0,5).map((r: any) => (
-                            <li key={r.id} className="text-sm">
-                              <Link href={`/requests/${r.id}`} className="text-blue-600 hover:underline">{r.title}</Link>
-                              <div className="text-xs text-gray-500">{r.user.firstName} {r.user.lastName} — {r.city || 'не вказано'}</div>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="mt-3">
-                          <Link href={`/services?q=${type}`} className="text-sm text-blue-600">Показати всі</Link>
+                  {requests.map((r: any) => (
+                    <div key={`request-${r.id}`} className="col-span-1">
+                      <div className="bg-yellow-50 border border-yellow-100 p-0 rounded-lg shadow-sm overflow-hidden">
+                        <Link href={`/requests/${r.id}`} className="block">
+                          <div className="h-44 w-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl font-bold">{r.title?.slice(0,1) || 'R'}</div>
+                        </Link>
+                        <div className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-sm text-yellow-800 font-semibold">{r.requestType || 'Запит'}</div>
+                            {r.isPaid && r.priceFrom && <div className="text-xs text-yellow-700">Промо</div>}
+                          </div>
+                          <Link href={`/requests/${r.id}`} className="block">
+                            <h4 className="font-bold text-neutral-900 mb-2 hover:text-primary-600">{r.title}</h4>
+                          </Link>
+                          <div className="text-sm text-neutral-600 mb-3 line-clamp-2">{r.description}</div>
+                          <div className="text-sm text-neutral-700">{r.priceFrom ? `${r.priceFrom} ${r.priceUnit || 'уцм'}` : 'За домовленістю'}</div>
                         </div>
                       </div>
                     </div>
