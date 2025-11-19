@@ -118,7 +118,8 @@ async function getServices(q?: string, city?: string, category?: string) {
         }
       });
 
-      // Map requests to a unified shape and merge with services
+      // Map requests to a unified shape and merge with services so requests
+      // appear as service-like cards in the main grid.
       const mappedRequests = requests.map((r: any) => ({
         id: r.id,
         kind: 'request',
@@ -135,17 +136,18 @@ async function getServices(q?: string, city?: string, category?: string) {
         user: r.user,
       }));
 
-      // Group requests by type for separate subsections (employers can browse requests by purpose)
-      const requestsByType = mappedRequests.reduce((acc: any, r: any) => {
-        const t = r.requestType || 'other'
-        if (!acc[t]) acc[t] = []
-        acc[t].push(r)
-        return acc
-      }, {})
+      // Keep requestsByType in case UI needs grouped sidebars, but to avoid
+      // duplication we'll return requests merged into the main `services`
+      // array and provide an empty requestsByType so subsections don't
+      // duplicate the cards. If you prefer both, change this behavior.
+      const requestsByType: any = {}
 
-      // Combine services (only) and return both structures
-      const servicesOnly = services.map((s: any) => ({ ...s, kind: 'service' }))
-      return { services: servicesOnly, requestsByType };
+      // Combine services and requests into a single list and sort by date
+      const servicesOnly = services.map((s: any) => ({ ...s, kind: 'service' }));
+      const merged = [...mappedRequests, ...servicesOnly]
+        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      return { services: merged, requestsByType };
     } catch (err) {
       console.warn('Failed to load requests to merge into services listing:', err);
     }

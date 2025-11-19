@@ -411,6 +411,7 @@ export default function CreateServicePage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="грн">грн</option>
+                  <option value="уцм">уцм</option>
                   <option value="грн/год">грн/год</option>
                   <option value="грн/день">грн/день</option>
                   <option value="грн/м²">грн/м²</option>
