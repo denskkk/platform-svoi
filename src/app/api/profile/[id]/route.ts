@@ -157,6 +157,7 @@ export async function GET(
         usesBusinessServices: true,
         readyToSwitchToUCM: true,
         avgRating: true,
+        balanceUcm: true,
         totalReviews: true,
         isVerified: true,
         subscriptionActive: true,

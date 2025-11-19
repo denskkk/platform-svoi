@@ -21,19 +21,28 @@ async function main() {
 
   for (const u of users) {
     try {
+      const current = Number(u.balanceUcm) || 0;
+      const delta = Math.max(0, AMOUNT - current);
+
+      if (delta === 0) {
+        console.log(`User ${u.id} (${u.email || 'no-email'}) already has >= ${AMOUNT} (has ${current})`);
+        success++;
+        continue;
+      }
+
       if (DRY_RUN) {
-        console.log(`[DRY] Would credit user ${u.id} (${u.email || 'no-email'}) with ${AMOUNT}`);
+        console.log(`[DRY] Would top-up user ${u.id} (${u.email || 'no-email'}) by ${delta} to reach ${AMOUNT} (has ${current})`);
         success++;
         continue;
       }
 
       await prisma.$transaction(async (tx) => {
-        await tx.user.update({ where: { id: u.id }, data: { balanceUcm: { increment: AMOUNT } } });
+        await tx.user.update({ where: { id: u.id }, data: { balanceUcm: { increment: delta } } });
         await tx.ucmTransaction.create({
           data: {
             userId: u.id,
             kind: 'credit',
-            amount: AMOUNT,
+            amount: delta,
             reason: 'admin_grant',
             relatedEntityType: null,
             relatedEntityId: null,
@@ -42,11 +51,11 @@ async function main() {
         });
       });
 
-      console.log(`Credited user ${u.id} (${u.email || 'no-email'}) with ${AMOUNT}`);
+      console.log(`Topped-up user ${u.id} (${u.email || 'no-email'}) by ${delta} to reach ${AMOUNT}`);
       success++;
     } catch (e) {
       failed++;
-      console.error(`Failed to credit user ${u.id}:`, e && e.message ? e.message : e);
+      console.error(`Failed to top-up user ${u.id}:`, e && e.message ? e.message : e);
     }
   }
 
