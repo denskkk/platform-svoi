@@ -280,6 +280,14 @@ export function Navbar() {
                         Редагувати профіль
                       </Link>
                       <Link
+                        href="/upgrade"
+                        className="block px-4 py-2 text-indigo-600 hover:bg-indigo-50 font-medium"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        ⚡ Покращити акаунт
+                      </Link>
+                      <div className="border-t border-neutral-200 my-2"></div>
+                      <Link
                         href="/chat"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
                         onClick={() => setShowProfileMenu(false)}
@@ -402,6 +410,13 @@ export function Navbar() {
                       <span className="font-medium">{balance.toFixed(2)} уцмка</span>
                     </div>
                   )}
+                  <Link
+                    href="/upgrade"
+                    className="block px-4 py-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    ⚡ Покращити акаунт
+                  </Link>
                   <Link
                     href="/profile/edit"
                     className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
