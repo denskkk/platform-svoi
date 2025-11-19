@@ -279,10 +279,16 @@ export async function getUserEarningProgress(userId: number) {
       }
     });
 
-    const earnedActions = new Set(
-      transactions.map(t => 
-        Object.entries(EARNING_DESCRIPTIONS).find(([_, desc]) => desc === t.reason)?.[0]
-      ).filter(Boolean)
+    // Тип для транзакции (минимально необходимое поле)
+    interface CreditTx { reason: string; }
+
+    const earnedActions = new Set<string>(
+      (transactions as CreditTx[]) // приводим к интерфейсу
+        .map((t: CreditTx) => {
+          const match = Object.entries(EARNING_DESCRIPTIONS).find(([_key, desc]) => desc === t.reason);
+          return match ? match[0] : undefined;
+        })
+        .filter((v): v is string => Boolean(v))
     );
 
     const progress = Object.entries(EARNING_REWARDS).map(([action, amount]) => {
