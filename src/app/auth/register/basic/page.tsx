@@ -147,9 +147,9 @@ export default function RegisterBasicPage() {
         localStorage.setItem("token", data.token);
       }
 
-  // Перенаправити на профіль з кеш-бастингом (щоб аватар одразу відобразився)
-  const redirectTs = Date.now();
-  router.push(`/profile/${data.user.id}?t=${redirectTs}`);
+      // Перенаправити на розширену анкету, щоб користувач міг одразу заповнити повний профіль
+      // Розширена анкета вимагає збереженого локального user, тому зберігаємо і йдемо туди
+      router.push('/auth/register/extended');
     } catch (err: any) {
       setError(err.message || "Помилка реєстрації");
     } finally {
