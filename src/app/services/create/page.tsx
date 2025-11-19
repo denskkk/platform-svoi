@@ -53,13 +53,6 @@ export default function CreateServicePage() {
     const userData = JSON.parse(storedUser);
   setUser(userData);
     setToken(storedToken);
-
-    // If basic account, open request modal immediately so user can create a request with photo/price
-    try {
-      if (userData && userData.accountType === 'basic') {
-        setOpenModal(true);
-      }
-    } catch {}
     
     // Установить город пользователя по умолчанию
     setFormData(prev => ({
@@ -221,36 +214,7 @@ export default function CreateServicePage() {
     );
   }
 
-  // Базовий акаунт: пропонуємо апгрейд на розширений для створення послуги
-  if (user && user.accountType === 'basic') {
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Створити заявку</h1>
-          <p className="text-gray-600 mb-6">
-            Для створення заявки не потрібно оновлювати акаунт — оберіть тип заявки нижче.
-          </p>
-          <div className="space-y-3">
-            <button
-              onClick={() => setOpenModal(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors"
-            >
-              Обрати тип заявки
-            </button>
-            <button
-              onClick={() => router.push(`/profile/${user.id}`)}
-              className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-lg font-medium transition-colors"
-            >
-              Повернутися до профілю
-            </button>
-          </div>
-
-          <CreateRequestModal open={openModal} onClose={() => setOpenModal(false)} />
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
