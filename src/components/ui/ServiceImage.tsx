@@ -31,19 +31,16 @@ export function ServiceImage({ src, alt, className = "", fallbackLetter }: Servi
         return `${u}${u.includes("?") ? "&" : "?"}t=${ts}`;
       };
       
-      // Якщо маємо webp → генеруємо jpeg fallback
-      if (src.endsWith('.webp')) {
+      // Якщо URL має розширення .webp — підготуємо webp джерело і jpeg fallback
+      if (src.toLowerCase().endsWith('.webp')) {
         const jpegBase = src.replace(/\.webp$/i, '.jpg');
         setWebpSrc(addTs(src));
         setJpegSrc(addTs(jpegBase));
-      } else if (src.endsWith('.jpg') || src.endsWith('.jpeg') || src.endsWith('.png')) {
-        setWebpSrc(addTs(src));
-        setJpegSrc(addTs(src));
       } else {
-        setWebpSrc(addTs(src));
-        // Спробуємо універсальний jpeg варіант
-        const jpegGuess = src + '.jpg';
-        setJpegSrc(addTs(jpegGuess));
+        // Для jpg/png або будь-якого іншого URL — не ставимо <source type="image/webp">,
+        // а використовуємо безпосередньо основний src як jpeg/png (з cache-buster).
+        setWebpSrc(null);
+        setJpegSrc(addTs(src));
       }
     } else {
       setWebpSrc(null);
@@ -64,24 +61,21 @@ export function ServiceImage({ src, alt, className = "", fallbackLetter }: Servi
 
   return (
     <picture>
-      {/* Джерело WebP */}
-      <source srcSet={webpSrc} type="image/webp" />
-      {/* Fallback JPEG/PNG */}
+      {/* Якщо є webpSrc — додамо webp-джерело, інакше просто рендеримо <img> з jpegSrc */}
+      {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
       <img
-        src={jpegSrc || webpSrc}
+        src={jpegSrc || webpSrc || ''}
         alt={alt}
         className={className}
         onError={() => {
-          // Якщо помилка на jpeg → пробуємо оригінал без cache-buster один раз
           if (!retriedRef.current && src) {
             retriedRef.current = true;
-            // Спроба без параметра (WebP)
-            if (webpSrc && webpSrc.includes('?t=')) {
-              setWebpSrc(src.endsWith('.webp') ? src : src + (src.includes('?') ? '&' : '?') + 'orig=1');
+            // Спроба підчистити cache-buster
+            if (jpegSrc && jpegSrc.includes('?t=')) {
+              setJpegSrc(jpegSrc.split('?')[0]);
             }
           } else if (!triedJpegRef.current && jpegSrc) {
             triedJpegRef.current = true;
-            // Спробуємо ще раз jpeg без cache-buster
             const cleanJpeg = jpegSrc.split('?')[0];
             setJpegSrc(cleanJpeg);
           } else {
