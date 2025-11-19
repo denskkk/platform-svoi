@@ -845,8 +845,6 @@ export default function EditProfilePage() {
                   </select>
                 </div>
 
-                {!isExtended && (
-                  <>
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
                         Про себе
@@ -919,8 +917,6 @@ export default function EditProfilePage() {
                         </div>
                       </div>
                     </div>
-                  </>
-                )}
               </div>
             )}
 
@@ -1024,6 +1020,20 @@ export default function EditProfilePage() {
                     <option value="Студент">Студент</option>
                     <option value="Пенсіонер">Пенсіонер</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Професія / Спеціальність
+                  </label>
+                  <input
+                    type="text"
+                    name="profession"
+                    value={formData.profession}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                    placeholder="Ваша професія або спеціальність"
+                  />
                 </div>
 
                 {(formData.employmentStatus === 'Безробітний' || formData.employmentStatus === 'Студент') && (
