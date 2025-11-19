@@ -8,7 +8,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuthWithPermission } from '@/lib/api-middleware';
+import { requireAuthWithPermission, requireAuth } from '@/lib/api-middleware';
+import { chargeForAction } from '@/lib/ucm';
 import { apiCache, invalidateCache } from '@/lib/cache';
 import { getAuthCookie } from '@/lib/cookies';
 import { awardUcmForAction } from '@/lib/earning';
@@ -161,8 +162,8 @@ export async function GET(request: NextRequest) {
 // POST - Створити послугу
 export async function POST(request: NextRequest) {
   try {
-    // Перевіряємо авторизацію та дозволи
-    const authResult = await requireAuthWithPermission(request, 'CREATE_SERVICE');
+    // Перевіряємо авторизацію (доступ до створення послуг на клієнті вже знято)
+    const authResult = await requireAuth(request);
     if (authResult.error) {
       return authResult.error;
     }
@@ -177,8 +178,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userId = Number(authResult.user.userId);
+    const accountType = authResult.user.accountType;
+
     const serviceData: any = {
-      userId: authResult.user.userId,
+      userId,
       categoryId: body.categoryId,
       title: body.title,
       description: body.description,
@@ -192,6 +196,19 @@ export async function POST(request: NextRequest) {
 
     if (body.imageUrl) {
       serviceData.imageUrl = body.imageUrl;
+    }
+
+    // If user is basic — force price = 1 уцм and charge 1 уцм for service creation
+    if (accountType === 'basic') {
+      serviceData.priceUnit = 'уцм';
+      serviceData.priceFrom = 1;
+      serviceData.priceTo = 1;
+      try {
+        await chargeForAction({ userId, amount: 1, reason: 'create_service', related: { type: 'service' } });
+      } catch (e: any) {
+        console.error('[create service] failed charging basic user:', e?.message || e);
+        return NextResponse.json({ error: 'Недостатньо уцмок на балансі' }, { status: 402 });
+      }
     }
 
     const service = await prisma.service.create({
@@ -217,6 +234,7 @@ export async function POST(request: NextRequest) {
 
     // Інвалідувати кеш послуг (бо створили нову)
     invalidateCache('services:');
+
 
     // Нарахувати бонус за першу послугу
     try {
