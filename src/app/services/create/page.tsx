@@ -7,7 +7,7 @@ import { ArrowLeft, Camera, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { usePermission } from '@/hooks/usePermission';
 const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
-import { RequirePermission } from '@/components/ui/RequirePermission';
+// Permission gating removed for service creation to allow basic users to create 1 уцм services
 
 export default function CreateServicePage() {
   const router = useRouter();
@@ -51,8 +51,15 @@ export default function CreateServicePage() {
     }
 
     const userData = JSON.parse(storedUser);
-  setUser(userData);
+    setUser(userData);
     setToken(storedToken);
+
+    // If basic account: default service price unit to 'уцм' and minimum price to 1
+    try {
+      if (userData && userData.accountType === 'basic') {
+        setFormData(prev => ({ ...prev, priceUnit: 'уцм', priceFrom: '1' }));
+      }
+    } catch {}
     
     // Установить город пользователя по умолчанию
     setFormData(prev => ({
@@ -245,7 +252,6 @@ export default function CreateServicePage() {
             </div>
           )}
 
-          <RequirePermission permission="CREATE_SERVICE">
             <form onSubmit={handleSubmit} className="space-y-6">
             {/* Категорія */}
             <div>
@@ -360,6 +366,7 @@ export default function CreateServicePage() {
                   step="0.01"
                   value={formData.priceFrom}
                   onChange={handleChange}
+                  disabled={user?.accountType === 'basic'}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="100"
                 />
@@ -390,6 +397,7 @@ export default function CreateServicePage() {
                   value={formData.priceUnit}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={user?.accountType === 'basic'}
                 >
                   <option value="грн">грн</option>
                   <option value="уцм">уцм</option>
@@ -469,7 +477,7 @@ export default function CreateServicePage() {
               </Link>
             </div>
           </form>
-          </RequirePermission>
+          
         </div>
       </div>
     </div>
