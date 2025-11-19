@@ -178,6 +178,48 @@ export async function POST(request: NextRequest) {
       console.warn('[register] referral post-processing failed', e);
     }
 
+    // Нарахувати стартовий бонус користувачу (наприклад 5 уцмок) та записати транзакцію
+    const START_BONUS = 5;
+    try {
+      await prisma.$transaction(async (tx: typeof prisma) => {
+        await tx.user.update({ where: { id: created.id }, data: { balanceUcm: { increment: START_BONUS } } });
+        await tx.ucmTransaction.create({
+          data: {
+            userId: created.id,
+            kind: 'credit',
+            amount: START_BONUS,
+            reason: 'signup_bonus',
+            relatedEntityType: null,
+            relatedEntityId: null,
+            meta: {},
+          }
+        });
+      });
+    } catch (e) {
+      console.warn('[register] failed to apply start bonus', e);
+    }
+
+    // Підтягнемо оновлені дані користувача (щоб повернути balanceUcm) перед відправкою відповіді
+    const returnedUser = await prisma.user.findUnique({
+      where: { id: created.id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        accountType: true,
+        city: true,
+        avatarUrl: true,
+        isVerified: true,
+        subscriptionActive: true,
+        subscriptionStartedAt: true,
+        subscriptionExpiresAt: true,
+        createdAt: true,
+        balanceUcm: true,
+      }
+    });
+
     // Генерація JWT токена
     const token = generateToken({
       userId: created.id,
@@ -204,7 +246,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       message: 'Реєстрація успішна!',
-      user: created,
+      user: returnedUser || created,
       token,
     }, { status: 201 });
 
