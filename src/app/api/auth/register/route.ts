@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       ? await prisma.user.findFirst({ where: { referralCode: String(refCode) }, select: { id: true, email: true } })
       : null;
 
-    // Створимо користувача та обробимо реферал у транзакції
+    // Створимо користувача у транзакції (реферальні дії виконаємо після commit)
     const created = await prisma.$transaction(async (tx: typeof prisma) => {
       const newUser = await tx.user.create({
         data: {
@@ -164,16 +164,19 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      // Згенерувати власний рефкод
-      await ensureUserReferralCode(newUser.id)
-
-      // Нарахувати реф-нагороду, якщо є валідний інвайтер
-      if (inviter && inviter.email !== email) {
-        await awardReferral({ inviterId: inviter.id, inviteeId: newUser.id, code: String(refCode) })
-      }
-
       return newUser
     });
+
+    // Після успішної транзакції генеруємо реф-код та нараховуємо бонуси (позатранзакційно)
+    try {
+      await ensureUserReferralCode(created.id);
+      if (inviter && inviter.email !== email) {
+        await awardReferral({ inviterId: inviter.id, inviteeId: created.id, code: String(refCode) });
+      }
+    } catch (e) {
+      // Логуємо, але не блокуємо реєстрацію у випадку проблем з реферальною системою
+      console.warn('[register] referral post-processing failed', e);
+    }
 
     // Генерація JWT токена
     const token = generateToken({
