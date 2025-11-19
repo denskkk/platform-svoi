@@ -16,7 +16,8 @@ import {
   ArrowRight,
   Eye,
   User,
-  AlertCircle
+  AlertCircle,
+  Gift
 } from 'lucide-react';
 
 interface PaidAction {
@@ -232,12 +233,21 @@ export default function UpgradePage() {
                 <span className="text-2xl">уцмок</span>
               </div>
             </div>
-            <Link
-              href="/payments/checkout"
-              className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:bg-yellow-50 transition-colors shadow-lg"
-            >
-              Поповнити баланс
-            </Link>
+            <div className="flex gap-3 flex-wrap">
+              <Link
+                href="/earn"
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-lg flex items-center gap-2"
+              >
+                <Gift className="w-5 h-5" />
+                Заробити безкоштовно
+              </Link>
+              <Link
+                href="/payments/checkout"
+                className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:bg-yellow-50 transition-colors shadow-lg"
+              >
+                Поповнити баланс
+              </Link>
+            </div>
           </div>
         </div>
 

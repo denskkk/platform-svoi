@@ -280,6 +280,13 @@ export function Navbar() {
                         Редагувати профіль
                       </Link>
                       <Link
+                        href="/earn"
+                        className="block px-4 py-2 text-green-600 hover:bg-green-50 font-medium"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        💰 Як заробити уцмки
+                      </Link>
+                      <Link
                         href="/upgrade"
                         className="block px-4 py-2 text-indigo-600 hover:bg-indigo-50 font-medium"
                         onClick={() => setShowProfileMenu(false)}
@@ -410,6 +417,13 @@ export function Navbar() {
                       <span className="font-medium">{balance.toFixed(2)} уцмка</span>
                     </div>
                   )}
+                  <Link
+                    href="/earn"
+                    className="block px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    💰 Як заробити уцмки
+                  </Link>
                   <Link
                     href="/upgrade"
                     className="block px-4 py-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"

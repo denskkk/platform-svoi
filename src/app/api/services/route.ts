@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { apiCache, invalidateCache } from '@/lib/cache';
 import { getAuthCookie } from '@/lib/cookies';
+import { awardUcmForAction } from '@/lib/earning';
 
 // GET - Отримати послуги з фільтрами
 export async function GET(request: NextRequest) {
@@ -187,6 +188,19 @@ export async function POST(request: NextRequest) {
 
     // Інвалідувати кеш послуг (бо створили нову)
     invalidateCache('services:');
+
+    // Нарахувати бонус за першу послугу
+    try {
+      const userServices = await prisma.service.count({
+        where: { userId: authResult.user.userId }
+      });
+      
+      if (userServices === 1) {
+        await awardUcmForAction(authResult.user.userId, 'FIRST_SERVICE');
+      }
+    } catch (error) {
+      console.error('Error awarding first service bonus:', error);
+    }
 
     return NextResponse.json({
       success: true,
