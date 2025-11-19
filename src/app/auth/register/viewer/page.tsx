@@ -320,3 +320,11 @@ function ViewerRegisterForm() {
   );
 }
 
+export default function ViewerRegistrationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">Завантаження...</div>}>
+      <ViewerRegisterForm />
+    </Suspense>
+  );
+}
+

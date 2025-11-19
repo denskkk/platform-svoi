@@ -277,11 +277,3 @@ export default function RegisterIndividualPage() {
     </Suspense>
   )
 }
-
-export default function RegisterIndividualPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Завантаження...</div>}>
-      <RegisterIndividualForm />
-    </Suspense>
-  )
-}
