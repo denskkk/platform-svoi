@@ -16,6 +16,7 @@ export function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [balance, setBalance] = useState<number | null>(null)
   const [earnIncompleteCount, setEarnIncompleteCount] = useState(0)
+  const [profileCompletionPct, setProfileCompletionPct] = useState<number | null>(null)
 
   useEffect(() => {
     const readUser = () => {
@@ -158,6 +159,27 @@ export function Navbar() {
     if (user) fetchEarn()
   }, [user])
 
+  // Fetch profile completion percent
+  useEffect(() => {
+    const fetchCompletion = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) return
+        const res = await fetch('/api/earning/progress', { headers: { 'Authorization': `Bearer ${token}` } })
+        if (!res.ok) return
+        const data = await res.json()
+        if (Array.isArray(data.progress)) {
+          const prof = data.progress.find((p: any) => p.action === 'PROFILE_COMPLETE')
+          if (prof) {
+            const pct = prof.progressMax > 0 ? (prof.progress / prof.progressMax) * 100 : 0
+            setProfileCompletionPct(Math.round(pct))
+          }
+        }
+      } catch {}
+    }
+    if (user) fetchCompletion()
+  }, [user])
+
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
@@ -271,6 +293,9 @@ export function Navbar() {
                       {balance !== null && (
                         <span className="text-[11px] text-neutral-500 font-normal">{balance.toFixed(2)} уцмка</span>
                       )}
+                      {profileCompletionPct !== null && profileCompletionPct < 100 && (
+                        <span className="text-[10px] text-indigo-600 font-semibold">Профіль {profileCompletionPct}%</span>
+                      )}
                     </span>
                   </button>
 
@@ -289,6 +314,12 @@ export function Navbar() {
                       >
                         Мій профіль
                       </Link>
+                      {profileCompletionPct !== null && profileCompletionPct < 100 && (
+                        <div className="px-4 py-2 text-neutral-700 flex items-center justify-between text-xs">
+                          <span>Заповнено</span>
+                          <span className="font-medium text-indigo-600">{profileCompletionPct}%</span>
+                        </div>
+                      )}
                       {balance !== null && (
                         <div className="px-4 py-2 text-neutral-700 flex items-center justify-between">
                           <span>Баланс</span>

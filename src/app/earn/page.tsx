@@ -27,6 +27,7 @@ interface EarningProgress {
   progress: number;
   progressMax: number;
   isRepeatable: boolean;
+  missingFields?: string[];
 }
 
 interface EarningStats {
@@ -72,6 +73,16 @@ export default function EarnPage() {
 
   useEffect(() => {
     loadData();
+    // Авто-оновлення прогресу кожні 60с + при поверненні у вкладку
+    const interval = setInterval(loadData, 60000);
+    const onFocus = () => loadData();
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
   }, []);
 
   const loadData = async () => {
@@ -141,6 +152,32 @@ export default function EarnPage() {
   const completedTasks = progress.filter(p => p.completed).length;
   const totalTasks = progress.filter(p => !p.isRepeatable).length;
   let visibleTasks = progress.slice();
+    const ACTION_ROUTES: Record<string, { href: string; label: string }> = {
+      PROFILE_COMPLETE: { href: '/profile/edit', label: 'Заповнити профіль' },
+      FIRST_SERVICE: { href: '/services/create', label: 'Додати послугу' },
+      VERIFIED_PHONE: { href: '/profile/edit', label: 'Підтвердити телефон' },
+      VERIFIED_EMAIL: { href: '/profile/edit', label: 'Підтвердити email' },
+      ADD_AVATAR: { href: '/profile/edit', label: 'Додати фото' },
+      GIVE_REVIEW: { href: '/services', label: 'Залишити відгук' },
+      SERVICE_COMPLETED: { href: '/services', label: 'Переглянути послуги' },
+      BUSINESS_UPGRADE: { href: '/upgrade', label: 'Апгрейд аккаунту' },
+      REFERRAL_INVITER: { href: '/referrals', label: 'Запросити друга' },
+      REFERRAL_INVITEE: { href: '/auth/register', label: 'Реєстрація' }
+    };
+
+    const renderActionButton = (action: string, completed: boolean) => {
+      if (completed) return null;
+      const route = ACTION_ROUTES[action];
+      if (!route) return null;
+      return (
+        <Link
+          href={route.href}
+          className="mt-3 inline-flex items-center text-xs font-medium px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition"
+        >
+          {route.label}
+        </Link>
+      );
+    };
   if (taskFilter === 'incomplete') visibleTasks = visibleTasks.filter(t => !t.completed);
   else if (taskFilter === 'completed') visibleTasks = visibleTasks.filter(t => t.completed);
   else if (taskFilter === 'repeatable') visibleTasks = visibleTasks.filter(t => t.isRepeatable);
@@ -316,81 +353,151 @@ export default function EarnPage() {
         </div>
 
         {/* Tasks Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {visibleTasks.map((task) => {
-            const Icon = ACTION_ICONS[task.action] || Gift;
-            const progressPercent = (task.progress / task.progressMax) * 100;
-
-            return (
-              <div
-                key={task.action}
-                className={`bg-white rounded-xl shadow-lg p-6 border-2 transition-all ${
-                  task.completed
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-gray-200 hover:border-indigo-300 hover:shadow-xl'
-                }`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      task.completed 
-                        ? 'bg-green-100' 
-                        : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+        {visibleTasks.length === 0 ? (
+          <div className="p-6 bg-white border border-neutral-200 rounded-xl text-center text-sm text-neutral-600">
+            Завдання наразі не завантажені. Спробуйте оновити сторінку або перевірити авторизацію.
+          </div>
+        ) : taskFilter === 'all' ? (
+          <div className="space-y-10">
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-600 mb-3 uppercase tracking-wide">Унікальні завдання</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {visibleTasks.filter(t=>!t.isRepeatable).map(task => {
+                  const Icon = ACTION_ICONS[task.action] || Gift;
+                  const progressPercent = (task.progress / task.progressMax) * 100;
+                  return (
+                    <div key={task.action} className={`bg-white rounded-xl shadow-lg p-6 border-2 transition-all ${
+                      task.completed ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-indigo-300 hover:shadow-xl'
                     }`}>
-                      {task.completed ? (
-                        <CheckCircle className="w-6 h-6 text-green-600" />
-                      ) : (
-                        <Icon className="w-6 h-6 text-white" />
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                        {task.description}
-                        {task.isRepeatable && (
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                            Багаторазове
-                          </span>
-                        )}
-                      </h3>
-                      
-                      {!task.completed && task.progressMax > 1 && (
-                        <div className="mb-2">
-                          <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-                            <span>Прогрес</span>
-                            <span>{task.progress}/{task.progressMax}</span>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            task.completed ? 'bg-green-100' : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                          }`}>
+                            {task.completed ? <CheckCircle className="w-6 h-6 text-green-600" /> : <Icon className="w-6 h-6 text-white" />}
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div 
-                              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all"
-                              style={{ width: `${progressPercent}%` }}
-                            />
+                          <div className="flex-1">
+                            <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                              {task.description}
+                            </h3>
+                            {!task.completed && task.progressMax > 1 && (
+                              <div className="mb-2">
+                                <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                                  <span>Прогрес</span>
+                                  <span>{task.progress}/{task.progressMax}</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
+                                </div>
+                              </div>
+                            )}
+                            {!task.completed && task.action === 'PROFILE_COMPLETE' && task.missingFields && (
+                              <div className="mt-2 text-xs text-neutral-600">
+                                Відсутні: {task.missingFields.slice(0,5).join(', ')}{task.missingFields.length>5?'…':''}
+                              </div>
+                            )}
                           </div>
                         </div>
-                      )}
+                        <div className="flex flex-col items-end gap-2">
+                          <div className={`font-bold text-2xl ${task.completed ? 'text-green-600' : 'text-orange-500'}`}>+{task.amount}</div>
+                          <div className="text-sm text-gray-500">уцмок</div>
+                        </div>
+                      </div>
+                      {task.completed ? (
+                        <div className="flex items-center gap-2 text-green-600 text-sm font-medium"><CheckCircle className="w-4 h-4" />Виконано</div>
+                      ) : renderActionButton(task.action, task.completed)}
                     </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2">
-                    <div className={`font-bold text-2xl ${
-                      task.completed ? 'text-green-600' : 'text-orange-500'
-                    }`}>
-                      +{task.amount}
-                    </div>
-                    <div className="text-sm text-gray-500">уцмок</div>
-                  </div>
-                </div>
-
-                {task.completed && (
-                  <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
-                    <CheckCircle className="w-4 h-4" />
-                    Виконано
-                  </div>
-                )}
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-600 mb-3 uppercase tracking-wide">Багаторазові завдання</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {visibleTasks.filter(t=>t.isRepeatable).map(task => {
+                  const Icon = ACTION_ICONS[task.action] || Gift;
+                  const progressPercent = (task.progress / task.progressMax) * 100;
+                  return (
+                    <div key={task.action} className={`bg-white rounded-xl shadow-lg p-6 border-2 transition-all ${
+                      task.completed ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-indigo-300 hover:shadow-xl'
+                    }`}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            task.completed ? 'bg-green-100' : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                          }`}>
+                            {task.completed ? <CheckCircle className="w-6 h-6 text-green-600" /> : <Icon className="w-6 h-6 text-white" />}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                              {task.description}
+                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Багаторазове</span>
+                            </h3>
+                            {!task.completed && task.progressMax > 1 && (
+                              <div className="mb-2">
+                                <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                                  <span>Прогрес</span>
+                                  <span>{task.progress}/{task.progressMax}</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
+                                </div>
+                              </div>
+                            )}
+                            {!task.completed && task.action === 'PROFILE_COMPLETE' && task.missingFields && (
+                              <div className="mt-2 text-xs text-neutral-600">
+                                Відсутні: {task.missingFields.slice(0,5).join(', ')}{task.missingFields.length>5?'…':''}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <div className={`font-bold text-2xl ${task.completed ? 'text-green-600' : 'text-orange-500'}`}>+{task.amount}</div>
+                          <div className="text-sm text-gray-500">уцмок</div>
+                        </div>
+                      </div>
+                      {task.completed ? (
+                        <div className="flex items-center gap-2 text-green-600 text-sm font-medium"><CheckCircle className="w-4 h-4" />Виконано</div>
+                      ) : renderActionButton(task.action, task.completed)}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {visibleTasks.map(task => {
+              const Icon = ACTION_ICONS[task.action] || Gift;
+              const progressPercent = (task.progress / task.progressMax) * 100;
+              return (
+                <div key={task.action} className={`bg-white rounded-xl shadow-lg p-6 border-2 transition-all ${task.completed ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-indigo-300 hover:shadow-xl'}`}>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${task.completed ? 'bg-green-100' : 'bg-gradient-to-br from-blue-500 to-indigo-600'}`}>
+                        {task.completed ? <CheckCircle className="w-6 h-6 text-green-600" /> : <Icon className="w-6 h-6 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                          {task.description}
+                          {task.isRepeatable && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Багаторазове</span>}
+                        </h3>
+                        {!task.completed && task.progressMax > 1 && (
+                          <div className="mb-2">
+                            <div className="flex items-center justify-between text-sm text-gray-600 mb-1"><span>Прогрес</span><span>{task.progress}/{task.progressMax}</span></div>
+                            <div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all" style={{ width: `${progressPercent}%` }} /></div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2"><div className={`font-bold text-2xl ${task.completed ? 'text-green-600' : 'text-orange-500'}`}>+{task.amount}</div><div className="text-sm text-gray-500">уцмок</div></div>
+                  </div>
+                  {task.completed ? <div className="flex items-center gap-2 text-green-600 text-sm font-medium"><CheckCircle className="w-4 h-4" />Виконано</div> : renderActionButton(task.action, task.completed)}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Help Section */}
         <div className="mt-12 bg-blue-50 border border-blue-200 rounded-2xl p-8">

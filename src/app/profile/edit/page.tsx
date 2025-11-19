@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, GraduationCap, Briefcase, Home, Car, Heart, Target, Camera } from 'lucide-react';
+import { ProfileCompletionHint } from '@/components/ui/ProfileCompletionHint';
 
 // Маппінг українських значень до enum значень бази даних
 const toDbValue = {
@@ -190,9 +191,12 @@ export default function EditProfilePage() {
     
     if (!storedUser || !storedToken) {
       router.push('/auth/login');
-      return;
+      return (
     }
 
+            <div className="mb-4">
+              <ProfileCompletionHint />
+            </div>
     const userData = JSON.parse(storedUser);
     setUser(userData);
     setToken(storedToken);

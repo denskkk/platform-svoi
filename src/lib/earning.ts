@@ -267,7 +267,20 @@ export async function getUserEarningProgress(userId: number) {
       }
     });
 
-    if (!user) return [];
+    // Если пользователь не найден – возвращаем базовый список задач с нулевым прогрессом
+    // чтобы UI всегда имел структуры задач
+    if (!user) {
+      return Object.entries(EARNING_REWARDS).map(([action, amount]) => ({
+        action,
+        description: EARNING_DESCRIPTIONS[action as keyof typeof EARNING_DESCRIPTIONS],
+        amount,
+        completed: false,
+        canEarn: false,
+        progress: 0,
+        progressMax: 1,
+        isRepeatable: ['DAILY_LOGIN', 'GIVE_REVIEW', 'SERVICE_COMPLETED'].includes(action)
+      }));
+    }
 
     const transactions = await prisma.ucmTransaction.findMany({
       where: {
@@ -296,13 +309,26 @@ export async function getUserEarningProgress(userId: number) {
       let canEarn = true;
       let progress = 0;
       let progressMax = 1;
+      let missingFields: string[] | undefined;
 
       // Определяем возможность заработать и прогресс
       switch (action) {
         case 'PROFILE_COMPLETE':
-          const fields = [user.firstName, user.lastName, user.phone, user.email, user.city, user.avatarUrl, user.bio, user.profession, user.educationLevel, user.employmentStatus];
-          progress = fields.filter(f => f && f.toString().trim().length > 0).length;
-          progressMax = fields.length;
+          const fieldMap: [string, any][] = [
+            ['Імʼя', user.firstName],
+            ['Прізвище', user.lastName],
+            ['Телефон', user.phone],
+            ['Email', user.email],
+            ['Місто', user.city],
+            ['Аватар', user.avatarUrl],
+            ['Опис', user.bio],
+            ['Професія', user.profession],
+            ['Освіта', user.educationLevel],
+            ['Статус працевлаштування', user.employmentStatus]
+          ];
+          progress = fieldMap.filter(([, v]) => v && v.toString().trim().length > 0).length;
+          progressMax = fieldMap.length;
+          missingFields = fieldMap.filter(([, v]) => !v || v.toString().trim().length === 0).map(([label]) => label);
           break;
         
         case 'FIRST_SERVICE':
@@ -340,7 +366,8 @@ export async function getUserEarningProgress(userId: number) {
         canEarn,
         progress,
         progressMax,
-        isRepeatable: ['DAILY_LOGIN', 'GIVE_REVIEW', 'SERVICE_COMPLETED'].includes(action)
+        isRepeatable: ['DAILY_LOGIN', 'GIVE_REVIEW', 'SERVICE_COMPLETED'].includes(action),
+        ...(missingFields ? { missingFields } : {})
       };
     });
 

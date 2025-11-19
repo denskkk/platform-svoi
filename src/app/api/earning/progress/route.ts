@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
 
     // Получить прогресс заработка
     const progress = await getUserEarningProgress(userId);
+    const userRecord = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, accountType: true } });
+    console.log(`[earning/progress] user=${userId} found=${!!userRecord} progressCount=${progress.length}`);
 
     // Получить общую сумму заработанного
     const transactions = await prisma.ucmTransaction.findMany({
@@ -31,7 +33,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       progress,
-      totalEarned
+      totalEarned,
+      debug: {
+        userFound: !!userRecord,
+        accountType: userRecord?.accountType || null
+      }
     });
 
   } catch (error: any) {
