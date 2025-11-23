@@ -188,20 +188,56 @@ export default function EditProfilePage() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
-    
-    if (!storedUser || !storedToken) {
-      router.push('/auth/login');
-      return;
-    }
-    const userData = JSON.parse(storedUser);
-    setUser(userData);
-    setToken(storedToken);
-    setAvatarPreview(userData.avatarUrl || '');
 
-    loadProfile(userData.id, storedToken);
+    const initFromLocal = () => {
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          setAvatarPreview(userData.avatarUrl || '');
+        } catch {}
+      }
+      if (storedToken) setToken(storedToken);
+      if (storedUser) {
+          try {
+          const userData = JSON.parse(storedUser);
+          loadProfile(userData.id, storedToken ?? undefined);
+        } catch {}
+      }
+    };
+
+    // Если в localStorage нет токена/пользователя — пробуем получить через httpOnly cookie
+    if (!storedUser || !storedToken) {
+      (async () => {
+        try {
+          const res = await fetch('/api/auth/me', { credentials: 'include' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user) {
+              setUser(data.user);
+              setAvatarPreview(data.user.avatarUrl || '');
+              // Загружаем профиль по id
+              loadProfile(data.user.id, storedToken ?? undefined);
+              return;
+            }
+          }
+        } catch (e) {
+          console.error('Auth check failed in EditProfilePage:', e);
+        }
+
+        // Если и cookie, и localStorage не дали пользователя — пробуем инициализировать из local (если есть), либо редирект
+        if (storedUser || storedToken) {
+          initFromLocal();
+        } else {
+          router.push('/auth/login');
+        }
+      })();
+    } else {
+      initFromLocal();
+    }
   }, [router]);
 
-  const loadProfile = async (userId: number, authToken: string) => {
+  const loadProfile = async (userId: number, authToken?: string) => {
     try {
       const response = await fetch(`/api/profile/${userId}`);
       const data = await response.json();
@@ -352,11 +388,13 @@ export default function EditProfilePage() {
 
     try {
       console.log('[Upload Avatar] Початок завантаження аватара...');
+      const uploadHeaders: any = {};
+      if (token) uploadHeaders['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch('/api/upload', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
+        headers: uploadHeaders,
         body: uploadFormData,
       });
 
@@ -512,12 +550,13 @@ export default function EditProfilePage() {
         socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
       };
 
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`/api/profile/${user.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
+        headers,
         body: JSON.stringify(requestBody),
       });
 
