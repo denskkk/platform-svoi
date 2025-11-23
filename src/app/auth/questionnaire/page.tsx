@@ -30,7 +30,8 @@ export default function QuestionnairePage() {
     // Транспорт
     hasCar: '',
     carInfo: '',
-    otherTransport: '',
+    otherTransport: [] as string[],
+    otherTransportOther: '',
     
     // Професійна діяльність
     profession: '',
@@ -42,13 +43,18 @@ export default function QuestionnairePage() {
     
     // Домашні тварини
     hasPets: '',
-    petsInfo: '',
+    petsInfo: [] as string[],
+    petsInfoOther: '',
     
     // Інтереси
-    hobbies: '',
-    outdoorActivities: '',
-    lifestyle: '',
-    sports: '',
+    hobbies: [] as string[],
+    hobbiesOther: '',
+    outdoorActivities: [] as string[],
+    outdoorActivitiesOther: '',
+    lifestyle: [] as string[],
+    lifestyleOther: '',
+    sports: [] as string[],
+    sportsOther: '',
     bio: '',
     
     // Соцмережі
@@ -97,6 +103,14 @@ export default function QuestionnairePage() {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleCheckboxChange = (name: string, value: string) => {
+    const current = (formData as any)[name];
+    if (!Array.isArray(current)) return;
+    const exists = current.includes(value);
+    const updated = exists ? current.filter((v: string) => v !== value) : [...current, value];
+    setFormData({ ...formData, [name]: updated });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -471,14 +485,29 @@ export default function QuestionnairePage() {
           <label className="block text-sm font-medium text-neutral-700 mb-2">
             Інший транспорт
           </label>
-          <input
-            type="text"
-            name="otherTransport"
-            value={formData.otherTransport}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Велосипед, самокат, мотоцикл..."
-          />
+          <div className="grid grid-cols-2 gap-2">
+            {['Велосипед','Самокат','Мотоцикл','Скейт','Гірський велосипед','Інше'].map(opt => (
+              <label key={opt} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="otherTransport"
+                  checked={Array.isArray(formData.otherTransport) && formData.otherTransport.includes(opt)}
+                  onChange={() => handleCheckboxChange('otherTransport', opt)}
+                />
+                <span className="text-sm">{opt}</span>
+              </label>
+            ))}
+          </div>
+          {Array.isArray(formData.otherTransport) && formData.otherTransport.includes('Інше') && (
+            <input
+              type="text"
+              name="otherTransportOther"
+              value={formData.otherTransportOther}
+              onChange={handleChange}
+              className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              placeholder="Опишіть інший транспорт"
+            />
+          )}
         </div>
       </div>
     </div>
@@ -629,75 +658,80 @@ export default function QuestionnairePage() {
 
         {formData.hasPets === 'yes' && (
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Які тварини?
-            </label>
-            <input
-              type="text"
-              name="petsInfo"
-              value={formData.petsInfo}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Собака, кіт, папуга..."
-            />
+            <label className="block text-sm font-medium text-neutral-700 mb-2">Які тварини?</label>
+            <div className="grid grid-cols-2 gap-2">
+              {['Кіт','Собака','Птахи','Рибки','Гризуни','Немає','Інше'].map(opt => (
+                <label key={opt} className="inline-flex items-center gap-2">
+                  <input type="checkbox" name="petsInfo" checked={Array.isArray(formData.petsInfo) && formData.petsInfo.includes(opt)} onChange={() => handleCheckboxChange('petsInfo', opt)} />
+                  <span className="text-sm">{opt}</span>
+                </label>
+              ))}
+            </div>
+            {Array.isArray(formData.petsInfo) && formData.petsInfo.includes('Інше') && (
+              <input type="text" name="petsInfoOther" value={formData.petsInfoOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інших тварин" />
+            )}
           </div>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Хобі / Захоплення
-        </label>
-        <textarea
-          name="hobbies"
-          rows={2}
-          value={formData.hobbies}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Музика, мистецтво, подорожі, фотографія..."
-        />
+        <label className="block text-sm font-medium text-neutral-700 mb-2">Хобі / Захоплення</label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Музика','Кіно','Читання','Подорожі','Фотографія','Малювання','Рукоділля','Кулінарія','Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="hobbies" checked={Array.isArray(formData.hobbies) && formData.hobbies.includes(opt)} onChange={() => handleCheckboxChange('hobbies', opt)} />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {Array.isArray(formData.hobbies) && formData.hobbies.includes('Інше') && (
+          <input type="text" name="hobbiesOther" value={formData.hobbiesOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Вкажіть інше хобі" />
+        )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Охота, рибалка, активний відпочинок
-        </label>
-        <textarea
-          name="outdoorActivities"
-          rows={2}
-          value={formData.outdoorActivities}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Що саме, рівень залученості..."
-        />
+        <label className="block text-sm font-medium text-neutral-700 mb-2">Активності на свіжому повітрі</label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Прогулянки','Пікніки','Походи','Риболовля','Поїздки на природу','Покатушки на велосипеді','Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="outdoorActivities" checked={Array.isArray(formData.outdoorActivities) && formData.outdoorActivities.includes(opt)} onChange={() => handleCheckboxChange('outdoorActivities', opt)} />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {Array.isArray(formData.outdoorActivities) && formData.outdoorActivities.includes('Інше') && (
+          <input type="text" name="outdoorActivitiesOther" value={formData.outdoorActivitiesOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+        )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Спортивна активність
-        </label>
-        <textarea
-          name="sports"
-          rows={2}
-          value={formData.sports}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Який спорт, любительський чи професійний..."
-        />
+        <label className="block text-sm font-medium text-neutral-700 mb-2">Спорт</label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Футбол','Баскетбол','Плавання','Біг','Тренажерний зал','Йога','Велоспорт','Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="sports" checked={Array.isArray(formData.sports) && formData.sports.includes(opt)} onChange={() => handleCheckboxChange('sports', opt)} />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {Array.isArray(formData.sports) && formData.sports.includes('Інше') && (
+          <input type="text" name="sportsOther" value={formData.sportsOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+        )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Стиль життя
-        </label>
-        <textarea
-          name="lifestyle"
-          rows={2}
-          value={formData.lifestyle}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Відвідування кафе, ресторанів, подорожі (часто / рідко / іноді)..."
-        />
+        <label className="block text-sm font-medium text-neutral-700 mb-2">Стиль життя</label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Активний','Спокійний','Сімейний','Соціальний','Творчий','Кар\'єрний','Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="lifestyle" checked={Array.isArray(formData.lifestyle) && formData.lifestyle.includes(opt)} onChange={() => handleCheckboxChange('lifestyle', opt)} />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {Array.isArray(formData.lifestyle) && formData.lifestyle.includes('Інше') && (
+          <input type="text" name="lifestyleOther" value={formData.lifestyleOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+        )}
       </div>
 
       <div>
