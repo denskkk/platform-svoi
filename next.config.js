@@ -13,8 +13,13 @@ const nextConfig = {
   },
   
   // Оптимізація зображень
+  // Замінено deprecated `images.domains` на `images.remotePatterns`
   images: {
-    domains: ['localhost'],
+    // Разрешаем загрузку изображений с localhost (dev) по HTTP/HTTPS
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'localhost' },
+    ],
     formats: ['image/avif', 'image/webp'], // Сучасні формати для меншого розміру
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840], // Responsive sizes
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Icon sizes
