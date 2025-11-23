@@ -634,8 +634,10 @@ export default function EditProfilePage() {
                     width={96}
                     height={96}
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-200"
+                    unoptimized
                     onError={() => {
                       console.error('Avatar load error:', avatarPreview);
+                      setAvatarPreview('');
                     }}
                   />
                 ) : (

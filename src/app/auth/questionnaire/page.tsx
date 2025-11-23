@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, MapPin, Briefcase, Heart, Car, Globe } from 'lucide-react';
+import { User, MapPin, Briefcase, Heart, Car, Globe, Target } from 'lucide-react';
 
 export default function QuestionnairePage() {
   const router = useRouter();
@@ -62,6 +62,9 @@ export default function QuestionnairePage() {
     facebook: '',
     telegram: '',
     tiktok: '',
+    // Мета використання
+    siteUsageGoal: [] as string[],
+    siteUsageGoalOther: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -170,6 +173,8 @@ export default function QuestionnairePage() {
           facebook: u.socialLinks?.facebook || prev.facebook,
           telegram: u.socialLinks?.telegram || prev.telegram,
           tiktok: u.socialLinks?.tiktok || prev.tiktok,
+          siteUsageGoal: csvToArray(u.siteUsageGoal),
+          siteUsageGoalOther: '',
         }));
       } catch (e) {
         console.warn('Failed to fetch profile for questionnaire prefill', e);
@@ -291,6 +296,12 @@ export default function QuestionnairePage() {
           bio: formData.bio || null,
           
           socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
+          siteUsageGoal: Array.isArray(formData.siteUsageGoal)
+            ? (formData.siteUsageGoal
+                .map((v: string) => (v === 'Інше' && (formData as any).siteUsageGoalOther ? (formData as any).siteUsageGoalOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.siteUsageGoal || null,
         }),
       });
 
@@ -317,7 +328,7 @@ export default function QuestionnairePage() {
   };
 
   const nextStep = () => {
-    if (currentStep < 5) setCurrentStep(currentStep + 1);
+    if (currentStep < 6) setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
@@ -951,6 +962,33 @@ export default function QuestionnairePage() {
     </div>
   );
 
+  const renderStepMeta = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
+          <Target className="w-8 h-8 text-primary-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-neutral-900 mb-2">
+          🎯 Мета використання сайту
+        </h2>
+        <p className="text-neutral-600">Навіщо ви користуєтесь платформою?</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {['Знайти клієнтів','Знайти підрядників/послуги','Пошук роботи','Спілкування/мережування','Інше'].map(opt => (
+          <label key={opt} className="inline-flex items-center gap-2">
+            <input type="checkbox" name="siteUsageGoal" checked={Array.isArray(formData.siteUsageGoal) && formData.siteUsageGoal.includes(opt)} onChange={() => handleCheckboxChange('siteUsageGoal', opt)} />
+            <span className="text-sm">{opt}</span>
+          </label>
+        ))}
+      </div>
+
+      {Array.isArray(formData.siteUsageGoal) && formData.siteUsageGoal.includes('Інше') && (
+        <input type="text" name="siteUsageGoalOther" value={formData.siteUsageGoalOther || ''} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
@@ -959,7 +997,7 @@ export default function QuestionnairePage() {
           <div className="bg-neutral-100 px-8 py-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-neutral-700">
-                Крок {currentStep} з 5
+                Крок {currentStep} з 6
               </span>
               <span className="text-sm text-neutral-600">
                 {Math.round((currentStep / 5) * 100)}%
@@ -968,7 +1006,7 @@ export default function QuestionnairePage() {
             <div className="w-full bg-neutral-200 rounded-full h-2">
               <div
                 className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(currentStep / 5) * 100}%` }}
+                style={{ width: `${(currentStep / 6) * 100}%` }}
               />
             </div>
           </div>
@@ -986,6 +1024,7 @@ export default function QuestionnairePage() {
               {currentStep === 3 && renderStep3()}
               {currentStep === 4 && renderStep4()}
               {currentStep === 5 && renderStep5()}
+              {currentStep === 6 && renderStepMeta()}
 
               {/* Navigation Buttons */}
               <div className="flex gap-4 mt-8">
