@@ -87,6 +87,94 @@ export default function QuestionnairePage() {
       lastName: userData.lastName || '',
       city: userData.city || '',
     }));
+
+    // Также попытаться получить профиль с сервера и заполнить поля для редактирования
+    (async () => {
+      try {
+        const res = await fetch(`/api/profile/${userData.id}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        const u = json.user;
+        if (!u) return;
+
+        // Вспомогательная функция: перевод строки CSV -> string[]
+        const csvToArray = (val: any) => {
+          if (!val) return [] as string[];
+          if (Array.isArray(val)) return val;
+          if (typeof val === 'string') {
+            return val.split(',').map((s) => s.trim()).filter(Boolean);
+          }
+          return [] as string[];
+        };
+
+        const mapOther = (arr: string[], known: string[]) => {
+          // Если есть элементы, не в known — помечаем как 'Інше' и сохраняем текст
+          const otherItems = arr.filter(a => !known.includes(a));
+          const filtered = arr.filter(a => known.includes(a));
+          if (otherItems.length) {
+            return { values: [...filtered, 'Інше'], other: otherItems.join(', ') };
+          }
+          return { values: filtered, other: '' };
+        };
+
+        const otherTransportKnown = ['Автомобіль', 'Громадський транспорт', 'Велосипед', 'Пішки', 'Таксі', 'Інше'];
+        const petsKnown = ['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше'];
+        const hobbiesKnown = ['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше'];
+        const outdoorKnown = ['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше'];
+        const lifestyleKnown = ['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше'];
+        const sportsKnown = ['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше'];
+
+        const ot = mapOther(csvToArray(u.otherTransport), otherTransportKnown);
+        const pets = mapOther(csvToArray(u.petsInfo), petsKnown);
+        const hobbies = mapOther(csvToArray(u.hobbies), hobbiesKnown);
+        const outdoor = mapOther(csvToArray(u.outdoorActivities), outdoorKnown);
+        const lifestyle = mapOther(csvToArray(u.lifestyle), lifestyleKnown);
+        const sports = mapOther(csvToArray(u.sports), sportsKnown);
+
+        setFormData(prev => ({
+          ...prev,
+          middleName: u.middleName || prev.middleName,
+          phone: u.phone || prev.phone,
+          age: u.age ? String(u.age) : prev.age,
+          gender: u.gender || prev.gender,
+          maritalStatus: u.maritalStatus || prev.maritalStatus,
+          familyComposition: u.familyComposition || prev.familyComposition,
+          childrenCount: u.childrenCount ? String(u.childrenCount) : prev.childrenCount,
+          city: u.city || prev.city,
+          region: u.region || prev.region,
+          housingType: u.housingType || prev.housingType,
+          livingSituation: u.livingSituation || prev.livingSituation,
+          hasCar: typeof u.hasCar === 'boolean' ? (u.hasCar ? 'yes' : 'no') : prev.hasCar,
+          carInfo: u.carInfo || prev.carInfo,
+          otherTransport: ot.values,
+          otherTransportOther: ot.other,
+          profession: u.profession || prev.profession,
+          employmentStatus: u.employmentStatus || prev.employmentStatus,
+          workplace: u.workplace || prev.workplace,
+          education: u.educationLevel || u.educationDetails || prev.education,
+          businessInfo: u.privateBusinessInfo || prev.businessInfo,
+          jobSeeking: u.jobSeeking || prev.jobSeeking,
+          hasPets: typeof u.hasPets === 'boolean' ? (u.hasPets ? 'yes' : 'no') : prev.hasPets,
+          petsInfo: pets.values,
+          petsInfoOther: pets.other,
+          hobbies: hobbies.values,
+          hobbiesOther: hobbies.other,
+          outdoorActivities: outdoor.values,
+          outdoorActivitiesOther: outdoor.other,
+          lifestyle: lifestyle.values,
+          lifestyleOther: lifestyle.other,
+          sports: sports.values,
+          sportsOther: sports.other,
+          bio: u.bio || prev.bio,
+          instagram: u.socialLinks?.instagram || prev.instagram,
+          facebook: u.socialLinks?.facebook || prev.facebook,
+          telegram: u.socialLinks?.telegram || prev.telegram,
+          tiktok: u.socialLinks?.tiktok || prev.tiktok,
+        }));
+      } catch (e) {
+        console.warn('Failed to fetch profile for questionnaire prefill', e);
+      }
+    })();
   }, [router]);
 
   const cities = [

@@ -17,6 +17,11 @@ function RegisterIndividualForm() {
     confirmPassword: '',
     city: '',
   })
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [instagram, setInstagram] = useState('')
+  const [facebook, setFacebook] = useState('')
+  const [telegram, setTelegram] = useState('')
+  const [tiktok, setTiktok] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -44,6 +49,20 @@ function RegisterIndividualForm() {
       const firstName = nameParts[0] || formData.name
       const lastName = nameParts.slice(1).join(' ') || 'User'
 
+      // Валідація: аватар обов'язковий при реєстрації
+      if (!avatarFile) {
+        setError('Будь ласка, завантажте аватар при реєстрації')
+        setLoading(false)
+        return
+      }
+
+      // Валідація: принаймні одна соцмережа повинна бути вказана
+      if (!instagram && !facebook && !telegram && !tiktok) {
+        setError('Вкажіть принаймні одну соціальну мережу')
+        setLoading(false)
+        return
+      }
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -58,6 +77,14 @@ function RegisterIndividualForm() {
           city: formData.city,
           role: 'user',
           ref: searchParams?.get('ref') || undefined,
+          // We don't send avatarFile here (needs upload after we get token),
+          // but send social links if provided so they can be stored immediately.
+          socialLinks: (instagram || facebook || telegram || tiktok) ? {
+            ...(instagram ? { instagram } : {}),
+            ...(facebook ? { facebook } : {}),
+            ...(telegram ? { telegram } : {}),
+            ...(tiktok ? { tiktok } : {}),
+          } : undefined,
         }),
       })
 
@@ -70,6 +97,53 @@ function RegisterIndividualForm() {
       // Зберегти токен та дані користувача
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
+
+      // Загрузим аватар негайно і оновимо профіль з avatarUrl + socialLinks
+      try {
+        const fd = new FormData()
+        fd.append('file', avatarFile)
+        fd.append('type', 'avatars')
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${data.token}`,
+          },
+          body: fd,
+        })
+        const uploadData = await uploadRes.json()
+        if (uploadRes.ok && uploadData.url) {
+          const profileUpdateBody: any = { avatarUrl: uploadData.url }
+          const socialObj: any = {}
+          if (instagram) socialObj.instagram = instagram
+          if (facebook) socialObj.facebook = facebook
+          if (telegram) socialObj.telegram = telegram
+          if (tiktok) socialObj.tiktok = tiktok
+          if (Object.keys(socialObj).length) profileUpdateBody.socialLinks = socialObj
+
+          const profileRes = await fetch(`/api/profile/${data.user.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${data.token}`,
+            },
+            body: JSON.stringify(profileUpdateBody),
+          })
+          if (profileRes.ok) {
+            try {
+              const profileJson = await profileRes.json()
+              if (profileJson && profileJson.user) {
+                localStorage.setItem('user', JSON.stringify(profileJson.user))
+              }
+            } catch (e) {
+              // ignore parse errors
+            }
+          }
+        } else {
+          console.warn('Avatar upload failed or returned no url', uploadData)
+        }
+      } catch (e) {
+        console.warn('Avatar upload failed after registration', e)
+      }
 
       // Перейти на анкету
       router.push('/auth/questionnaire')
@@ -257,6 +331,43 @@ function RegisterIndividualForm() {
               {loading ? 'Реєструємо...' : 'Продовжити'}
             </button>
           </form>
+
+          {/* Avatar + socials (optional at registration) */}
+          <div className="mt-6 border-t pt-6">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">Аватар (опціонально)</label>
+            <input type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <input
+                type="text"
+                placeholder="Instagram"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+              <input
+                type="text"
+                placeholder="Facebook"
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+              <input
+                type="text"
+                placeholder="Telegram"
+                value={telegram}
+                onChange={(e) => setTelegram(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+              <input
+                type="text"
+                placeholder="TikTok"
+                value={tiktok}
+                onChange={(e) => setTiktok(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+          </div>
 
           {/* Повернутись */}
           <div className="mt-6 text-center">

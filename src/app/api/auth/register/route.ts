@@ -54,6 +54,8 @@ export async function POST(request: NextRequest) {
       employmentStatus,
       ref,
       referralCode,
+      avatarUrl,
+      socialLinks,
     } = body;
 
     // Валідація обов'язкових полів
@@ -134,6 +136,8 @@ export async function POST(request: NextRequest) {
           email,
           phone: phone || null,
           city: city || null,
+          avatarUrl: avatarUrl || null,
+          socialLinks: socialLinks ? socialLinks : null,
           passwordHash,
           isVerified: false,
           educationLevel: educationLevel || null,
