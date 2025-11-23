@@ -13,8 +13,7 @@ export const EARNING_REWARDS = {
   // Активность на платформе
   PROFILE_COMPLETE: 5,        // За заполнение профиля на 100%
   FIRST_SERVICE: 10,          // За добавление первой услуги
-  VERIFIED_PHONE: 3,          // За верификацию телефона
-  VERIFIED_EMAIL: 3,          // За верификацию email
+  // VERIFIED_PHONE and VERIFIED_EMAIL removed — verification not required
   ADD_AVATAR: 2,              // За добавление аватара
   
   // Взаимодействие
@@ -41,7 +40,7 @@ export const EARNING_DESCRIPTIONS = {
   PROFILE_COMPLETE: 'Заповнити профіль на 100%',
   FIRST_SERVICE: 'Додати першу послугу',
   VERIFIED_PHONE: 'Підтвердити номер телефону',
-  VERIFIED_EMAIL: 'Підтвердити email',
+  // VERIFIED_EMAIL removed — not required
   ADD_AVATAR: 'Додати фото профілю',
   FIRST_REVIEW_RECEIVED: 'Отримати перший відгук',
   GIVE_REVIEW: 'Залишити відгук',
@@ -75,8 +74,6 @@ export async function awardUcmForAction(
     const uniqueActions = [
       'PROFILE_COMPLETE',
       'FIRST_SERVICE',
-      'VERIFIED_PHONE',
-      'VERIFIED_EMAIL',
       'ADD_AVATAR',
       'FIRST_REVIEW_RECEIVED',
       'HIGH_RATING',
@@ -357,6 +354,8 @@ export async function getUserEarningProgress(userId: number) {
         case 'ADD_AVATAR':
           progress = user.avatarUrl ? 1 : 0;
           break;
+
+        // VERIFIED_PHONE / VERIFIED_EMAIL intentionally omitted — not part of default rewards
         
         case 'FIRST_REVIEW_RECEIVED':
           progress = user.reviewsReceived.length > 0 ? 1 : 0;

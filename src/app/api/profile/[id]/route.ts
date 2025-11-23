@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 import { prisma } from '@/lib/prisma';
+import { checkProfileCompletion } from '@/lib/earning';
 import { verifyToken, getTokenFromHeader } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
 
@@ -594,6 +595,13 @@ export async function PUT(
 
     // Удаляем чувствительные данные перед отправкой
     const { passwordHash, ...userWithoutPassword } = updatedUser;
+
+    // Запустить проверку завершённости профиля для начисления уцмок (в фоне)
+    try {
+      checkProfileCompletion(updatedUser.id).catch((e) => console.warn('[checkProfileCompletion] error', e));
+    } catch (e) {
+      console.warn('[put profile] failed to trigger profile completion check', e);
+    }
 
     return NextResponse.json({
       success: true,

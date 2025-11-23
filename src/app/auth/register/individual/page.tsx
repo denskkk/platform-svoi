@@ -49,19 +49,8 @@ function RegisterIndividualForm() {
       const firstName = nameParts[0] || formData.name
       const lastName = nameParts.slice(1).join(' ') || 'User'
 
-      // Валідація: аватар обов'язковий при реєстрації
-      if (!avatarFile) {
-        setError('Будь ласка, завантажте аватар при реєстрації')
-        setLoading(false)
-        return
-      }
-
-      // Валідація: принаймні одна соцмережа повинна бути вказана
-      if (!instagram && !facebook && !telegram && !tiktok) {
-        setError('Вкажіть принаймні одну соціальну мережу')
-        setLoading(false)
-        return
-      }
+      // Аватар и соцсети остаются опциональными при регистрации.
+      // Пользователь сможет добавить или изменить их позже в разделе редактирования профиля.
 
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -98,48 +87,50 @@ function RegisterIndividualForm() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
 
-      // Загрузим аватар негайно і оновимо профіль з avatarUrl + socialLinks
+      // Загрузим аватар негайно і оновимо профіль з avatarUrl + socialLinks (тільки якщо файл є)
       try {
-        const fd = new FormData()
-        fd.append('file', avatarFile)
-        fd.append('type', 'avatars')
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${data.token}`,
-          },
-          body: fd,
-        })
-        const uploadData = await uploadRes.json()
-        if (uploadRes.ok && uploadData.url) {
-          const profileUpdateBody: any = { avatarUrl: uploadData.url }
-          const socialObj: any = {}
-          if (instagram) socialObj.instagram = instagram
-          if (facebook) socialObj.facebook = facebook
-          if (telegram) socialObj.telegram = telegram
-          if (tiktok) socialObj.tiktok = tiktok
-          if (Object.keys(socialObj).length) profileUpdateBody.socialLinks = socialObj
-
-          const profileRes = await fetch(`/api/profile/${data.user.id}`, {
-            method: 'PUT',
+        if (avatarFile) {
+          const fd = new FormData()
+          fd.append('file', avatarFile)
+          fd.append('type', 'avatars')
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               'Authorization': `Bearer ${data.token}`,
             },
-            body: JSON.stringify(profileUpdateBody),
+            body: fd,
           })
-          if (profileRes.ok) {
-            try {
-              const profileJson = await profileRes.json()
-              if (profileJson && profileJson.user) {
-                localStorage.setItem('user', JSON.stringify(profileJson.user))
+          const uploadData = await uploadRes.json()
+          if (uploadRes.ok && uploadData.url) {
+            const profileUpdateBody: any = { avatarUrl: uploadData.url }
+            const socialObj: any = {}
+            if (instagram) socialObj.instagram = instagram
+            if (facebook) socialObj.facebook = facebook
+            if (telegram) socialObj.telegram = telegram
+            if (tiktok) socialObj.tiktok = tiktok
+            if (Object.keys(socialObj).length) profileUpdateBody.socialLinks = socialObj
+
+            const profileRes = await fetch(`/api/profile/${data.user.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${data.token}`,
+              },
+              body: JSON.stringify(profileUpdateBody),
+            })
+            if (profileRes.ok) {
+              try {
+                const profileJson = await profileRes.json()
+                if (profileJson && profileJson.user) {
+                  localStorage.setItem('user', JSON.stringify(profileJson.user))
+                }
+              } catch (e) {
+                // ignore parse errors
               }
-            } catch (e) {
-              // ignore parse errors
             }
+          } else {
+            console.warn('Avatar upload failed or returned no url', uploadData)
           }
-        } else {
-          console.warn('Avatar upload failed or returned no url', uploadData)
         }
       } catch (e) {
         console.warn('Avatar upload failed after registration', e)

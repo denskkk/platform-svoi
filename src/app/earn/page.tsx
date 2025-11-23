@@ -46,8 +46,6 @@ const ACTION_ICONS: Record<string, any> = {
   REFERRAL_INVITEE: Gift,
   PROFILE_COMPLETE: CheckCircle,
   FIRST_SERVICE: Zap,
-  VERIFIED_PHONE: CheckCircle,
-  VERIFIED_EMAIL: CheckCircle,
   ADD_AVATAR: CheckCircle,
   FIRST_REVIEW_RECEIVED: Star,
   GIVE_REVIEW: Star,
@@ -180,8 +178,6 @@ export default function EarnPage() {
     const ACTION_ROUTES: Record<string, { href: string; label: string }> = {
       PROFILE_COMPLETE: { href: '/profile/edit', label: 'Заповнити профіль' },
       FIRST_SERVICE: { href: '/services/create', label: 'Додати послугу' },
-      VERIFIED_PHONE: { href: '/profile/edit', label: 'Підтвердити телефон' },
-      VERIFIED_EMAIL: { href: '/profile/edit', label: 'Підтвердити email' },
       ADD_AVATAR: { href: '/profile/edit', label: 'Додати фото' },
       GIVE_REVIEW: { href: '/services', label: 'Залишити відгук' },
       SERVICE_COMPLETED: { href: '/services', label: 'Переглянути послуги' },
