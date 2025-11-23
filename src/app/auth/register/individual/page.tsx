@@ -166,12 +166,56 @@ function RegisterIndividualForm() {
         if (tiktok) socialObj.tiktok = tiktok
         if (Object.keys(socialObj).length) profileUpdateBody.socialLinks = socialObj
 
-        // Доп. поля анкеты (заполняем только если есть данные)
+        // Базовые поля анкеты (заполняем только если есть данные)
         if (educationLevel) profileUpdateBody.educationLevel = educationLevel
         if (gender) profileUpdateBody.gender = gender
         if (employmentStatusField) profileUpdateBody.employmentStatus = employmentStatusField
         if (bio) profileUpdateBody.bio = bio
         if (siteUsageGoal) profileUpdateBody.siteUsageGoal = siteUsageGoal.split(',').map(s => s.trim()).filter(Boolean)
+
+        // Если пользователь выбрал заполнить расширенную анкету при регистрации,
+        // добавляем все соответствующие поля из `extended`.
+        if (showExtended) {
+          const ext = extended
+          if (ext.educationDetails) profileUpdateBody.educationDetails = ext.educationDetails
+          if (ext.ucmMember !== undefined && ext.ucmMember !== '') profileUpdateBody.ucmMember = ext.ucmMember
+          if (ext.ucmSupporter !== undefined && ext.ucmSupporter !== '') profileUpdateBody.ucmSupporter = ext.ucmSupporter
+          if (ext.workplace) profileUpdateBody.workplace = ext.workplace
+          if (ext.profession) profileUpdateBody.profession = ext.profession
+          if (ext.seekingPartTime !== undefined) profileUpdateBody.seekingPartTime = ext.seekingPartTime
+          if (ext.seekingFullTime !== undefined) profileUpdateBody.seekingFullTime = ext.seekingFullTime
+          if (ext.seekingSpecialty) profileUpdateBody.seekingSpecialty = ext.seekingSpecialty
+          if (ext.wantsStartBusiness !== undefined) profileUpdateBody.wantsStartBusiness = ext.wantsStartBusiness
+          if (ext.businessType) profileUpdateBody.businessType = ext.businessType
+          if (ext.fopGroup) profileUpdateBody.fopGroup = ext.fopGroup
+          if (ext.tovType) profileUpdateBody.tovType = ext.tovType
+          if (ext.companyCode) profileUpdateBody.companyCode = ext.companyCode
+          if (ext.businessCategory) profileUpdateBody.businessCategory = ext.businessCategory
+          if (ext.offerType) profileUpdateBody.offerType = ext.offerType
+          if (ext.usesBusinessServices && ext.usesBusinessServices.length) profileUpdateBody.usesBusinessServices = ext.usesBusinessServices
+          if (ext.readyToSwitchToUCM) profileUpdateBody.readyToSwitchToUCM = ext.readyToSwitchToUCM
+          if (ext.workHistory) profileUpdateBody.workHistory = ext.workHistory
+          if (ext.hasChildren) profileUpdateBody.hasChildren = ext.hasChildren
+          if (ext.childrenCount) profileUpdateBody.childrenCount = ext.childrenCount
+          if (ext.childrenAges && ext.childrenAges.length) profileUpdateBody.childrenAges = ext.childrenAges
+          if (ext.hasPets !== undefined && ext.hasPets !== '') profileUpdateBody.hasPets = ext.hasPets
+          if (ext.petsInfo) profileUpdateBody.petsInfo = ext.petsInfo
+          if (ext.housingType) profileUpdateBody.housingType = ext.housingType
+          if (ext.housingDetails && ext.housingDetails.length) profileUpdateBody.housingDetails = ext.housingDetails
+          if (ext.usesHomeServices && ext.usesHomeServices.length) profileUpdateBody.usesHomeServices = ext.usesHomeServices
+          if (ext.hasCar !== undefined && ext.hasCar !== '') profileUpdateBody.hasCar = ext.hasCar
+          if (ext.carInfo) profileUpdateBody.carInfo = ext.carInfo
+          if (ext.usesTaxi !== undefined) profileUpdateBody.usesTaxi = ext.usesTaxi
+          if (ext.carServices && ext.carServices.length) profileUpdateBody.carServices = ext.carServices
+          if (ext.hasBicycle) profileUpdateBody.hasBicycle = ext.hasBicycle
+          if (ext.bicycleInfo) profileUpdateBody.bicycleInfo = ext.bicycleInfo
+          if (ext.usesDelivery) profileUpdateBody.usesDelivery = ext.usesDelivery
+          if (ext.restaurantFrequency) profileUpdateBody.restaurantFrequency = ext.restaurantFrequency
+          if (ext.cuisinePreference) profileUpdateBody.cuisinePreference = ext.cuisinePreference
+          if (ext.outdoorActivities && ext.outdoorActivities.length) profileUpdateBody.outdoorActivities = ext.outdoorActivities
+          if (ext.sports) profileUpdateBody.sports = ext.sports
+          if (ext.beautyServices && ext.beautyServices.length) profileUpdateBody.beautyServices = ext.beautyServices
+        }
 
         // Всегда отправляем хотя бы пустой объект, сервер корректно обработает null-поля
         const profileRes = await fetch(`/api/profile/${data.user.id}`, {
