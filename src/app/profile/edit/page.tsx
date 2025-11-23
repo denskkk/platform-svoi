@@ -333,6 +333,8 @@ export default function EditProfilePage() {
         
         // Оновлюємо user state з повними даними
         setUser(u);
+        // Показувати базову вкладку після завантаження профілю
+        setActiveTab('basic');
       }
     } catch (err) {
       console.error('Помилка завантаження профілю:', err);
@@ -780,7 +782,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-3 md:px-8 py-3 md:py-6">
+          <form onSubmit={handleSubmit} className="px-3 md:px-8 py-3 md:py-6 min-h-[260px]">
             
             {/* Basic Tab - завжди доступна як вкладка; контент рендериться по activeTab */}
             {activeTab === 'basic' && (
