@@ -673,6 +673,21 @@ export default function EditProfilePage() {
                 )}
               </div>
             </div>
+            {/* Quick edit + debug (temporary) */}
+            <div className="px-4 md:px-8 py-3 bg-neutral-50 border-b border-neutral-100">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-neutral-600">Quick edit</div>
+                <div className="text-xs text-neutral-500">activeTab: <span className="font-medium text-neutral-700">{activeTab}</span></div>
+              </div>
+              <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Ім'я" className="px-3 py-2 border rounded-lg" />
+                <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Прізвище" className="px-3 py-2 border rounded-lg" />
+                <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="px-3 py-2 border rounded-lg" />
+              </div>
+              <div className="mt-3">
+                <button type="button" onClick={saveProfile} className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg">Зберегти швидко</button>
+              </div>
+            </div>
           </div>
 
           {/* Tabs - показувати розширену анкету завжди (анкета безкоштовна) */}
