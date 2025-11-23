@@ -70,50 +70,50 @@ export default function QuestionnairePage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Получить данные пользователя из localStorage
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    
-    let userData: any = null;
-
-    // If we have localStorage user+token prefer them, otherwise try httpOnly cookie via /api/auth/me
-    if (storedUser && storedToken) {
-      try {
-        userData = JSON.parse(storedUser);
-        setUser(userData);
-        setToken(storedToken);
-      } catch {}
-    } else {
-      try {
-        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
-        if (meRes.ok) {
-          const meJson = await meRes.json();
-          if (meJson?.user) {
-            userData = meJson.user;
-            setUser(userData);
-            // token remains from localStorage if present, otherwise empty (we will use cookie auth)
-          }
-        }
-      } catch (e) {
-        console.warn('auth/me failed', e);
-      }
-    }
-
-    if (!userData) {
-      router.push('/auth/login');
-      return;
-    }
-
-    // Заполнить форму базовыми данными из регистрации/профиля
-    setFormData(prev => ({
-      ...prev,
-      firstName: userData.firstName || '',
-      lastName: userData.lastName || '',
-      city: userData.city || '',
-    }));
-
-    // Также попытаться получить профиль с сервера и заполнить поля для редактирования
     (async () => {
+      // Получить данные пользователя из localStorage
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+      
+      let userData: any = null;
+
+      // If we have localStorage user+token prefer them, otherwise try httpOnly cookie via /api/auth/me
+      if (storedUser && storedToken) {
+        try {
+          userData = JSON.parse(storedUser);
+          setUser(userData);
+          setToken(storedToken);
+        } catch {}
+      } else {
+        try {
+          const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+          if (meRes.ok) {
+            const meJson = await meRes.json();
+            if (meJson?.user) {
+              userData = meJson.user;
+              setUser(userData);
+              // token remains from localStorage if present, otherwise empty (we will use cookie auth)
+            }
+          }
+        } catch (e) {
+          console.warn('auth/me failed', e);
+        }
+      }
+
+      if (!userData) {
+        router.push('/auth/login');
+        return;
+      }
+
+      // Заполнить форму базовыми данными из регистрации/профиля
+      setFormData(prev => ({
+        ...prev,
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        city: userData.city || '',
+      }));
+
+      // Также попытаться получить профиль с сервера и заполнить поля для редактирования
       try {
         const res = await fetch(`/api/profile/${userData.id}`, { credentials: 'include' });
         if (!res.ok) return;
