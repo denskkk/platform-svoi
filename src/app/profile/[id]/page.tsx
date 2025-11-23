@@ -38,9 +38,15 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     };
 
     window.addEventListener('focus', handleFocus);
+    // Перезавантажувати профіль коли інші частини апки повідомлять про оновлення користувача
+    const handleUserUpdated = () => {
+      loadProfile();
+    };
+    window.addEventListener('userUpdated', handleUserUpdated as EventListener);
     
     return () => {
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('userUpdated', handleUserUpdated as EventListener);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
