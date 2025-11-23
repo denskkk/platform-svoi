@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -118,13 +118,18 @@ export default function UpgradePage() {
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
-
-  useEffect(() => {
-    loadUserData();
-  }, []);
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     try {
+      // Try cookie-based auth first
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+        setBalance(Number(data.user.balanceUcm) || 0);
+        return;
+      }
+
+      // Fallback to token stored in localStorage
       const token = localStorage.getItem('token');
       if (!token) {
         router.push('/auth/login');
@@ -132,9 +137,7 @@ export default function UpgradePage() {
       }
 
       const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.ok) {
@@ -149,7 +152,11 @@ export default function UpgradePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
 
   const handleUpgradeAccount = async (targetType: string) => {
     if (targetType === user?.accountType) return;
@@ -169,13 +176,13 @@ export default function UpgradePage() {
     setUpgrading(true);
 
     try {
+      const headers: any = { 'Content-Type': 'application/json' };
       const token = localStorage.getItem('token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       const response = await fetch('/api/user/upgrade', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        credentials: 'include',
+        headers,
         body: JSON.stringify({ accountType: targetType })
       });
 

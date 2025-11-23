@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { MessageCircle, Send, ArrowLeft } from 'lucide-react';
@@ -61,20 +61,90 @@ function ChatPageContent() {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
 
-    if (!storedUser || !storedToken) {
-      router.push('/auth/login');
-      return;
-    }
+    const initFromLocal = () => {
+      if (storedUser) setUser(JSON.parse(storedUser));
+      if (storedToken) setToken(storedToken);
+    };
 
-    setUser(JSON.parse(storedUser));
-    setToken(storedToken);
+    // If no local token/user, try cookie-based auth
+    if (!storedUser || !storedToken) {
+      (async () => {
+        try {
+          const res = await fetch('/api/auth/me', { credentials: 'include' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user) {
+              setUser(data.user);
+              // token may not be present in cookie flow
+              return;
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        // fallback to localStorage
+        if (storedUser || storedToken) initFromLocal();
+        else router.push('/auth/login');
+      })();
+    } else {
+      initFromLocal();
+    }
   }, [router]);
+
+  const loadConversations = useCallback(async () => {
+    try {
+      setLoading(true);
+      const headers: any = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const response = await fetch('/api/conversations', {
+        credentials: 'include',
+        headers,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setConversations(data.conversations || []);
+      } else {
+        setError(data.error || 'Помилка завантаження діалогів');
+      }
+    } catch (err) {
+      setError('Помилка підключення до сервера');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (user && token) {
       loadConversations();
     }
-  }, [user, token]);
+  }, [user, token, loadConversations]);
+
+  const createConversation = useCallback(async (otherUserId: number) => {
+    try {
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const response = await fetch('/api/conversations', {
+        method: 'POST',
+        credentials: 'include',
+        headers,
+        body: JSON.stringify({ otherUserId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSelectedConversation(data.conversation.id);
+        await loadConversations(); // Обновляем список диалогов
+      } else {
+        setError(data.error || 'Помилка створення діалогу');
+      }
+    } catch (err) {
+      setError('Помилка підключення до сервера');
+    }
+  }, [token, loadConversations]);
 
   useEffect(() => {
     if (!withUserId || !user || !token || handledWithParam) return;
@@ -91,13 +161,41 @@ function ChatPageContent() {
       // Создаем диалог, если его нет
       createConversation(otherId).finally(() => setHandledWithParam(true));
     }
-  }, [withUserId, user, token, conversations, handledWithParam]);
+  }, [withUserId, user, token, conversations, handledWithParam, createConversation]);
+
+  const loadMessages = useCallback(async (conversationId: number) => {
+    try {
+      const headers: any = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const response = await fetch(`/api/conversations/${conversationId}/messages`, {
+        credentials: 'include',
+        headers,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessages(data.messages || []);
+        // Прокручиваем вниз к последнему сообщению
+        setTimeout(() => {
+          const messagesContainer = document.getElementById('messages-container');
+          if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }
+        }, 100);
+      } else {
+        setError(data.error || 'Помилка завантаження повідомлень');
+      }
+    } catch (err) {
+      setError('Помилка підключення до сервера');
+    }
+  }, [token]);
 
   useEffect(() => {
     if (selectedConversation && token) {
       loadMessages(selectedConversation);
     }
-  }, [selectedConversation, token]);
+  }, [selectedConversation, token, loadMessages]);
 
   // Poll new messages periodically to simulate real-time updates
   useEffect(() => {
@@ -128,81 +226,9 @@ function ChatPageContent() {
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onFocus);
     };
-  }, [selectedConversation, token]);
+  }, [selectedConversation, token, loadMessages, loadConversations]);
 
-  const loadConversations = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/conversations', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setConversations(data.conversations || []);
-      } else {
-        setError(data.error || 'Помилка завантаження діалогів');
-      }
-    } catch (err) {
-      setError('Помилка підключення до сервера');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createConversation = async (otherUserId: number) => {
-    try {
-      const response = await fetch('/api/conversations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ otherUserId }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSelectedConversation(data.conversation.id);
-        await loadConversations(); // Обновляем список диалогов
-      } else {
-        setError(data.error || 'Помилка створення діалогу');
-      }
-    } catch (err) {
-      setError('Помилка підключення до сервера');
-    }
-  };
-
-  const loadMessages = async (conversationId: number) => {
-    try {
-      const response = await fetch(`/api/conversations/${conversationId}/messages`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessages(data.messages || []);
-        // Прокручиваем вниз к последнему сообщению
-        setTimeout(() => {
-          const messagesContainer = document.getElementById('messages-container');
-          if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-          }
-        }, 100);
-      } else {
-        setError(data.error || 'Помилка завантаження повідомлень');
-      }
-    } catch (err) {
-      setError('Помилка підключення до сервера');
-    }
-  };
+  
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,12 +237,12 @@ function ChatPageContent() {
 
     setSending(true);
     try {
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       const response = await fetch(`/api/conversations/${selectedConversation}/messages`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
+        headers,
         body: JSON.stringify({ content: messageText }),
       });
 

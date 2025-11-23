@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Building2, User, FileText, Users, Phone, Award, Upload, Camera, Image as ImageIcon } from 'lucide-react';
 
 export default function EditBusinessProfilePage() {
@@ -413,7 +414,7 @@ export default function EditBusinessProfilePage() {
               <div className="relative w-full h-28 sm:h-36 md:h-44 lg:h-52 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200">
                 {bannerPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={bannerPreview} alt="Company banner" className="w-full h-full object-cover" />
+                  <Image src={bannerPreview} alt="Company banner" width={1600} height={480} unoptimized className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-neutral-500 text-sm">Немає банера</div>
                 )}
@@ -437,9 +438,12 @@ export default function EditBusinessProfilePage() {
             <div className="flex items-center space-x-4 md:space-x-6">
               <div className="relative flex-shrink-0">
                 {logoPreview ? (
-                  <img
+                  <Image
                     src={logoPreview}
                     alt="Company logo"
+                    width={96}
+                    height={96}
+                    unoptimized
                     className="w-20 h-20 md:w-24 md:h-24 rounded-lg object-contain bg-neutral-100 p-2 border-4 border-accent-200"
                   />
                 ) : (

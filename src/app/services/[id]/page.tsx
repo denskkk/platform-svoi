@@ -59,6 +59,30 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       setCurrentUser(JSON.parse(storedUser));
     }
 
+    const loadService = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const response = await fetch(`/api/services/${params.id}`, {
+          headers,
+          credentials: 'include',
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Помилка завантаження послуги');
+        }
+
+        setService(data.service);
+      } catch (err: any) {
+        setError(err.message || 'Помилка завантаження послуги');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadService();
   }, [params.id]);
 
@@ -85,11 +109,13 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
     setDeleting(true);
     try {
       const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`/api/services/${params.id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include',
       });
 
       if (!response.ok) {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 // import { Dialog } from '@headlessui/react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -198,7 +199,7 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
             <label className="block text-sm font-medium text-gray-700 mb-1">Фото (необов'язково)</label>
             {imagePreview ? (
               <div className="relative inline-block">
-                <img src={imagePreview} alt="preview" className="w-full max-w-xs h-40 object-cover rounded" />
+                <Image src={imagePreview} alt="preview" width={320} height={160} className="w-full max-w-xs h-40 object-cover rounded" />
               </div>
             ) : null}
             <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />

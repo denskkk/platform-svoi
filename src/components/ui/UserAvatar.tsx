@@ -79,6 +79,7 @@ export function UserAvatar({ src, alt, className = '', fallbackName }: UserAvata
         <source srcSet={imageSrc} type="image/webp" />
       )}
       {/* Fallback <img>: try JPG (if available) or original */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={withCacheBuster(jpgFallback || imageSrc || '') || undefined}
         alt={alt}

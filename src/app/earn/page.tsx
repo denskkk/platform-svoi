@@ -84,32 +84,33 @@ export default function EarnPage() {
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onFocus);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
       setFetchError(null);
 
-      // Загрузить пользователя
-      const userResponse = await fetch('/api/auth/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
+      // Try cookie-based auth first
+      const userResponse = await fetch('/api/auth/me', { credentials: 'include' });
       if (userResponse.ok) {
         const userData = await userResponse.json();
         setUser(userData.user);
         setBalance(Number(userData.user.balanceUcm) || 0);
+      } else {
+        // fallback to token from localStorage if present
+        const token = localStorage.getItem('token');
+        if (!token) {
+          router.push('/auth/login');
+          return;
+        }
       }
 
       // Загрузить прогресс заработка
-      const progressResponse = await fetch('/api/earning/progress', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const token = localStorage.getItem('token');
+      const progressHeaders: any = {};
+      if (token) progressHeaders['Authorization'] = `Bearer ${token}`;
+      const progressResponse = await fetch('/api/earning/progress', { credentials: 'include', headers: progressHeaders });
 
       if (progressResponse.ok) {
         const progressData = await progressResponse.json();
@@ -135,9 +136,9 @@ export default function EarnPage() {
       }
 
       // Загрузить агреговану статистику
-      const statsResponse = await fetch('/api/earning/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const statsHeaders: any = {};
+      if (token) statsHeaders['Authorization'] = `Bearer ${token}`;
+      const statsResponse = await fetch('/api/earning/stats', { credentials: 'include', headers: statsHeaders });
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setStats(statsData);

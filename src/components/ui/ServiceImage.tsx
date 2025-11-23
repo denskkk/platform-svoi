@@ -63,6 +63,7 @@ export function ServiceImage({ src, alt, className = "", fallbackLetter }: Servi
     <picture>
       {/* Якщо є webpSrc — додамо webp-джерело, інакше просто рендеримо <img> з jpegSrc */}
       {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={jpegSrc || webpSrc || ''}
         alt={alt}

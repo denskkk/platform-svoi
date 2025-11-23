@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X } from 'lucide-react';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { usePermission } from '@/hooks/usePermission';
 const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
@@ -316,9 +317,12 @@ export default function CreateServicePage() {
               
               {imagePreview ? (
                 <div className="relative inline-block">
-                  <img
+                  <Image
                     src={imagePreview}
                     alt="Preview"
+                    width={640}
+                    height={320}
+                    unoptimized
                     className="w-full max-w-md h-48 object-cover rounded-lg border-2 border-gray-200"
                   />
                   <button

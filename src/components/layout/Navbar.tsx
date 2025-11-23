@@ -32,14 +32,9 @@ export function Navbar() {
 
     const syncWithServer = async () => {
       try {
-        let token: string | null = null
-        try { token = localStorage.getItem('token') } catch {}
-        const headers: Record<string, string> = {}
-        if (token) headers['Authorization'] = `Bearer ${token}`
-
+        // Use cookie-based auth first (httpOnly cookie). Avoid relying on localStorage token.
         const res = await fetch('/api/auth/me', {
           credentials: 'include',
-          headers,
         })
         if (res.ok) {
           const data = await res.json()
@@ -54,19 +49,17 @@ export function Navbar() {
             localStorage.setItem('user', JSON.stringify(data.user))
           } catch {}
           
-          // Загрузка непрочитанных сообщений
-          if (token) {
-            try {
-              const unreadRes = await fetch('/api/conversations/unread-count', {
-                headers: { 'Authorization': `Bearer ${token}` },
-              })
-              if (unreadRes.ok) {
-                const unreadData = await unreadRes.json()
-                setUnreadCount(unreadData.unreadCount || 0)
-              }
-            } catch {
-              // ignore
+          // Загрузка непрочитанных сообщений (cookie auth)
+          try {
+            const unreadRes = await fetch('/api/conversations/unread-count', {
+              credentials: 'include',
+            })
+            if (unreadRes.ok) {
+              const unreadData = await unreadRes.json()
+              setUnreadCount(unreadData.unreadCount || 0)
             }
+          } catch {
+            // ignore
           }
         } else {
           try {
@@ -113,10 +106,8 @@ export function Navbar() {
     let timer: any;
     const fetchUnread = async () => {
       try {
-        const token = localStorage.getItem('token')
-        if (!token) return
         const res = await fetch('/api/conversations/unread-count', {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         })
         if (res.ok) {
           const data = await res.json()
@@ -143,10 +134,8 @@ export function Navbar() {
   useEffect(() => {
     const fetchEarn = async () => {
       try {
-        const token = localStorage.getItem('token')
-        if (!token) return
         const res = await fetch('/api/earning/progress', {
-          headers: { 'Authorization': `Bearer ${token}` }
+          credentials: 'include',
         })
         if (!res.ok) return
         const data = await res.json()
@@ -165,9 +154,7 @@ export function Navbar() {
   useEffect(() => {
     const fetchCompletion = async () => {
       try {
-        const token = localStorage.getItem('token')
-        if (!token) return
-        const res = await fetch('/api/earning/progress', { headers: { 'Authorization': `Bearer ${token}` } })
+        const res = await fetch('/api/earning/progress', { credentials: 'include' })
         if (!res.ok) return
         const data = await res.json()
         if (Array.isArray(data.progress)) {

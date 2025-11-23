@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { User, GraduationCap, Briefcase, Home, Car, Heart, Target, Camera } from 'lucide-react';
 import { ProfileCompletionHint } from '@/components/ui/ProfileCompletionHint';
@@ -624,22 +625,17 @@ export default function EditProfilePage() {
             <div className="flex items-center space-x-4 md:space-x-6">
               <div className="relative flex-shrink-0">
                 {avatarPreview ? (
-                  <img
+                  <Image
                     src={avatarPreview.startsWith('data:') ? avatarPreview : 
                          avatarPreview.startsWith('http') || avatarPreview.startsWith('/') ? 
                          `${avatarPreview}${avatarPreview.includes('?') ? '&' : '?'}t=${Date.now()}` : 
                          avatarPreview}
                     alt="Avatar"
+                    width={96}
+                    height={96}
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-200"
-                    onError={(e) => {
+                    onError={() => {
                       console.error('Avatar load error:', avatarPreview);
-                      const img = e.currentTarget as HTMLImageElement;
-                      if (!img.dataset.retried && !avatarPreview.startsWith('data:')) {
-                        img.dataset.retried = 'true';
-                        img.src = avatarPreview;
-                      } else {
-                        img.style.display = 'none';
-                      }
                     }}
                   />
                 ) : (
@@ -675,99 +671,97 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Tabs - показувати тільки для extended */}
-          {isExtended && (
-            <div className="border-b border-neutral-200 overflow-x-auto">
-              <div className="px-2 md:px-8">
-                <div className="flex space-x-1 md:space-x-6 min-w-max">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('basic')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'basic'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <User className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Основні дані
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('education')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'education'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <GraduationCap className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Освіта
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('work')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'work'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <Briefcase className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Робота
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('family')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'family'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <Home className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Сім'я
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('transport')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'transport'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <Car className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Транспорт
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('lifestyle')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'lifestyle'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <Heart className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Стиль життя
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('goal')}
-                    className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                      activeTab === 'goal'
-                        ? 'border-blue-500 text-blue-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <Target className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                    Мета
-                  </button>
-                </div>
+          {/* Tabs - показувати розширену анкету завжди (анкета безкоштовна) */}
+          <div className="border-b border-neutral-200 overflow-x-auto">
+            <div className="px-2 md:px-8">
+              <div className="flex space-x-1 md:space-x-6 min-w-max">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('basic')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'basic'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <User className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Основні дані
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('education')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'education'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <GraduationCap className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Освіта
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('work')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'work'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <Briefcase className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Робота
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('family')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'family'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <Home className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Сім'я
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('transport')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'transport'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <Car className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Транспорт
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('lifestyle')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'lifestyle'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <Heart className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Стиль життя
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('goal')}
+                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
+                    activeTab === 'goal'
+                      ? 'border-blue-500 text-blue-600 font-medium'
+                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  <Target className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
+                  Мета
+                </button>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Messages */}
           <div className="px-3 md:px-8 pt-3 md:pt-6">
@@ -786,8 +780,8 @@ export default function EditProfilePage() {
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="px-3 md:px-8 py-3 md:py-6">
             
-            {/* Basic Tab - ЗАВЖДИ для базового, або перший таб для extended */}
-            {(!isExtended || activeTab === 'basic') && (
+            {/* Basic Tab - завжди доступна як вкладка; контент рендериться по activeTab */}
+            {activeTab === 'basic' && (
               <div className="space-y-4 md:space-y-6">
                 <h2 className="text-base md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
                   1-4. Основні дані

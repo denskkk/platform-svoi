@@ -4,6 +4,7 @@
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Star, Mail, Phone, Facebook, Instagram, Linkedin, Globe, Send, ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
@@ -120,9 +121,12 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
             <div className="flex-shrink-0">
               <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={`${user.firstName} ${user.lastName}`}
+                    width={128}
+                    height={128}
+                    unoptimized
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -305,9 +309,12 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
                         {review.reviewer.avatarUrl ? (
-                          <img
+                          <Image
                             src={review.reviewer.avatarUrl}
                             alt={review.reviewer.firstName}
+                            width={48}
+                            height={48}
+                            unoptimized
                             className="w-full h-full object-cover"
                           />
                         ) : (

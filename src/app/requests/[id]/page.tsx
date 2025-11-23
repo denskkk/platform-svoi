@@ -4,6 +4,7 @@
  */
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, ArrowLeft } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
@@ -66,7 +67,7 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
             {/* Image (if provided in metadata) */}
             {req.metadata && req.metadata.imageUrl ? (
               <div className="mb-6">
-                <img src={req.metadata.imageUrl} alt={req.title} className="w-full max-h-96 object-cover rounded-lg mb-4" />
+                <Image src={req.metadata.imageUrl} alt={req.title} width={1200} height={600} className="w-full max-h-96 object-cover rounded-lg mb-4" />
               </div>
             ) : null}
 
