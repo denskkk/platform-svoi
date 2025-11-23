@@ -176,6 +176,7 @@ export default function EditProfilePage() {
   const [success, setSuccess] = useState('');
   const [showEmptyFieldsModal, setShowEmptyFieldsModal] = useState(false);
   const [emptyFieldsList, setEmptyFieldsList] = useState<string[]>([]);
+  const [showRawEditor, setShowRawEditor] = useState(false);
 
   const cities = [
     'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
@@ -478,6 +479,13 @@ export default function EditProfilePage() {
       if (formData.telegram) socialLinks.telegram = formData.telegram;
       if (formData.tiktok) socialLinks.tiktok = formData.tiktok;
 
+      const arrToCsv = (v: any) => {
+        if (!v) return null;
+        if (Array.isArray(v)) return v.map((s: any) => String(s).trim()).filter(Boolean).join(', ') || null;
+        if (typeof v === 'string') return v.trim() || null;
+        return null;
+      };
+
       const requestBody = {
         firstName: formData.firstName,
         middleName: formData.middleName || null,
@@ -510,7 +518,7 @@ export default function EditProfilePage() {
         businessCategory: formData.businessCategory || null,
         offerType: formData.offerType || null,
         
-        usesBusinessServices: formData.usesBusinessServices.length > 0 ? formData.usesBusinessServices : null,
+        usesBusinessServices: arrToCsv(formData.usesBusinessServices),
         readyToSwitchToUCM: formData.readyToSwitchToUCM || null,
         
         workHistory: formData.workHistory || null,
@@ -518,20 +526,20 @@ export default function EditProfilePage() {
         maritalStatus: formData.maritalStatus ? (toDbValue.maritalStatus[formData.maritalStatus as keyof typeof toDbValue.maritalStatus] || formData.maritalStatus) : null,
         hasChildren: formData.hasChildren || null,
         childrenCount: formData.childrenCount ? parseInt(formData.childrenCount) : null,
-        childrenAges: formData.childrenAges.length > 0 ? formData.childrenAges : null,
+        childrenAges: arrToCsv(formData.childrenAges),
         
         hasPets: formData.hasPets || null,
-        petsInfo: formData.petsInfo || null,
+        petsInfo: arrToCsv(formData.petsInfo),
         
         housingType: formData.housingType || null,
-        housingDetails: formData.housingDetails.length > 0 ? formData.housingDetails : null,
+        housingDetails: arrToCsv(formData.housingDetails),
         
-        usesHomeServices: formData.usesHomeServices.length > 0 ? formData.usesHomeServices : null,
+        usesHomeServices: arrToCsv(formData.usesHomeServices),
         
         hasCar: formData.hasCar || null,
         carInfo: formData.carInfo || null,
         usesTaxi: formData.usesTaxi || null,
-        carServices: formData.carServices.length > 0 ? formData.carServices : null,
+        carServices: arrToCsv(formData.carServices),
         
         hasBicycle: formData.hasBicycle || null,
         bicycleInfo: formData.bicycleInfo || null,
@@ -540,13 +548,13 @@ export default function EditProfilePage() {
         restaurantFrequency: formData.restaurantFrequency || null,
         cuisinePreference: formData.cuisinePreference || null,
         
-        outdoorActivities: formData.outdoorActivities || null,
+        outdoorActivities: arrToCsv(formData.outdoorActivities),
+
+        sports: arrToCsv(formData.sports),
         
-        sports: formData.sports || null,
-        
-        beautyServices: formData.beautyServices.length > 0 ? formData.beautyServices : null,
-        
-        siteUsageGoal: formData.siteUsageGoal.length > 0 ? formData.siteUsageGoal : null,
+        beautyServices: arrToCsv(formData.beautyServices),
+
+        siteUsageGoal: arrToCsv(formData.siteUsageGoal),
         
         bio: formData.bio || null,
         
@@ -778,6 +786,12 @@ export default function EditProfilePage() {
                   <Target className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
                   Мета
                 </button>
+                <div className="ml-4 flex items-center">
+                  <label className="inline-flex items-center text-sm text-neutral-600">
+                    <input type="checkbox" className="mr-2" checked={showRawEditor} onChange={() => setShowRawEditor(!showRawEditor)} />
+                    Показать все поля анкеты
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -798,6 +812,37 @@ export default function EditProfilePage() {
 
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="px-3 md:px-8 py-3 md:py-6 min-h-[260px]">
+            {showRawEditor && (
+              <div className="mb-6 p-4 bg-neutral-50 border rounded-lg">
+                <h3 className="text-sm font-medium text-neutral-800 mb-3">Редактор всех полей анкеты (быстрая правка)</h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {Object.keys(formData).map((key) => {
+                    const val: any = (formData as any)[key];
+                    const isArray = Array.isArray(val);
+                    const isBool = typeof val === 'boolean';
+                    const isLongText = typeof val === 'string' && (val.length > 120 || key.toLowerCase().includes('bio') || key.toLowerCase().includes('history'));
+
+                    return (
+                      <div key={key} className="flex flex-col">
+                        <label className="text-xs text-neutral-600 mb-1">{key}</label>
+                        {isArray ? (
+                          <textarea className="px-3 py-2 border rounded-md" rows={2} value={(val || []).join(', ')} onChange={(e) => setFormData({ ...formData, [key]: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
+                        ) : isBool ? (
+                          <label className="inline-flex items-center gap-2"><input type="checkbox" checked={!!val} onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })} /> <span className="text-sm">{String(val)}</span></label>
+                        ) : isLongText ? (
+                          <textarea className="px-3 py-2 border rounded-md" rows={3} value={val || ''} onChange={(e) => setFormData({ ...formData, [key]: e.target.value })} />
+                        ) : (
+                          <input className="px-3 py-2 border rounded-md" value={val ?? ''} onChange={(e) => setFormData({ ...formData, [key]: e.target.value })} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-3">
+                  <button type="button" onClick={saveProfile} className="px-4 py-2 bg-green-600 text-white rounded-md">Сохранить все</button>
+                </div>
+              </div>
+            )}
             
             {/* Basic Tab - завжди доступна як вкладка; контент рендериться по activeTab */}
             {activeTab === 'basic' && (

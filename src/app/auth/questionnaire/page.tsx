@@ -74,16 +74,37 @@ export default function QuestionnairePage() {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     
-    if (!storedUser || !storedToken) {
+    let userData: any = null;
+
+    // If we have localStorage user+token prefer them, otherwise try httpOnly cookie via /api/auth/me
+    if (storedUser && storedToken) {
+      try {
+        userData = JSON.parse(storedUser);
+        setUser(userData);
+        setToken(storedToken);
+      } catch {}
+    } else {
+      try {
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const meJson = await meRes.json();
+          if (meJson?.user) {
+            userData = meJson.user;
+            setUser(userData);
+            // token remains from localStorage if present, otherwise empty (we will use cookie auth)
+          }
+        }
+      } catch (e) {
+        console.warn('auth/me failed', e);
+      }
+    }
+
+    if (!userData) {
       router.push('/auth/login');
       return;
     }
 
-    const userData = JSON.parse(storedUser);
-    setUser(userData);
-    setToken(storedToken);
-    
-    // Заполнить форму данными из регистрации
+    // Заполнить форму базовыми данными из регистрации/профиля
     setFormData(prev => ({
       ...prev,
       firstName: userData.firstName || '',
@@ -94,7 +115,7 @@ export default function QuestionnairePage() {
     // Также попытаться получить профиль с сервера и заполнить поля для редактирования
     (async () => {
       try {
-        const res = await fetch(`/api/profile/${userData.id}`);
+        const res = await fetch(`/api/profile/${userData.id}`, { credentials: 'include' });
         if (!res.ok) return;
         const json = await res.json();
         const u = json.user;
@@ -219,12 +240,13 @@ export default function QuestionnairePage() {
       if (formData.telegram) socialLinks.telegram = formData.telegram;
       if (formData.tiktok) socialLinks.tiktok = formData.tiktok;
 
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`/api/profile/${user.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include',
         body: JSON.stringify({
           firstName: formData.firstName,
           middleName: formData.middleName || null,
