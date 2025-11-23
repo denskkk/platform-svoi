@@ -138,6 +138,9 @@ export function Navbar() {
           credentials: 'include',
         })
         if (!res.ok) return
+        const onEarningUpdated = () => { if (user) fetchEarn(); };
+        window.addEventListener('earningUpdated', onEarningUpdated as EventListener);
+        return () => { window.removeEventListener('earningUpdated', onEarningUpdated as EventListener); };
         const data = await res.json()
         if (Array.isArray(data.progress)) {
           const count = data.progress.filter((t: any) => !t.completed && !t.isRepeatable).length
@@ -167,6 +170,9 @@ export function Navbar() {
       } catch {}
     }
     if (user) fetchCompletion()
+      const onEarningUpdated2 = () => { if (user) fetchCompletion(); };
+      window.addEventListener('earningUpdated', onEarningUpdated2 as EventListener);
+      return () => { window.removeEventListener('earningUpdated', onEarningUpdated2 as EventListener); };
   }, [user])
 
   const handleLogout = async () => {

@@ -35,6 +35,9 @@ export function EarnQuickList() {
       }
     };
     load();
+    const onEarningUpdated = () => { setLoading(true); load(); };
+    window.addEventListener('earningUpdated', onEarningUpdated as EventListener);
+    return () => { window.removeEventListener('earningUpdated', onEarningUpdated as EventListener); };
   }, []);
 
   if (loading) {

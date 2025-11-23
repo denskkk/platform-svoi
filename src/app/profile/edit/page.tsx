@@ -591,6 +591,8 @@ export default function EditProfilePage() {
         
         // Відправляємо подію для оновлення аватара в інших компонентах
         window.dispatchEvent(new Event('userUpdated'));
+        // Також повідомляємо, що змінився прогрес заробітку (щоб UI перезавантажив задачі/лічильник)
+        window.dispatchEvent(new Event('earningUpdated'));
       }
 
       setSuccess('Профіль успішно оновлено!');

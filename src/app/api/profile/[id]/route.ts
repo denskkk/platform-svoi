@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 import { prisma } from '@/lib/prisma';
-import { checkProfileCompletion } from '@/lib/earning';
+import { checkProfileCompletion, awardUcmForAction } from '@/lib/earning';
 import { verifyToken, getTokenFromHeader } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
 
@@ -588,6 +588,19 @@ export async function PUT(
 
     console.log('[PUT /api/profile] Updating user with data:', JSON.stringify(updateData, null, 2));
 
+    // Detect one-time actions (e.g., adding avatar) to award ucm
+    let shouldAwardAddAvatar = false;
+    if (updateData.avatarUrl !== undefined && updateData.avatarUrl !== null) {
+      try {
+        const existing = await prisma.user.findUnique({ where: { id: userId }, select: { avatarUrl: true } });
+        if (existing && !existing.avatarUrl) {
+          shouldAwardAddAvatar = true;
+        }
+      } catch (e) {
+        console.warn('[PUT /api/profile] could not check existing avatar for awarding:', e);
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
@@ -599,6 +612,14 @@ export async function PUT(
     // Запустить проверку завершённости профиля для начисления уцмок (в фоне)
     try {
       checkProfileCompletion(updatedUser.id).catch((e) => console.warn('[checkProfileCompletion] error', e));
+      // Если мы обнаружили, что аватар был добавлен в этом обновлении — начисляем бонус за добавление аватара.
+      try {
+        if ((shouldAwardAddAvatar as any) === true) {
+          awardUcmForAction(updatedUser.id, 'ADD_AVATAR').catch((e) => console.warn('[awardUcmForAction ADD_AVATAR] error', e));
+        }
+      } catch (e) {
+        console.warn('[PUT /api/profile] failed to award add-avatar bonus', e);
+      }
     } catch (e) {
       console.warn('[put profile] failed to trigger profile completion check', e);
     }
