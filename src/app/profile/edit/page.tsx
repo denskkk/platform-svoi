@@ -422,8 +422,8 @@ export default function EditProfilePage() {
   const checkEmptyFields = () => {
     const emptyFields: string[] = [];
     
-    // Перевірка основних полів для extended акаунтів
-    if (user?.accountType === 'extended') {
+    // Перевірка основних полів для розширеної анкети (всі, крім viewer)
+    if (user?.accountType && user.accountType !== 'viewer') {
       if (!formData.educationLevel) emptyFields.push('Освіта');
       if (!formData.gender) emptyFields.push('Стать');
       if (!formData.maritalStatus) emptyFields.push('Сімейний стан');
@@ -444,9 +444,9 @@ export default function EditProfilePage() {
     setError('');
     setSuccess('');
     
-    // Перевірка незаповнених полів для extended акаунтів
+    // Перевірка незаповнених полів для розширеної анкети (всі, крім viewer)
     const emptyFields = checkEmptyFields();
-    if (emptyFields.length > 0 && user?.accountType === 'extended') {
+    if (emptyFields.length > 0 && user?.accountType && user.accountType !== 'viewer') {
       setEmptyFieldsList(emptyFields);
       setShowEmptyFieldsModal(true);
       return; // Показуємо модалку і чекаємо рішення
@@ -614,7 +614,7 @@ export default function EditProfilePage() {
     );
   }
 
-  const isExtended = user.accountType === 'extended';
+  const isExtended = !!(user?.accountType && user.accountType !== 'viewer');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
