@@ -151,7 +151,12 @@ export default function QuestionnairePage() {
           
           hasCar: formData.hasCar ? formData.hasCar === 'yes' : null,
           carInfo: formData.carInfo || null,
-          otherTransport: formData.otherTransport || null,
+          otherTransport: Array.isArray(formData.otherTransport)
+            ? (formData.otherTransport
+                .map((v: string) => (v === 'Інше' && formData.otherTransportOther ? formData.otherTransportOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.otherTransport || null,
           
           profession: formData.profession || null,
           employmentStatus: formData.employmentStatus || null,
@@ -161,12 +166,40 @@ export default function QuestionnairePage() {
           jobSeeking: formData.jobSeeking || null,
           
           hasPets: formData.hasPets ? formData.hasPets === 'yes' : null,
-          petsInfo: formData.petsInfo || null,
-          
-          hobbies: formData.hobbies || null,
-          outdoorActivities: formData.outdoorActivities || null,
-          lifestyle: formData.lifestyle || null,
-          sports: formData.sports || null,
+          petsInfo: Array.isArray(formData.petsInfo)
+            ? (formData.petsInfo
+                .map((v: string) => (v === 'Інше' && formData.petsInfoOther ? formData.petsInfoOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.petsInfo || null,
+
+          hobbies: Array.isArray(formData.hobbies)
+            ? (formData.hobbies
+                .map((v: string) => (v === 'Інше' && formData.hobbiesOther ? formData.hobbiesOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.hobbies || null,
+
+          outdoorActivities: Array.isArray(formData.outdoorActivities)
+            ? (formData.outdoorActivities
+                .map((v: string) => (v === 'Інше' && formData.outdoorActivitiesOther ? formData.outdoorActivitiesOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.outdoorActivities || null,
+
+          lifestyle: Array.isArray(formData.lifestyle)
+            ? (formData.lifestyle
+                .map((v: string) => (v === 'Інше' && formData.lifestyleOther ? formData.lifestyleOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.lifestyle || null,
+
+          sports: Array.isArray(formData.sports)
+            ? (formData.sports
+                .map((v: string) => (v === 'Інше' && formData.sportsOther ? formData.sportsOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.sports || null,
           bio: formData.bio || null,
           
           socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
