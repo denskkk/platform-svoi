@@ -11,6 +11,19 @@ import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { EarnQuickList } from '@/components/ui/EarnQuickList';
+import { 
+  translateCategory, 
+  translateOfferType, 
+  translateEmploymentType, 
+  translateGender, 
+  translateMaritalStatus, 
+  translateEducation, 
+  translateEmploymentStatus, 
+  translateAccountType, 
+  translateBoolean, 
+  translateHousingType,
+  formatList
+} from '@/lib/translations';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -91,117 +104,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     }
     if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
     return [];
-  };
-
-  // Функції перекладу
-  const translateCategory = (category: string): string => {
-    const translations: Record<string, string> = {
-      'auto_service': 'Автосервіс',
-      'beauty': 'Краса',
-      'food': 'Їжа',
-      'education': 'Освіта',
-      'health': 'Здоров\'я',
-      'sport': 'Спорт',
-      'entertainment': 'Розваги',
-      'repair': 'Ремонт',
-      'construction': 'Будівництво',
-      'cleaning': 'Прибирання',
-      'transport': 'Транспорт',
-      'finance': 'Фінанси',
-      'law': 'Право',
-      'it': 'ІТ',
-      'marketing': 'Маркетинг',
-      'real_estate': 'Нерухомість',
-      'retail': 'Роздрібна торгівля',
-      'wholesale': 'Оптова торгівля',
-      'manufacturing': 'Виробництво',
-      'agriculture': 'Сільське господарство',
-      'tourism': 'Туризм',
-      'hospitality': 'Готельний бізнес',
-      'logistics': 'Логістика',
-      'consulting': 'Консалтинг',
-      'design': 'Дизайн',
-      'photo_video': 'Фото/Відео',
-      'events': 'Організація подій',
-      'other': 'Інше'
-    };
-    return translations[category] || category;
-  };
-
-  const translateOfferType = (offerType: string): string => {
-    const translations: Record<string, string> = {
-      'service': 'Послуги',
-      'product': 'Товари',
-      'both': 'Товари та послуги'
-    };
-    return translations[offerType] || offerType;
-  };
-
-  const translateEmploymentType = (type: string): string => {
-    const translations: Record<string, string> = {
-      'full-time': 'Повна зайнятість',
-      'part-time': 'Часткова зайнятість',
-      'contract': 'Контракт',
-      'freelance': 'Фріланс',
-      'internship': 'Стажування'
-    };
-    return translations[type] || type;
-  };
-
-  const translateGender = (gender: string): string => {
-    const translations: Record<string, string> = {
-      'male': 'Чоловік',
-      'female': 'Жінка',
-      'other': 'Інше'
-    };
-    return translations[gender] || gender;
-  };
-
-  const translateMaritalStatus = (status: string): string => {
-    const translations: Record<string, string> = {
-      'single': 'Неодружений/Незаміжня',
-      'married': 'Одружений/Заміжня',
-      'divorced': 'Розлучений/Розлучена',
-      'widowed': 'Вдівець/Вдова',
-      'in_relationship': 'У стосунках',
-      'engaged': 'Заручений/Заручена'
-    };
-    return translations[status] || status;
-  };
-
-  const translateEducation = (education: string): string => {
-    const translations: Record<string, string> = {
-      'secondary': 'Середня освіта',
-      'vocational': 'Професійно-технічна',
-      'incomplete_higher': 'Неповна вища',
-      'bachelor': 'Бакалавр',
-      'master': 'Магістр',
-      'phd': 'Кандидат наук',
-      'doctorate': 'Доктор наук'
-    };
-    return translations[education] || education;
-  };
-
-  const translateEmploymentStatus = (status: string): string => {
-    const translations: Record<string, string> = {
-      'employed': 'Працюю',
-      'self_employed': 'Самозайнятий',
-      'unemployed': 'Не працюю',
-      'student': 'Студент',
-      'retired': 'Пенсіонер',
-      'looking_for_work': 'Шукаю роботу'
-    };
-    return translations[status] || status;
-  };
-
-  const translateAccountType = (type: string): string => {
-    const translations: Record<string, string> = {
-      'basic': 'Базовий',
-      'extended': 'Розширений',
-      'business': 'Бізнес',
-      'viewer': 'Глядач'
-    };
-    return translations[type] || type;
   };
 
   if (loading) {
@@ -1158,10 +1060,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
                     <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Тип житла</p>
                     <p className="font-medium text-neutral-900">
-                      {profile.housingType === 'apartment' ? 'Квартира' :
-                       profile.housingType === 'house' ? 'Будинок' :
-                       profile.housingType === 'dormitory' ? 'Гуртожиток' :
-                       profile.housingType === 'rent' ? 'Оренда' : profile.housingType}
+                      {translateHousingType(profile.housingType)}
                     </p>
                   </div>
                 )}

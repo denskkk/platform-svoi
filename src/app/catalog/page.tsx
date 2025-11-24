@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { Search, MapPin, Star, Users } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { translateAccountType } from '@/lib/translations';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -94,7 +95,7 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
                   </div>
                   {u.profession && <p className="text-sm text-gray-700 mb-3 line-clamp-2">{u.profession}</p>}
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span className="font-medium capitalize">{u.accountType?.replace('_', ' ')}</span>
+                    <span className="font-medium">{translateAccountType(u.accountType)}</span>
                     {u.totalReviews > 0 && (
                       <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{u.avgRating.toFixed(1)}</span>
                     )}
