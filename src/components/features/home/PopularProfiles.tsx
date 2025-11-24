@@ -42,14 +42,21 @@ export function PopularProfiles() {
   }
 
   return (
-    <section className="py-20 bg-neutral-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-gradient-to-b from-white via-neutral-50 to-white relative overflow-hidden">
+      {/* Декоративні елементи */}
+      <div className="absolute top-10 right-10 w-40 h-40 bg-primary-200 rounded-full blur-3xl opacity-20 animate-float"></div>
+      <div className="absolute bottom-10 left-10 w-32 h-32 bg-accent-200 rounded-full blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+          <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-accent-100 to-primary-100 rounded-full">
+            <p className="text-sm font-semibold text-accent-700">⭐ Рекомендовані</p>
+          </div>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-neutral-900 mb-4">
             Популярні профілі
           </h2>
-          <p className="text-lg text-neutral-600">
-            Познайомся з нашими найкращими фахівцями
+          <p className="text-lg md:text-xl text-neutral-600">
+            Познайомся з нашими <span className="font-semibold text-accent-600">найкращими</span> фахівцями
           </p>
         </div>
 
@@ -62,23 +69,26 @@ export function PopularProfiles() {
             return (
               <div
                 key={profile.id}
-                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-neutral-100 hover:border-primary-300 card-hover"
               >
                 {/* Фото */}
-                <div className="relative h-48 bg-gradient-to-br from-primary-200 to-accent-200">
+                <div className="relative h-48 bg-gradient-to-br from-primary-200 to-accent-200 overflow-hidden">
                   <UserOrCompanyAvatar
                     user={profile}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                   />
+                  {/* Градієнтний оверлей */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
                 {/* Контент */}
-                <div className="p-5">
-                  <h3 className="font-semibold text-lg text-neutral-900 mb-1">
+                <div className="p-6">
+                  <h3 className="font-bold text-xl text-neutral-900 mb-1 group-hover:text-primary-700 transition-colors">
                     {displayName}
                   </h3>
                   {profile.profession && (
-                    <p className="text-primary-600 font-medium mb-2">
+                    <p className="text-primary-600 font-semibold mb-3 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full inline-block"></span>
                       {profile.profession}
                     </p>
                   )}

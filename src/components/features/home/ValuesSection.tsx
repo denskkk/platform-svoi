@@ -25,14 +25,23 @@ const values = [
 
 export function ValuesSection() {
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+    <section className="py-20 bg-gradient-to-br from-white via-neutral-50 to-white relative overflow-hidden">
+      {/* Фонові елементи */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-400 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16">
+          <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-primary-100 to-accent-100 rounded-full">
+            <p className="text-sm font-semibold text-primary-700">💎 Що нас об'єднує</p>
+          </div>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-neutral-900 mb-4">
             Наші цінності
           </h2>
-          <p className="text-lg text-neutral-600">
-            На чому базується наша спільнота
+          <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
+            На чому базується наша <span className="font-semibold text-primary-600">спільнота</span>
           </p>
         </div>
 
@@ -43,10 +52,10 @@ export function ValuesSection() {
             return (
               <div
                 key={index}
-                className="text-center group"
+                className="text-center group p-8 rounded-3xl hover:bg-white/80 transition-all duration-300 hover:shadow-xl"
               >
                 {/* Іконка */}
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300"
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br mb-6 shadow-xl group-hover:shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
                   style={{
                     background: `linear-gradient(135deg, ${value.color.includes('blue') ? '#3B82F6, #2563EB' : value.color.includes('red') ? '#EF4444, #EC4899' : '#FFCA00, #007FE6'})`
                   }}
@@ -55,14 +64,17 @@ export function ValuesSection() {
                 </div>
 
                 {/* Заголовок */}
-                <h3 className="font-display text-2xl font-bold text-neutral-900 mb-3">
+                <h3 className="font-display text-2xl md:text-3xl font-bold text-neutral-900 mb-4 group-hover:text-primary-700 transition-colors">
                   {value.title}
                 </h3>
 
                 {/* Опис */}
-                <p className="text-neutral-600 leading-relaxed">
+                <p className="text-neutral-600 leading-relaxed text-base md:text-lg">
                   {value.description}
                 </p>
+                
+                {/* Декоративна лінія */}
+                <div className="mt-6 h-1 w-0 group-hover:w-20 mx-auto bg-gradient-to-r from-primary-500 to-accent-500 rounded-full transition-all duration-500"></div>
               </div>
             )
           })}
