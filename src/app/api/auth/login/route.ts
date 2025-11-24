@@ -48,7 +48,22 @@ export async function POST(request: NextRequest) {
 
     // Знайти користувача
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        passwordHash: true,
+        role: true,
+        accountType: true,
+        avatarUrl: true,
+        city: true,
+        balanceUcm: true,
+        isAdmin: true,
+        isVerified: true,
+        isActive: true,
+      }
     });
 
     if (!user) {

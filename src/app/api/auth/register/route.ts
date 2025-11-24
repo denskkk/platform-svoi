@@ -221,6 +221,7 @@ export async function POST(request: NextRequest) {
         city: true,
         avatarUrl: true,
         isVerified: true,
+        isAdmin: true,
         subscriptionActive: true,
         subscriptionStartedAt: true,
         subscriptionExpiresAt: true,
