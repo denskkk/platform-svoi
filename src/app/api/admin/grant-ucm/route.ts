@@ -1,22 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { withAuth } from '@/lib/authMiddleware';
 
 const prisma = new PrismaClient();
 
 // Перевірка доступу адміністратора
 async function checkAdmin(userId: number) {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true }
+    where: { id: userId }
   });
 
-  if (!user?.isAdmin) {
+  if (!(user as any)?.isAdmin) {
     throw new Error('Доступ заборонено. Тільки для адміністраторів.');
   }
+  
+  return true;
 }
 
 // POST /api/admin/grant-ucm - Видати УЦМ користувачу
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const userId = (request as any).user?.userId;
     
@@ -50,8 +52,8 @@ export async function POST(request: NextRequest) {
     // Перевірити, чи існує користувач
     const targetUser = await prisma.user.findUnique({
       where: { id: Number(targetUserId) },
-      select: { id: true, firstName: true, lastName: true, email: true, balanceUcm: true }
-    });
+      select: { id: true, firstName: true, lastName: true, email: true }
+    } as any);
 
     if (!targetUser) {
       return NextResponse.json(
@@ -63,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Виконати транзакцію
     const result = await prisma.$transaction(async (tx) => {
       // Створити запис транзакції
-      const transaction = await tx.ucmTransaction.create({
+      const transaction = await (tx as any).ucmTransaction.create({
         data: {
           userId: Number(targetUserId),
           amount: Number(amount),
@@ -79,15 +81,14 @@ export async function POST(request: NextRequest) {
           balanceUcm: {
             increment: Number(amount)
           }
-        },
+        } as any,
         select: {
           id: true,
           firstName: true,
           lastName: true,
-          email: true,
-          balanceUcm: true
+          email: true
         }
-      });
+      } as any);
 
       return { transaction, updatedUser };
     });
@@ -114,4 +115,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return withAuth(request, handler);
 }

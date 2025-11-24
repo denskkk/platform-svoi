@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { withAuth } from '@/lib/authMiddleware';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +16,7 @@ async function checkAdmin(userId: number) {
 }
 
 // PATCH /api/admin/users/[id]/verify - Встановити статус "Перевірено УЦМ"
-export async function PATCH(
+async function handler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -90,4 +91,11 @@ export async function PATCH(
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
+  return withAuth(request, (req) => handler(req, context));
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { withAuth } from '@/lib/authMiddleware';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +16,7 @@ async function checkAdmin(userId: number) {
 }
 
 // GET /api/admin/messages - Отримати всі переписки
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const userId = (request as any).user?.userId;
     
@@ -210,4 +211,8 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function GET(request: NextRequest) {
+  return withAuth(request, handler);
 }
