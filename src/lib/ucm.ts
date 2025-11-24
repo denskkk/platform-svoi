@@ -46,6 +46,16 @@ export const PAID_ACTION_DESCRIPTIONS = {
   advanced_search: 'Розширений пошук',
 } as const
 
+// Extra cost to promote (additional to base PAID_ACTION_COSTS)
+export const PROMO_ACTION_EXTRAS: Record<string, number> = {
+  partner_search: 2,
+  job_request: 2,
+  service_request: 2,
+  employee_search: 2,
+  investor_search: 2,
+  advanced_search: 0,
+}
+
 // Generate a short human-friendly referral code
 export function generateReferralCode(seed?: string): string {
   const base = (seed || '') + Math.random().toString(36).slice(2)

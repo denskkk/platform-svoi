@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/api-middleware'
-import { chargePaidAction, PAID_ACTION_COSTS, hasUcmTransactionsTable } from '@/lib/ucm'
+import { chargeForAction, PAID_ACTION_COSTS, PROMO_ACTION_EXTRAS, hasUcmTransactionsTable } from '@/lib/ucm'
 
 export async function POST(request: NextRequest) {
   const { user, error } = await requireAuth(request)
@@ -43,23 +43,27 @@ export async function POST(request: NextRequest) {
       actionType = 'investor_search'
     }
 
-    // If cost > 0: try to charge before creating
+    // If actionType known -> compute base and promo extra and charge total before creating
     let paid = false
     let paidAmount: number | null = null
     if (actionType) {
-      try {
-        const chargeResult = await chargePaidAction({ 
-          userId, 
-          actionType,
-          description: `Заявка: ${title}`
-        })
-        paid = true
-        paidAmount = chargeResult.amount
-      } catch (e: any) {
-        return NextResponse.json({
-          error: e.message || 'Недостатньо уцмок на балансі',
-          required: PAID_ACTION_COSTS[actionType],
-        }, { status: 402 })
+      const base = PAID_ACTION_COSTS[actionType] ?? 0
+      const promoExtra = PROMO_ACTION_EXTRAS[actionType as string] ?? 0
+      // Determine whether the client requested promotion (promoted flag in body)
+      const wantsPromote = !!body.paid
+      const totalToCharge = base + (wantsPromote ? promoExtra : 0)
+
+      if (totalToCharge > 0) {
+        try {
+          await chargeForAction({ userId, amount: totalToCharge, reason: 'request_create', related: { type: 'request' } })
+          paid = wantsPromote || base > 0
+          paidAmount = totalToCharge
+        } catch (e: any) {
+          return NextResponse.json({
+            error: e.message || 'Недостатньо уцмок на балансі',
+            required: totalToCharge,
+          }, { status: 402 })
+        }
       }
     }
 
@@ -85,8 +89,8 @@ export async function POST(request: NextRequest) {
         criteria: criteria ?? {},
         isPaid: paid,
         priceUcm: paidAmount ?? null,
-        promoted: paid,
-        expiresAt: paid ? defaultExpiry : null,
+        promoted: !!body.paid,
+        expiresAt: body.paid ? defaultExpiry : null,
         metadata: imageUrl ? { imageUrl } : {},
       }
       })
