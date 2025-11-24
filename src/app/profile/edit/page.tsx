@@ -3,70 +3,7 @@
 import { useState, useEffect } from 'react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useRouter } from 'next/navigation';
-import { User, GraduationCap, Briefcase, Home, Car, Heart, Target, Camera } from 'lucide-react';
-import { ProfileCompletionHint } from '@/components/ui/ProfileCompletionHint';
-
-// Маппінг українських значень до enum значень бази даних
-const toDbValue = {
-  gender: {
-    'Чоловік': 'male',
-    'Жінка': 'female',
-    'Інше': 'other'
-  },
-  maritalStatus: {
-    'Одружений/Заміжня': 'married',
-    'Не одружений/Не заміжня': 'single',
-    'У цивільному шлюбі': 'civil',
-    'Розлучений/Розлучена': 'divorced',
-    'Вдівець/Вдова': 'widowed'
-  },
-  employmentStatus: {
-    'Працевлаштований': 'employed',
-    'Безробітний': 'unemployed',
-    'Власник бізнесу': 'business_owner',
-    'Фрілансер': 'freelancer',
-    'Студент': 'student',
-    'Пенсіонер': 'retired'
-  },
-  educationLevel: {
-    'Середня': 'secondary',
-    'Коледж': 'college',
-    'Бакалавр': 'bachelor',
-    'Магістр': 'master',
-    'Аспірантура': 'doctorate'
-  }
-};
-
-// Зворотній маппінг для відображення в UI
-const toUiValue = {
-  gender: {
-    'male': 'Чоловік',
-    'female': 'Жінка',
-    'other': 'Інше'
-  },
-  maritalStatus: {
-    'married': 'Одружений/Заміжня',
-    'single': 'Не одружений/Не заміжня',
-    'civil': 'У цивільному шлюбі',
-    'divorced': 'Розлучений/Розлучена',
-    'widowed': 'Вдівець/Вдова'
-  },
-  employmentStatus: {
-    'employed': 'Працевлаштований',
-    'unemployed': 'Безробітний',
-    'business_owner': 'Власник бізнесу',
-    'freelancer': 'Фрілансер',
-    'student': 'Студент',
-    'retired': 'Пенсіонер'
-  },
-  educationLevel: {
-    'secondary': 'Середня',
-    'college': 'Коледж',
-    'bachelor': 'Бакалавр',
-    'master': 'Магістр',
-    'doctorate': 'Аспірантура'
-  }
-};
+import { User, MapPin, Briefcase, Heart, Camera, Globe } from 'lucide-react';
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -74,99 +11,61 @@ export default function EditProfilePage() {
   const [token, setToken] = useState<string>('');
   const [activeTab, setActiveTab] = useState('basic');
   const [formData, setFormData] = useState({
-    // 1-4: Основні дані
+    // Основна інформація
     firstName: '',
     middleName: '',
     lastName: '',
     phone: '',
-    email: '',
-    city: '',
-    
-    // 5-6: Освіта
-    educationLevel: '',
-    educationDetails: '',
-    
-    // 6-7: Участь в УЦМ
-    ucmMember: '',
-    ucmSupporter: '',
-    
-    // 8: Працевлаштування
-    employmentStatus: '',
-    workplace: '',
-    profession: '',
-    seekingPartTime: false,
-    seekingFullTime: false,
-    seekingSpecialty: '',
-    wantsStartBusiness: '',
-    
-    // Для підприємців
-    businessType: '',
-    fopGroup: '',
-    tovType: '',
-    companyCode: '',
-    businessCategory: '',
-    offerType: '',
-    
-    // 9: Використання бізнес-послуг
-    usesBusinessServices: [] as string[],
-    readyToSwitchToUCM: '',
-    
-    // 9: Останні місця роботи
-    workHistory: '',
-    
-    // 10-12: Сімейний стан та діти
+    age: '',
     gender: '',
     maritalStatus: '',
-    hasChildren: '',
+    familyComposition: '',
     childrenCount: '',
-    childrenAges: [] as string[],
     
-    // 13: Домашні тварини
-    hasPets: '',
-    petsInfo: '',
-    
-    // 14: Проживання
+    // Місце проживання
+    city: '',
+    region: '',
     housingType: '',
-    housingDetails: [] as string[],
+    livingSituation: '',
     
-    // 15: Використання побутових послуг
-    usesHomeServices: [] as string[],
-    
-    // 16: Автомобіль
+    // Транспорт
     hasCar: '',
     carInfo: '',
-    usesTaxi: false,
-    carServices: [] as string[],
+    otherTransport: [] as string[],
+    otherTransportOther: '',
     
-    // 17: Велосипед/Самокат
-    hasBicycle: '',
-    bicycleInfo: '',
+    // Професійна діяльність
+    profession: '',
+    employmentStatus: '',
+    workplace: '',
+    education: '',
+    businessInfo: '',
+    jobSeeking: '',
     
-    // 18-20: Доставка та їжа
-    usesDelivery: '',
-    restaurantFrequency: '',
-    cuisinePreference: '',
+    // Домашні тварини
+    hasPets: '',
+    petsInfo: [] as string[],
+    petsInfoOther: '',
     
-    // 21: Активний відпочинок
-    outdoorActivities: '',
-    
-    // 22: Спорт
-    sports: '',
-    
-    // 23: Салони краси
-    beautyServices: [] as string[],
-    
-    // 24: Мета використання сайту
-    siteUsageGoal: [] as string[],
+    // Інтереси
+    hobbies: [] as string[],
+    hobbiesOther: '',
+    outdoorActivities: [] as string[],
+    outdoorActivitiesOther: '',
+    lifestyle: [] as string[],
+    lifestyleOther: '',
+    sports: [] as string[],
+    sportsOther: '',
+    bio: '',
     
     // Соцмережі
     instagram: '',
     facebook: '',
     telegram: '',
     tiktok: '',
-    
-    // Опис (для базового)
-    bio: '',
+    // Мета використання
+    siteUsageGoal: [] as string[],
+    siteUsageGoalOther: '',
   });
   
   const [avatarPreview, setAvatarPreview] = useState<string>('');
@@ -174,9 +73,6 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [showEmptyFieldsModal, setShowEmptyFieldsModal] = useState(false);
-  const [emptyFieldsList, setEmptyFieldsList] = useState<string[]>([]);
-  const [showRawEditor, setShowRawEditor] = useState(false);
 
   const cities = [
     'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
@@ -201,14 +97,13 @@ export default function EditProfilePage() {
       }
       if (storedToken) setToken(storedToken);
       if (storedUser) {
-          try {
+        try {
           const userData = JSON.parse(storedUser);
           loadProfile(userData.id, storedToken ?? undefined);
         } catch {}
       }
     };
 
-    // Если в localStorage нет токена/пользователя — пробуем получить через httpOnly cookie
     if (!storedUser || !storedToken) {
       (async () => {
         try {
@@ -218,7 +113,6 @@ export default function EditProfilePage() {
             if (data.user) {
               setUser(data.user);
               setAvatarPreview(data.user.avatarUrl || '');
-              // Загружаем профиль по id
               loadProfile(data.user.id, storedToken ?? undefined);
               return;
             }
@@ -227,7 +121,6 @@ export default function EditProfilePage() {
           console.error('Auth check failed in EditProfilePage:', e);
         }
 
-        // Если и cookie, и localStorage не дали пользователя — пробуем инициализировать из local (если есть), либо редирект
         if (storedUser || storedToken) {
           initFromLocal();
         } else {
@@ -246,96 +139,89 @@ export default function EditProfilePage() {
       
       if (data.user) {
         const u = data.user;
-        console.log('Loaded profile data:', u);
-        const socialLinks = u.socialLinks || {};
-        
-        const toArray = (val: any): string[] => {
-          if (!val) return [];
+        const csvToArray = (val: any) => {
+          if (!val) return [] as string[];
           if (Array.isArray(val)) return val;
-          if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
-          return [];
+          if (typeof val === 'string') {
+            return val.split(',').map((s) => s.trim()).filter(Boolean);
+          }
+          return [] as string[];
         };
-        
+
+        const mapOther = (arr: string[], known: string[]) => {
+          const otherItems = arr.filter(a => !known.includes(a));
+          const filtered = arr.filter(a => known.includes(a));
+          if (otherItems.length) {
+            return { values: [...filtered, 'Інше'], other: otherItems.join(', ') };
+          }
+          return { values: filtered, other: '' };
+        };
+
+        const otherTransportKnown = ['Велосипед','Самокат','Мотоцикл','Скейт','Гірський велосипед','Інше'];
+        const petsKnown = ['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше'];
+        const hobbiesKnown = ['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше'];
+        const outdoorKnown = ['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше'];
+        const lifestyleKnown = ['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше'];
+        const sportsKnown = ['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше'];
+
+        const ot = mapOther(csvToArray(u.otherTransport), otherTransportKnown);
+        const pets = mapOther(csvToArray(u.petsInfo), petsKnown);
+        const hobbies = mapOther(csvToArray(u.hobbies), hobbiesKnown);
+        const outdoor = mapOther(csvToArray(u.outdoorActivities), outdoorKnown);
+        const lifestyle = mapOther(csvToArray(u.lifestyle), lifestyleKnown);
+        const sports = mapOther(csvToArray(u.sports), sportsKnown);
+
         setFormData({
           firstName: u.firstName || '',
           middleName: u.middleName || '',
           lastName: u.lastName || '',
           phone: u.phone || '',
-          email: u.email || '',
+          age: u.age ? String(u.age) : '',
+          gender: u.gender || '',
+          maritalStatus: u.maritalStatus || '',
+          familyComposition: u.familyComposition || '',
+          childrenCount: u.childrenCount ? String(u.childrenCount) : '',
+          
           city: u.city || '',
-          
-          educationLevel: u.educationLevel ? (toUiValue.educationLevel[u.educationLevel as keyof typeof toUiValue.educationLevel] || u.educationLevel) : '',
-          educationDetails: u.educationDetails || '',
-          
-          ucmMember: u.ucmMember || '',
-          ucmSupporter: u.ucmSupporter || '',
-          
-          employmentStatus: u.employmentStatus ? (toUiValue.employmentStatus[u.employmentStatus as keyof typeof toUiValue.employmentStatus] || u.employmentStatus) : '',
-          workplace: u.workplace || '',
-          profession: u.profession || '',
-          seekingPartTime: u.seekingPartTime === true,
-          seekingFullTime: u.seekingFullTime === true,
-          seekingSpecialty: u.seekingSpecialty || '',
-          wantsStartBusiness: u.wantsStartBusiness || '',
-          
-          businessType: u.businessType || '',
-          fopGroup: u.fopGroup || '',
-          tovType: u.tovType || '',
-          companyCode: u.companyCode || '',
-          businessCategory: u.businessCategory || '',
-          offerType: u.offerType || '',
-          
-          usesBusinessServices: toArray(u.usesBusinessServices),
-          readyToSwitchToUCM: u.readyToSwitchToUCM || '',
-          
-          workHistory: u.workHistory || '',
-          
-          gender: u.gender ? (toUiValue.gender[u.gender as keyof typeof toUiValue.gender] || u.gender) : '',
-          maritalStatus: u.maritalStatus ? (toUiValue.maritalStatus[u.maritalStatus as keyof typeof toUiValue.maritalStatus] || u.maritalStatus) : '',
-          hasChildren: u.hasChildren || '',
-          childrenCount: u.childrenCount?.toString() || '',
-          childrenAges: toArray(u.childrenAges),
-          
-          hasPets: u.hasPets || '',
-          petsInfo: u.petsInfo || '',
-          
+          region: u.region || '',
           housingType: u.housingType || '',
-          housingDetails: toArray(u.housingDetails),
+          livingSituation: u.livingSituation || '',
           
-          usesHomeServices: toArray(u.usesHomeServices),
-          
-          hasCar: u.hasCar || '',
+          hasCar: typeof u.hasCar === 'boolean' ? (u.hasCar ? 'yes' : 'no') : '',
           carInfo: u.carInfo || '',
-          usesTaxi: u.usesTaxi === true,
-          carServices: toArray(u.carServices),
+          otherTransport: ot.values,
+          otherTransportOther: ot.other,
           
-          hasBicycle: u.hasBicycle || '',
-          bicycleInfo: u.bicycleInfo || '',
+          profession: u.profession || '',
+          employmentStatus: u.employmentStatus || '',
+          workplace: u.workplace || '',
+          education: u.educationLevel || u.educationDetails || '',
+          businessInfo: u.privateBusinessInfo || '',
+          jobSeeking: u.jobSeeking || '',
           
-          usesDelivery: u.usesDelivery || '',
-          restaurantFrequency: u.restaurantFrequency || '',
-          cuisinePreference: u.cuisinePreference || '',
+          hasPets: typeof u.hasPets === 'boolean' ? (u.hasPets ? 'yes' : 'no') : '',
+          petsInfo: pets.values,
+          petsInfoOther: pets.other,
           
-          outdoorActivities: u.outdoorActivities || '',
-          
-          sports: u.sports || '',
-          
-          beautyServices: toArray(u.beautyServices),
-          
-          siteUsageGoal: toArray(u.siteUsageGoal),
-          
-          instagram: socialLinks.instagram || '',
-          facebook: socialLinks.facebook || '',
-          telegram: socialLinks.telegram || '',
-          tiktok: socialLinks.tiktok || '',
-          
+          hobbies: hobbies.values,
+          hobbiesOther: hobbies.other,
+          outdoorActivities: outdoor.values,
+          outdoorActivitiesOther: outdoor.other,
+          lifestyle: lifestyle.values,
+          lifestyleOther: lifestyle.other,
+          sports: sports.values,
+          sportsOther: sports.other,
           bio: u.bio || '',
+          
+          instagram: u.socialLinks?.instagram || '',
+          facebook: u.socialLinks?.facebook || '',
+          telegram: u.socialLinks?.telegram || '',
+          tiktok: u.socialLinks?.tiktok || '',
+          siteUsageGoal: csvToArray(u.siteUsageGoal),
+          siteUsageGoalOther: '',
         });
         
-        // Оновлюємо user state з повними даними
         setUser(u);
-        // Показувати базову вкладку після завантаження профілю
-        setActiveTab('basic');
       }
     } catch (err) {
       console.error('Помилка завантаження профілю:', err);
@@ -344,21 +230,15 @@ export default function EditProfilePage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData({ ...formData, [name]: checked });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCheckboxGroup = (field: keyof typeof formData, value: string) => {
-    const currentValues = formData[field] as string[];
-    const newValues = currentValues.includes(value)
-      ? currentValues.filter(v => v !== value)
-      : [...currentValues, value];
-    setFormData({ ...formData, [field]: newValues });
+  const handleCheckboxChange = (name: string, value: string) => {
+    const current = (formData as any)[name];
+    if (!Array.isArray(current)) return;
+    const exists = current.includes(value);
+    const updated = exists ? current.filter((v: string) => v !== value) : [...current, value];
+    setFormData({ ...formData, [name]: updated });
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -391,7 +271,6 @@ export default function EditProfilePage() {
     uploadFormData.append('type', 'avatars');
 
     try {
-      console.log('[Upload Avatar] Початок завантаження аватара...');
       const uploadHeaders: any = {};
       if (token) uploadHeaders['Authorization'] = `Bearer ${token}`;
 
@@ -403,12 +282,9 @@ export default function EditProfilePage() {
       });
 
       const data = await response.json();
-      console.log('[Upload Avatar] Відповідь від сервера:', data);
       
       if (response.ok && data.url) {
-        // Додаємо timestamp до URL для примусового оновлення зображення
         const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
-        console.log('[Upload Avatar] Аватар успішно завантажено:', urlWithTimestamp);
         return urlWithTimestamp;
       }
       
@@ -419,58 +295,20 @@ export default function EditProfilePage() {
     }
   };
 
-  const checkEmptyFields = () => {
-    const emptyFields: string[] = [];
-    
-    // Перевірка основних полів для розширеної анкети (всі, крім viewer)
-    if (user?.accountType && user.accountType !== 'viewer') {
-      if (!formData.educationLevel) emptyFields.push('Освіта');
-      if (!formData.gender) emptyFields.push('Стать');
-      if (!formData.maritalStatus) emptyFields.push('Сімейний стан');
-      if (!formData.employmentStatus) emptyFields.push('Статус працевлаштування');
-      if (!formData.hasPets) emptyFields.push('Домашні тварини');
-      if (!formData.housingType) emptyFields.push('Тип житла');
-      if (!formData.hasCar) emptyFields.push('Наявність автомобіля');
-      if (!formData.usesDelivery) emptyFields.push('Ставлення до доставки');
-      if (!formData.restaurantFrequency) emptyFields.push('Відвідування кафе/ресторанів');
-      if (formData.siteUsageGoal.length === 0) emptyFields.push('Мета використання сайту');
-    }
-    
-    return emptyFields;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
-    // Перевірка незаповнених полів для розширеної анкети (всі, крім viewer)
-    const emptyFields = checkEmptyFields();
-    if (emptyFields.length > 0 && user?.accountType && user.accountType !== 'viewer') {
-      setEmptyFieldsList(emptyFields);
-      setShowEmptyFieldsModal(true);
-      return; // Показуємо модалку і чекаємо рішення
-    }
-    
-    // Якщо все ОК або підтверджено - продовжуємо збереження
-    await saveProfile();
-  };
-  
-  const saveProfile = async () => {
     setLoading(true);
     
     try {
       let avatarUrl = avatarPreview;
       
       if (avatarFile) {
-        console.log('[Save Profile] Завантаження нового аватара...');
         const uploadedUrl = await uploadAvatar();
         if (uploadedUrl) {
           avatarUrl = uploadedUrl;
-          console.log('[Save Profile] Новий URL аватара:', avatarUrl);
         }
-      } else {
-        console.log('[Save Profile] Використовуємо існуючий аватар:', avatarUrl);
       }
 
       const socialLinks: any = {};
@@ -479,130 +317,105 @@ export default function EditProfilePage() {
       if (formData.telegram) socialLinks.telegram = formData.telegram;
       if (formData.tiktok) socialLinks.tiktok = formData.tiktok;
 
-      const arrToCsv = (v: any) => {
-        if (!v) return null;
-        if (Array.isArray(v)) return v.map((s: any) => String(s).trim()).filter(Boolean).join(', ') || null;
-        if (typeof v === 'string') return v.trim() || null;
-        return null;
-      };
-
-      const requestBody = {
-        firstName: formData.firstName,
-        middleName: formData.middleName || null,
-        lastName: formData.lastName,
-        phone: formData.phone || null,
-        email: formData.email || null,
-        city: formData.city,
-        avatarUrl: avatarUrl || null,
-        
-        educationLevel: formData.educationLevel ? (toDbValue.educationLevel[formData.educationLevel as keyof typeof toDbValue.educationLevel] || formData.educationLevel) : null,
-        educationDetails: formData.educationDetails || null,
-        
-        ucmMember: formData.ucmMember || null,
-        ucmSupporter: formData.ucmSupporter || null,
-        
-        gender: formData.gender ? (toDbValue.gender[formData.gender as keyof typeof toDbValue.gender] || formData.gender) : null,
-        employmentStatus: formData.employmentStatus ? (toDbValue.employmentStatus[formData.employmentStatus as keyof typeof toDbValue.employmentStatus] || formData.employmentStatus) : null,
-        workplace: formData.workplace || null,
-        profession: formData.profession || null,
-        
-        seekingPartTime: formData.seekingPartTime || null,
-        seekingFullTime: formData.seekingFullTime || null,
-        seekingSpecialty: formData.seekingSpecialty || null,
-        wantsStartBusiness: formData.wantsStartBusiness || null,
-        
-        businessType: formData.businessType || null,
-        fopGroup: formData.fopGroup || null,
-        tovType: formData.tovType || null,
-        companyCode: formData.companyCode || null,
-        businessCategory: formData.businessCategory || null,
-        offerType: formData.offerType || null,
-        
-        usesBusinessServices: arrToCsv(formData.usesBusinessServices),
-        readyToSwitchToUCM: formData.readyToSwitchToUCM || null,
-        
-        workHistory: formData.workHistory || null,
-        
-        maritalStatus: formData.maritalStatus ? (toDbValue.maritalStatus[formData.maritalStatus as keyof typeof toDbValue.maritalStatus] || formData.maritalStatus) : null,
-        hasChildren: formData.hasChildren || null,
-        childrenCount: formData.childrenCount ? parseInt(formData.childrenCount) : null,
-        childrenAges: arrToCsv(formData.childrenAges),
-        
-        hasPets: formData.hasPets || null,
-        petsInfo: arrToCsv(formData.petsInfo),
-        
-        housingType: formData.housingType || null,
-        housingDetails: arrToCsv(formData.housingDetails),
-        
-        usesHomeServices: arrToCsv(formData.usesHomeServices),
-        
-        hasCar: formData.hasCar || null,
-        carInfo: formData.carInfo || null,
-        usesTaxi: formData.usesTaxi || null,
-        carServices: arrToCsv(formData.carServices),
-        
-        hasBicycle: formData.hasBicycle || null,
-        bicycleInfo: formData.bicycleInfo || null,
-        
-        usesDelivery: formData.usesDelivery || null,
-        restaurantFrequency: formData.restaurantFrequency || null,
-        cuisinePreference: formData.cuisinePreference || null,
-        
-        outdoorActivities: arrToCsv(formData.outdoorActivities),
-
-        sports: arrToCsv(formData.sports),
-        
-        beautyServices: arrToCsv(formData.beautyServices),
-
-        siteUsageGoal: arrToCsv(formData.siteUsageGoal),
-        
-        bio: formData.bio || null,
-        
-        socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
-      };
-
       const headers: any = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const response = await fetch(`/api/profile/${user.id}`, {
         method: 'PUT',
-        credentials: 'include',
         headers,
-        body: JSON.stringify(requestBody),
+        credentials: 'include',
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          middleName: formData.middleName || null,
+          lastName: formData.lastName,
+          phone: formData.phone || null,
+          city: formData.city,
+          region: formData.region || null,
+          avatarUrl: avatarUrl || null,
+          
+          gender: formData.gender || null,
+          age: formData.age ? parseInt(formData.age) : null,
+          maritalStatus: formData.maritalStatus || null,
+          familyComposition: formData.familyComposition || null,
+          childrenCount: formData.childrenCount ? parseInt(formData.childrenCount) : null,
+          
+          housingType: formData.housingType || null,
+          livingSituation: formData.livingSituation || null,
+          
+          hasCar: formData.hasCar ? formData.hasCar === 'yes' : null,
+          carInfo: formData.carInfo || null,
+          otherTransport: Array.isArray(formData.otherTransport)
+            ? (formData.otherTransport
+                .map((v: string) => (v === 'Інше' && formData.otherTransportOther ? formData.otherTransportOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.otherTransport || null,
+          
+          profession: formData.profession || null,
+          employmentStatus: formData.employmentStatus || null,
+          workplace: formData.workplace || null,
+          education: formData.education || null,
+          privateBusinessInfo: formData.businessInfo || null,
+          jobSeeking: formData.jobSeeking || null,
+          
+          hasPets: formData.hasPets ? formData.hasPets === 'yes' : null,
+          petsInfo: Array.isArray(formData.petsInfo)
+            ? (formData.petsInfo
+                .map((v: string) => (v === 'Інше' && formData.petsInfoOther ? formData.petsInfoOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.petsInfo || null,
+
+          hobbies: Array.isArray(formData.hobbies)
+            ? (formData.hobbies
+                .map((v: string) => (v === 'Інше' && formData.hobbiesOther ? formData.hobbiesOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.hobbies || null,
+
+          outdoorActivities: Array.isArray(formData.outdoorActivities)
+            ? (formData.outdoorActivities
+                .map((v: string) => (v === 'Інше' && formData.outdoorActivitiesOther ? formData.outdoorActivitiesOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.outdoorActivities || null,
+
+          lifestyle: Array.isArray(formData.lifestyle)
+            ? (formData.lifestyle
+                .map((v: string) => (v === 'Інше' && formData.lifestyleOther ? formData.lifestyleOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.lifestyle || null,
+
+          sports: Array.isArray(formData.sports)
+            ? (formData.sports
+                .map((v: string) => (v === 'Інше' && formData.sportsOther ? formData.sportsOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.sports || null,
+          bio: formData.bio || null,
+          
+          socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
+          siteUsageGoal: Array.isArray(formData.siteUsageGoal)
+            ? (formData.siteUsageGoal
+                .map((v: string) => (v === 'Інше' && formData.siteUsageGoalOther ? formData.siteUsageGoalOther : v))
+                .filter(Boolean)
+                .join(', ') || null)
+            : formData.siteUsageGoal || null,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // If server returned validation details, show them to the user
-        const details = data?.details;
-        const detailMsg = Array.isArray(details) && details.length ? ` (${details.join('; ')})` : '';
-        throw new Error((data.error || 'Помилка збереження') + detailMsg);
+        throw new Error(data.error || 'Помилка збереження');
       }
 
-      // Оновлюємо дані користувача в localStorage з новим аватаром
-      if (data.user) {
-        const updatedUser = {
-          ...user,
-          ...data.user,
-          avatarUrl: avatarUrl || user.avatarUrl,
-        };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        
-        // Також оновлюємо стан user для миттєвого відображення в UI
-        setUser(updatedUser);
-        
-        // Відправляємо подію для оновлення аватара в інших компонентах
-        window.dispatchEvent(new Event('userUpdated'));
-        // Також повідомляємо, що змінився прогрес заробітку (щоб UI перезавантажив задачі/лічильник)
-        window.dispatchEvent(new Event('earningUpdated'));
-      }
-
-      setSuccess('Профіль успішно оновлено!');
+      localStorage.setItem('user', JSON.stringify(data.user));
       
+      setSuccess('Профіль успішно оновлено!');
       setTimeout(() => {
-        // Додаємо timestamp до URL для примусової перезагрузки
-        router.push(`/profile/${user.id}?t=${Date.now()}`);
+        router.push(`/profile/${user.id}`);
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'Помилка збереження');
@@ -613,52 +426,692 @@ export default function EditProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
         <div className="text-neutral-600">Завантаження...</div>
       </div>
     );
   }
 
-  const isExtended = !!(user?.accountType && user.accountType !== 'viewer');
+  const renderBasicInfo = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <User className="w-5 h-5 text-primary-600" />
+        Основна інформація
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Ім'я *
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            required
+            value={formData.firstName}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Прізвище *
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            required
+            value={formData.lastName}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            По батькові
+          </label>
+          <input
+            type="text"
+            name="middleName"
+            value={formData.middleName}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Телефон
+          </label>
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Вік
+          </label>
+          <input
+            type="number"
+            name="age"
+            min="18"
+            max="120"
+            value={formData.age}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Стать
+          </label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Не вказано</option>
+            <option value="male">Чоловіча</option>
+            <option value="female">Жіноча</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Сімейний стан
+          </label>
+          <select
+            name="maritalStatus"
+            value={formData.maritalStatus}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Не вказано</option>
+            <option value="single">Неодружений/неодружена</option>
+            <option value="married">Одружений/одружена</option>
+            <option value="relationship">У стосунках</option>
+            <option value="divorced">Розлучений/розлучена</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Кількість дітей
+          </label>
+          <input
+            type="number"
+            name="childrenCount"
+            min="0"
+            max="20"
+            value={formData.childrenCount}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Склад сім'ї
+          </label>
+          <textarea
+            name="familyComposition"
+            rows={2}
+            value={formData.familyComposition}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLocation = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <MapPin className="w-5 h-5 text-primary-600" />
+        Місце проживання & Транспорт
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Місто *
+          </label>
+          <select
+            name="city"
+            required
+            value={formData.city}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Оберіть місто</option>
+            {cities.map(city => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Область
+          </label>
+          <input
+            type="text"
+            name="region"
+            value={formData.region}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Тип житла
+          </label>
+          <select
+            name="housingType"
+            value={formData.housingType}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Не вказано</option>
+            <option value="house">Будинок</option>
+            <option value="apartment">Квартира</option>
+            <option value="other">Інше</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Проживання
+          </label>
+          <select
+            name="livingSituation"
+            value={formData.livingSituation}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Не вказано</option>
+            <option value="alone">Самостійно</option>
+            <option value="family">З родиною</option>
+            <option value="roommates">З співмешканцями</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Чи є автомобіль?
+          </label>
+          <select
+            name="hasCar"
+            value={formData.hasCar}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Не вказано</option>
+            <option value="yes">Так</option>
+            <option value="no">Ні</option>
+          </select>
+        </div>
+
+        {formData.hasCar === 'yes' && (
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
+              Марка та модель авто
+            </label>
+            <input
+              type="text"
+              name="carInfo"
+              value={formData.carInfo}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+        )}
+
+        <div className={formData.hasCar === 'yes' ? '' : 'md:col-span-2'}>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Інший транспорт
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {['Велосипед','Самокат','Мотоцикл','Скейт','Гірський велосипед','Інше'].map(opt => (
+              <label key={opt} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.otherTransport.includes(opt)}
+                  onChange={() => handleCheckboxChange('otherTransport', opt)}
+                />
+                <span className="text-sm">{opt}</span>
+              </label>
+            ))}
+          </div>
+          {formData.otherTransport.includes('Інше') && (
+            <input
+              type="text"
+              name="otherTransportOther"
+              value={formData.otherTransportOther}
+              onChange={handleChange}
+              className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              placeholder="Опишіть інший транспорт"
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProfession = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <Briefcase className="w-5 h-5 text-primary-600" />
+        Професійна діяльність
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Професія / Спеціальність
+          </label>
+          <input
+            type="text"
+            name="profession"
+            value={formData.profession}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Статус зайнятості
+          </label>
+          <select
+            name="employmentStatus"
+            value={formData.employmentStatus}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Не вказано</option>
+            <option value="employed">Працевлаштований</option>
+            <option value="unemployed">Не працевлаштований</option>
+            <option value="freelance">Фріланс</option>
+            <option value="business">Власний бізнес</option>
+            <option value="student">Студент</option>
+            <option value="retired">Пенсіонер</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Місце роботи
+          </label>
+          <input
+            type="text"
+            name="workplace"
+            value={formData.workplace}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Освіта
+          </label>
+          <input
+            type="text"
+            name="education"
+            value={formData.education}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Приватна бізнес-інформація
+          </label>
+          <textarea
+            name="businessInfo"
+            rows={2}
+            value={formData.businessInfo}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Пошук роботи
+          </label>
+          <textarea
+            name="jobSeeking"
+            rows={2}
+            value={formData.jobSeeking}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderInterests = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <Heart className="w-5 h-5 text-primary-600" />
+        Інтереси та хобі
+      </h3>
+
+      {/* Pets */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Чи є домашні тварини?
+        </label>
+        <select
+          name="hasPets"
+          value={formData.hasPets}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        >
+          <option value="">Не вказано</option>
+          <option value="yes">Так</option>
+          <option value="no">Ні</option>
+        </select>
+      </div>
+
+      {formData.hasPets === 'yes' && (
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Які тварини?
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше'].map(opt => (
+              <label key={opt} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.petsInfo.includes(opt)}
+                  onChange={() => handleCheckboxChange('petsInfo', opt)}
+                />
+                <span className="text-sm">{opt}</span>
+              </label>
+            ))}
+          </div>
+          {formData.petsInfo.includes('Інше') && (
+            <input
+              type="text"
+              name="petsInfoOther"
+              value={formData.petsInfoOther}
+              onChange={handleChange}
+              className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              placeholder="Опишіть інших тварин"
+            />
+          )}
+        </div>
+      )}
+
+      {/* Hobbies */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Хобі
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.hobbies.includes(opt)}
+                onChange={() => handleCheckboxChange('hobbies', opt)}
+              />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {formData.hobbies.includes('Інше') && (
+          <input
+            type="text"
+            name="hobbiesOther"
+            value={formData.hobbiesOther}
+            onChange={handleChange}
+            className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Опишіть інші хобі"
+          />
+        )}
+      </div>
+
+      {/* Outdoor activities */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Активний відпочинок
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.outdoorActivities.includes(opt)}
+                onChange={() => handleCheckboxChange('outdoorActivities', opt)}
+              />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {formData.outdoorActivities.includes('Інше') && (
+          <input
+            type="text"
+            name="outdoorActivitiesOther"
+            value={formData.outdoorActivitiesOther}
+            onChange={handleChange}
+            className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Опишіть інші активності"
+          />
+        )}
+      </div>
+
+      {/* Lifestyle */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Спосіб життя
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.lifestyle.includes(opt)}
+                onChange={() => handleCheckboxChange('lifestyle', opt)}
+              />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {formData.lifestyle.includes('Інше') && (
+          <input
+            type="text"
+            name="lifestyleOther"
+            value={formData.lifestyleOther}
+            onChange={handleChange}
+            className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Опишіть інший спосіб життя"
+          />
+        )}
+      </div>
+
+      {/* Sports */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Спорт
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.sports.includes(opt)}
+                onChange={() => handleCheckboxChange('sports', opt)}
+              />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {formData.sports.includes('Інше') && (
+          <input
+            type="text"
+            name="sportsOther"
+            value={formData.sportsOther}
+            onChange={handleChange}
+            className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Опишіть інші види спорту"
+          />
+        )}
+      </div>
+
+      {/* Bio */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Про себе
+        </label>
+        <textarea
+          name="bio"
+          rows={4}
+          value={formData.bio}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          placeholder="Розкажіть про себе..."
+        />
+      </div>
+    </div>
+  );
+
+  const renderSocial = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <Globe className="w-5 h-5 text-primary-600" />
+        Соцмережі та мета
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Instagram
+          </label>
+          <input
+            type="text"
+            name="instagram"
+            value={formData.instagram}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="@username"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Facebook
+          </label>
+          <input
+            type="text"
+            name="facebook"
+            value={formData.facebook}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="facebook.com/username"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            Telegram
+          </label>
+          <input
+            type="text"
+            name="telegram"
+            value={formData.telegram}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="@username"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            TikTok
+          </label>
+          <input
+            type="text"
+            name="tiktok"
+            value={formData.tiktok}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="@username"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          Мета використання платформи
+        </label>
+        <div className="grid grid-cols-1 gap-2">
+          {['Пошук послуг', 'Пропонування послуг', 'Нові знайомства', 'Бізнес-партнери', 'Інше'].map(opt => (
+            <label key={opt} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.siteUsageGoal.includes(opt)}
+                onChange={() => handleCheckboxChange('siteUsageGoal', opt)}
+              />
+              <span className="text-sm">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {formData.siteUsageGoal.includes('Інше') && (
+          <input
+            type="text"
+            name="siteUsageGoalOther"
+            value={formData.siteUsageGoalOther}
+            onChange={handleChange}
+            className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Опишіть іншу мету"
+          />
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 md:px-8 py-4 md:py-6">
-            <h1 className="text-xl md:text-3xl font-bold text-white">
-              👤 Редагувати профіль
-            </h1>
-            <p className="text-blue-100 mt-1 md:mt-2 text-sm md:text-base">
-              {isExtended ? 'Заповніть детальну анкету' : 'Оновіть свою інформацію'}
-            </p>
+          <div className="bg-gradient-to-r from-primary-500 to-accent-500 px-8 py-6">
+            <h1 className="text-3xl font-bold text-white">Редагувати профіль</h1>
+            <p className="text-primary-100 mt-2">Оновіть вашу інформацію</p>
           </div>
 
-          {/* Avatar Upload */}
-          <div className="px-4 md:px-8 py-4 md:py-6 border-b border-neutral-200">
-            <div className="flex items-center space-x-4 md:space-x-6">
-              <div className="relative flex-shrink-0">
-                {avatarPreview ? (
-                  <UserAvatar
-                    src={avatarPreview.startsWith('data:') ? avatarPreview : 
-                         avatarPreview.startsWith('http') || avatarPreview.startsWith('/') ? 
-                         `${avatarPreview}${avatarPreview.includes('?') ? '&' : '?'}t=${Date.now()}` : 
-                         avatarPreview}
-                    alt="Avatar"
-                    className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-200"
-                    fallbackName={`${formData.firstName || ''} ${formData.lastName || ''}`}
-                  />
-                ) : (
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-blue-500 flex items-center justify-center border-4 border-blue-200">
-                    <User className="w-10 h-10 md:w-12 md:h-12 text-white" />
-                  </div>
-                )}
+          {/* Avatar */}
+          <div className="px-8 py-6 border-b border-neutral-200">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <UserAvatar
+                  src={avatarPreview}
+                  alt={user.firstName}
+                  size="xl"
+                  className="border-4 border-primary-200"
+                />
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-blue-500 touch-manipulation"
+                  className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-primary-500"
                 >
-                  <Camera className="w-4 h-4 text-blue-600" />
+                  <Camera className="w-5 h-5 text-primary-600" />
                 </label>
                 <input
                   id="avatar-upload"
@@ -668,1276 +1121,90 @@ export default function EditProfilePage() {
                   className="hidden"
                 />
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-neutral-900 text-sm md:text-base">Фото профілю</h3>
-                <p className="text-xs md:text-sm text-neutral-600 mt-1">
+              <div>
+                <h3 className="font-semibold text-neutral-900">Фото профілю</h3>
+                <p className="text-sm text-neutral-600 mt-1">
                   PNG, JPG або HEIC. Макс 10MB
                 </p>
                 {avatarFile && (
-                  <p className="text-xs md:text-sm text-blue-600 mt-1 truncate">
+                  <p className="text-sm text-primary-600 mt-1">
                     ✓ Нове фото: {avatarFile.name}
                   </p>
                 )}
               </div>
             </div>
-            {/* Quick edit + debug (temporary) */}
-            <div className="px-4 md:px-8 py-3 bg-neutral-50 border-b border-neutral-100">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-neutral-600">Quick edit</div>
-                <div className="text-xs text-neutral-500">activeTab: <span className="font-medium text-neutral-700">{activeTab}</span></div>
-              </div>
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Ім'я" className="px-3 py-2 border rounded-lg" />
-                <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Прізвище" className="px-3 py-2 border rounded-lg" />
-                <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="px-3 py-2 border rounded-lg" />
-              </div>
-              <div className="mt-3">
-                <button type="button" onClick={saveProfile} className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg">Зберегти швидко</button>
-              </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-b border-neutral-200">
+            <div className="px-8 flex space-x-8 overflow-x-auto">
+              {[
+                { id: 'basic', name: 'Основне', icon: User },
+                { id: 'location', name: 'Місце & Транспорт', icon: MapPin },
+                { id: 'profession', name: 'Професія', icon: Briefcase },
+                { id: 'interests', name: 'Інтереси', icon: Heart },
+                { id: 'social', name: 'Соцмережі', icon: Globe },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    type="button"
+                    className={`py-4 px-4 border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
+                      activeTab === tab.id
+                        ? 'border-primary-500 text-primary-600 font-medium'
+                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Tabs - показувати розширену анкету завжди (анкета безкоштовна) */}
-          <div className="border-b border-neutral-200 overflow-x-auto">
-            <div className="px-2 md:px-8">
-              <div className="flex space-x-1 md:space-x-6 min-w-max">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('basic')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'basic'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <User className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Основні дані
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('education')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'education'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <GraduationCap className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Освіта
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('work')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'work'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Briefcase className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Робота
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('family')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'family'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Home className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Сім'я
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('transport')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'transport'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Car className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Транспорт
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('lifestyle')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'lifestyle'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Heart className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Стиль життя
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('goal')}
-                  className={`py-2.5 md:py-4 px-1.5 md:px-0 border-b-2 transition-colors whitespace-nowrap text-[10px] md:text-base touch-manipulation ${
-                    activeTab === 'goal'
-                      ? 'border-blue-500 text-blue-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Target className="w-3 h-3 md:w-4 md:h-4 inline mr-0.5 md:mr-1" />
-                  Мета
-                </button>
-                <div className="ml-4 flex items-center">
-                  <label className="inline-flex items-center text-sm text-neutral-600">
-                    <input type="checkbox" className="mr-2" checked={showRawEditor} onChange={() => setShowRawEditor(!showRawEditor)} />
-                    Показать все поля анкеты
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className="px-3 md:px-8 pt-3 md:pt-6">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-8 space-y-6">
             {error && (
-              <div className="mb-3 p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
+
             {success && (
-              <div className="mb-3 p-2.5 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs md:text-sm">
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
                 {success}
               </div>
             )}
-          </div>
 
-          {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-3 md:px-8 py-3 md:py-6 min-h-[260px]">
-            {showRawEditor && (
-              <div className="mb-6 p-4 bg-neutral-50 border rounded-lg">
-                <h3 className="text-sm font-medium text-neutral-800 mb-3">Редактор всех полей анкеты (быстрая правка)</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {Object.keys(formData).map((key) => {
-                    const val: any = (formData as any)[key];
-                    const isArray = Array.isArray(val);
-                    const isBool = typeof val === 'boolean';
-                    const isLongText = typeof val === 'string' && (val.length > 120 || key.toLowerCase().includes('bio') || key.toLowerCase().includes('history'));
+            {activeTab === 'basic' && renderBasicInfo()}
+            {activeTab === 'location' && renderLocation()}
+            {activeTab === 'profession' && renderProfession()}
+            {activeTab === 'interests' && renderInterests()}
+            {activeTab === 'social' && renderSocial()}
 
-                    return (
-                      <div key={key} className="flex flex-col">
-                        <label className="text-xs text-neutral-600 mb-1">{key}</label>
-                        {isArray ? (
-                          <textarea className="px-3 py-2 border rounded-md" rows={2} value={(val || []).join(', ')} onChange={(e) => setFormData({ ...formData, [key]: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
-                        ) : isBool ? (
-                          <label className="inline-flex items-center gap-2"><input type="checkbox" checked={!!val} onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })} /> <span className="text-sm">{String(val)}</span></label>
-                        ) : isLongText ? (
-                          <textarea className="px-3 py-2 border rounded-md" rows={3} value={val || ''} onChange={(e) => setFormData({ ...formData, [key]: e.target.value })} />
-                        ) : (
-                          <input className="px-3 py-2 border rounded-md" value={val ?? ''} onChange={(e) => setFormData({ ...formData, [key]: e.target.value })} />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="mt-3">
-                  <button type="button" onClick={saveProfile} className="px-4 py-2 bg-green-600 text-white rounded-md">Сохранить все</button>
-                </div>
-              </div>
-            )}
-            
-            {/* Basic Tab - завжди доступна як вкладка; контент рендериться по activeTab */}
-            {activeTab === 'basic' && (
-              <div className="space-y-4 md:space-y-6">
-                <h2 className="text-base md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-                  1-4. Основні дані
-                </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                  <div>
-                    <label className="block text-xs md:text-sm font-medium text-neutral-700 mb-1.5 md:mb-2">
-                      Ім'я *
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      required
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      По батькові
-                    </label>
-                    <input
-                      type="text"
-                      name="middleName"
-                      value={formData.middleName}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Прізвище *
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      required
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      2. Номер телефону *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      placeholder="+380 XX XXX XX XX"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      3. Електронна пошта
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    4. Об. Місто проживання *
-                  </label>
-                  <select
-                    name="city"
-                    required
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть місто</option>
-                    {cities.map(city => (
-                      <option key={city} value={city}>{city}</option>
-                    ))}
-                  </select>
-                </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Про себе
-                      </label>
-                      <textarea
-                        name="bio"
-                        rows={4}
-                        value={formData.bio}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
-                        placeholder="Розкажіть трохи про себе..."
-                      />
-                    </div>
-
-                    <div className="pt-4">
-                      <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
-                        📱 Соціальні мережі
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-2">
-                            Instagram
-                          </label>
-                          <input
-                            type="text"
-                            name="instagram"
-                            value={formData.instagram}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                            placeholder="@username"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-2">
-                            Facebook
-                          </label>
-                          <input
-                            type="text"
-                            name="facebook"
-                            value={formData.facebook}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-2">
-                            Telegram
-                          </label>
-                          <input
-                            type="text"
-                            name="telegram"
-                            value={formData.telegram}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                            placeholder="@username"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-2">
-                            TikTok
-                          </label>
-                          <input
-                            type="text"
-                            name="tiktok"
-                            value={formData.tiktok}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                            placeholder="@username"
-                          />
-                        </div>
-                      </div>
-                    </div>
-              </div>
-            )}
-
-            {/* Education Tab - 5-7: Освіта та УЦМ */}
-            {isExtended && activeTab === 'education' && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-                  5-7. Освіта та участь в УЦМ
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    5. Освіта *
-                  </label>
-                  <select
-                    name="educationLevel"
-                    value={formData.educationLevel}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть рівень</option>
-                    <option value="Середня">Середня</option>
-                    <option value="Бакалавр">Бакалавр</option>
-                    <option value="Магістр">Магістр</option>
-                    <option value="Коледж">Коледж</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Інститут та напрямок
-                  </label>
-                  <textarea
-                    name="educationDetails"
-                    rows={2}
-                    value={formData.educationDetails}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
-                    placeholder="Назва навчального закладу та спеціальність"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    6. Учасник команди УЦМ
-                  </label>
-                  <select
-                    name="ucmMember"
-                    value={formData.ucmMember}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Так">Так</option>
-                    <option value="Ні">Ні</option>
-                    <option value="Планую стати">Планую стати</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    7. Підтримуєш проєкти УЦМ
-                  </label>
-                  <select
-                    name="ucmSupporter"
-                    value={formData.ucmSupporter}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Так">Так</option>
-                    <option value="Ні">Ні</option>
-                    <option value="Планую">Планую</option>
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {/* Work Tab - 8-9: Робота та бізнес */}
-            {isExtended && activeTab === 'work' && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-                  8. Працевлаштування
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Працюєш
-                  </label>
-                  <select
-                    name="employmentStatus"
-                    value={formData.employmentStatus}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Працевлаштований">Працевлаштований</option>
-                    <option value="Безробітний">Безробітний</option>
-                    <option value="Власник бізнесу">Власник бізнесу</option>
-                    <option value="Фрілансер">Фрілансер</option>
-                    <option value="Студент">Студент</option>
-                    <option value="Пенсіонер">Пенсіонер</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Професія / Спеціальність
-                  </label>
-                  <input
-                    type="text"
-                    name="profession"
-                    value={formData.profession}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    placeholder="Ваша професія або спеціальність"
-                  />
-                </div>
-
-                {(formData.employmentStatus === 'Безробітний' || formData.employmentStatus === 'Студент') && (
-                  <div className="bg-blue-50 p-4 rounded-lg space-y-4">
-                    <h3 className="font-semibold text-gray-900">💁 Якщо в пошуку роботи:</h3>
-                    
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          name="seekingPartTime"
-                          checked={formData.seekingPartTime}
-                          onChange={handleChange}
-                          className="w-5 h-5 text-blue-600"
-                        />
-                        <span>1) Часткова зайнятість</span>
-                      </label>
-
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          name="seekingFullTime"
-                          checked={formData.seekingFullTime}
-                          onChange={handleChange}
-                          className="w-5 h-5 text-blue-600"
-                        />
-                        <span>2) Повноцінна робота</span>
-                      </label>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Спеціальності
-                      </label>
-                      <input
-                        type="text"
-                        name="seekingSpecialty"
-                        value={formData.seekingSpecialty}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Маєш бажання відкрити свою справу / Запропонувати бізнес проєкт УЦМ?
-                      </label>
-                      <select
-                        name="wantsStartBusiness"
-                        value={formData.wantsStartBusiness}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      >
-                        <option value="">Оберіть</option>
-                        <option value="Так">Так</option>
-                        <option value="Ні">Ні</option>
-                        <option value="Розглядаю варіанти">Розглядаю варіанти</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-
-                {(formData.employmentStatus === 'Власник бізнесу' || formData.employmentStatus === 'Сам на себе') && (
-                  <div className="bg-green-50 p-4 rounded-lg space-y-4">
-                    <h3 className="font-semibold text-gray-900">💁 Якщо підприємець:</h3>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Тип бізнесу
-                      </label>
-                      <select
-                        name="businessType"
-                        value={formData.businessType}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      >
-                        <option value="">Оберіть</option>
-                        <option value="fop">ФОП</option>
-                        <option value="tov">ТОВ</option>
-                      </select>
-                    </div>
-
-                    {formData.businessType === 'fop' && (
-                      <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
-                          Група ФОП
-                        </label>
-                        <select
-                          name="fopGroup"
-                          value={formData.fopGroup}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        >
-                          <option value="">Оберіть</option>
-                          <option value="1">Група 1</option>
-                          <option value="2">Група 2</option>
-                          <option value="3">Група 3</option>
-                        </select>
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Що продаєте чи покупаєте
-                      </label>
-                      <select
-                        name="offerType"
-                        value={formData.offerType}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      >
-                        <option value="">Оберіть</option>
-                        <option value="service">Послугу</option>
-                        <option value="product">Товар</option>
-                        <option value="both">Послуги та товари</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Категорія діяльності
-                      </label>
-                      <select
-                        name="businessCategory"
-                        value={formData.businessCategory}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      >
-                        <option value="">Оберіть категорію</option>
-                        <option value="education">Освіта</option>
-                        <option value="products">Продукти харчування</option>
-                        <option value="advertising">Реклама та маркетинг</option>
-                        <option value="online_sales">Інтернет-продажі</option>
-                        <option value="offline_sales">Офлайн-торгівля</option>
-                        <option value="auto_service">СТО та автосервіс</option>
-                        <option value="construction">Будівництво та ремонт</option>
-                        <option value="it">IT та розробка</option>
-                        <option value="other">Інше</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Код ЄДРПОУ (для перевірки КВЕД)
-                      </label>
-                      <input
-                        type="text"
-                        name="companyCode"
-                        value={formData.companyCode}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        placeholder="12345678"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="bg-purple-50 p-4 rounded-lg space-y-4">
-                  <h3 className="font-semibold text-gray-900">💁 Користуєтеся послугами:</h3>
-                  <div className="space-y-2">
-                    {['Бухгалтер', 'Юрист', 'СММ', 'Рекламщик', 'Спеціаліст в написанні сайтів', 'Не користувався'].map(service => (
-                      <label key={service} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={formData.usesBusinessServices.includes(service)}
-                          onChange={() => handleCheckboxGroup('usesBusinessServices', service)}
-                          className="w-5 h-5 text-blue-600"
-                        />
-                        <span>{service}</span>
-                      </label>
-                    ))}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Готовий перейти на спеціалістів з УЦМ?
-                    </label>
-                    <select
-                      name="readyToSwitchToUCM"
-                      value={formData.readyToSwitchToUCM}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Оберіть</option>
-                      <option value="Так">Так</option>
-                      <option value="Ні">Ні</option>
-                      <option value="Розглядаю">Розглядаю</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    9. Останні 2-3 місця роботи
-                  </label>
-                  <textarea
-                    name="workHistory"
-                    rows={4}
-                    value={formData.workHistory}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
-                    placeholder="Назва компанії, посада, період роботи, соц мережі компанії..."
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Family Tab - 10-15: Сім'я та побут */}
-            {isExtended && activeTab === 'family' && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-                  10-15. Сім'я та побут
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      10. Стать
-                    </label>
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Оберіть</option>
-                      <option value="Чоловік">Чоловік</option>
-                      <option value="Жінка">Жінка</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      11. Сімейний стан
-                    </label>
-                    <select
-                      name="maritalStatus"
-                      value={formData.maritalStatus}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Оберіть</option>
-                      <option value="Одружений/Заміжня">Одружений/Заміжня</option>
-                      <option value="Не одружений/Не заміжня">Не одружений/Не заміжня</option>
-                      <option value="У цивільному шлюбі">У цивільному шлюбі</option>
-                      <option value="Розлучений/Розлучена">Розлучений/Розлучена</option>
-                      <option value="Вдівець/Вдова">Вдівець/Вдова</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    12. Діти
-                  </label>
-                  <select
-                    name="hasChildren"
-                    value={formData.hasChildren}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Так">Так</option>
-                    <option value="Ні">Ні</option>
-                  </select>
-                </div>
-
-                {formData.hasChildren === 'Так' && (
-                  <div className="bg-blue-50 p-4 rounded-lg space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Кількість дітей
-                      </label>
-                      <select
-                        name="childrenCount"
-                        value={formData.childrenCount}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      >
-                        <option value="">Оберіть</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="more">Більше</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Вік дітей (для садка, школи, розвивайок)
-                      </label>
-                      <div className="space-y-2">
-                        {['від 0 до 2', 'від 2 до 5', 'від 6 до 10', 'від 10 до 14', 'від 14 до 18'].map(age => (
-                          <label key={age} className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={formData.childrenAges.includes(age)}
-                              onChange={() => handleCheckboxGroup('childrenAges', age)}
-                              className="w-5 h-5 text-blue-600"
-                            />
-                            <span>{age}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    13. Домашні тварини
-                  </label>
-                  <select
-                    name="hasPets"
-                    value={formData.hasPets}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Ні">Ні</option>
-                    <option value="Кіт">Кіт</option>
-                    <option value="Пес">Пес</option>
-                    <option value="Сільськогосподарські тварини">Сільськогосподарські тварини</option>
-                    <option value="Інше">Інше</option>
-                  </select>
-                </div>
-
-                {formData.hasPets && formData.hasPets !== 'Ні' && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Деталі (хто саме)
-                    </label>
-                    <input
-                      type="text"
-                      name="petsInfo"
-                      value={formData.petsInfo}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      placeholder="Опишіть ваших тварин"
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    14. Проживання
-                  </label>
-                  <select
-                    name="housingType"
-                    value={formData.housingType}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="house">Дім</option>
-                    <option value="apartment">Квартира</option>
-                    <option value="ground_apartment">Квартира на землі</option>
-                  </select>
-                </div>
-
-                {formData.housingType === 'house' && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Деталі для дому
-                    </label>
-                    <div className="space-y-2">
-                      {['Гараж', 'Двір', 'Сад', 'Ландшафт/Газон'].map(detail => (
-                        <label key={detail} className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={formData.housingDetails.includes(detail)}
-                            onChange={() => handleCheckboxGroup('housingDetails', detail)}
-                            className="w-5 h-5 text-blue-600"
-                          />
-                          <span>{detail}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    15. Користуєшся послугами
-                  </label>
-                  <div className="space-y-2">
-                    {['Електрика', 'Сантехніка', 'Клінінг', 'Будівельник', 'Садовник'].map(service => (
-                      <label key={service} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={formData.usesHomeServices.includes(service)}
-                          onChange={() => handleCheckboxGroup('usesHomeServices', service)}
-                          className="w-5 h-5 text-blue-600"
-                        />
-                        <span>{service}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Transport Tab - 16-17: Транспорт */}
-            {isExtended && activeTab === 'transport' && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-                  16-17. Транспорт
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    16. Автомобіль
-                  </label>
-                  <select
-                    name="hasCar"
-                    value={formData.hasCar}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Так">Так</option>
-                    <option value="Ні">Ні</option>
-                  </select>
-                </div>
-
-                {formData.hasCar === 'Ні' && (
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      name="usesTaxi"
-                      checked={formData.usesTaxi}
-                      onChange={handleChange}
-                      className="w-5 h-5 text-blue-600"
-                    />
-                    <span>Користуюсь таксі</span>
-                  </label>
-                )}
-
-                {formData.hasCar === 'Так' && (
-                  <div className="bg-blue-50 p-4 rounded-lg space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Марка та рік
-                      </label>
-                      <input
-                        type="text"
-                        name="carInfo"
-                        value={formData.carInfo}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        placeholder="Toyota Camry 2020"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        💁 Відвідую:
-                      </label>
-                      <div className="space-y-2">
-                        {['СТО', 'Мийку', 'Автосалони'].map(service => (
-                          <label key={service} className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={formData.carServices.includes(service)}
-                              onChange={() => handleCheckboxGroup('carServices', service)}
-                              className="w-5 h-5 text-blue-600"
-                            />
-                            <span>{service}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    17. Велосипед/Самокат
-                  </label>
-                  <select
-                    name="hasBicycle"
-                    value={formData.hasBicycle}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="Так">Так</option>
-                    <option value="Ні">Ні</option>
-                  </select>
-                </div>
-
-                {formData.hasBicycle === 'Так' && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Що саме та марка
-                    </label>
-                    <input
-                      type="text"
-                      name="bicycleInfo"
-                      value={formData.bicycleInfo}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      placeholder="Велосипед Giant 2021"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Lifestyle Tab - 18-23: Стиль життя */}
-            {isExtended && activeTab === 'lifestyle' && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-                  18-23. Стиль життя та інтереси
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    18. Як відносишся до інтернет замовлень - доставок їди та товарів?
-                  </label>
-                  <select
-                    name="usesDelivery"
-                    value={formData.usesDelivery}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="use">Користуюсь</option>
-                    <option value="want_to_try">Не пробував, але хотів би</option>
-                    <option value="not_interested">Не цікаво</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    19. Полюбляєте ходити по кафе та ресторани?
-                  </label>
-                  <select
-                    name="restaurantFrequency"
-                    value={formData.restaurantFrequency}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="rarely">Рідко</option>
-                    <option value="sometimes">По бажанню</option>
-                    <option value="often">Часто</option>
-                    <option value="never">Не хожу</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    20. Яку кухню полюбляєш
-                  </label>
-                  <select
-                    name="cuisinePreference"
-                    value={formData.cuisinePreference}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="home">Домашню</option>
-                    <option value="ukrainian">Українську</option>
-                    <option value="european">Європейську</option>
-                    <option value="italian">Італійську</option>
-                    <option value="chinese">Китайську</option>
-                    <option value="japanese">Японську</option>
-                    <option value="georgian">Грузинську</option>
-                    <option value="asian">Азіатську</option>
-                    <option value="american">Американську</option>
-                    <option value="mexican">Мексиканську</option>
-                    <option value="turkish">Турецьку</option>
-                    <option value="street">Вуличну (шаурма, хот-доги)</option>
-                    <option value="fastfood">Фастфуд</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    21. Активний відпочинок (оберіть що подобається)
-                  </label>
-                  <div className="space-y-2">
-                    {['Охота', 'Рибалка', 'Походи', 'Кемпінг', 'Велосипед', 'Пікніки на природі'].map(activity => (
-                      <label key={activity} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={formData.outdoorActivities.includes(activity)}
-                          onChange={(e) => {
-                            const current = formData.outdoorActivities.split(',').map(s => s.trim()).filter(Boolean);
-                            if (e.target.checked) {
-                              setFormData({...formData, outdoorActivities: [...current, activity].join(', ')});
-                            } else {
-                              setFormData({...formData, outdoorActivities: current.filter(a => a !== activity).join(', ')});
-                            }
-                          }}
-                          className="w-5 h-5 text-blue-600 rounded"
-                        />
-                        <span className="text-sm md:text-base">{activity}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    22. Відношення до спорту
-                  </label>
-                  <select
-                    name="sports"
-                    value={formData.sports}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                  >
-                    <option value="">Оберіть</option>
-                    <option value="professional">Професійно</option>
-                    <option value="gym_alone">Спортзал самостійно</option>
-                    <option value="gym_trainer">Спортзал з тренером</option>
-                    <option value="sport_walks">Прогулянки спортивні</option>
-                    <option value="not_interested">Не цікаво</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    23. Відношення до салонів краси
-                  </label>
-                  <div className="space-y-2">
-                    {['Перукар', 'Манікюр-педікюр', 'СПА процедури', 'Масажі', 'Не цікаво'].map(service => (
-                      <label key={service} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={formData.beautyServices.includes(service)}
-                          onChange={() => handleCheckboxGroup('beautyServices', service)}
-                          className="w-5 h-5 text-blue-600"
-                        />
-                        <span>{service}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Goal Tab - 24: Мета використання сайту */}
-            {isExtended && activeTab === 'goal' && (
-              <div className="space-y-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-                  24. Користуюся сайтом щоб...
-                </h2>
-
-                <div className="space-y-3">
-                  {[
-                    { value: 'ease_life', label: 'Полегшити собі життя' },
-                    { value: 'support_team', label: 'Підтримати споживача і підприємця з однієї команди' },
-                    { value: 'support_ucm', label: 'Підтримую проєкти УЦМ щоб наша команда розвивалася і укріплялася' }
-                  ].map(goal => (
-                    <label key={goal.value} className="flex items-start gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
-                      <input
-                        type="checkbox"
-                        checked={formData.siteUsageGoal.includes(goal.value)}
-                        onChange={() => handleCheckboxGroup('siteUsageGoal', goal.value)}
-                        className="w-5 h-5 text-blue-600 mt-0.5 min-w-[20px]"
-                      />
-                      <span className="text-sm md:text-base">{goal.label}</span>
-                    </label>
-                  ))}
-                </div>
-
-                <div className="pt-4">
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
-                    📱 Соціальні мережі
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Instagram
-                      </label>
-                      <input
-                        type="text"
-                        name="instagram"
-                        value={formData.instagram}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        placeholder="@username"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Facebook
-                      </label>
-                      <input
-                        type="text"
-                        name="facebook"
-                        value={formData.facebook}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Telegram
-                      </label>
-                      <input
-                        type="text"
-                        name="telegram"
-                        value={formData.telegram}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        placeholder="@username"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        TikTok
-                      </label>
-                      <input
-                        type="text"
-                        name="tiktok"
-                        value={formData.tiktok}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        placeholder="@username"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 pt-6 border-t border-neutral-200">
+            {/* Submit Button */}
+            <div className="flex gap-4 pt-6 border-t">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="flex-1 px-6 py-3 border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-neutral-50 transition-colors"
+              >
+                Скасувати
+              </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-base"
+                className="flex-1 px-6 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Зберігаємо...' : 'Зберегти зміни'}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push(`/profile/${user.id}`)}
-                disabled={loading}
-                className="sm:w-auto py-3 px-6 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50 touch-manipulation text-base"
-              >
-                Скасувати
+                {loading ? 'Збереження...' : 'Зберегти зміни'}
               </button>
             </div>
           </form>
         </div>
       </div>
-
-      {/* Modal для незаповнених полів */}
-      {showEmptyFieldsModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">⚠️</span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Незаповнені поля</h3>
-              </div>
-              
-              <p className="text-gray-600 mb-4">
-                Ви не заповнили наступні поля анкети:
-              </p>
-              
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                <ul className="space-y-2">
-                  {emptyFieldsList.map((field, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-red-800">
-                      <span className="text-red-500 mt-0.5">•</span>
-                      <span>{field}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <p className="text-sm text-gray-600 mb-6">
-                💡 Заповнена анкета допоможе іншим користувачам краще вас знайти та зрозуміти ваші інтереси.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => {
-                    setShowEmptyFieldsModal(false);
-                    setEmptyFieldsList([]);
-                  }}
-                  className="flex-1 py-3 px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-colors"
-                >
-                  ← Повернутися до заповнення
-                </button>
-                <button
-                  onClick={() => {
-                    setShowEmptyFieldsModal(false);
-                    setEmptyFieldsList([]);
-                    saveProfile();
-                  }}
-                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                >
-                  Зберегти як є →
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

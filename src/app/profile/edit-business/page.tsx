@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, User, FileText, Users, Phone, Award, Upload, Camera, Image as ImageIcon } from 'lucide-react';
+import { Building2, User, Target, Upload, Camera, Image as ImageIcon, CheckCircle, Plus, Trash2 } from 'lucide-react';
 
 export default function EditBusinessProfilePage() {
   const router = useRouter();
@@ -10,52 +10,49 @@ export default function EditBusinessProfilePage() {
   const [token, setToken] = useState<string>('');
   const [activeTab, setActiveTab] = useState('basic');
   const [formData, setFormData] = useState({
+    // Особисті дані представника
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    
+    // Компанія
     companyName: '',
-    representativeName: '',
-    position: '',
-    city: '',
-    businessType: '',
     companyCode: '',
+    city: '',
     businessCategory: '',
     companyType: '',
     offerType: '',
-    
-    shortDescription: '',
-    mission: '',
-    uniqueValue: '',
     description: '',
-    
-    servicesList: '',
-    priceRange: '',
-    workingHours: '',
-    locationDetails: '',
-    
-    employeeCount: '',
-    keySpecialists: '',
-    teamDescription: '',
-    
-    phone: '',
-    email: '',
-    viber: '',
-    telegram: '',
     website: '',
-    socialLinks: '',
-    facebook: '',
-    instagram: '',
-    linkedin: '',
     
-    yearFounded: '',
-    registrationType: '',
-    hasCertificates: '',
-    certificatesInfo: '',
-    partnersInfo: '',
-    externalReviews: '',
-    
+    // Що шукаєте
     seekingPartner: false,
     seekingInvestor: false,
     seekingCustomer: false,
     seekingEmployee: false,
+    
+    // Детальна інформація пошуку
+    partnerType: '',
+    partnerSphere: '',
+    partnerCollaboration: '',
+    investmentAmount: '',
+    investmentTerm: '',
+    investmentGoals: '',
+    investmentOffer: '',
+    customerTarget: '',
+    customerOffer: '',
+    customerBenefits: '',
+    vacancies: [] as Array<{
+      position: string;
+      responsibilities: string;
+      requirements: string;
+      salary: string;
+      employmentType: string;
+      experience: string;
+    }>,
   });
+  
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string>('');
@@ -63,6 +60,27 @@ export default function EditBusinessProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const cities = [
+    'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
+    'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', 
+    'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', 
+    'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка',
+    'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук',
+    'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь'
+  ];
+
+  const businessCategories = [
+    { value: 'education', label: 'Освіта' },
+    { value: 'products', label: 'Продукти харчування' },
+    { value: 'advertising', label: 'Реклама та маркетинг' },
+    { value: 'online_sales', label: 'Інтернет-продажі' },
+    { value: 'offline_sales', label: 'Офлайн-торгівля' },
+    { value: 'auto_service', label: 'СТО та автосервіс' },
+    { value: 'construction', label: 'Будівництво та ремонт' },
+    { value: 'it', label: 'IT та розробка' },
+    { value: 'other', label: 'Інше' },
+  ];
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -93,63 +111,71 @@ export default function EditBusinessProfilePage() {
       
       if (data.businessInfo) {
         const b = data.businessInfo;
-  setLogoPreview(b.logoUrl || '');
-  setBannerPreview(b.bannerUrl || '');
+        setLogoPreview(b.logoUrl || '');
+        setBannerPreview(b.bannerUrl || '');
         
-        // Parse social links if it's JSON
-        let parsedSocialLinks: any = {};
+        // Parse search details
+        let partnerDetails: any = {};
+        let investorDetails: any = {};
+        let customerDetails: any = {};
+        let vacanciesList: any[] = [];
+
         try {
-          parsedSocialLinks = typeof b.socialLinks === 'string' ? JSON.parse(b.socialLinks) : (b.socialLinks || {});
-        } catch {
-          parsedSocialLinks = {};
+          if (b.partnerSearchDetails) {
+            partnerDetails = typeof b.partnerSearchDetails === 'string' 
+              ? JSON.parse(b.partnerSearchDetails) 
+              : b.partnerSearchDetails;
+          }
+          if (b.investorSearchDetails) {
+            investorDetails = typeof b.investorSearchDetails === 'string'
+              ? JSON.parse(b.investorSearchDetails)
+              : b.investorSearchDetails;
+          }
+          if (b.customerSearchDetails) {
+            customerDetails = typeof b.customerSearchDetails === 'string'
+              ? JSON.parse(b.customerSearchDetails)
+              : b.customerSearchDetails;
+          }
+          if (b.employeeVacancies) {
+            vacanciesList = typeof b.employeeVacancies === 'string'
+              ? JSON.parse(b.employeeVacancies)
+              : b.employeeVacancies;
+          }
+        } catch (e) {
+          console.error('Error parsing business details:', e);
         }
-        
+
         setFormData({
+          firstName: user?.firstName || '',
+          lastName: user?.lastName || '',
+          email: user?.email || '',
+          phone: b.phone || user?.phone || '',
+          
           companyName: b.companyName || '',
-          representativeName: b.representativeName || '',
-          position: b.position || '',
-          city: b.city || '',
-          businessType: b.businessType || '',
           companyCode: b.companyCode || '',
+          city: b.city || '',
           businessCategory: b.businessCategory || '',
           companyType: b.companyType || '',
           offerType: b.offerType || '',
-          
-          shortDescription: b.shortDescription || b.description || '',
-          mission: b.mission || '',
-          uniqueValue: b.uniqueValue || '',
           description: b.description || b.shortDescription || '',
-          
-          servicesList: b.servicesList || '',
-          priceRange: b.priceRange || '',
-          workingHours: b.workingHours || b.workHours || '',
-          locationDetails: b.locationDetails || '',
-          
-          employeeCount: b.employeeCount?.toString() || '',
-          keySpecialists: b.keySpecialists || '',
-          teamDescription: b.teamDescription || '',
-          
-          phone: b.phone || '',
-          email: b.email || '',
-          viber: b.viber || '',
-          telegram: b.telegram || '',
           website: b.website || '',
-          socialLinks: typeof b.socialLinks === 'string' ? b.socialLinks : JSON.stringify(b.socialLinks || {}, null, 2),
-          facebook: parsedSocialLinks.facebook || '',
-          instagram: parsedSocialLinks.instagram || '',
-          linkedin: parsedSocialLinks.linkedin || '',
-          
-          yearFounded: b.yearFounded?.toString() || '',
-          registrationType: b.registrationType || '',
-          hasCertificates: b.hasCertificates === true ? 'yes' : b.hasCertificates === false ? 'no' : '',
-          certificatesInfo: b.certificatesInfo || '',
-          partnersInfo: b.partnersInfo || b.partners || '',
-          externalReviews: typeof b.externalReviews === 'string' ? b.externalReviews : JSON.stringify(b.externalReviews || {}, null, 2),
           
           seekingPartner: b.seekingPartner || false,
           seekingInvestor: b.seekingInvestor || false,
           seekingCustomer: b.seekingCustomer || false,
           seekingEmployee: b.seekingEmployee || false,
+          
+          partnerType: partnerDetails.type || '',
+          partnerSphere: partnerDetails.sphere || '',
+          partnerCollaboration: partnerDetails.collaboration || '',
+          investmentAmount: investorDetails.amount || '',
+          investmentTerm: investorDetails.term || '',
+          investmentGoals: investorDetails.goals || '',
+          investmentOffer: investorDetails.offer || '',
+          customerTarget: customerDetails.target || '',
+          customerOffer: customerDetails.offer || '',
+          customerBenefits: customerDetails.benefits || '',
+          vacancies: Array.isArray(vacanciesList) ? vacanciesList : [],
         });
       }
     } catch (err) {
@@ -157,20 +183,14 @@ export default function EditBusinessProfilePage() {
     }
   };
 
-  const cities = [
-    'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
-    'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', 
-    'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', 
-    'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка',
-    'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук',
-    'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь'
-  ];
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData({ ...formData, [name]: checked });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,38 +212,6 @@ export default function EditBusinessProfilePage() {
         setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const uploadLogo = async (): Promise<string | null> => {
-    if (!logoFile) return null;
-
-  const formData = new FormData();
-  formData.append('file', logoFile);
-  formData.append('type', 'logos');
-
-    try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-      
-      if (response.ok && data.url) {
-        // Додаємо timestamp для миттєвого відображення
-        const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
-        console.log('[Upload Logo] Лого успішно завантажено:', urlWithTimestamp);
-        return urlWithTimestamp;
-      }
-      
-      throw new Error(data.error || 'Помилка завантаження лого');
-    } catch (err: any) {
-      console.error('Upload error:', err);
-      throw err;
     }
   };
 
@@ -249,12 +237,12 @@ export default function EditBusinessProfilePage() {
     }
   };
 
-  const uploadBanner = async (): Promise<string | null> => {
-    if (!bannerFile) return null;
+  const uploadImage = async (file: File, type: 'logo' | 'banner'): Promise<string | null> => {
+    if (!file) return null;
 
-    const formData = new FormData();
-    formData.append('file', bannerFile);
-    formData.append('type', 'banners');
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', file);
+    uploadFormData.append('type', type === 'logo' ? 'logos' : 'banners');
 
     try {
       const response = await fetch('/api/upload', {
@@ -262,23 +250,51 @@ export default function EditBusinessProfilePage() {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-        body: formData,
+        body: uploadFormData,
       });
 
       const data = await response.json();
 
       if (response.ok && data.url) {
-        // Додаємо timestamp для миттєвого відображення
         const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
-        console.log('[Upload Banner] Банер успішно завантажено:', urlWithTimestamp);
         return urlWithTimestamp;
       }
 
-      throw new Error(data.error || 'Помилка завантаження банера');
+      throw new Error(data.error || `Помилка завантаження ${type === 'logo' ? 'лого' : 'банера'}`);
     } catch (err: any) {
-      console.error('Upload banner error:', err);
+      console.error(`Upload ${type} error:`, err);
       throw err;
     }
+  };
+
+  const addVacancy = () => {
+    setFormData({
+      ...formData,
+      vacancies: [
+        ...formData.vacancies,
+        {
+          position: '',
+          responsibilities: '',
+          requirements: '',
+          salary: '',
+          employmentType: '',
+          experience: '',
+        },
+      ],
+    });
+  };
+
+  const removeVacancy = (index: number) => {
+    setFormData({
+      ...formData,
+      vacancies: formData.vacancies.filter((_, i) => i !== index),
+    });
+  };
+
+  const updateVacancy = (index: number, field: string, value: string) => {
+    const updatedVacancies = [...formData.vacancies];
+    updatedVacancies[index] = { ...updatedVacancies[index], [field]: value };
+    setFormData({ ...formData, vacancies: updatedVacancies });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -292,26 +308,35 @@ export default function EditBusinessProfilePage() {
       let bannerUrl = bannerPreview;
       
       if (logoFile) {
-        const uploadedUrl = await uploadLogo();
-        if (uploadedUrl) {
-          logoUrl = uploadedUrl;
-        }
+        const uploadedUrl = await uploadImage(logoFile, 'logo');
+        if (uploadedUrl) logoUrl = uploadedUrl;
       }
 
       if (bannerFile) {
-        const uploadedBannerUrl = await uploadBanner();
-        if (uploadedBannerUrl) {
-          bannerUrl = uploadedBannerUrl;
-        }
+        const uploadedUrl = await uploadImage(bannerFile, 'banner');
+        if (uploadedUrl) bannerUrl = uploadedUrl;
       }
 
-      // Prepare social links object
-      const socialLinksObj: any = {};
-      if (formData.facebook) socialLinksObj.facebook = formData.facebook;
-      if (formData.instagram) socialLinksObj.instagram = formData.instagram;
-      if (formData.linkedin) socialLinksObj.linkedin = formData.linkedin;
-      
-      // Видаляємо timestamp з URL перед збереженням в БД
+      // Prepare search details
+      const partnerSearchDetails = formData.seekingPartner ? {
+        type: formData.partnerType,
+        sphere: formData.partnerSphere,
+        collaboration: formData.partnerCollaboration,
+      } : null;
+
+      const investorSearchDetails = formData.seekingInvestor ? {
+        amount: formData.investmentAmount,
+        term: formData.investmentTerm,
+        goals: formData.investmentGoals,
+        offer: formData.investmentOffer,
+      } : null;
+
+      const customerSearchDetails = formData.seekingCustomer ? {
+        target: formData.customerTarget,
+        offer: formData.customerOffer,
+        benefits: formData.customerBenefits,
+      } : null;
+
       const cleanUrl = (url: string | null) => url ? url.split('?')[0] : null;
       
       const response = await fetch('/api/business-info', {
@@ -326,45 +351,22 @@ export default function EditBusinessProfilePage() {
           companyType: formData.companyType || null,
           businessCategory: formData.businessCategory || null,
           offerType: formData.offerType || null,
-          representativeName: formData.representativeName || null,
-          position: formData.position || null,
           city: formData.city || null,
-          businessType: formData.businessType || null,
+          description: formData.description || null,
+          website: formData.website || null,
+          phone: formData.phone || null,
           logoUrl: cleanUrl(logoUrl),
           bannerUrl: cleanUrl(bannerUrl),
-          
-          shortDescription: formData.shortDescription || null,
-          description: formData.description || formData.shortDescription || null,
-          mission: formData.mission || null,
-          uniqueValue: formData.uniqueValue || null,
-          
-          servicesList: formData.servicesList || null,
-          priceRange: formData.priceRange || null,
-          workingHours: formData.workingHours || null,
-          locationDetails: formData.locationDetails || null,
-          
-          employeeCount: formData.employeeCount ? parseInt(formData.employeeCount) : null,
-          keySpecialists: formData.keySpecialists || null,
-          teamDescription: formData.teamDescription || null,
-          
-          phone: formData.phone || null,
-          email: formData.email || null,
-          viber: formData.viber || null,
-          telegram: formData.telegram || null,
-          website: formData.website || null,
-          socialLinks: Object.keys(socialLinksObj).length > 0 ? JSON.stringify(socialLinksObj) : null,
-          
-          yearFounded: formData.yearFounded ? parseInt(formData.yearFounded) : null,
-          registrationType: formData.registrationType || null,
-          hasCertificates: formData.hasCertificates ? formData.hasCertificates === 'yes' : null,
-          certificatesInfo: formData.certificatesInfo || null,
-          partners: formData.partnersInfo || null,
-          externalReviews: formData.externalReviews || null,
           
           seekingPartner: formData.seekingPartner || false,
           seekingInvestor: formData.seekingInvestor || false,
           seekingCustomer: formData.seekingCustomer || false,
           seekingEmployee: formData.seekingEmployee || false,
+          
+          partnerSearchDetails: partnerSearchDetails ? JSON.stringify(partnerSearchDetails) : null,
+          investorSearchDetails: investorSearchDetails ? JSON.stringify(investorSearchDetails) : null,
+          customerSearchDetails: customerSearchDetails ? JSON.stringify(customerSearchDetails) : null,
+          employeeVacancies: formData.vacancies.length > 0 ? JSON.stringify(formData.vacancies) : null,
         }),
       });
 
@@ -378,7 +380,7 @@ export default function EditBusinessProfilePage() {
       
       setTimeout(() => {
         router.push(`/profile/${user.id}`);
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Помилка збереження');
     } finally {
@@ -394,65 +396,74 @@ export default function EditBusinessProfilePage() {
     );
   }
 
+  const tabs = [
+    { id: 'basic', name: 'Основне', icon: User },
+    { id: 'company', name: 'Компанія', icon: Building2 },
+    { id: 'seeking', name: 'Що шукаєте', icon: Target },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-50 to-primary-50 py-4 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-accent-500 to-primary-500 px-4 md:px-8 py-4 md:py-6">
-            <h1 className="text-xl md:text-3xl font-bold text-white">🏢 Редагувати бізнес-профіль</h1>
-            <p className="text-accent-100 mt-1 md:mt-2 text-sm md:text-base">Оновіть інформацію про вашу компанію</p>
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-6">
+            <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+              <Building2 className="w-8 h-8" />
+              Редагувати бізнес-профіль
+            </h1>
+            <p className="text-orange-100 mt-2">Оновіть інформацію про вашу компанію</p>
           </div>
 
-          {/* Banner Upload */}
-          <div className="px-4 md:px-8 pt-4 md:pt-6">
-            <div className="mb-4">
-              <h3 className="font-semibold text-neutral-900 text-sm md:text-base mb-2 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-accent-600" /> Банер компанії
+          {/* Images Upload */}
+          <div className="p-8 border-b border-neutral-200 space-y-4">
+            {/* Banner */}
+            <div>
+              <h3 className="font-semibold text-neutral-900 mb-2 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-orange-600" /> Банер компанії
               </h3>
-              <div className="relative w-full h-28 sm:h-36 md:h-44 lg:h-52 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200">
+              <div className="relative w-full h-44 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200">
                 {bannerPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={bannerPreview} alt="Company banner" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-500 text-sm">Немає банера</div>
+                  <div className="w-full h-full flex items-center justify-center text-neutral-500 text-sm">
+                    Немає банера
+                  </div>
                 )}
                 <label
                   htmlFor="banner-upload"
-                  className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 backdrop-blur rounded-full shadow border border-neutral-200 cursor-pointer hover:bg-white transition-colors text-xs md:text-sm"
+                  className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 backdrop-blur rounded-full shadow border border-neutral-200 cursor-pointer hover:bg-white transition-colors text-sm"
                 >
                   Завантажити банер
                 </label>
                 <input id="banner-upload" type="file" accept="image/*" onChange={handleBannerChange} className="hidden" />
               </div>
               {bannerFile && (
-                <p className="text-xs md:text-sm text-accent-600 mt-2 truncate">✓ Новий банер: {bannerFile.name}</p>
+                <p className="text-sm text-orange-600 mt-2">✓ Новий банер: {bannerFile.name}</p>
               )}
-              <p className="text-xs md:text-[13px] text-neutral-600 mt-1">Рекомендовано 1920×480 (широкий). PNG/JPG/WebP/HEIC. Макс 10MB</p>
             </div>
-          </div>
 
-          {/* Logo Upload */}
-          <div className="px-4 md:px-8 py-4 md:py-6 border-b border-neutral-200">
-            <div className="flex items-center space-x-4 md:space-x-6">
+            {/* Logo */}
+            <div className="flex items-center space-x-6">
               <div className="relative flex-shrink-0">
                 {logoPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={logoPreview}
                     alt="Company logo"
-                    className="w-20 h-20 md:w-24 md:h-24 rounded-lg object-contain bg-neutral-100 p-2 border-4 border-accent-200"
+                    className="w-24 h-24 rounded-lg object-contain bg-neutral-100 p-2 border-4 border-orange-200"
                   />
                 ) : (
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg bg-accent-500 flex items-center justify-center border-4 border-accent-200">
-                    <Building2 className="w-10 h-10 md:w-12 md:h-12 text-white" />
+                  <div className="w-24 h-24 rounded-lg bg-orange-500 flex items-center justify-center border-4 border-orange-200">
+                    <Building2 className="w-12 h-12 text-white" />
                   </div>
                 )}
                 <label
                   htmlFor="logo-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-accent-500 touch-manipulation"
+                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-orange-500"
                 >
-                  <Camera className="w-4 h-4 text-accent-600" />
+                  <Camera className="w-4 h-4 text-orange-600" />
                 </label>
                 <input
                   id="logo-upload"
@@ -462,13 +473,13 @@ export default function EditBusinessProfilePage() {
                   className="hidden"
                 />
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-neutral-900 text-sm md:text-base">Лого компанії</h3>
-                <p className="text-xs md:text-sm text-neutral-600 mt-1">
-                  PNG, JPG або HEIC (бажано з прозорим фоном). Макс 10MB
+              <div className="flex-1">
+                <h3 className="font-semibold text-neutral-900">Лого компанії</h3>
+                <p className="text-sm text-neutral-600 mt-1">
+                  PNG, JPG або HEIC. Макс 10MB
                 </p>
                 {logoFile && (
-                  <p className="text-xs md:text-sm text-accent-600 mt-1 truncate">
+                  <p className="text-sm text-orange-600 mt-1">
                     ✓ Нове лого: {logoFile.name}
                   </p>
                 )}
@@ -477,112 +488,115 @@ export default function EditBusinessProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-neutral-200 overflow-x-auto">
-            <div className="px-4 md:px-8">
-              <div className="flex space-x-2 md:space-x-8 min-w-max">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('basic')}
-                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
-                    activeTab === 'basic'
-                      ? 'border-accent-500 text-accent-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Building2 className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Основне</span>
-                  <span className="sm:hidden">Основ.</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('description')}
-                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
-                    activeTab === 'description'
-                      ? 'border-accent-500 text-accent-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <FileText className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
-                  Опис
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('services')}
-                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
-                    activeTab === 'services'
-                      ? 'border-accent-500 text-accent-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <FileText className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Послуги</span>
-                  <span className="sm:hidden">Посл.</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('team')}
-                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
-                    activeTab === 'team'
-                      ? 'border-accent-500 text-accent-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Users className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Команда</span>
-                  <span className="sm:hidden">Ком.</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('contacts')}
-                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
-                    activeTab === 'contacts'
-                      ? 'border-accent-500 text-accent-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Phone className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Контакти</span>
-                  <span className="sm:hidden">Конт.</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('additional')}
-                  className={`py-3 md:py-4 px-3 md:px-0 border-b-2 transition-colors whitespace-nowrap text-sm md:text-base touch-manipulation ${
-                    activeTab === 'additional'
-                      ? 'border-accent-500 text-accent-600 font-medium'
-                      : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  <Award className="w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Додатково</span>
-                  <span className="sm:hidden">Дод.</span>
-                </button>
-              </div>
+          <div className="border-b border-neutral-200">
+            <div className="px-8 flex space-x-8 overflow-x-auto">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    type="button"
+                    className={`py-4 px-4 border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
+                      activeTab === tab.id
+                        ? 'border-orange-500 text-orange-600 font-medium'
+                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Messages */}
-          <div className="px-4 md:px-8 pt-4 md:pt-6">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-8 space-y-6">
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
+
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs md:text-sm">
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
                 {success}
               </div>
             )}
-          </div>
 
-          {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-4 md:px-8 py-4 md:py-6">
-            {/* Basic Tab */}
+            {/* Tab: Basic */}
             {activeTab === 'basic' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Дані представника компанії
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ім'я *
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      required
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Прізвище *
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      required
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Телефон
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab: Company */}
+            {activeTab === 'company' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Назва компанії *
                     </label>
                     <input
@@ -591,13 +605,12 @@ export default function EditBusinessProfilePage() {
                       required
                       value={formData.companyName}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="ТОВ 'Будівельна компанія'"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Код ЄДРПОУ
                     </label>
                     <input
@@ -605,20 +618,38 @@ export default function EditBusinessProfilePage() {
                       name="companyCode"
                       value={formData.companyCode}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="12345678"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Місто діяльності
+                    </label>
+                    <select
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                      <option value="">Оберіть місто</option>
+                      {cities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Тип компанії
                     </label>
                     <select
                       name="companyType"
                       value={formData.companyType}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
                       <option value="">Оберіть тип</option>
                       <option value="fop">ФОП</option>
@@ -628,106 +659,33 @@ export default function EditBusinessProfilePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Представник *
-                    </label>
-                    <input
-                      type="text"
-                      name="representativeName"
-                      required
-                      value={formData.representativeName}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Посада
-                    </label>
-                    <input
-                      type="text"
-                      name="position"
-                      value={formData.position}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="Директор, Власник..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Місто *
-                    </label>
-                    <select
-                      name="city"
-                      required
-                      value={formData.city}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Оберіть місто</option>
-                      {cities.map(city => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Категорія діяльності
                     </label>
                     <select
                       name="businessCategory"
                       value={formData.businessCategory}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
                       <option value="">Оберіть категорію</option>
-                      <option value="education">Освіта</option>
-                      <option value="products">Продукти харчування</option>
-                      <option value="advertising">Реклама та маркетинг</option>
-                      <option value="online_sales">Інтернет-продажі</option>
-                      <option value="offline_sales">Офлайн-торгівля</option>
-                      <option value="auto_service">СТО та автосервіс</option>
-                      <option value="construction">Будівництво та ремонт</option>
-                      <option value="it">IT та розробка</option>
-                      <option value="other">Інше</option>
+                      {businessCategories.map((cat) => (
+                        <option key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Тип бізнесу
-                    </label>
-                    <select
-                      name="businessType"
-                      value={formData.businessType}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Оберіть тип</option>
-                      <option value="Виробництво">Виробництво</option>
-                      <option value="Послуги">Послуги</option>
-                      <option value="Торгівля">Торгівля</option>
-                      <option value="IT">IT</option>
-                      <option value="Будівництво">Будівництво</option>
-                      <option value="Ремонт">Ремонт</option>
-                      <option value="Транспорт">Транспорт</option>
-                      <option value="Консалтинг">Консалтинг</option>
-                      <option value="Інше">Інше</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Що пропонуєте?
                     </label>
                     <select
                       name="offerType"
                       value={formData.offerType}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
                       <option value="">Оберіть</option>
                       <option value="service">Послуга</option>
@@ -735,296 +693,23 @@ export default function EditBusinessProfilePage() {
                       <option value="both">Послуги та товари</option>
                     </select>
                   </div>
-                </div>
 
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mt-6 pt-6 border-t border-gray-200">
-                  Кого/що шукаєте?
-                </h3>
-
-                <div className="space-y-3">
-                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
-                    <input
-                      type="checkbox"
-                      name="seekingPartner"
-                      checked={formData.seekingPartner}
-                      onChange={(e) => setFormData({ ...formData, seekingPartner: e.target.checked })}
-                      className="w-5 h-5 text-accent-600 min-w-[20px]"
-                    />
-                    <div>
-                      <div className="font-medium text-sm md:text-base">Партнера</div>
-                      <div className="text-xs md:text-sm text-gray-500">
-                        Пошук ділових партнерів для співпраці
-                      </div>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
-                    <input
-                      type="checkbox"
-                      name="seekingInvestor"
-                      checked={formData.seekingInvestor}
-                      onChange={(e) => setFormData({ ...formData, seekingInvestor: e.target.checked })}
-                      className="w-5 h-5 text-accent-600 min-w-[20px]"
-                    />
-                    <div>
-                      <div className="font-medium text-sm md:text-base">Інвестора</div>
-                      <div className="text-xs md:text-sm text-gray-500">
-                        Залучення інвестицій для розвитку
-                      </div>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
-                    <input
-                      type="checkbox"
-                      name="seekingCustomer"
-                      checked={formData.seekingCustomer}
-                      onChange={(e) => setFormData({ ...formData, seekingCustomer: e.target.checked })}
-                      className="w-5 h-5 text-accent-600 min-w-[20px]"
-                    />
-                    <div>
-                      <div className="font-medium text-sm md:text-base">Споживача</div>
-                      <div className="text-xs md:text-sm text-gray-500">
-                        Розширення клієнтської бази
-                      </div>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center gap-3 p-3 md:p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer touch-manipulation">
-                    <input
-                      type="checkbox"
-                      name="seekingEmployee"
-                      checked={formData.seekingEmployee}
-                      onChange={(e) => setFormData({ ...formData, seekingEmployee: e.target.checked })}
-                      className="w-5 h-5 text-accent-600 min-w-[20px]"
-                    />
-                    <div>
-                      <div className="font-medium text-sm md:text-base">Працівника</div>
-                      <div className="text-xs md:text-sm text-gray-500">
-                        Пошук співробітників у команду
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            )}
-
-            {/* Description Tab */}
-            {activeTab === 'description' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Короткий опис компанії
-                  </label>
-                  <textarea
-                    name="shortDescription"
-                    rows={3}
-                    value={formData.shortDescription}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    placeholder="Що ви пропонуєте?"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Місія компанії
-                  </label>
-                  <textarea
-                    name="mission"
-                    rows={3}
-                    value={formData.mission}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    placeholder="Ваша місія та цілі"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Унікальна цінність
-                  </label>
-                  <textarea
-                    name="uniqueValue"
-                    rows={3}
-                    value={formData.uniqueValue}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    placeholder="Чому клієнти обирають саме вас?"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Services Tab */}
-            {activeTab === 'services' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Перелік послуг/товарів
-                  </label>
-                  <textarea
-                    name="servicesList"
-                    rows={5}
-                    value={formData.servicesList}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    placeholder="- Послуга 1&#10;- Послуга 2&#10;- Послуга 3"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Ціновий діапазон
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Короткий опис
                     </label>
-                    <input
-                      type="text"
-                      name="priceRange"
-                      value={formData.priceRange}
+                    <textarea
+                      name="description"
+                      value={formData.description}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="від 500 до 5000 грн"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Години роботи
-                    </label>
-                    <input
-                      type="text"
-                      name="workingHours"
-                      value={formData.workingHours}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="Пн-Пт: 9:00-18:00"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Деталі локації (адреса, як знайти)
-                  </label>
-                  <textarea
-                    name="locationDetails"
-                    rows={2}
-                    value={formData.locationDetails}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Team Tab */}
-            {activeTab === 'team' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Кількість працівників
-                  </label>
-                  <input
-                    type="number"
-                    name="employeeCount"
-                    min="1"
-                    value={formData.employeeCount}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Ключові учасники
-                  </label>
-                  <textarea
-                    name="keySpecialists"
-                    rows={3}
-                    value={formData.keySpecialists}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    placeholder="Хто працює у вашій команді?"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Опис команди
-                  </label>
-                  <textarea
-                    name="teamDescription"
-                    rows={3}
-                    value={formData.teamDescription}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Contacts Tab */}
-            {activeTab === 'contacts' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Телефон
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="+380 XX XXX XX XX"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Viber
-                    </label>
-                    <input
-                      type="tel"
-                      name="viber"
-                      value={formData.viber}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="+380 XX XXX XX XX"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Telegram
-                    </label>
-                    <input
-                      type="text"
-                      name="telegram"
-                      value={formData.telegram}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                      placeholder="@username"
+                      rows={3}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                      placeholder="Що пропонує ваша компанія..."
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Веб-сайт
                     </label>
                     <input
@@ -1032,177 +717,364 @@ export default function EditBusinessProfilePage() {
                       name="website"
                       value={formData.website}
                       onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       placeholder="https://yourcompany.com"
                     />
                   </div>
                 </div>
-
-                <div className="pt-4">
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
-                    📱 Соціальні мережі
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Facebook
-                      </label>
-                      <input
-                        type="url"
-                        name="facebook"
-                        value={formData.facebook}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                        placeholder="https://facebook.com/yourpage"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Instagram
-                      </label>
-                      <input
-                        type="url"
-                        name="instagram"
-                        value={formData.instagram}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                        placeholder="https://instagram.com/yourpage"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        LinkedIn
-                      </label>
-                      <input
-                        type="url"
-                        name="linkedin"
-                        value={formData.linkedin}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                        placeholder="https://linkedin.com/company/yourcompany"
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
 
-            {/* Additional Tab */}
-            {activeTab === 'additional' && (
+            {/* Tab: Seeking */}
+            {activeTab === 'seeking' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Рік заснування
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Кого/що шукаєте?
+                </h3>
+
+                <div className="space-y-6">
+                  {/* Пошук партнера */}
+                  <div className="border border-gray-300 rounded-lg overflow-hidden">
+                    <label className="flex items-center gap-3 p-4 bg-gray-50 cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="checkbox"
+                        name="seekingPartner"
+                        checked={formData.seekingPartner}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-orange-600"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">Партнера</div>
+                        <div className="text-sm text-gray-500">
+                          Пошук ділових партнерів для співпраці
+                        </div>
+                      </div>
                     </label>
-                    <input
-                      type="number"
-                      name="yearFounded"
-                      min="1900"
-                      max={new Date().getFullYear()}
-                      value={formData.yearFounded}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    />
+                    {formData.seekingPartner && (
+                      <div className="p-4 space-y-4 bg-white border-t">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Тип партнера
+                          </label>
+                          <select
+                            name="partnerType"
+                            value={formData.partnerType}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          >
+                            <option value="">Оберіть тип</option>
+                            <option value="investor">Інвестиційний партнер</option>
+                            <option value="supplier">Постачальник</option>
+                            <option value="distributor">Дистриб'ютор</option>
+                            <option value="franchise">Франчайзі</option>
+                            <option value="strategic">Стратегічний партнер</option>
+                            <option value="other">Інше</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Сфера співпраці
+                          </label>
+                          <input
+                            type="text"
+                            name="partnerSphere"
+                            value={formData.partnerSphere}
+                            onChange={handleChange}
+                            placeholder="Наприклад: оптові поставки, спільний маркетинг..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Умови співпраці
+                          </label>
+                          <textarea
+                            name="partnerCollaboration"
+                            value={formData.partnerCollaboration}
+                            onChange={handleChange}
+                            rows={3}
+                            placeholder="Опишіть, що ви пропонуєте партнеру..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Тип реєстрації
+                  {/* Пошук інвестора */}
+                  <div className="border border-gray-300 rounded-lg overflow-hidden">
+                    <label className="flex items-center gap-3 p-4 bg-gray-50 cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="checkbox"
+                        name="seekingInvestor"
+                        checked={formData.seekingInvestor}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-orange-600"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">Інвестора</div>
+                        <div className="text-sm text-gray-500">
+                          Залучення інвестицій для розвитку
+                        </div>
+                      </div>
                     </label>
-                    <select
-                      name="registrationType"
-                      value={formData.registrationType}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Оберіть тип</option>
-                      <option value="ФОП">ФОП</option>
-                      <option value="ТОВ">ТОВ</option>
-                      <option value="ПрАТ">ПрАТ</option>
-                      <option value="Не зареєстровано">Не зареєстровано</option>
-                    </select>
+                    {formData.seekingInvestor && (
+                      <div className="p-4 space-y-4 bg-white border-t">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Необхідна сума інвестицій
+                          </label>
+                          <input
+                            type="text"
+                            name="investmentAmount"
+                            value={formData.investmentAmount}
+                            onChange={handleChange}
+                            placeholder="Наприклад: від 500 000 до 1 000 000 грн"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Строк окупності
+                          </label>
+                          <input
+                            type="text"
+                            name="investmentTerm"
+                            value={formData.investmentTerm}
+                            onChange={handleChange}
+                            placeholder="Наприклад: 18-24 місяці"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Цілі інвестицій
+                          </label>
+                          <textarea
+                            name="investmentGoals"
+                            value={formData.investmentGoals}
+                            onChange={handleChange}
+                            rows={2}
+                            placeholder="На що підуть інвестиції: розширення, обладнання, маркетинг..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Що пропонуєте інвестору
+                          </label>
+                          <textarea
+                            name="investmentOffer"
+                            value={formData.investmentOffer}
+                            onChange={handleChange}
+                            rows={2}
+                            placeholder="Частка бізнесу, дивіденди, інше..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Чи є сертифікати?
+                  {/* Пошук споживача */}
+                  <div className="border border-gray-300 rounded-lg overflow-hidden">
+                    <label className="flex items-center gap-3 p-4 bg-gray-50 cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="checkbox"
+                        name="seekingCustomer"
+                        checked={formData.seekingCustomer}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-orange-600"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">Споживача</div>
+                        <div className="text-sm text-gray-500">
+                          Розширення клієнтської бази
+                        </div>
+                      </div>
                     </label>
-                    <select
-                      name="hasCertificates"
-                      value={formData.hasCertificates}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base"
-                    >
-                      <option value="">Не вказано</option>
-                      <option value="yes">Так</option>
-                      <option value="no">Ні</option>
-                    </select>
+                    {formData.seekingCustomer && (
+                      <div className="p-4 space-y-4 bg-white border-t">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Цільова аудиторія
+                          </label>
+                          <input
+                            type="text"
+                            name="customerTarget"
+                            value={formData.customerTarget}
+                            onChange={handleChange}
+                            placeholder="Хто ваші клієнти: приватні особи, бізнес, вікова група..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Що пропонуєте
+                          </label>
+                          <textarea
+                            name="customerOffer"
+                            value={formData.customerOffer}
+                            onChange={handleChange}
+                            rows={2}
+                            placeholder="Опишіть ваші продукти/послуги..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Переваги для клієнтів
+                          </label>
+                          <textarea
+                            name="customerBenefits"
+                            value={formData.customerBenefits}
+                            onChange={handleChange}
+                            rows={2}
+                            placeholder="Чому обирають вас: якість, ціна, швидкість..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
 
-                {formData.hasCertificates === 'yes' && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Інформація про сертифікати
+                  {/* Пошук працівника */}
+                  <div className="border border-gray-300 rounded-lg overflow-hidden">
+                    <label className="flex items-center gap-3 p-4 bg-gray-50 cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="checkbox"
+                        name="seekingEmployee"
+                        checked={formData.seekingEmployee}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-orange-600"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">Працівника</div>
+                        <div className="text-sm text-gray-500">
+                          Пошук співробітників у команду
+                        </div>
+                      </div>
                     </label>
-                    <textarea
-                      name="certificatesInfo"
-                      rows={2}
-                      value={formData.certificatesInfo}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    />
+                    {formData.seekingEmployee && (
+                      <div className="p-4 space-y-4 bg-white border-t">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-gray-900">Вакансії</h4>
+                          <button
+                            type="button"
+                            onClick={addVacancy}
+                            className="flex items-center gap-1 px-3 py-1 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Додати вакансію
+                          </button>
+                        </div>
+
+                        {formData.vacancies.length === 0 && (
+                          <p className="text-sm text-gray-500 text-center py-4">
+                            Додайте вакансії, які ви хочете опублікувати
+                          </p>
+                        )}
+
+                        {formData.vacancies.map((vacancy, index) => (
+                          <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium text-gray-700">
+                                Вакансія #{index + 1}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeVacancy(index)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="col-span-2">
+                                <input
+                                  type="text"
+                                  placeholder="Посада"
+                                  value={vacancy.position}
+                                  onChange={(e) => updateVacancy(index, 'position', e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <textarea
+                                  placeholder="Обов'язки"
+                                  value={vacancy.responsibilities}
+                                  onChange={(e) => updateVacancy(index, 'responsibilities', e.target.value)}
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <textarea
+                                  placeholder="Вимоги"
+                                  value={vacancy.requirements}
+                                  onChange={(e) => updateVacancy(index, 'requirements', e.target.value)}
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                                />
+                              </div>
+                              <div>
+                                <input
+                                  type="text"
+                                  placeholder="Зарплата (грн)"
+                                  value={vacancy.salary}
+                                  onChange={(e) => updateVacancy(index, 'salary', e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                />
+                              </div>
+                              <div>
+                                <select
+                                  value={vacancy.employmentType}
+                                  onChange={(e) => updateVacancy(index, 'employmentType', e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                >
+                                  <option value="">Тип зайнятості</option>
+                                  <option value="full-time">Повна зайнятість</option>
+                                  <option value="part-time">Часткова зайнятість</option>
+                                  <option value="remote">Віддалена робота</option>
+                                  <option value="contract">За контрактом</option>
+                                  <option value="freelance">Фріланс</option>
+                                </select>
+                              </div>
+                              <div className="col-span-2">
+                                <input
+                                  type="text"
+                                  placeholder="Необхідний досвід"
+                                  value={vacancy.experience}
+                                  onChange={(e) => updateVacancy(index, 'experience', e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Партнери та співпраця
-                  </label>
-                  <textarea
-                    name="partnersInfo"
-                    rows={2}
-                    value={formData.partnersInfo}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Зовнішні відгуки (Google, Facebook)
-                  </label>
-                  <textarea
-                    name="externalReviews"
-                    rows={2}
-                    value={formData.externalReviews}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2.5 md:px-4 md:py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none text-base"
-                    placeholder="Посилання на відгуки"
-                  />
                 </div>
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 pt-6 border-t border-neutral-200">
+            {/* Submit Button */}
+            <div className="flex gap-4 pt-6 border-t">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="flex-1 px-6 py-3 border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-neutral-50 transition-colors"
+              >
+                Скасувати
+              </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-accent-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-accent-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-base"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-medium hover:from-orange-600 hover:to-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Зберігаємо...' : 'Зберегти зміни'}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push(`/profile/${user.id}`)}
-                disabled={loading}
-                className="sm:w-auto py-3 px-6 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50 touch-manipulation text-base"
-              >
-                Скасувати
+                {loading ? 'Збереження...' : 'Зберегти зміни'}
               </button>
             </div>
           </form>
