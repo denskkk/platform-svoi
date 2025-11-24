@@ -4,7 +4,7 @@
  */
 
 import Link from 'next/link'
-import Image from 'next/image'
+import { ServiceImage } from '@/components/ui/ServiceImage'
 import { MapPin, ArrowLeft } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
@@ -64,10 +64,10 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
 
             <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">{req.title}</h1>
 
-            {/* Image (if provided in metadata) */}
+            {/* Image (if provided in metadata) - use client-side ServiceImage to avoid optimizer 400 errors */}
             {req.metadata && req.metadata.imageUrl ? (
               <div className="mb-6">
-                <Image src={req.metadata.imageUrl} alt={req.title} width={1200} height={600} className="w-full max-h-96 object-cover rounded-lg mb-4" />
+                <ServiceImage src={req.metadata.imageUrl} alt={req.title} className="w-full max-h-96 object-cover rounded-lg mb-4 h-[400px] object-cover" fallbackLetter={req.title?.slice(0,1)} />
               </div>
             ) : null}
 

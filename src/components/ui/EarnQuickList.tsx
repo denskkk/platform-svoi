@@ -20,10 +20,15 @@ export function EarnQuickList() {
   useEffect(() => {
     const load = async () => {
       try {
-        let token: string | null = null;
-        try { token = localStorage.getItem("token"); } catch {}
-        if (!token) { setLoading(false); return; }
-        const res = await fetch('/api/earning/progress', { headers: { 'Authorization': `Bearer ${token}` } });
+        // Try cookie-based auth first
+        let res = await fetch('/api/earning/progress', { credentials: 'include' });
+        if (!res.ok) {
+          // fallback: try Authorization header with token from localStorage
+          let token: string | null = null;
+          try { token = localStorage.getItem("token"); } catch {}
+          if (!token) { setLoading(false); return; }
+          res = await fetch('/api/earning/progress', { headers: { 'Authorization': `Bearer ${token}` } });
+        }
         if (!res.ok) throw new Error('Не вдалося завантажити завдання');
         const data = await res.json();
         const incomplete = (data.progress || []).filter((t: TaskItem) => !t.completed).slice(0,5);

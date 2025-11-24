@@ -150,7 +150,8 @@ export function Navbar() {
         // silent
       }
     }
-    if (user) fetchEarn()
+    // Only fetch after server sync completed to avoid making requests with stale localStorage user
+    if (!isLoading && user) fetchEarn()
   }, [user])
 
   // Fetch profile completion percent
@@ -169,7 +170,7 @@ export function Navbar() {
         }
       } catch {}
     }
-    if (user) fetchCompletion()
+    if (!isLoading && user) fetchCompletion()
       const onEarningUpdated2 = () => { if (user) fetchCompletion(); };
       window.addEventListener('earningUpdated', onEarningUpdated2 as EventListener);
       return () => { window.removeEventListener('earningUpdated', onEarningUpdated2 as EventListener); };
