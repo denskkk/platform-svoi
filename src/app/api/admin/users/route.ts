@@ -18,13 +18,13 @@ async function checkAdmin(userId: number) {
 
 // GET /api/admin/users - Список всіх користувачів з детальною статистикою
 async function handler(request: NextRequest) {
-  const userId = (request as any).userId;
+  const userId = (request as any).user?.userId;
   
   try {
     // Перевірити що userId існує
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторізація' },
+        { error: 'Необхідна авторизація' },
         { status: 401 }
       );
     }

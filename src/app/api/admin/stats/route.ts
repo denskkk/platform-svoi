@@ -18,7 +18,7 @@ async function checkAdmin(userId: number) {
 
 // GET /api/admin/stats - Загальна статистика
 async function handler(request: NextRequest) {
-  const userId = (request as any).userId;
+  const userId = (request as any).user?.userId;
   
   try {
     // Перевірити що userId існує
