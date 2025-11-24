@@ -11,6 +11,7 @@ import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { EarnQuickList } from '@/components/ui/EarnQuickList';
+import { TransferUcmModal } from '@/components/ui/TransferUcmModal';
 import { 
   translateCategory, 
   translateOfferType, 
@@ -227,7 +228,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     </div>
 
                     {/* Дії */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       {isOwnProfile ? (
                         <Link
                           href="/profile/edit"
@@ -245,6 +246,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             <MessageCircle className="w-4 h-4 mr-2" />
                             Написати
                           </Link>
+                          {currentUser && currentUser.balanceUcm !== undefined && (
+                            <TransferUcmModal
+                              recipientId={profile.id}
+                              recipientName={`${profile.firstName} ${profile.lastName}`}
+                              currentUserBalance={Number(currentUser.balanceUcm || 0)}
+                              onSuccess={() => {
+                                // Перезавантажити профіль після успішного переказу
+                                loadProfile()
+                              }}
+                            />
+                          )}
                           <PermissionButton
                             permission="ADD_TO_FAVORITES"
                             onClick={() => setIsFavorite(!isFavorite)}
