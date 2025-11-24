@@ -21,6 +21,14 @@ async function handler(request: NextRequest) {
   const userId = (request as any).userId;
   
   try {
+    // Перевірити що userId існує
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Необхідна авторізація' },
+        { status: 401 }
+      );
+    }
+    
     // Перевірити адмін права
     await checkAdmin(userId);
     
