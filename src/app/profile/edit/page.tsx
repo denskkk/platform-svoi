@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useRouter } from 'next/navigation';
 import { User, GraduationCap, Briefcase, Home, Car, Heart, Target, Camera } from 'lucide-react';
 import { ProfileCompletionHint } from '@/components/ui/ProfileCompletionHint';
@@ -640,20 +640,14 @@ export default function EditProfilePage() {
             <div className="flex items-center space-x-4 md:space-x-6">
               <div className="relative flex-shrink-0">
                 {avatarPreview ? (
-                  <Image
+                  <UserAvatar
                     src={avatarPreview.startsWith('data:') ? avatarPreview : 
                          avatarPreview.startsWith('http') || avatarPreview.startsWith('/') ? 
                          `${avatarPreview}${avatarPreview.includes('?') ? '&' : '?'}t=${Date.now()}` : 
                          avatarPreview}
                     alt="Avatar"
-                    width={96}
-                    height={96}
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-200"
-                    unoptimized
-                    onError={() => {
-                      console.error('Avatar load error:', avatarPreview);
-                      setAvatarPreview('');
-                    }}
+                    fallbackName={`${formData.firstName || ''} ${formData.lastName || ''}`}
                   />
                 ) : (
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-blue-500 flex items-center justify-center border-4 border-blue-200">

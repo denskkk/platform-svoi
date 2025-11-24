@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+// Use local image loader for uploaded files to avoid Next.js image optimizer errors
+// (uploads are served from /uploads/* by nginx)
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift } from 'lucide-react';
@@ -232,13 +233,10 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         {/* Банер компанії (для бізнес акаунтів) */}
         {profile?.businessInfo?.bannerUrl && (
           <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
-            <Image
+            <ServiceImage
               src={`${profile.businessInfo.bannerUrl}${profile.businessInfo.bannerUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
               alt="Банер компанії"
-              width={1600}
-              height={400}
               className="w-full h-48 md:h-64 object-cover"
-              onError={() => console.warn('Failed to load banner:', profile.businessInfo.bannerUrl)}
             />
           </div>
         )}
@@ -251,22 +249,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Фото */}
                 <div className="relative">
                   {profile?.businessInfo?.logoUrl ? (
-                    <Image
+                    <ServiceImage
                       src={`${profile.businessInfo.logoUrl}${profile.businessInfo.logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt="Логотип компанії"
-                      width={128}
-                      height={128}
                       className="w-32 h-32 rounded-2xl object-cover flex-shrink-0 bg-white shadow-md ring-4 ring-white"
-                      onError={() => console.warn('Failed to load company logo:', profile.businessInfo.logoUrl)}
                     />
                   ) : profile.avatarUrl ? (
-                    <Image
+                    <ServiceImage
                       src={`${profile.avatarUrl}${profile.avatarUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt={`${profile.firstName} ${profile.lastName}`}
-                      width={128}
-                      height={128}
                       className="w-32 h-32 rounded-2xl object-cover flex-shrink-0 shadow-md ring-4 ring-white"
-                      onError={() => console.error('Failed to load avatar:', profile.avatarUrl)}
                     />
                   ) : (
                     <div className="w-32 h-32 bg-gradient-to-br from-primary-400 to-accent-400 rounded-2xl flex items-center justify-center text-5xl font-bold text-white flex-shrink-0 shadow-md ring-4 ring-white">
@@ -487,14 +479,10 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   
                   {/* Лого компанії */}
                   {profile.businessInfo.logoUrl && (
-                    <Image
+                    <ServiceImage
                       src={`${profile.businessInfo.logoUrl}${profile.businessInfo.logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt={`${profile.businessInfo.companyName} logo`}
-                      width={80}
-                      height={80}
-                      unoptimized
                       className="w-20 h-20 object-contain rounded-lg bg-white p-2 shadow-sm"
-                      onError={() => {/* fallback handled by layout */}}
                     />
                   )}
                 </div>
