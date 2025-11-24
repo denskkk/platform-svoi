@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { ensureUserReferralCode, awardReferral } from '@/lib/ucm';
+import { ensureUserReferralCode, awardReferral, hasUcmTransactionsTable } from '@/lib/ucm';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
@@ -246,6 +246,29 @@ export async function POST(request: NextRequest) {
 
       return { user, business };
     });
+
+    // Нарахувати стартовий бонус для бізнес акаунту
+    const START_BONUS = 50;
+    try {
+      const hasLedger = await hasUcmTransactionsTable();
+      await prisma.$transaction(async (tx: any) => {
+        await tx.user.update({ where: { id: result.user.id }, data: { balanceUcm: { increment: START_BONUS } } });
+        if (hasLedger) {
+          await tx.ucmTransaction.create({
+            data: {
+              userId: result.user.id,
+              kind: 'credit',
+              amount: START_BONUS,
+              reason: 'signup_bonus',
+              relatedEntityType: null,
+              relatedEntityId: null,
+            }
+          });
+        }
+      });
+    } catch (e) {
+      console.warn('[register-business] failed to apply start bonus', e);
+    }
 
     // Генерація JWT токена
     const token = generateToken({
