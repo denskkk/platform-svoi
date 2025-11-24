@@ -13,6 +13,15 @@ import { expandSearchQuery, detectCategoryFromQuery, calculateRelevance } from '
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+const REQUEST_TYPE_LABELS: Record<string, string> = {
+  partner: 'пару',
+  job: 'роботу',
+  service: 'послугу',
+  employee: 'співробітника',
+  investor: 'інвестора',
+  other: 'те, що ви шукаєте',
+};
+
 async function getServices(q?: string, city?: string, category?: string) {
   try {
     const where: any = {
@@ -119,6 +128,7 @@ async function getServices(q?: string, city?: string, category?: string) {
       });
 
       // Map requests to a unified shape so they can be rendered similarly to services
+
       const mappedRequests = requests.map((r: any) => ({
         id: r.id,
         kind: 'request',
@@ -127,7 +137,8 @@ async function getServices(q?: string, city?: string, category?: string) {
         description: r.description,
         imageUrl: r.metadata && r.metadata.imageUrl ? r.metadata.imageUrl : null,
         category: null,
-        priceFrom: r.priceUcm ? Number(r.priceUcm) : null,
+        // Show creator's declared budget when available; fall back to paid promotion price
+        priceFrom: r.budgetFrom ?? (r.priceUcm ? Number(r.priceUcm) : null),
         priceTo: null,
         priceUnit: r.priceUcm ? 'уцмок' : undefined,
         city: r.city,
@@ -252,14 +263,14 @@ export default async function ServicesPage({
                         </Link>
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <div className="text-sm text-yellow-800 font-semibold">{r.requestType || 'Запит'}</div>
+                            <div className="text-sm text-yellow-800 font-semibold">{REQUEST_TYPE_LABELS[r.requestType] ? `Шукає ${REQUEST_TYPE_LABELS[r.requestType]}` : 'Запит'}</div>
                             {r.isPaid && r.priceFrom && <div className="text-xs text-yellow-700">Промо</div>}
                           </div>
                           <Link href={`/requests/${r.id}`} className="block">
                             <h4 className="font-bold text-neutral-900 mb-2 hover:text-primary-600">{r.title}</h4>
                           </Link>
                           <div className="text-sm text-neutral-600 mb-3 line-clamp-2">{r.description}</div>
-                          <div className="text-sm text-neutral-700">{r.priceFrom ? `${r.priceFrom} ${r.priceUnit || 'уцм'}` : 'За домовленістю'}</div>
+                          {/* For request cards we do not show how much the creator "spent" — price is visible in details */}
                         </div>
                       </div>
                     </div>

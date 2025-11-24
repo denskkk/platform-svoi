@@ -80,6 +80,10 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       setError('Будь ласка, заповніть заголовок та опис');
       return;
     }
+    if (!budgetFrom) {
+      setError('Будь ласка, вкажіть, скільки буде коштувати ваша заявка');
+      return;
+    }
 
     // Check balance if paid (use server costs if available)
     const entry = REQUEST_TYPES.find(r => r.key === type);
@@ -95,7 +99,8 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       const token = localStorage.getItem('token');
       const body: any = { type, title, description };
       if (paid) body.paid = true;
-      if (budgetFrom) body.budgetFrom = parseFloat(budgetFrom);
+      // budgetFrom is required for requests (declared cost)
+      body.budgetFrom = parseFloat(budgetFrom);
       if (budgetTo) body.budgetTo = parseFloat(budgetTo);
 
       // If an image was selected, upload it first
@@ -187,7 +192,30 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
             <textarea value={description} onChange={e=>setDescription(e.target.value)} rows={5} className="w-full p-2 border rounded" />
           </div>
 
-          {/* Цена убрана по требованию — бюджет можно обсуждать в переписке */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Скільки буде коштувати моя заявка (у уцм)</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={budgetFrom}
+                onChange={e=>setBudgetFrom(e.target.value)}
+                placeholder="Сума уцм"
+                className="w-full p-2 border rounded"
+                required
+              />
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={budgetTo}
+                onChange={e=>setBudgetTo(e.target.value)}
+                placeholder="(опціонально) до"
+                className="w-36 p-2 border rounded"
+              />
+            </div>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Фото (необов'язково)</label>
