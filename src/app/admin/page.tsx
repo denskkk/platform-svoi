@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
 
@@ -55,6 +55,7 @@ export default function AdminDashboard() {
     
     // Перевірити чи користувач адміністратор
     if (!user.isAdmin) {
+      alert('Доступ заборонено. Тільки для адміністраторів.');
       router.push('/');
       return;
     }

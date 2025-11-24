@@ -36,9 +36,15 @@ export default function LoginPage() {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('auth:changed'))
       }
-      // Перехід на профіль користувача
-      const target = data?.user?.id ? `/profile/${data.user.id}` : '/catalog'
-      router.push(target)
+      
+      // Якщо користувач адміністратор - перехід на адмін-панель
+      if (data.user?.isAdmin) {
+        router.push('/admin')
+      } else {
+        // Звичайний користувач - на профіль
+        const target = data?.user?.id ? `/profile/${data.user.id}` : '/catalog'
+        router.push(target)
+      }
     } catch (err: any) {
       setError(err.message || 'Не вдалося увійти')
     } finally {
