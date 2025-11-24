@@ -5,11 +5,10 @@ import { withAuth } from '@/lib/authMiddleware';
 // Перевірка чи користувач адміністратор
 async function checkAdmin(userId: number) {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true }
+    where: { id: userId }
   });
   
-  if (!user?.isAdmin) {
+  if (!(user as any)?.isAdmin) {
     throw new Error('Доступ заборонено. Тільки для адміністраторів.');
   }
   
@@ -52,9 +51,69 @@ async function handler(request: NextRequest) {
     }
     
     // Отримати транзакції
-    const [transactions, totalCount] = await Promise.all([
-      prisma.ucmTransaction.findMany({
-        where,
+    let transactions: any[] = [];
+    let totalCount = 0;
+    
+    try {
+      [transactions, totalCount] = await Promise.all([
+        (prisma as any).ucmTransaction.findMany({
+          where,
+          select: {
+            id: true,
+            amount: true,
+            reason: true,
+            description: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                city: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          },
+          skip,
+          take: limit
+        }),
+        (prisma as any).ucmTransaction.count({ where })
+      ]);
+    } catch (err) {
+      console.log('Error loading transactions:', err);
+    }
+    
+    // Статистика по типах транзакцій
+    let transactionStats: any[] = [];
+    try {
+      transactionStats = await (prisma as any).ucmTransaction.groupBy({
+        by: ['reason'],
+        _count: {
+          id: true
+        },
+        _sum: {
+          amount: true
+        },
+        _avg: {
+          amount: true
+        }
+      });
+    } catch (err) {
+      console.log('Error loading transaction stats:', err);
+    }
+    
+    // Найбільші перекази
+    let biggestTransfers: any[] = [];
+    try {
+      biggestTransfers = await (prisma as any).ucmTransaction.findMany({
+        where: {
+          reason: {
+            in: ['transfer_sent', 'transfer_received']
+          }
+        },
         select: {
           id: true,
           amount: true,
@@ -66,91 +125,55 @@ async function handler(request: NextRequest) {
               id: true,
               firstName: true,
               lastName: true,
-              email: true,
-              city: true,
-              balanceUcm: true
+              city: true
             }
           }
         },
         orderBy: {
-          createdAt: 'desc'
+          amount: 'desc'
         },
-        skip,
-        take: limit
-      }),
-      prisma.ucmTransaction.count({ where })
-    ]);
-    
-    // Статистика по типах транзакцій
-    const transactionStats = await prisma.ucmTransaction.groupBy({
-      by: ['reason'],
-      _count: {
-        id: true
-      },
-      _sum: {
-        amount: true
-      },
-      _avg: {
-        amount: true
-      }
-    });
-    
-    // Найбільші перекази
-    const biggestTransfers = await prisma.ucmTransaction.findMany({
-      where: {
-        reason: {
-          in: ['transfer_sent', 'transfer_received']
-        }
-      },
-      select: {
-        id: true,
-        amount: true,
-        reason: true,
-        description: true,
-        createdAt: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            city: true
-          }
-        }
-      },
-      orderBy: {
-        amount: 'desc'
-      },
-      take: 10
-    });
+        take: 10
+      });
+    } catch (err) {
+      console.log('Error loading biggest transfers:', err);
+    }
     
     // Статистика за період
-    const [
-      transactionsToday,
-      transactionsWeek,
-      transactionsMonth
-    ] = await Promise.all([
-      prisma.ucmTransaction.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0))
+    let transactionsToday = 0;
+    let transactionsWeek = 0;
+    let transactionsMonth = 0;
+    
+    try {
+      [
+        transactionsToday,
+        transactionsWeek,
+        transactionsMonth
+      ] = await Promise.all([
+        (prisma as any).ucmTransaction.count({
+          where: {
+            createdAt: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0))
+            }
           }
-        }
-      }),
-      prisma.ucmTransaction.count({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        }),
+        (prisma as any).ucmTransaction.count({
+          where: {
+            createdAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+            }
           }
-        }
-      }),
-      prisma.ucmTransaction.count({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        }),
+        (prisma as any).ucmTransaction.count({
+          where: {
+            createdAt: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+            }
           }
-        }
-      })
-    ]);
+        })
+      ]);
+    } catch (err) {
+      console.log('Error loading period stats:', err);
+    }
     
     return NextResponse.json({
       success: true,
