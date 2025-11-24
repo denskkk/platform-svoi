@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get('file') as File;
   const rawType = (formData.get('type') as string) || 'avatars';
-  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc']);
+  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc', 'requests']);
   const safeDir = allowedDirs.has(rawType) ? rawType : 'avatars';
     
     if (!file) {
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
     // - services: до 1200x800 (cover)
     // - misc: до 800x800 (cover)
   const isAvatar = safeDir === 'avatars' || safeDir === 'logos';
-  const isService = safeDir === 'services';
+  const isService = safeDir === 'services' || safeDir === 'requests';
   const isBanner = safeDir === 'banners';
 
     let pipeline = sharp(buffer);

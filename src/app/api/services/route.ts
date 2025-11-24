@@ -198,11 +198,8 @@ export async function POST(request: NextRequest) {
       serviceData.imageUrl = body.imageUrl;
     }
 
-    // If user is basic — force price = 1 уцм and charge 1 уцм for service creation
+    // If user is basic — charge a small creation fee (1 уцм) but do NOT overwrite the service's price
     if (accountType === 'basic') {
-      serviceData.priceUnit = 'уцм';
-      serviceData.priceFrom = 1;
-      serviceData.priceTo = 1;
       try {
         await chargeForAction({ userId, amount: 1, reason: 'create_service', related: { type: 'service' } });
       } catch (e: any) {

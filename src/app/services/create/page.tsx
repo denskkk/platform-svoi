@@ -55,10 +55,10 @@ export default function CreateServicePage() {
     setUser(userData);
     setToken(storedToken);
 
-    // If basic account: default service price unit to 'уцм' and minimum price to 1
+    // If basic account: default price unit to 'уцм' but do not force the price
     try {
       if (userData && userData.accountType === 'basic') {
-        setFormData(prev => ({ ...prev, priceUnit: 'уцм', priceFrom: '1' }));
+        setFormData(prev => ({ ...prev, priceUnit: 'уцм' }));
       }
     } catch {}
     
@@ -370,7 +370,7 @@ export default function CreateServicePage() {
                   step="0.01"
                   value={formData.priceFrom}
                   onChange={handleChange}
-                  disabled={user?.accountType === 'basic'}
+                  // Allow basic users to set their service price (creation fee may still apply)
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="100"
                 />
@@ -401,7 +401,7 @@ export default function CreateServicePage() {
                   value={formData.priceUnit}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  disabled={user?.accountType === 'basic'}
+                  // Allow selecting unit for all users
                 >
                   <option value="грн">грн</option>
                   <option value="уцм">уцм</option>

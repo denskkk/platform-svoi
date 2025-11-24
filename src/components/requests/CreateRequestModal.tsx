@@ -187,13 +187,7 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
             <textarea value={description} onChange={e=>setDescription(e.target.value)} rows={5} className="w-full p-2 border rounded" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ціна (необов'язково)</label>
-            <div className="grid grid-cols-2 gap-2">
-              <input value={budgetFrom} onChange={e=>setBudgetFrom(e.target.value)} placeholder="від" className="p-2 border rounded" />
-              <input value={budgetTo} onChange={e=>setBudgetTo(e.target.value)} placeholder="до" className="p-2 border rounded" />
-            </div>
-          </div>
+          {/* Цена убрана по требованию — бюджет можно обсуждать в переписке */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Фото (необов'язково)</label>

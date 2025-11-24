@@ -140,9 +140,10 @@ export async function POST(request: NextRequest) {
 
     // Створення користувача та бізнесу в транзакції
     const result = await prisma.$transaction(async (tx: any) => {
-      const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || undefined;
-      const inviter = refCode 
-        ? await tx.user.findFirst({ where: { referralCode: String(refCode) }, select: { id: true, email: true } })
+      const cookieRef = request.cookies.get('ref')?.value;
+      const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || cookieRef || undefined;
+      const inviter = refCode
+        ? await tx.user.findFirst({ where: { referralCode: { equals: String(refCode), mode: 'insensitive' } }, select: { id: true, email: true } })
         : null;
       // Створення користувача
       const user = await tx.user.create({
@@ -281,6 +282,13 @@ export async function POST(request: NextRequest) {
 
     // ТАКОЖ зберегти токен в httpOnly cookie для безпеки
     setAuthCookie(response, token);
+
+    // Очистити cookie `ref` якщо він був встановлений при редіректі
+    try {
+      response.cookies.set('ref', '', { path: '/', maxAge: 0 });
+    } catch (e) {
+      // ignore
+    }
 
     return response;
 

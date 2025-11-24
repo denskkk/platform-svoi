@@ -118,10 +118,12 @@ export async function POST(request: NextRequest) {
       return null;
     };
 
-    // Визначимо інвайтера за рефкодом, якщо передано
-    const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || undefined as any;
+    // Визначимо інвайтера за рефкодом, якщо передано.
+    // Поддерживаем несколько источников: тело запроса (`ref`/`referralCode`), query-параметр и cookie `ref` (установлен при редіректі /r/:code).
+    const cookieRef = request.cookies.get('ref')?.value;
+    const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || cookieRef || undefined as any;
     const inviter = refCode
-      ? await prisma.user.findFirst({ where: { referralCode: String(refCode) }, select: { id: true, email: true } })
+      ? await prisma.user.findFirst({ where: { referralCode: { equals: String(refCode), mode: 'insensitive' } }, select: { id: true, email: true } })
       : null;
 
     // Створимо користувача у транзакції (реферальні дії виконаємо після commit)
@@ -259,6 +261,13 @@ export async function POST(request: NextRequest) {
 
     // ТАКОЖ зберегти токен в httpOnly cookie для безпеки
     setAuthCookie(response, token);
+
+    // Очистити cookie `ref` якщо він був встановлений при редіректі
+    try {
+      response.cookies.set('ref', '', { path: '/', maxAge: 0 });
+    } catch (e) {
+      // ignore
+    }
 
     return response;
 
