@@ -91,9 +91,7 @@ function RegisterIndividualForm() {
         {/* Заголовок */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">С</span>
-            </div>
+            <img src="/sitelogo.png" alt="Логотип" className="w-12 h-12 object-contain" />
             <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
           </Link>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">

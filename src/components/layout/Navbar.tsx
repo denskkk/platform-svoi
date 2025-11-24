@@ -198,9 +198,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Лого */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform">
-              <span className="text-white font-bold text-xl">С</span>
-            </div>
+            <img src="/sitelogo.png" alt="Логотип" className="w-10 h-10 object-contain transform group-hover:scale-105 transition-transform" />
             <span className="font-display font-bold text-lg hidden sm:block">
               СВІЙ ДЛЯ СВОЇХ
             </span>
