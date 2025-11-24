@@ -181,13 +181,27 @@ export async function POST(request: NextRequest) {
     const userId = Number(authResult.user.userId);
     const accountType = authResult.user.accountType;
 
+    // Validate numeric price fields to avoid DB numeric overflow (Decimal(10,2) limit)
+    const parseSafeNumber = (v: any): number | null => {
+      if (v === undefined || v === null || v === '') return null;
+      const n = typeof v === 'number' ? v : parseFloat(String(v));
+      if (!isFinite(n)) return null;
+      // Decimal(10,2) accepts absolute values less than 1e8
+      if (Math.abs(n) >= 1e8) return null;
+      // Round to 2 decimals
+      return Math.round(n * 100) / 100;
+    };
+
+    const safePriceFrom = parseSafeNumber(body.priceFrom);
+    const safePriceTo = parseSafeNumber(body.priceTo);
+
     const serviceData: any = {
       userId,
       categoryId: body.categoryId,
       title: body.title,
       description: body.description,
-      priceFrom: body.priceFrom,
-      priceTo: body.priceTo,
+      priceFrom: safePriceFrom,
+      priceTo: safePriceTo,
       priceUnit: body.priceUnit || 'грн',
       city: body.city,
       region: body.region || null,
