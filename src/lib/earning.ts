@@ -127,36 +127,49 @@ export async function awardUcmForAction(
 
     // Начисляем уцмки
     const hasLedger = await hasUcmTransactionsTable();
+    console.log(`[awardUcmForAction] hasLedger=${hasLedger} for user=${userId}, action=${action}, amount=${amount}`);
     if (hasLedger) {
-      await prisma.$transaction([
-        // Увеличиваем баланс
-        prisma.user.update({
-          where: { id: userId },
-          data: {
-            balanceUcm: {
-              increment: amount
+      try {
+        const results = await prisma.$transaction([
+          // Увеличиваем баланс
+          prisma.user.update({
+            where: { id: userId },
+            data: {
+              balanceUcm: {
+                increment: amount
+              }
             }
-          }
-        }),
-        // Создаем транзакцию
-        prisma.ucmTransaction.create({
-          data: {
-            userId,
-            kind: 'credit',
-            amount,
-            reason: description,
-            relatedEntityType: 'earning',
-            relatedEntityId: userId,
-            meta: metadata ? JSON.stringify(metadata) : null
-          }
-        })
-      ]);
+          }),
+          // Создаем транзакцию
+          prisma.ucmTransaction.create({
+            data: {
+              userId,
+              kind: 'credit',
+              amount,
+              reason: description,
+              relatedEntityType: 'earning',
+              relatedEntityId: userId,
+              meta: metadata ? JSON.stringify(metadata) : null
+            }
+          })
+        ]);
+        console.log(`[awardUcmForAction] Transaction created for user ${userId} action ${action}`, results?.[1] ? { txId: (results as any)[1].id } : null);
+      } catch (txErr) {
+        console.error(`[awardUcmForAction] Failed to create ucm transaction for user ${userId} action ${action}:`, txErr);
+        // As a fallback, still increment balance to avoid leaving user without award
+        try {
+          await prisma.user.update({ where: { id: userId }, data: { balanceUcm: { increment: amount } } });
+          console.log(`[awardUcmForAction] Fallback: incremented balance for user ${userId} without transaction`);
+        } catch (fallbackErr) {
+          console.error(`[awardUcmForAction] Fallback failed for user ${userId}:`, fallbackErr);
+          throw fallbackErr;
+        }
+      }
     } else {
       // Ledger table missing — just update balance
       await prisma.user.update({ where: { id: userId }, data: { balanceUcm: { increment: amount } } });
+      console.log(`[awardUcmForAction] Ledger missing — incremented balance for user ${userId} by ${amount}`);
     }
-
-    console.log(`[awardUcmForAction] Awarded ${amount} ucm to user ${userId} for ${action}`);
     
     return {
       amount,

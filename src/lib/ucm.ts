@@ -128,9 +128,11 @@ export async function awardReferral(opts: { inviterId: number; inviteeId: number
       })
     }
 
+    console.log(`[awardReferral] Created referral id=${referral.id} inviter=${inviterId} invitee=${inviteeId} inviterBonus=${REFERRAL_BONUS.inviter} inviteeBonus=${REFERRAL_BONUS.invitee}`);
     return referral
   })
 
+  console.log('[awardReferral] transaction committed', result?.id ? { referralId: result.id } : null);
   return result
 }
 
