@@ -321,11 +321,11 @@ export async function getUserEarningProgress(userId: number) {
     );
 
     const progress = Object.entries(EARNING_REWARDS).map(([action, amount]) => {
-      const completed = earnedActions.has(action);
       let canEarn = true;
       let progress = 0;
       let progressMax = 1;
       let missingFields: string[] | undefined;
+      const isRepeatable = ['DAILY_LOGIN', 'GIVE_REVIEW', 'SERVICE_COMPLETED'].includes(action);
 
       // Определяем возможность заработать и прогресс
       switch (action) {
@@ -376,6 +376,22 @@ export async function getUserEarningProgress(userId: number) {
           break;
       }
 
+      // Determine completed state:
+      // - If ledger exists, rely on recorded transactions (earnedActions)
+      // - If ledger is missing, fall back to progress comparison for unique (non-repeatable) actions
+      let completed = false;
+      if (hasLedger) {
+        completed = earnedActions.has(action);
+      } else {
+        // No ledger: consider task completed when progress reaches required max for unique tasks
+        completed = !isRepeatable && progress >= progressMax;
+      }
+
+      // If task is completed and not repeatable, mark as not earnable
+      if (completed && !isRepeatable) {
+        canEarn = false;
+      }
+
       return {
         action,
         description: EARNING_DESCRIPTIONS[action as keyof typeof EARNING_DESCRIPTIONS],
@@ -384,7 +400,7 @@ export async function getUserEarningProgress(userId: number) {
         canEarn,
         progress,
         progressMax,
-        isRepeatable: ['DAILY_LOGIN', 'GIVE_REVIEW', 'SERVICE_COMPLETED'].includes(action),
+        isRepeatable,
         ...(missingFields ? { missingFields } : {})
       };
     });
