@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, MapPin, Phone, Mail, MessageCircle, User, Edit, Trash2, Star } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, MessageCircle, User, Edit, Trash2, Star, Gift } from 'lucide-react';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
+import { TransferUcmModal } from '@/components/ui/TransferUcmModal';
 
 interface Service {
   id: number;
@@ -335,6 +336,22 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     <MessageCircle className="w-5 h-5" />
                     <span>Написати</span>
                   </Link>
+
+                  {currentUser && (
+                    <TransferUcmModal
+                      recipientId={service.user.id}
+                      recipientName={service.user?.businessInfo?.companyName || `${service.user.firstName} ${service.user.lastName}`}
+                      currentUserBalance={currentUser.balanceUcm || 0}
+                      onSuccess={() => {
+                        // Оновити баланс користувача
+                        const storedUser = localStorage.getItem('user');
+                        if (storedUser) {
+                          const user = JSON.parse(storedUser);
+                          setCurrentUser(user);
+                        }
+                      }}
+                    />
+                  )}
 
                   <Link
                     href={`/profile/${service.user.id}`}
