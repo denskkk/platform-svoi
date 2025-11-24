@@ -161,6 +161,7 @@ export async function GET(
         balanceUcm: true,
         totalReviews: true,
         isVerified: true,
+        ucmVerified: true,
         subscriptionActive: true,
         subscriptionExpiresAt: true,
         subscriptionStartedAt: true,
@@ -193,7 +194,7 @@ export async function GET(
             reviewsReceived: true,
           }
         }
-      }
+      } as any
     });
 
     if (!user) {
