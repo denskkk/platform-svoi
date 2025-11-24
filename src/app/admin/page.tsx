@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { 
   Users, 
   MessageSquare, 
@@ -10,7 +9,7 @@ import {
   TrendingUp, 
   Activity,
   Shield,
-  ArrowLeft,
+  LogOut,
   RefreshCw,
   Search,
   Filter
@@ -83,10 +82,27 @@ export default function AdminDashboard() {
     } catch (err: any) {
       setError(err.message);
       if (err.message.includes('Доступ заборонено')) {
-        setTimeout(() => router.push('/'), 2000);
+        setTimeout(() => router.push('/auth/login'), 2000);
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      localStorage.removeItem('user');
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Помилка виходу:', error);
+      // Все одно перенаправити на сторінку входу
+      localStorage.removeItem('user');
+      router.push('/auth/login');
     }
   };
 
@@ -134,32 +150,34 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-neutral-600 hover:text-neutral-900 mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            На головну
-          </Link>
-          
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
                 <Shield className="w-10 h-10 text-primary-500" />
-                Адмін-панель
+                Адмін-панель УЦМ
               </h1>
               <p className="text-neutral-600">
-                Детальна статистика платформи СВІЙ ДЛЯ СВОЇХ
+                Детальна бізнес-статистика платформи СВІЙ ДЛЯ СВОЇХ
               </p>
             </div>
             
-            <button
-              onClick={loadStats}
-              className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-neutral-200 rounded-lg hover:border-primary-500 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Оновити
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={loadStats}
+                className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-neutral-200 rounded-lg hover:border-primary-500 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Оновити
+              </button>
+              
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Вихід
+              </button>
+            </div>
           </div>
         </div>
 
@@ -360,9 +378,12 @@ export default function AdminDashboard() {
                 Детальний список користувачів
               </h2>
               <div className="text-center py-8 text-neutral-600">
-                <Link href="/admin/users" className="text-primary-500 hover:text-primary-600 font-medium">
-                  Перейти до повного списку користувачів →
-                </Link>
+                <button 
+                  onClick={() => router.push('/admin/users-manage')} 
+                  className="text-primary-500 hover:text-primary-600 font-medium"
+                >
+                  Перейти до управління користувачами →
+                </button>
               </div>
             </div>
           )}
@@ -373,9 +394,12 @@ export default function AdminDashboard() {
                 Статистика переписок
               </h2>
               <div className="text-center py-8 text-neutral-600">
-                <Link href="/admin/conversations" className="text-primary-500 hover:text-primary-600 font-medium">
+                <button 
+                  onClick={() => router.push('/admin/messages')} 
+                  className="text-primary-500 hover:text-primary-600 font-medium"
+                >
                   Перейти до переписок →
-                </Link>
+                </button>
               </div>
             </div>
           )}
@@ -386,9 +410,12 @@ export default function AdminDashboard() {
                 Історія транзакцій
               </h2>
               <div className="text-center py-8 text-neutral-600">
-                <Link href="/admin/transactions" className="text-primary-500 hover:text-primary-600 font-medium">
+                <button 
+                  onClick={() => router.push('/admin/transactions')} 
+                  className="text-primary-500 hover:text-primary-600 font-medium"
+                >
                   Перейти до транзакцій →
-                </Link>
+                </button>
               </div>
             </div>
           )}
