@@ -63,23 +63,24 @@ export function generateReferralCode(seed?: string): string {
 }
 
 // Ensure a unique referral code for a user
-export async function ensureUserReferralCode(userId: number) {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, referralCode: true, firstName: true } })
+export async function ensureUserReferralCode(userId: number, client?: typeof prisma) {
+  const db = client || prisma
+  const user = await db.user.findUnique({ where: { id: userId }, select: { id: true, referralCode: true, firstName: true } })
   if (!user) throw new Error('User not found')
   if (user.referralCode) return user.referralCode
 
   // Try a few times to avoid collisions
   for (let i = 0; i < 5; i++) {
     const candidate = generateReferralCode(user.firstName || '')
-    const exists = await prisma.user.findFirst({ where: { referralCode: candidate }, select: { id: true } })
+    const exists = await db.user.findFirst({ where: { referralCode: candidate }, select: { id: true } })
     if (!exists) {
-      await prisma.user.update({ where: { id: user.id }, data: { referralCode: candidate } })
+      await db.user.update({ where: { id: user.id }, data: { referralCode: candidate } })
       return candidate
     }
   }
   // Fallback
   const fallback = generateReferralCode('U')
-  await prisma.user.update({ where: { id: user.id }, data: { referralCode: fallback } })
+  await db.user.update({ where: { id: user.id }, data: { referralCode: fallback } })
   return fallback
 }
 

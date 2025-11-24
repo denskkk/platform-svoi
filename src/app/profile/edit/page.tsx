@@ -574,7 +574,10 @@ export default function EditProfilePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка збереження');
+        // If server returned validation details, show them to the user
+        const details = data?.details;
+        const detailMsg = Array.isArray(details) && details.length ? ` (${details.join('; ')})` : '';
+        throw new Error((data.error || 'Помилка збереження') + detailMsg);
       }
 
       // Оновлюємо дані користувача в localStorage з новим аватаром

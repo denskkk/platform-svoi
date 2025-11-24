@@ -180,8 +180,8 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      // Генеруємо власний реф-код
-      await ensureUserReferralCode(user.id)
+      // Генеруємо власний реф-код (використовуємо tx, щоб бачити незакомічений запис)
+      await ensureUserReferralCode(user.id, tx)
 
       // Створення бізнес інформації
       console.log('[Register Business API] Створення бізнес профілю з даними:', {

@@ -4,7 +4,8 @@
 
 import { NextResponse } from 'next/server';
 
-const COOKIE_NAME = 'auth_token';
+// Use `token` for backward compatibility with existing middleware and routes
+const COOKIE_NAME = 'token';
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 днів в секундах
 
 /**
