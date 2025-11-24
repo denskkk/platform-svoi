@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, User, Target, Upload, Camera, Image as ImageIcon, CheckCircle, Plus, Trash2 } from 'lucide-react';
+import { Building2, User, Upload, Camera, Image as ImageIcon, CheckCircle, Plus, Trash2 } from 'lucide-react';
 
 export default function EditBusinessProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
-  const [activeTab, setActiveTab] = useState('basic');
   const [formData, setFormData] = useState({
     // Особисті дані представника
     firstName: '',
@@ -396,12 +395,6 @@ export default function EditBusinessProfilePage() {
     );
   }
 
-  const tabs = [
-    { id: 'basic', name: 'Основне', icon: User },
-    { id: 'company', name: 'Компанія', icon: Building2 },
-    { id: 'seeking', name: 'Що шукаєте', icon: Target },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -415,104 +408,8 @@ export default function EditBusinessProfilePage() {
             <p className="text-orange-100 mt-2">Оновіть інформацію про вашу компанію</p>
           </div>
 
-          {/* Images Upload */}
-          <div className="p-8 border-b border-neutral-200 space-y-4">
-            {/* Banner */}
-            <div>
-              <h3 className="font-semibold text-neutral-900 mb-2 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-orange-600" /> Банер компанії
-              </h3>
-              <div className="relative w-full h-44 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200">
-                {bannerPreview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={bannerPreview} alt="Company banner" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-500 text-sm">
-                    Немає банера
-                  </div>
-                )}
-                <label
-                  htmlFor="banner-upload"
-                  className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 backdrop-blur rounded-full shadow border border-neutral-200 cursor-pointer hover:bg-white transition-colors text-sm"
-                >
-                  Завантажити банер
-                </label>
-                <input id="banner-upload" type="file" accept="image/*" onChange={handleBannerChange} className="hidden" />
-              </div>
-              {bannerFile && (
-                <p className="text-sm text-orange-600 mt-2">✓ Новий банер: {bannerFile.name}</p>
-              )}
-            </div>
-
-            {/* Logo */}
-            <div className="flex items-center space-x-6">
-              <div className="relative flex-shrink-0">
-                {logoPreview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={logoPreview}
-                    alt="Company logo"
-                    className="w-24 h-24 rounded-lg object-contain bg-neutral-100 p-2 border-4 border-orange-200"
-                  />
-                ) : (
-                  <div className="w-24 h-24 rounded-lg bg-orange-500 flex items-center justify-center border-4 border-orange-200">
-                    <Building2 className="w-12 h-12 text-white" />
-                  </div>
-                )}
-                <label
-                  htmlFor="logo-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors border-2 border-orange-500"
-                >
-                  <Camera className="w-4 h-4 text-orange-600" />
-                </label>
-                <input
-                  id="logo-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  className="hidden"
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-neutral-900">Лого компанії</h3>
-                <p className="text-sm text-neutral-600 mt-1">
-                  PNG, JPG або HEIC. Макс 10MB
-                </p>
-                {logoFile && (
-                  <p className="text-sm text-orange-600 mt-1">
-                    ✓ Нове лого: {logoFile.name}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="border-b border-neutral-200">
-            <div className="px-8 flex space-x-8 overflow-x-auto">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    type="button"
-                    className={`py-4 px-4 border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
-                      activeTab === tab.id
-                        ? 'border-orange-500 text-orange-600 font-medium'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
@@ -525,214 +422,258 @@ export default function EditBusinessProfilePage() {
               </div>
             )}
 
-            {/* Tab: Basic */}
-            {activeTab === 'basic' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Дані представника компанії
-                </h3>
+            {/* Дані представника компанії */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Дані представника компанії
+              </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ім'я *
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      required
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ім'я *
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    required
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Прізвище *
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      required
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Телефон
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Прізвище *
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    required
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* Tab: Company */}
-            {activeTab === 'company' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Назва компанії *
-                    </label>
+            {/* Компанія */}
+            <div className="space-y-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Назва компанії *
+                  </label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    required
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="ТОВ 'Будівельна компанія'"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Код ЄДРПОУ
+                  </label>
+                  <input
+                    type="text"
+                    name="companyCode"
+                    value={formData.companyCode}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="12345678"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Місто діяльності
+                  </label>
+                  <select
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="">Оберіть місто</option>
+                    {cities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Тип компанії
+                  </label>
+                  <select
+                    name="companyType"
+                    value={formData.companyType}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="">Оберіть тип</option>
+                    <option value="fop">ФОП</option>
+                    <option value="tov">ТОВ</option>
+                    <option value="other">Інше</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Категорія діяльності
+                  </label>
+                  <select
+                    name="businessCategory"
+                    value={formData.businessCategory}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="">Оберіть категорію</option>
+                    {businessCategories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Що пропонуєте?
+                  </label>
+                  <select
+                    name="offerType"
+                    value={formData.offerType}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="">Оберіть</option>
+                    <option value="service">Послуга</option>
+                    <option value="product">Товар</option>
+                    <option value="both">Послуги та товари</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Короткий опис
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                    placeholder="Що пропонує ваша компанія..."
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Веб-сайт
+                  </label>
+                  <input
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://yourcompany.com"
+                  />
+                </div>
+
+                {/* Логотип компанії */}
+                <div className="md:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <ImageIcon className="w-4 h-4 inline mr-1" />
+                    Логотип компанії
+                  </label>
+                  <div className="relative">
                     <input
-                      type="text"
-                      name="companyName"
-                      required
-                      value={formData.companyName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      className="hidden"
+                      id="logo-upload"
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Код ЄДРПОУ
+                    <label
+                      htmlFor="logo-upload"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
+                      {logoFile || logoPreview ? (
+                        <div className="flex flex-col items-center gap-2">
+                          {logoPreview && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={logoPreview} alt="Logo preview" className="w-20 h-20 object-contain" />
+                          )}
+                          <span className="text-sm text-gray-700">{logoFile?.name || 'Завантажити нове'}</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="w-5 h-5 text-gray-400" />
+                          <span className="text-sm text-gray-600">Завантажити логотип</span>
+                        </>
+                      )}
                     </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Рекомендований розмір: 400x400px</p>
+                </div>
+
+                {/* Банер компанії */}
+                <div className="md:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <ImageIcon className="w-4 h-4 inline mr-1" />
+                    Банер компанії
+                  </label>
+                  <div className="relative">
                     <input
-                      type="text"
-                      name="companyCode"
-                      value={formData.companyCode}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerChange}
+                      className="hidden"
+                      id="banner-upload"
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Місто діяльності
-                    </label>
-                    <select
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    <label
+                      htmlFor="banner-upload"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                     >
-                      <option value="">Оберіть місто</option>
-                      {cities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Тип компанії
+                      {bannerFile || bannerPreview ? (
+                        <div className="flex flex-col items-center gap-2">
+                          {bannerPreview && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={bannerPreview} alt="Banner preview" className="w-full h-16 object-cover rounded" />
+                          )}
+                          <span className="text-sm text-gray-700">{bannerFile?.name || 'Завантажити новий'}</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="w-5 h-5 text-gray-400" />
+                          <span className="text-sm text-gray-600">Завантажити банер</span>
+                        </>
+                      )}
                     </label>
-                    <select
-                      name="companyType"
-                      value={formData.companyType}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    >
-                      <option value="">Оберіть тип</option>
-                      <option value="fop">ФОП</option>
-                      <option value="tov">ТОВ</option>
-                      <option value="other">Інше</option>
-                    </select>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Категорія діяльності
-                    </label>
-                    <select
-                      name="businessCategory"
-                      value={formData.businessCategory}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    >
-                      <option value="">Оберіть категорію</option>
-                      {businessCategories.map((cat) => (
-                        <option key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Що пропонуєте?
-                    </label>
-                    <select
-                      name="offerType"
-                      value={formData.offerType}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    >
-                      <option value="">Оберіть</option>
-                      <option value="service">Послуга</option>
-                      <option value="product">Товар</option>
-                      <option value="both">Послуги та товари</option>
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Короткий опис
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
-                      placeholder="Що пропонує ваша компанія..."
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Веб-сайт
-                    </label>
-                    <input
-                      type="url"
-                      name="website"
-                      value={formData.website}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      placeholder="https://yourcompany.com"
-                    />
-                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Рекомендований розмір: 1200x400px</p>
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* Tab: Seeking */}
-            {activeTab === 'seeking' && (
+            {/* Що шукаєте */}
+            <div className="space-y-6 pt-6 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Кого/що шукаєте?
+              </h3>
+
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Кого/що шукаєте?
-                </h3>
-
-                <div className="space-y-6">
                   {/* Пошук партнера */}
                   <div className="border border-gray-300 rounded-lg overflow-hidden">
                     <label className="flex items-center gap-3 p-4 bg-gray-50 cursor-pointer hover:bg-gray-100">
@@ -1058,7 +999,6 @@ export default function EditBusinessProfilePage() {
                   </div>
                 </div>
               </div>
-            )}
 
             {/* Submit Button */}
             <div className="flex gap-4 pt-6 border-t">
