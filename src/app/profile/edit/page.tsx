@@ -1104,8 +1104,7 @@ export default function EditProfilePage() {
                 <UserAvatar
                   src={avatarPreview}
                   alt={user.firstName}
-                  size="xl"
-                  className="border-4 border-primary-200"
+                  className="w-24 h-24 border-4 border-primary-200"
                 />
                 <label
                   htmlFor="avatar-upload"
