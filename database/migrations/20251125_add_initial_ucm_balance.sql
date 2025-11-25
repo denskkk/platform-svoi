@@ -16,12 +16,12 @@ BEGIN
 
     -- Оновити баланс для користувачів, які не мають UCM транзакцій
     FOR v_user IN 
-        SELECT u.id, u.role, u.account_type, u.balance_ucm
+        SELECT u.user_id as id, u.role, u.account_type, u.balance_ucm
         FROM users u
         WHERE u.balance_ucm = 0
         AND NOT EXISTS (
             SELECT 1 FROM ucm_transactions 
-            WHERE user_id = u.id 
+            WHERE user_id = u.user_id 
             AND reason = 'signup_bonus'
         )
     LOOP
@@ -35,7 +35,7 @@ BEGIN
         -- Оновити баланс користувача
         UPDATE users 
         SET balance_ucm = balance_ucm + v_bonus 
-        WHERE id = v_user.id;
+        WHERE user_id = v_user.id;
 
         -- Створити транзакцію якщо таблиця існує
         IF v_has_transactions THEN
