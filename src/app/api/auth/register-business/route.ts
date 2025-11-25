@@ -262,6 +262,7 @@ export async function POST(request: NextRequest) {
               reason: 'signup_bonus',
               relatedEntityType: null,
               relatedEntityId: null,
+              meta: {},
             }
           });
         }

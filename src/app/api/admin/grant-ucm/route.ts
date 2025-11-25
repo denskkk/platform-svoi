@@ -68,9 +68,12 @@ async function handler(request: NextRequest) {
       const transaction = await (tx as any).ucmTransaction.create({
         data: {
           userId: Number(targetUserId),
+          kind: 'credit',
           amount: Number(amount),
           reason: String(reason),
-          description: description || `Видано адміністратором`
+          relatedEntityType: 'admin_grant',
+          relatedEntityId: userId,
+          meta: { description: description || `Видано адміністратором` }
         }
       });
 

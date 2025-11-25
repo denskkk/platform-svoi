@@ -51,13 +51,14 @@ export async function GET(request: NextRequest) {
           isVerified: true,
           accountType: true,
           role: true,
+          ucmVerified: true,
           businessInfo: {
             select: {
               companyName: true,
               logoUrl: true,
             }
           },
-        },
+        } as any,
         orderBy: [
           { avgRating: 'desc' },
           { totalReviews: 'desc' },
