@@ -150,6 +150,21 @@ npm install
 npm run build
 ```
 
+#### Tailwind/`Cannot find module 'tailwindcss'`
+Якщо білд падає з помилкою про `tailwindcss`, значить devDependencies не встановлені (npm пропустив їх через `NODE_ENV=production`). Перед білдом встановіть:
+```bash
+export NPM_CONFIG_PRODUCTION=false
+npm ci
+npm run build
+```
+Альтернатива: `npm ci --include=dev` (Node 18+). Не рекомендується переносити Tailwind у dependencies, щоб не збільшувати продакшен образ.
+
+Перевірка:
+```bash
+ls node_modules/tailwindcss | head -n 1
+```
+Якщо помилка `No such file or directory` – devDeps відсутні.
+
 ### PM2 не запускається:
 ```bash
 # Перевірити статус
