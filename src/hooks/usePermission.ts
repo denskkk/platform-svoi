@@ -99,4 +99,3 @@ export function useIsRegistered() {
   const { accountType } = useCurrentUser();
   return accountType === 'basic' || accountType === 'business';
 }
-}
