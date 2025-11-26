@@ -113,8 +113,8 @@ async function viewProfiles() {
       _count: {
         select: {
           services: true,
-          clientRequests: true,
-          executorRequests: true
+          serviceRequestsCreated: true,
+          serviceRequestsAccepted: true
         }
       },
       businessInfo: true
@@ -135,8 +135,8 @@ async function viewProfiles() {
     console.log(`     Тип акаунту: ${user.accountType}`);
     console.log(`     Баланс УЦМ: ${user.balanceUcm}`);
     console.log(`     Послуг: ${user._count.services}`);
-    console.log(`     Заявок як клієнт: ${user._count.clientRequests}`);
-    console.log(`     Заявок як виконавець: ${user._count.executorRequests}`);
+    console.log(`     Заявок створено: ${user._count.serviceRequestsCreated}`);
+    console.log(`     Заявок прийнято: ${user._count.serviceRequestsAccepted}`);
     console.log(`     Адмін: ${user.isAdmin ? 'Так' : 'Ні'}`);
     if (user.businessInfo) {
       console.log(`     Бізнес: ${user.businessInfo.companyName || 'Не вказано'}`);
