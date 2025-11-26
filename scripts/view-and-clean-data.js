@@ -245,7 +245,7 @@ async function deleteUser(id) {
   console.log('⚠️  УВАГА: Це видалить користувача та ВСІ пов\'язані дані!\n');
 
   // Видаляємо все пов'язане з користувачем
-  await prisma.review.deleteMany({ where: { OR: [{ authorId: userId }, { targetUserId: userId }] } });
+  await prisma.review.deleteMany({ where: { OR: [{ reviewerId: userId }, { reviewedId: userId }] } });
   await prisma.message.deleteMany({ where: { OR: [{ senderId: userId }, { receiverId: userId }] } });
   await prisma.conversation.deleteMany({ where: { OR: [{ user1Id: userId }, { user2Id: userId }] } });
   await prisma.ucmTransaction.deleteMany({ where: { OR: [{ fromUserId: userId }, { toUserId: userId }] } });

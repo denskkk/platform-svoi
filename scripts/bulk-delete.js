@@ -69,7 +69,7 @@ async function deleteUsersExceptMaksym() {
     console.log(`  Видалення: [${user.id}] ${user.firstName} ${user.lastName} (${user.email})`);
     
     // Видаляємо все пов'язане
-    await prisma.review.deleteMany({ where: { OR: [{ authorId: user.id }, { targetUserId: user.id }] } });
+    await prisma.review.deleteMany({ where: { OR: [{ reviewerId: user.id }, { reviewedId: user.id }] } });
     await prisma.message.deleteMany({ where: { OR: [{ senderId: user.id }, { receiverId: user.id }] } });
     await prisma.conversation.deleteMany({ where: { OR: [{ user1Id: user.id }, { user2Id: user.id }] } });
     await prisma.ucmTransaction.deleteMany({ where: { OR: [{ fromUserId: user.id }, { toUserId: user.id }] } });
