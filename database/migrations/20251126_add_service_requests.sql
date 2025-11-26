@@ -4,9 +4,8 @@
 -- Опис: Додає таблицю service_requests для заявок клієнтів виконавцям
 -- ========================================
 
--- Створити ENUM для статусів заявок
 DO $$ BEGIN
-  CREATE TYPE service_request_status AS ENUM (
+  CREATE TYPE "ServiceRequestStatus" AS ENUM (
     'new',
     'viewed',
     'accepted',
@@ -47,7 +46,7 @@ CREATE TABLE IF NOT EXISTS service_requests (
   is_paid BOOLEAN DEFAULT FALSE,
   
   -- Статус
-  status service_request_status DEFAULT 'new',
+  status "ServiceRequestStatus" DEFAULT 'new',
   
   -- Терміни
   desired_date TIMESTAMP,
