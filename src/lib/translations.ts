@@ -68,10 +68,9 @@ export const translateEmploymentStatus = (status: string | null | undefined): st
 export const translateAccountType = (type: string | null | undefined): string => {
   if (!type) return '';
   const translations: Record<string, string> = {
-    'basic': 'Базовий',
-    'extended': 'Розширений',
-    'business': 'Бізнес',
     'viewer': 'Глядач',
+    'basic': 'Базовий',
+    'business': 'Бізнес',
     'user': 'Звичайний'
   };
   return translations[type] || type;

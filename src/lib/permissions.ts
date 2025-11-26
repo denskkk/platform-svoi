@@ -2,31 +2,31 @@
  * Система прав доступу для різних типів акаунтів
  */
 
-export type AccountType = 'guest' | 'basic' | 'extended' | 'business' | 'business_premium';
+export type AccountType = 'viewer' | 'basic' | 'business';
 
 export const PERMISSIONS = {
   // Базові можливості
-  VIEW_CATALOG: ['guest', 'basic', 'extended', 'business', 'business_premium'] as AccountType[],
-  VIEW_PROFILE: ['basic', 'extended', 'business', 'business_premium'] as AccountType[],
-  EDIT_PROFILE: ['basic', 'extended', 'business', 'business_premium'] as AccountType[],
+  VIEW_CATALOG: ['viewer', 'basic', 'business'] as AccountType[],
+  VIEW_PROFILE: ['basic', 'business'] as AccountType[],
+  EDIT_PROFILE: ['basic', 'business'] as AccountType[],
   
   // Обране
-  ADD_TO_FAVORITES: ['basic', 'extended', 'business', 'business_premium'] as AccountType[],
-  VIEW_FAVORITES: ['basic', 'extended', 'business', 'business_premium'] as AccountType[],
+  ADD_TO_FAVORITES: ['basic', 'business'] as AccountType[],
+  VIEW_FAVORITES: ['basic', 'business'] as AccountType[],
   
   // Послуги
-  CREATE_SERVICE: ['extended', 'business', 'business_premium'] as AccountType[],
-  EDIT_SERVICE: ['extended', 'business', 'business_premium'] as AccountType[],
-  DELETE_SERVICE: ['extended', 'business', 'business_premium'] as AccountType[],
+  CREATE_SERVICE: ['basic', 'business'] as AccountType[],
+  EDIT_SERVICE: ['basic', 'business'] as AccountType[],
+  DELETE_SERVICE: ['basic', 'business'] as AccountType[],
   
   // Заявки (requests)
-  CREATE_REQUEST: ['extended', 'business', 'business_premium'] as AccountType[],
-  VIEW_REQUESTS: ['extended', 'business', 'business_premium'] as AccountType[],
-  RESPOND_TO_REQUEST: ['business', 'business_premium'] as AccountType[],
+  CREATE_REQUEST: ['basic', 'business'] as AccountType[],
+  VIEW_REQUESTS: ['basic', 'business'] as AccountType[],
+  RESPOND_TO_REQUEST: ['basic', 'business'] as AccountType[],
   
   // Повідомлення
-  SEND_MESSAGE: ['extended', 'business', 'business_premium'] as AccountType[],
-  VIEW_MESSAGES: ['extended', 'business', 'business_premium'] as AccountType[],
+  SEND_MESSAGE: ['basic', 'business'] as AccountType[],
+  VIEW_MESSAGES: ['basic', 'business'] as AccountType[],
   
   // Відгуки
   LEAVE_REVIEW: ['basic', 'extended', 'business', 'business_premium'] as AccountType[],
