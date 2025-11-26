@@ -14,6 +14,8 @@ interface ServiceRequest {
   budgetTo: number | null;
   status: string;
   createdAt: string;
+  isPromoted: boolean;
+  promotedUntil: string | null;
   client: {
     id: number;
     firstName: string;
@@ -163,75 +165,99 @@ export default function ServiceRequestsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {requests.map((request) => (
-              <Link
-                key={request.id}
-                href={`/service-requests/${request.id}`}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 border border-gray-100 hover:border-blue-200"
-              >
-                {/* Статус */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[request.status]}`}>
-                    {statusLabels[request.status]}
-                  </span>
-                  {request.category && (
-                    <span className="text-sm text-gray-500">{request.category}</span>
-                  )}
-                </div>
-
-                {/* Назва */}
-                <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">
-                  {request.title}
-                </h3>
-
-                {/* Опис */}
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                  {request.description}
-                </p>
-
-                {/* Інфо */}
-                <div className="space-y-2 text-sm text-gray-500">
-                  {request.city && (
-                    <div className="flex items-center gap-2">
-                      <span>📍</span>
-                      <span>{request.city}</span>
+            {requests.map((request) => {
+              // Перевіряємо чи заявка в топі
+              const isPromoted = request.isPromoted && request.promotedUntil && new Date(request.promotedUntil) > new Date();
+              
+              return (
+                <Link
+                  key={request.id}
+                  href={`/service-requests/${request.id}`}
+                  className={`bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 border ${
+                    isPromoted 
+                      ? 'border-yellow-400 border-2 ring-2 ring-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50' 
+                      : 'border-gray-100 hover:border-blue-200'
+                  }`}
+                >
+                  {/* ТОП Бейдж */}
+                  {isPromoted && (
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full text-xs font-bold shadow-md flex items-center gap-1">
+                        <span>🔥</span>
+                        <span>ТОП ОГОЛОШЕННЯ</span>
+                      </div>
+                      {request.promotedUntil && (
+                        <span className="text-xs text-gray-500">
+                          до {new Date(request.promotedUntil).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}
+                        </span>
+                      )}
                     </div>
                   )}
-                  {(request.budgetFrom || request.budgetTo) && (
-                    <div className="flex items-center gap-2">
-                      <span>💰</span>
-                      <span>
-                        {request.budgetFrom && request.budgetTo
-                          ? `${request.budgetFrom}-${request.budgetTo} УЦМ`
-                          : request.budgetFrom
-                          ? `від ${request.budgetFrom} УЦМ`
-                          : `до ${request.budgetTo} УЦМ`}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span>👤</span>
-                    <span>{request.client.firstName} {request.client.lastName}</span>
+
+                  {/* Статус */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[request.status]}`}>
+                      {statusLabels[request.status]}
+                    </span>
+                    {request.category && (
+                      <span className="text-sm text-gray-500">{request.category}</span>
+                    )}
                   </div>
-                  {request.executor && (
-                    <div className="flex items-center gap-2">
-                      <span>🔨</span>
-                      <span>Виконавець: {request.executor.firstName}</span>
-                    </div>
-                  )}
-                </div>
 
-                {/* Дата */}
-                <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
-                  {new Date(request.createdAt).toLocaleDateString('uk-UA', {
-                    day: 'numeric',
-                    month: 'long',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              </Link>
-            ))}
+                  {/* Назва */}
+                  <h3 className={`font-bold text-lg mb-2 line-clamp-2 ${isPromoted ? 'text-gray-900' : 'text-gray-900'}`}>
+                    {request.title}
+                  </h3>
+
+                  {/* Опис */}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {request.description}
+                  </p>
+
+                  {/* Інфо */}
+                  <div className="space-y-2 text-sm text-gray-500">
+                    {request.city && (
+                      <div className="flex items-center gap-2">
+                        <span>📍</span>
+                        <span>{request.city}</span>
+                      </div>
+                    )}
+                    {(request.budgetFrom || request.budgetTo) && (
+                      <div className="flex items-center gap-2">
+                        <span>💰</span>
+                        <span>
+                          {request.budgetFrom && request.budgetTo
+                            ? `${request.budgetFrom}-${request.budgetTo} УЦМ`
+                            : request.budgetFrom
+                            ? `від ${request.budgetFrom} УЦМ`
+                            : `до ${request.budgetTo} УЦМ`}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span>👤</span>
+                      <span>{request.client.firstName} {request.client.lastName}</span>
+                    </div>
+                    {request.executor && (
+                      <div className="flex items-center gap-2">
+                        <span>🔨</span>
+                        <span>Виконавець: {request.executor.firstName}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Дата */}
+                  <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+                    {new Date(request.createdAt).toLocaleDateString('uk-UA', {
+                      day: 'numeric',
+                      month: 'long',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

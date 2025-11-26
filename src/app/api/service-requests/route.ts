@@ -311,17 +311,30 @@ async function listHandler(request: NextRequest) {
             }
           }
         },
-        orderBy: {
-          createdAt: 'desc'
-        },
+        orderBy: [
+          // ТОП оголошення зверху (якщо ще активні)
+          { isPromoted: 'desc' },
+          // Потім сортуємо за датою створення (новіші зверху)
+          { createdAt: 'desc' }
+        ],
         skip,
         take: limit
       }),
       prisma.serviceRequest.count({ where })
     ]);
 
+    // Фільтруємо просунуті заявки - показуємо тільки ті, що ще активні
+    const now = new Date();
+    const filteredRequests = requests.map((req: any) => {
+      // Якщо заявка промоутнута, але термін минув - знімаємо флаг
+      if (req.isPromoted && req.promotedUntil && req.promotedUntil < now) {
+        return { ...req, isPromoted: false, promotedUntil: null };
+      }
+      return req;
+    });
+
     return NextResponse.json({
-      requests,
+      requests: filteredRequests,
       pagination: {
         page,
         limit,

@@ -76,6 +76,21 @@ export const translateAccountType = (type: string | null | undefined): string =>
   return translations[type] || type;
 };
 
+// Статус заявки
+export const translateServiceRequestStatus = (status: string | null | undefined): string => {
+  if (!status) return '';
+  const translations: Record<string, string> = {
+    'new': 'Нова',
+    'viewed': 'Переглянута',
+    'accepted': 'Прийнята',
+    'in_progress': 'В роботі',
+    'completed': 'Завершена',
+    'cancelled': 'Скасована',
+    'paid': 'Оплачена'
+  };
+  return translations[status] || status;
+};
+
 // Категорії бізнесу/послуг
 export const translateCategory = (category: string | null | undefined): string => {
   if (!category) return '';

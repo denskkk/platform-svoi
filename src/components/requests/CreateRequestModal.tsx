@@ -15,13 +15,18 @@ const REQUEST_TYPES: { key: string; label: string; priceKey?: string }[] = [
   { key: 'other', label: 'Розширений пошук', priceKey: 'advanced_search' },
 ];
 
+// Базова вартість створення заявки на послугу
+const SERVICE_REQUEST_BASE_PRICE = 5; // 5 УЦМ
+const SERVICE_REQUEST_PROMO_PRICE = 2; // +2 УЦМ за просування
+const SERVICE_REQUEST_PROMO_DAYS = 3; // 3 дні в топі
+
 // Server-driven prices will be fetched from /api/ucm/costs
 type CostsMap = Record<string, number>;
 
 const FALLBACK_COSTS: CostsMap = {
   partner_search: 5,
   job_request: 3,
-  service_request: 3,
+  service_request: 5, // Оновлено на 5 УЦМ
   employee_search: 4,
   investor_search: 5,
   advanced_search: 2,
@@ -76,20 +81,69 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       setError('Будь ласка, заповніть заголовок та опис');
       return;
     }
-    // Determine server-side base and promo costs
-    const entry = REQUEST_TYPES.find(r => r.key === type);
-    const priceKey = entry?.priceKey;
-    const base = priceKey ? (serverCosts?.costs?.[priceKey] ?? FALLBACK_COSTS[priceKey] ?? 0) : 0;
-    const promoExtra = priceKey ? (serverCosts?.promoExtras?.[priceKey] ?? 0) : 0;
+    
+    // Для заявок на послуги використовуємо фіксовану вартість
+    const base = type === 'service' ? SERVICE_REQUEST_BASE_PRICE : (() => {
+      const entry = REQUEST_TYPES.find(r => r.key === type);
+      const priceKey = entry?.priceKey;
+      return priceKey ? (serverCosts?.costs?.[priceKey] ?? FALLBACK_COSTS[priceKey] ?? 0) : 0;
+    })();
+    
+    const promoExtra = type === 'service' ? SERVICE_REQUEST_PROMO_PRICE : (() => {
+      const entry = REQUEST_TYPES.find(r => r.key === type);
+      const priceKey = entry?.priceKey;
+      return priceKey ? (serverCosts?.promoExtras?.[priceKey] ?? 0) : 0;
+    })();
+    
     const total = base + (promote ? promoExtra : 0);
+    
     if (total > 0 && (balance === null || balance < total)) {
-      setError(`Недостатньо уцмок: потрібно ${total} уцм.`);
+      setError(`Недостатньо УЦМ: потрібно ${total} УЦМ, у вас ${balance || 0} УЦМ`);
       return;
     }
 
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      
+      // Для заявок на послуги використовуємо окремий API endpoint
+      if (type === 'service') {
+        const payload = {
+          title,
+          description,
+          isPublic: true,  // Публічна заявка (відображається в списку)
+          isPromoted: promote,  // Чи просувати в топ
+        };
+
+        const res = await fetch('/api/service-requests', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${token}` 
+          },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        
+        if (!res.ok) {
+          setError(data.error || 'Помилка створення заявки');
+          setLoading(false);
+          return;
+        }
+
+        // Успішно створено
+        onClose();
+        if (data?.request?.id) {
+          router.push(`/service-requests/${data.request.id}`);
+        } else {
+          router.push('/service-requests');
+        }
+        return;
+      }
+
+      // Для інших типів заявок використовуємо старий API
       const body: any = { type, title, description };
       if (promote) body.paid = true;
 
@@ -116,7 +170,8 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
       });
 
       const data = await res.json();
-            if (!res.ok) {
+      
+      if (!res.ok) {
         setError(data.error || 'Помилка створення заявки');
         setLoading(false);
         return;
@@ -183,20 +238,32 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
           </div>
 
           {/* Cost breakdown (server-defined): base creation cost + optional promotion extra */}
-          <div className="p-3 bg-gray-50 rounded">
-            <div className="text-sm text-gray-700 mb-1 font-semibold">Вартість створення заявки</div>
-            <div className="text-sm text-gray-600">
+          <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+            <div className="text-sm text-blue-900 mb-2 font-semibold">💰 Вартість створення заявки</div>
+            <div className="text-sm text-gray-700">
               {(() => {
                 const entry = REQUEST_TYPES.find(r => r.key === type);
                 const priceKey = entry?.priceKey;
-                const base = priceKey ? (serverCosts?.costs?.[priceKey] ?? FALLBACK_COSTS[priceKey] ?? 0) : 0;
-                const promoExtra = priceKey ? (serverCosts?.promoExtras?.[priceKey] ?? 0) : 0;
+                // Для service_request використовуємо фіксовані ціни
+                const base = type === 'service' ? SERVICE_REQUEST_BASE_PRICE : (priceKey ? (serverCosts?.costs?.[priceKey] ?? FALLBACK_COSTS[priceKey] ?? 0) : 0);
+                const promoExtra = type === 'service' ? SERVICE_REQUEST_PROMO_PRICE : (priceKey ? (serverCosts?.promoExtras?.[priceKey] ?? 0) : 0);
                 const total = base + (promote ? promoExtra : 0);
                 return (
                   <div className="space-y-1">
-                    <div>Створення: <span className="font-medium">{base} уцм</span></div>
-                    {promoExtra > 0 && <div>Просування: <span className="font-medium">+{promoExtra} уцм</span></div>}
-                    <div className="mt-1">Всього: <span className="font-semibold">{total} уцм</span></div>
+                    <div className="flex justify-between">
+                      <span>Створення заявки:</span>
+                      <span className="font-medium">{base} УЦМ</span>
+                    </div>
+                    {promote && promoExtra > 0 && (
+                      <div className="flex justify-between text-yellow-700">
+                        <span>🔥 Просування в ТОП ({SERVICE_REQUEST_PROMO_DAYS} дні):</span>
+                        <span className="font-medium">+{promoExtra} УЦМ</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-2 mt-2 border-t border-blue-200">
+                      <span className="font-semibold">Всього:</span>
+                      <span className="font-bold text-blue-700">{total} УЦМ</span>
+                    </div>
                   </div>
                 )
               })()}
@@ -213,28 +280,65 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
             <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <input id="promote" type="checkbox" checked={promote} onChange={e=>setPromote(e.target.checked)} />
-              <label htmlFor="promote" className="text-sm text-gray-700">Просунути заявку (підвищена видимість)</label>
-            </div>
-            <div className="text-sm text-gray-600">Баланс: {balance !== null ? balance.toFixed(2) : '—'}</div>
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg p-4">
+            <label className="flex items-start cursor-pointer">
+              <input 
+                id="promote" 
+                type="checkbox" 
+                checked={promote} 
+                onChange={e=>setPromote(e.target.checked)}
+                className="mt-1 w-5 h-5 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-500"
+              />
+              <div className="ml-3 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-semibold text-gray-900">🔥 Просунути в ТОП</span>
+                  <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full">+{SERVICE_REQUEST_PROMO_PRICE} УЦМ</span>
+                </div>
+                <p className="text-sm text-gray-700 mt-1">
+                  Ваша заявка буде показуватись першою протягом <strong>{SERVICE_REQUEST_PROMO_DAYS} днів</strong> і отримає більше відгуків від виконавців
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+            <div className="text-sm text-gray-700">Ваш баланс:</div>
+            <div className="text-base font-bold text-blue-600">{balance !== null ? `${balance.toFixed(0)} УЦМ` : '—'}</div>
           </div>
 
           {/* If user lacks funds for the total, show top-up CTA */}
-          {serverCosts && (() => {
-            const entry = REQUEST_TYPES.find(r=> r.key === type);
-            const priceKey = entry?.priceKey;
-            const base = priceKey ? (serverCosts?.costs?.[priceKey] ?? FALLBACK_COSTS[priceKey] ?? 0) : 0;
-            const promoExtra = priceKey ? (serverCosts?.promoExtras?.[priceKey] ?? 0) : 0;
+          {(() => {
+            const base = type === 'service' ? SERVICE_REQUEST_BASE_PRICE : (() => {
+              const entry = REQUEST_TYPES.find(r=> r.key === type);
+              const priceKey = entry?.priceKey;
+              return priceKey ? (serverCosts?.costs?.[priceKey] ?? FALLBACK_COSTS[priceKey] ?? 0) : 0;
+            })();
+            const promoExtra = type === 'service' ? SERVICE_REQUEST_PROMO_PRICE : (() => {
+              const entry = REQUEST_TYPES.find(r=> r.key === type);
+              const priceKey = entry?.priceKey;
+              return priceKey ? (serverCosts?.promoExtras?.[priceKey] ?? 0) : 0;
+            })();
             const total = base + (promote ? promoExtra : 0);
+            
             if (balance !== null && balance < total) {
+              const needed = total - balance;
               return (
-                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm text-yellow-800">Недостатньо уцмок: потрібно {total} уцм.</p>
-                  <div className="mt-2">
-                    <a href="/payments/checkout" className="inline-block px-4 py-2 bg-yellow-600 text-white rounded">Додати уцмок</a>
-                    <button onClick={()=>setPromote(false)} className="ml-3 px-3 py-2 border rounded">Створити без просування</button>
+                <div className="mt-3 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                  <p className="text-sm font-semibold text-red-800 mb-2">
+                    ⚠️ Недостатньо УЦМ: потрібно {total} УЦМ, у вас {balance.toFixed(0)} УЦМ (не вистачає {needed} УЦМ)
+                  </p>
+                  <div className="flex gap-2">
+                    <a href="/ucm" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                      Поповнити баланс
+                    </a>
+                    {promote && (
+                      <button 
+                        onClick={()=>setPromote(false)} 
+                        className="px-3 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                      >
+                        Створити без просування ({base} УЦМ)
+                      </button>
+                    )}
                   </div>
                 </div>
               )
