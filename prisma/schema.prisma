@@ -259,6 +259,7 @@ model User {
   referralsAsInvitee Referral[] @relation("RefInvitee")
   serviceRequestsCreated ServiceRequest[] @relation("RequestCreator")
   serviceRequestsAccepted ServiceRequest[] @relation("RequestExecutor")
+  executorResponses  ServiceRequestResponse[] @relation("ExecutorResponses") // Відгуки виконавця на заявки
   
   @@index([email])
   @@index([city])
@@ -948,6 +949,7 @@ model ServiceRequest {
   executor          User?                 @relation("RequestExecutor", fields: [executorId], references: [id], onDelete: SetNull)
   service           Service?              @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   reviews           Review[]
+  responses         ServiceRequestResponse[] // Відгуки (пропозиції) виконавців
   
   @@index([clientId])
   @@index([executorId])
@@ -958,4 +960,37 @@ model ServiceRequest {
   @@index([createdAt(sort: Desc)])
   @@index([status, createdAt(sort: Desc)])
   @@map("service_requests")
+}
+
+// ========================================
+// ВІДГУКИ НА ЗАЯВКИ (Пропозиції виконавців)
+// ========================================
+
+model ServiceRequestResponse {
+  id                Int              @id @default(autoincrement()) @map("response_id")
+  requestId         Int              @map("request_id")
+  executorId        Int              @map("executor_id")
+  
+  // Пропозиція виконавця
+  proposedPrice     Decimal          @map("proposed_price") @db.Decimal(10, 2)
+  comment           String           @db.Text
+  estimatedDays     Int?             @map("estimated_days") // Орієнтовний термін виконання в днях
+  
+  // Статус відгуку
+  status            String           @default("pending") @db.VarChar(20) // pending, accepted, rejected
+  isSelected        Boolean          @default(false) @map("is_selected") // Чи обрав клієнт цього виконавця
+  
+  // Таймштампи
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+  
+  // Зв'язки
+  request           ServiceRequest   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  executor          User             @relation("ExecutorResponses", fields: [executorId], references: [id], onDelete: Cascade)
+  
+  @@unique([requestId, executorId]) // Один виконавець може залишити тільки один відгук на заявку
+  @@index([requestId])
+  @@index([executorId])
+  @@index([status])
+  @@map("service_request_responses")
 }
