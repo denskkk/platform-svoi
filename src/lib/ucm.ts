@@ -154,21 +154,23 @@ export async function chargeForAction(opts: { userId: number; amount: number; re
   const hasLedger = await hasUcmTransactionsTable()
 
   return prisma.$transaction(async (tx: typeof prisma) => {
-    const user = await tx.user.findUnique({ where: { id: userId }, select: { balanceUcm: true } })
+    const user = await tx.user.findUnique({ where: { id: userId }, select: { balanceUcm: true } as any })
     if (!user) throw new Error('User not found')
-    if (user.balanceUcm < amount) {
+    if ((user as any).balanceUcm < amount) {
+      console.error(`[chargeForAction] Insufficient UCM for user ${userId}: has ${(user as any).balanceUcm}, needs ${amount}`)
       throw new Error('INSUFFICIENT_UCM')
     }
-    await tx.user.update({ where: { id: userId }, data: { balanceUcm: { decrement: amount } } })
+    await tx.user.update({ where: { id: userId }, data: { balanceUcm: { decrement: amount } } as any })
     if (hasLedger) {
-      await tx.ucmTransaction.create({
+      await (tx as any).ucmTransaction.create({
         data: {
           userId,
           kind: 'debit',
           amount,
           reason,
-          relatedEntityType: related?.type,
-          relatedEntityId: related?.id,
+          relatedEntityType: related?.type || null,
+          relatedEntityId: related?.id || null,
+          meta: {},
         }
       })
     }
@@ -193,33 +195,35 @@ export async function chargePaidAction(opts: {
       // Перевіряємо баланс
       const user = await tx.user.findUnique({
         where: { id: userId },
-        select: { balanceUcm: true }
+        select: { balanceUcm: true } as any
       })
 
       if (!user) {
         throw new Error('Користувача не знайдено')
       }
 
-      if (user.balanceUcm < amount) {
+      if ((user as any).balanceUcm < amount) {
+        console.error(`[chargePaidAction] Insufficient UCM for user ${userId}: has ${(user as any).balanceUcm}, needs ${amount}`)
         throw new Error('Недостатньо уцмок на балансі')
       }
 
       // Списуємо кошти
       await tx.user.update({
         where: { id: userId },
-        data: { balanceUcm: { decrement: amount } }
+        data: { balanceUcm: { decrement: amount } } as any
       })
 
       // Створюємо транзакцію
       if (hasLedger) {
-        await tx.ucmTransaction.create({
+        await (tx as any).ucmTransaction.create({
           data: {
             userId,
             kind: 'debit',
             amount,
             reason: actionType,
-            relatedEntityType,
-            relatedEntityId,
+            relatedEntityType: relatedEntityType || null,
+            relatedEntityId: relatedEntityId || null,
+            meta: {},
           }
         })
       }
