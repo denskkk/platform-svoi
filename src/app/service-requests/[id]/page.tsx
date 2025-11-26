@@ -170,28 +170,11 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{request.title}</h1>
               {request.category && (
                 <p className="text-gray-500">Категорія: {request.category}</p>
-          )}
-        </div>
-
-        {/* Відгуки виконавців на публічну заявку */}
-        {request.isPublic && currentUserId === request.client?.id && request.responses?.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Пропозиції виконавців ({request.responses.length})
-            </h2>
-            <div className="space-y-4">
-              {request.responses.map((response: any) => (
-                <ExecutorResponseCard
-                  key={response.id}
-                  response={response}
-                  onSelect={handleSelectExecutor}
-                  isSelecting={selectingExecutor}
-                />
-              ))}
+              )}
             </div>
           </div>
-        )}
-      </div>          {/* Опис */}
+
+          {/* Опис */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Опис роботи</h2>
             <p className="text-gray-700 whitespace-pre-wrap">{request.description}</p>
@@ -361,6 +344,26 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
             </div>
           </div>
         </div>
+
+        {/* Відгуки виконавців на публічну заявку */}
+        {request.isPublic && currentUserId === request.client?.id && request.responses?.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Пропозиції виконавців ({request.responses.length})
+            </h2>
+            <div className="space-y-4">
+              {request.responses.map((response: any) => (
+                <ExecutorResponseCard
+                  key={response.id}
+                  response={response}
+                  onSelect={handleSelectExecutor}
+                  isSelecting={selectingExecutor}
+                  requestHasExecutor={!!request.executor}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Модальне вікно відгуку */}

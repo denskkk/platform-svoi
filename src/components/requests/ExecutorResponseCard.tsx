@@ -11,6 +11,8 @@ interface ResponseCardProps {
     comment: string;
     estimatedDays: number | null;
     createdAt: string;
+    status: string;
+    isSelected: boolean;
     executor: {
       id: number;
       firstName: string;
@@ -23,13 +25,20 @@ interface ResponseCardProps {
   };
   onSelect: (responseId: number) => void;
   isSelecting: boolean;
+  requestHasExecutor: boolean;
 }
 
-export function ExecutorResponseCard({ response, onSelect, isSelecting }: ResponseCardProps) {
+export function ExecutorResponseCard({ response, onSelect, isSelecting, requestHasExecutor }: ResponseCardProps) {
   const timeAgo = getTimeAgo(new Date(response.createdAt));
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+    <div className={`bg-white border rounded-xl p-6 transition-shadow ${
+      response.isSelected 
+        ? 'border-green-500 bg-green-50 shadow-lg' 
+        : response.status === 'rejected'
+        ? 'border-red-200 bg-gray-50 opacity-60'
+        : 'border-neutral-200 hover:shadow-md'
+    }`}>
       {/* Исполнитель */}
       <div className="flex items-start gap-4 mb-4">
         <UserOrCompanyAvatar 
@@ -89,14 +98,26 @@ export function ExecutorResponseCard({ response, onSelect, isSelecting }: Respon
       {/* Время и кнопка */}
       <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
         <span className="text-xs text-neutral-500">{timeAgo}</span>
-        <button
-          onClick={() => onSelect(response.id)}
-          disabled={isSelecting}
-          className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
-        >
-          <CheckCircle className="w-4 h-4" />
-          Обрати виконавця
-        </button>
+        
+        {response.isSelected ? (
+          <div className="flex items-center gap-2 text-green-600 font-medium">
+            <CheckCircle className="w-5 h-5" />
+            <span>Обрано</span>
+          </div>
+        ) : response.status === 'rejected' ? (
+          <div className="text-sm text-gray-500">Відхилено</div>
+        ) : !requestHasExecutor ? (
+          <button
+            onClick={() => onSelect(response.id)}
+            disabled={isSelecting}
+            className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            <CheckCircle className="w-4 h-4" />
+            Обрати виконавця
+          </button>
+        ) : (
+          <div className="text-sm text-gray-400">Вже обрано іншого виконавця</div>
+        )}
       </div>
     </div>
   );
