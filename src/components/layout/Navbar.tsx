@@ -172,10 +172,10 @@ export function Navbar() {
         // silent
       }
     }
-    // Only fetch after server sync completed to avoid making requests with stale localStorage user
+    
     if (!isLoading && user) {
       fetchEarn()
-      const onEarningUpdated = () => { if (user) fetchEarn(); };
+      const onEarningUpdated = () => { fetchEarn(); };
       window.addEventListener('earningUpdated', onEarningUpdated as EventListener);
       return () => { window.removeEventListener('earningUpdated', onEarningUpdated as EventListener); };
     }
@@ -197,9 +197,10 @@ export function Navbar() {
         }
       } catch {}
     }
+    
     if (!isLoading && user) {
       fetchCompletion()
-      const onEarningUpdated2 = () => { if (user) fetchCompletion(); };
+      const onEarningUpdated2 = () => { fetchCompletion(); };
       window.addEventListener('earningUpdated', onEarningUpdated2 as EventListener);
       return () => { window.removeEventListener('earningUpdated', onEarningUpdated2 as EventListener); };
     }
