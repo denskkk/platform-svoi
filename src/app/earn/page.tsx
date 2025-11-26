@@ -18,6 +18,7 @@ import {
   Crown
 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { formatRating } from '@/lib/format';
 
 interface EarningProgress {
   action: string;
@@ -288,7 +289,7 @@ export default function EarnPage() {
                 <h4 className="font-semibold text-neutral-800">Рейтинг</h4>
               </div>
               <div className="flex items-end gap-2">
-                <span className="text-3xl font-bold text-amber-600">{stats.avgRating.toFixed(1)}</span>
+                <span className="text-3xl font-bold text-amber-600">{formatRating(stats.avgRating,1)}</span>
                 <span className="text-sm text-neutral-500">({stats.totalReviews})</span>
               </div>
               <p className="text-xs text-neutral-500 mt-1">Середній бал та кількість відгуків</p>

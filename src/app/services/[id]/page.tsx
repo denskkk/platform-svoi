@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Phone, Mail, MessageCircle, User, Edit, Trash2, Star, Gift } from 'lucide-react';
+import { formatRating } from '@/lib/format';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
 import { TransferUcmModal } from '@/components/ui/TransferUcmModal';
@@ -257,12 +258,6 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
   const isOwner = currentUser && currentUser.id === service.user.id;
 
-  const formatRating = (val: any) => {
-    if (val === null || val === undefined) return '0.0';
-    const num = Number(val);
-    if (isNaN(num)) return '0.0';
-    return num.toFixed(1);
-  };
 
   return (
     <div className="min-h-screen bg-neutral-50 py-8">

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift } from 'lucide-react';
+import { formatRating } from '@/lib/format';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
@@ -298,7 +299,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           />
                         ))}
                       </div>
-                      <span className="font-bold text-neutral-900 text-lg">{Number(profile.avgRating).toFixed(1)}</span>
+                      <span className="font-bold text-neutral-900 text-lg">{formatRating(profile.avgRating,1)}</span>
                       <span className="text-neutral-600">•</span>
                       <span className="text-neutral-600">{profile.totalReviews} {profile.totalReviews === 1 ? 'відгук' : profile.totalReviews < 5 ? 'відгуки' : 'відгуків'}</span>
                     </div>

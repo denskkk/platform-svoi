@@ -4,6 +4,7 @@
 
 import Link from 'next/link';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
+import { formatRating } from '@/lib/format';
 import { prisma } from '@/lib/prisma';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ServiceImage } from '@/components/ui/ServiceImage';
@@ -366,7 +367,7 @@ export default async function ServicesPage({
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 text-yellow-400 fill-current" />
                             <span className="font-semibold text-gray-900 text-sm">
-                              {service.user.avgRating.toFixed(1)}
+                              {formatRating(service.user.avgRating, 1)}
                             </span>
                           </div>
                         )}

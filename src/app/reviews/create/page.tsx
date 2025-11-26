@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Star, AlertCircle } from 'lucide-react';
+import { formatRating } from '@/lib/format';
 
 function CreateReviewForm() {
   const router = useRouter();
@@ -188,7 +189,7 @@ function CreateReviewForm() {
                   {reviewedUser.avgRating && (
                     <div className="flex items-center gap-1 text-sm text-neutral-600">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      <span>{reviewedUser.avgRating.toFixed(1)}</span>
+                      <span>{formatRating(reviewedUser.avgRating,1)}</span>
                       <span className="text-neutral-400">({reviewedUser.totalReviews} відгуків)</span>
                     </div>
                   )}
