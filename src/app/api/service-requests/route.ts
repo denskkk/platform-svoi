@@ -83,10 +83,10 @@ async function createHandler(request: NextRequest) {
     // Перевірка балансу користувача
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { ucmBalance: true }
+      select: { balanceUcm: true }
     });
 
-    if (!user || user.ucmBalance < totalPrice) {
+    if (!user || Number(user.balanceUcm) < totalPrice) {
       return NextResponse.json(
         { error: `Недостатньо коштів. Потрібно ${totalPrice} UCM (${basePrice} UCM за заявку${promoPrice > 0 ? ` + ${promoPrice} UCM за просування` : ''})` },
         { status: 400 }
@@ -159,7 +159,7 @@ async function createHandler(request: NextRequest) {
     // Списати UCM з балансу користувача
     await prisma.user.update({
       where: { id: userId },
-      data: { ucmBalance: { decrement: totalPrice } }
+      data: { balanceUcm: { decrement: totalPrice } }
     });
 
     // Створити транзакцію UCM
@@ -169,7 +169,7 @@ async function createHandler(request: NextRequest) {
         type: 'debit',
         amount: totalPrice,
         description: `Оплата заявки "${title}"${isPromoted ? ' (з просуванням в ТОП)' : ''}`,
-        balanceAfter: user.ucmBalance - totalPrice,
+        balanceAfter: Number(user.balanceUcm) - totalPrice,
         meta: {
           serviceRequestId: serviceRequest.id,
           isPublic,
