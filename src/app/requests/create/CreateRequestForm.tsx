@@ -119,8 +119,18 @@ export default function CreateRequestForm() {
         throw new Error(data.error || 'Помилка створення заявки');
       }
 
-      // Перенаправить на страницу заявки
-      router.push(`/service-requests/${data.request.id}`);
+      // Якщо заявка публічна -> перейти на список публічних з форс-оновленням
+      if (data.request?.isPublic) {
+        const stamp = Date.now();
+        router.push(`/public-requests?refresh=${stamp}`);
+        // Невелика затримка для навігації перед примусовим оновленням
+        setTimeout(() => {
+          try { router.refresh(); } catch {}
+        }, 50);
+      } else {
+        // Інакше перейти на сторінку самої заявки
+        router.push(`/service-requests/${data.request.id}`);
+      }
     } catch (err: any) {
       setError(err.message || 'Помилка створення заявки');
     } finally {
