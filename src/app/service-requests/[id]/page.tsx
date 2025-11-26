@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { RespondToRequestModal } from '@/components/requests/RespondToRequestModal';
 
 const statusColors: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',
@@ -32,6 +33,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [showRespondModal, setShowRespondModal] = useState(false);
 
   useEffect(() => {
     // Отримати ID поточного користувача
@@ -219,6 +221,16 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
           {/* Дії */}
           <div className="border-t pt-6">
             <div className="flex gap-3 flex-wrap">
+              {/* Дії для ПУБЛІЧНОЇ ЗАЯВКИ - будь-який виконавець може відгукнутись */}
+              {request.isPublic && !request.executor && currentUserId && currentUserId !== request.client?.id && (
+                <button
+                  onClick={() => setShowRespondModal(true)}
+                  className="px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition"
+                >
+                  💰 Запропонувати свою ціну
+                </button>
+              )}
+
               {/* Дії для ВИКОНАВЦЯ */}
               {currentUserId === request.executor?.id && (
                 <>
@@ -305,6 +317,16 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
           </div>
         </div>
       </div>
+
+      {/* Модальне вікно відгуку */}
+      {showRespondModal && request && (
+        <RespondToRequestModal
+          requestId={request.id}
+          requestTitle={request.title}
+          onClose={() => setShowRespondModal(false)}
+          onSuccess={() => loadRequest()}
+        />
+      )}
     </div>
   );
 }
