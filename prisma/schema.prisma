@@ -95,6 +95,17 @@ enum UcmTransactionKind {
   debit
 }
 
+enum ServiceRequestStatus {
+  new              // Нова заявка
+  viewed           // Переглянута виконавцем
+  accepted         // Прийнята в роботу
+  in_progress      // В процесі виконання
+  completed        // Виконана
+  paid             // Оплачена
+  cancelled        // Скасована
+  rejected         // Відхилена виконавцем
+}
+
 // ========================================
 // MODELS
 // ========================================
@@ -245,6 +256,8 @@ model User {
   referralsInvited   User[]   @relation("ReferredBy")
   referralsAsInviter Referral[] @relation("RefInviter")
   referralsAsInvitee Referral[] @relation("RefInvitee")
+  serviceRequestsCreated ServiceRequest[] @relation("RequestCreator")
+  serviceRequestsAccepted ServiceRequest[] @relation("RequestExecutor")
   
   @@index([email])
   @@index([city])
@@ -311,6 +324,7 @@ model Service {
   // Зв'язки
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   category    Category @relation(fields: [categoryId], references: [id])
+  serviceRequests ServiceRequest[]
   
   @@index([userId])
   @@index([categoryId])
@@ -427,27 +441,29 @@ model BusinessInfo {
 }
 
 model Review {
-  id         Int      @id @default(autoincrement()) @map("review_id")
-  reviewerId Int      @map("reviewer_id")
-  reviewedId Int      @map("reviewed_id")
+  id               Int             @id @default(autoincrement()) @map("review_id")
+  reviewerId       Int             @map("reviewer_id")
+  reviewedId       Int             @map("reviewed_id")
+  serviceRequestId Int?            @map("service_request_id")
   
   // Оцінка
-  rating     Int
-  comment    String?  @db.Text
-  photos     Json     @default("[]")
+  rating           Int
+  comment          String?         @db.Text
+  photos           Json            @default("[]")
   
   // Метадані
-  isVisible  Boolean  @default(true) @map("is_visible")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  isVisible        Boolean         @default(true) @map("is_visible")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
   
   // Зв'язки
-  reviewer   User     @relation("ReviewerRelation", fields: [reviewerId], references: [id], onDelete: Cascade)
-  reviewed   User     @relation("ReviewedRelation", fields: [reviewedId], references: [id], onDelete: Cascade)
+  reviewer         User            @relation("ReviewerRelation", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewed         User            @relation("ReviewedRelation", fields: [reviewedId], references: [id], onDelete: Cascade)
+  serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
   
-  @@unique([reviewerId, reviewedId])
   @@index([reviewerId])
   @@index([reviewedId])
+  @@index([serviceRequestId])
   @@index([rating])
   @@index([createdAt(sort: Desc)])
   @@map("reviews")
@@ -872,4 +888,68 @@ model Referral {
   @@index([code])
   @@index([inviterId])
   @@map("referrals")
+}
+
+// ========================================
+// SERVICE REQUESTS (Заявки на послуги/роботи)
+// ========================================
+
+model ServiceRequest {
+  id                Int                   @id @default(autoincrement()) @map("service_request_id")
+  clientId          Int                   @map("client_id")
+  executorId        Int?                  @map("executor_id")
+  serviceId         Int?                  @map("service_id")
+  
+  // Деталі заявки
+  title             String                @db.VarChar(200)
+  description       String                @db.Text
+  category          String?               @db.VarChar(100) // Електрика, сантехніка, будівництво і т.д.
+  
+  // Локація
+  city              String?               @db.VarChar(100)
+  address           String?               @db.VarChar(255)
+  
+  // Медіа
+  photos            Json                  @default("[]") // Масив URL фотографій
+  
+  // Бюджет і оплата
+  budgetFrom        Decimal?              @map("budget_from") @db.Decimal(10, 2)
+  budgetTo          Decimal?              @map("budget_to") @db.Decimal(10, 2)
+  agreedPrice       Decimal?              @map("agreed_price") @db.Decimal(10, 2)
+  priceUcm          Decimal?              @map("price_ucm") @db.Decimal(12, 2) // Ціна в уцмках
+  isPaid            Boolean               @default(false) @map("is_paid")
+  
+  // Статус
+  status            ServiceRequestStatus  @default(new)
+  
+  // Терміни
+  desiredDate       DateTime?             @map("desired_date")
+  deadline          DateTime?
+  
+  // Метадані
+  priority          String?               @default("normal") @db.VarChar(20) // low, normal, high, urgent
+  viewsCount        Int                   @default(0) @map("views_count")
+  
+  // Таймштампи
+  createdAt         DateTime              @default(now()) @map("created_at")
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+  acceptedAt        DateTime?             @map("accepted_at")
+  completedAt       DateTime?             @map("completed_at")
+  paidAt            DateTime?             @map("paid_at")
+  
+  // Зв'язки
+  client            User                  @relation("RequestCreator", fields: [clientId], references: [id], onDelete: Cascade)
+  executor          User?                 @relation("RequestExecutor", fields: [executorId], references: [id], onDelete: SetNull)
+  service           Service?              @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  reviews           Review[]
+  
+  @@index([clientId])
+  @@index([executorId])
+  @@index([serviceId])
+  @@index([status])
+  @@index([city])
+  @@index([category])
+  @@index([createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+  @@map("service_requests")
 }
