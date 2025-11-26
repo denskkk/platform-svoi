@@ -494,166 +494,245 @@ export function Navbar() {
 
       {/* Mobile меню */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-neutral-200 bg-white">
-          <div className="px-4 py-4 space-y-3">
-            <Link 
-              href="/catalog" 
-              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Люди
-            </Link>
-            <Link 
-              href="/services" 
-              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Послуги
-            </Link>
-            <Link 
-              href="/public-requests" 
-              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Заявки
-            </Link>
-            <Link 
-              href="/about" 
-              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Про нас
-            </Link>
-            <Link 
-              href="/contacts" 
-              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Контакти
-            </Link>
+        <div className="md:hidden border-t border-neutral-200 bg-white shadow-lg max-h-[calc(100vh-64px)] overflow-y-auto">
+          <div className="px-3 py-3 space-y-1">
+            {/* Профиль пользователя вверху (если залогинен) */}
+            {user && (
+              <div className="mb-4 p-4 bg-gradient-to-r from-primary-50 to-purple-50 rounded-xl">
+                <div className="flex items-center space-x-3">
+                  <UserOrCompanyAvatar user={user} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-neutral-900 truncate">
+                      {user?.businessInfo?.companyName || `${user?.firstName} ${user?.lastName}`}
+                    </p>
+                    {balance !== null && (
+                      <p className="text-sm text-neutral-600">
+                        💰 {balance.toFixed(2)} уцмка
+                      </p>
+                    )}
+                    {profileCompletionPct !== null && profileCompletionPct < 100 && (
+                      <p className="text-xs text-indigo-600 font-medium mt-1">
+                        Профіль {profileCompletionPct}% заповнений
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
-            {/* Auth-dependent section */}
-            <div className="pt-2 border-t border-neutral-200">
-              {isLoading ? (
-                <>
-                  <div className="h-10 bg-neutral-200 rounded-lg animate-pulse mb-2"></div>
-                  <div className="h-10 bg-neutral-200 rounded-lg animate-pulse"></div>
-                </>
-              ) : user ? (
-                <>
-                  <Link
-                    href={`/profile/${user.id}`}
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Мій профіль
-                  </Link>
-                  {balance !== null && (
-                    <div className="px-4 py-2 text-neutral-700 rounded-lg flex items-center justify-between">
-                      <span>Баланс</span>
-                      <span className="font-medium">{balance.toFixed(2)} уцмка</span>
-                    </div>
-                  )}
-                  <Link
-                    href="/earn"
-                    className="block px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    💰 Як заробити уцмки
-                    {earnIncompleteCount > 0 && (
-                      <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[11px] leading-none rounded-full bg-green-600 text-white font-semibold" title={`${earnIncompleteCount} невиконаних завдань`}>
-                        {earnIncompleteCount}
-                      </span>
-                    )}
-                  </Link>
-                  <Link
-                    href="/upgrade"
-                    className="block px-4 py-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    ⚡ Покращити акаунт
-                  </Link>
-                  <Link
-                    href="/profile/edit"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Редагувати профіль
-                  </Link>
-                  <Link
-                    href="/services/create"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    + Додати послугу
-                  </Link>
-                  <Link
-                    href="/requests/create"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    + Створити заявку
-                  </Link>
-                  <Link
-                    href="/service-requests?type=tome"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors flex items-center justify-between"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span>📩 Заявки мені</span>
-                    {newRequestsCount > 0 && (
-                      <span className="ml-2 bg-green-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
-                        {newRequestsCount}
-                      </span>
-                    )}
-                  </Link>
-                  <Link
-                    href="/service-requests?type=my"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    📝 Мої заявки
-                  </Link>
-                  <Link
-                    href="/favorites"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Обране
-                  </Link>
-                  <Link
-                    href="/chat"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors flex items-center justify-between"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+            {/* Основная навигация */}
+            <div className="space-y-1">
+              <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                Навігація
+              </p>
+              <Link 
+                href="/catalog" 
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">👥</span>
+                <span>Люди</span>
+              </Link>
+              <Link 
+                href="/services" 
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">🛠️</span>
+                <span>Послуги</span>
+              </Link>
+              <Link 
+                href="/public-requests" 
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">📋</span>
+                <span>Заявки</span>
+              </Link>
+              <Link 
+                href="/about" 
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">ℹ️</span>
+                <span>Про нас</span>
+              </Link>
+              <Link 
+                href="/contacts" 
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">📞</span>
+                <span>Контакти</span>
+              </Link>
+            </div>
+
+            {/* Действия пользователя */}
+            {user && (
+              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  Мій акаунт
+                </p>
+                <Link
+                  href={`/profile/${user.id}`}
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">👤</span>
+                  <span>Мій профіль</span>
+                </Link>
+                <Link
+                  href="/profile/edit"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">✏️</span>
+                  <span>Редагувати профіль</span>
+                </Link>
+                <Link
+                  href="/chat"
+                  className="flex items-center justify-between px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">💬</span>
                     <span>Повідомлення</span>
-                    {unreadCount > 0 && (
-                      <span className="ml-2 bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                    )}
-                  </Link>
+                  </div>
+                  {unreadCount > 0 && (
+                    <span className="bg-primary-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/favorites"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">⭐</span>
+                  <span>Обране</span>
+                </Link>
+              </div>
+            )}
+
+            {/* Создание контента */}
+            {user && (
+              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  Створити
+                </p>
+                <Link
+                  href="/services/create"
+                  className="flex items-center px-4 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors font-medium shadow-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">➕</span>
+                  <span>Додати послугу</span>
+                </Link>
+                <Link
+                  href="/requests/create"
+                  className="flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl transition-colors font-medium shadow-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">📝</span>
+                  <span>Створити заявку</span>
+                </Link>
+              </div>
+            )}
+
+            {/* Заявки */}
+            {user && (
+              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  Заявки
+                </p>
+                <Link
+                  href="/service-requests?type=tome"
+                  className="flex items-center justify-between px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">📩</span>
+                    <span>Заявки мені</span>
+                  </div>
+                  {newRequestsCount > 0 && (
+                    <span className="bg-green-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
+                      {newRequestsCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/service-requests?type=my"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">📄</span>
+                  <span>Мої заявки</span>
+                </Link>
+              </div>
+            )}
+
+            {/* Заработок и улучшения */}
+            {user && (
+              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  Розвиток
+                </p>
+                <Link
+                  href="/earn"
+                  className="flex items-center justify-between px-4 py-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">💰</span>
+                    <span>Як заробити уцмки</span>
+                  </div>
+                  {earnIncompleteCount > 0 && (
+                    <span className="bg-green-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
+                      {earnIncompleteCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/upgrade"
+                  className="flex items-center px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">⚡</span>
+                  <span>Покращити акаунт</span>
+                </Link>
+              </div>
+            )}
+
+            {/* Авторизация / Выход */}
+            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1 pb-4">
+              {user ? (
+                <>
                   <button
                     onClick={async () => { await handleLogout(); setIsMenuOpen(false) }}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                    className="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium"
                   >
-                    Вийти
+                    <span className="text-xl mr-3">🚪</span>
+                    <span>Вийти</span>
                   </button>
                 </>
               ) : (
                 <>
                   <Link
                     href="/auth/login"
-                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Увійти
+                    <span className="text-xl mr-3">🔑</span>
+                    <span>Увійти</span>
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium text-center mt-2"
+                    className="flex items-center justify-center px-4 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors font-medium shadow-md mt-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Створити профіль
+                    <span className="text-xl mr-3">✨</span>
+                    <span>Створити профіль</span>
                   </Link>
                 </>
               )}
