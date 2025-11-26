@@ -25,11 +25,17 @@ async function createHandler(request: NextRequest) {
       photos = [],
       budgetFrom,
       budgetTo,
+      budgetMin, // Підтримка альтернативної назви
+      budgetMax, // Підтримка альтернативної назви
       desiredDate,
       deadline,
       priority = 'normal',
       serviceId
     } = body;
+    
+    // Використати budgetMin/budgetMax якщо budgetFrom/budgetTo не передані
+    const finalBudgetFrom = budgetFrom !== undefined ? budgetFrom : budgetMin;
+    const finalBudgetTo = budgetTo !== undefined ? budgetTo : budgetMax;
 
     // Валідація
     if (!title || !description) {
@@ -67,8 +73,8 @@ async function createHandler(request: NextRequest) {
         city,
         address,
         photos: Array.isArray(photos) ? photos : [],
-        budgetFrom: budgetFrom ? new Decimal(budgetFrom) : null,
-        budgetTo: budgetTo ? new Decimal(budgetTo) : null,
+        budgetFrom: finalBudgetFrom ? new Decimal(finalBudgetFrom) : null,
+        budgetTo: finalBudgetTo ? new Decimal(finalBudgetTo) : null,
         desiredDate: desiredDate ? new Date(desiredDate) : null,
         deadline: deadline ? new Date(deadline) : null,
         priority,
@@ -135,6 +141,7 @@ async function listHandler(request: NextRequest) {
     const category = searchParams.get('category');
     const city = searchParams.get('city');
     const type = searchParams.get('type'); // 'my' (створені мною), 'available' (доступні), 'assigned' (призначені мені)
+    const serviceId = searchParams.get('serviceId');
 
     const skip = (page - 1) * limit;
 
@@ -155,6 +162,7 @@ async function listHandler(request: NextRequest) {
     if (status) where.status = status;
     if (category) where.category = category;
     if (city) where.city = city;
+    if (serviceId) where.serviceId = parseInt(serviceId);
 
     const [requests, total] = await Promise.all([
       prisma.serviceRequest.findMany({

@@ -52,6 +52,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
   const [error, setError] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [hasActiveRequest, setHasActiveRequest] = useState(false);
 
   useEffect(() => {
     // Получить текущего пользователя
@@ -77,6 +78,11 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         }
 
         setService(data.service);
+        
+        // Перевірити чи є активна заявка на цю послугу
+        if (token) {
+          checkActiveRequest(token);
+        }
       } catch (err: any) {
         setError(err.message || 'Помилка завантаження послуги');
       } finally {
@@ -86,6 +92,25 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
     loadService();
   }, [params.id]);
+
+  const checkActiveRequest = async (token: string) => {
+    try {
+      const response = await fetch(`/api/service-requests?type=my&serviceId=${params.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const activeStatuses = ['new', 'viewed', 'accepted', 'in_progress', 'completed'];
+        const hasActive = data.requests?.some((req: any) => 
+          activeStatuses.includes(req.status) && req.serviceId === parseInt(params.id)
+        );
+        setHasActiveRequest(hasActive);
+      }
+    } catch (err) {
+      console.error('Помилка перевірки заявок:', err);
+    }
+  };
 
   const loadService = async () => {
     try {
@@ -337,13 +362,23 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     <span>Написати</span>
                   </Link>
 
-                  <Link
-                    href={`/requests/create?serviceId=${service.id}&executorId=${service.user.id}`}
-                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                  >
-                    <Gift className="w-5 h-5" />
-                    <span>Подати заявку</span>
-                  </Link>
+                  {hasActiveRequest ? (
+                    <Link
+                      href="/service-requests?type=my"
+                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md"
+                    >
+                      <Gift className="w-5 h-5" />
+                      <span>Заявка подана</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/requests/create?serviceId=${service.id}&executorId=${service.user.id}`}
+                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <Gift className="w-5 h-5" />
+                      <span>Подати заявку</span>
+                    </Link>
+                  )}
 
                   {currentUser && (
                     <TransferUcmModal
