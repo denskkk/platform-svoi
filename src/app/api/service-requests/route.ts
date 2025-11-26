@@ -46,6 +46,17 @@ async function createHandler(request: NextRequest) {
       );
     }
 
+    // Якщо переданий serviceId, перевіряємо що така послуга існує
+    if (serviceId) {
+      const serviceExists = await prisma.service.findUnique({ where: { id: Number(serviceId) } });
+      if (!serviceExists) {
+        return NextResponse.json(
+          { error: 'Послугу не знайдено або вона недоступна' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Створити заявку
     const serviceRequest = await prisma.serviceRequest.create({
       data: {
@@ -61,7 +72,7 @@ async function createHandler(request: NextRequest) {
         desiredDate: desiredDate ? new Date(desiredDate) : null,
         deadline: deadline ? new Date(deadline) : null,
         priority,
-        serviceId: serviceId || null,
+        serviceId: serviceId ? Number(serviceId) : null,
         status: 'new'
       },
       include: {
