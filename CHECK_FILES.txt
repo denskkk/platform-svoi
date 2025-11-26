@@ -1,0 +1,13 @@
+# ДІАГНОСТИКА - виконайте на сервері:
+
+# Перевірка вихідного коду (має бути balanceUcm)
+grep -n "balanceUcm\|ucmBalance" /var/www/sviydlyasvoih/platform-svoi/src/app/api/service-requests/route.ts | head -5
+
+# Якщо показує ucmBalance - потрібно git pull ще раз
+# Якщо показує balanceUcm - код правильний, проблема в білді
+
+# Перевірка зібраного файлу
+ls -lh /var/www/sviydlyasvoih/platform-svoi/.next/server/app/api/service-requests/route.js
+stat /var/www/sviydlyasvoih/platform-svoi/.next/server/app/api/service-requests/route.js
+
+# Якщо файл старий (не сьогоднішній) - потрібен rebuild

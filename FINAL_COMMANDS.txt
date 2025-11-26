@@ -1,0 +1,12 @@
+# ФІНАЛЬНІ КОМАНДИ (всі PM2 процеси вже видалені)
+
+cd /var/www/sviydlyasvoih/platform-svoi && \
+git pull origin main && \
+pm2 flush && \
+pm2 start ecosystem.config.js --update-env && \
+pm2 save && \
+sleep 3 && \
+pm2 list && \
+echo "" && \
+echo "=== ЛОГИ ===" && \
+pm2 logs sviy-platform --lines 50 --nostream

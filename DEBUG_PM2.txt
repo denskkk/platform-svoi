@@ -1,0 +1,18 @@
+# Перевірка та виправлення
+
+# 1. Перевірка що саме запущено
+pm2 list
+
+# 2. Повна зупинка та видалення старих процесів
+pm2 stop all
+pm2 delete all
+
+# 3. Перевірка файлу ecosystem.config.js
+cat ecosystem.config.js
+
+# 4. Запуск з ecosystem файлу
+pm2 start ecosystem.config.js --update-env
+
+# 5. Перевірка
+pm2 list
+pm2 logs --lines 50 --nostream

@@ -8,7 +8,7 @@ module.exports = {
   apps: [
     {
       // Название приложения в PM2
-      name: 'sviy-web',
+      name: 'sviy-platform',
       
       // Команда запуска
       script: 'npm',
@@ -50,8 +50,8 @@ module.exports = {
       max_memory_restart: '500M',
       
       // Логи
-  error_file: '/var/www/sviydlyasvoih/logs/pm2-error.log',
-  out_file: '/var/www/sviydlyasvoih/logs/pm2-out.log',
+      error_file: '/var/www/sviydlyasvoih/platform-svoi/logs/error.log',
+      out_file: '/var/www/sviydlyasvoih/platform-svoi/logs/out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       
       // Объединение логов из всех инстансов
