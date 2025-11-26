@@ -813,17 +813,22 @@ model Payment {
 // ========================================
 
 model UcmTransaction {
-  id                Int                 @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement()) @map("tx_id")
   userId            Int                 @map("user_id")
   user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind              String              @default("credit") @db.VarChar(50)
   amount            Decimal             @db.Decimal(12, 2)
-  reason            String              @db.VarChar(100)
+  reason            String              @db.VarChar(50)
+  relatedEntityType String?             @map("related_entity_type") @db.VarChar(50)
+  relatedEntityId   Int?                @map("related_entity_id")
+  meta              Json                @default("{}")
   description       String?             @db.Text
   createdAt         DateTime            @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([createdAt])
   @@index([userId, reason])
+  @@index([userId, createdAt])
   @@map("ucm_transactions")
 }
 
