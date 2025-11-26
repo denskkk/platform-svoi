@@ -101,7 +101,8 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       });
       if (response.ok) {
         const data = await response.json();
-        const activeStatuses = ['new', 'viewed', 'accepted', 'in_progress', 'completed'];
+        // Тільки заявки, які ще в процесі (не завершені та не оплачені)
+        const activeStatuses = ['new', 'viewed', 'accepted', 'in_progress'];
         const hasActive = data.requests?.some((req: any) => 
           activeStatuses.includes(req.status) && 
           req.serviceId && 
