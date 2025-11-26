@@ -257,6 +257,13 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
   const isOwner = currentUser && currentUser.id === service.user.id;
 
+  const formatRating = (val: any) => {
+    if (val === null || val === undefined) return '0.0';
+    const num = Number(val);
+    if (isNaN(num)) return '0.0';
+    return num.toFixed(1);
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -485,9 +492,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <Star className="w-5 h-5 text-amber-400 fill-current mr-1" />
-                      <span className="font-bold text-neutral-900">
-                        {service.user.avgRating?.toFixed(1) || '0.0'}
-                      </span>
+                      <span className="font-bold text-neutral-900">{formatRating(service.user.avgRating)}</span>
                     </div>
                     <span className="text-sm text-neutral-600">
                       {service.user.totalReviews} відгук{service.user.totalReviews === 1 ? '' : service.user.totalReviews < 5 ? 'и' : 'ів'}
