@@ -1,0 +1,23 @@
+# Швидка перевірка заявок через SQL (правильні назви полів)
+
+# Простий запит - останні 10 заявок
+psql -U postgres -d sviydlyasvoyikh -c "SELECT service_request_id, title, is_promoted, created_at FROM service_requests ORDER BY created_at DESC LIMIT 10;"
+
+# Детальний запит з користувачем
+psql -U postgres -d sviydlyasvoyikh -c "
+SELECT 
+  sr.service_request_id,
+  sr.title,
+  sr.is_promoted,
+  sr.promoted_until,
+  sr.status,
+  sr.created_at,
+  u.first_name || ' ' || u.last_name as user_name
+FROM service_requests sr
+LEFT JOIN users u ON sr.client_id = u.user_id
+ORDER BY sr.created_at DESC
+LIMIT 10;
+"
+
+# Перевірка UCM транзакцій
+psql -U postgres -d sviydlyasvoyikh -c "SELECT id, user_id, amount, reason, description, created_at FROM ucm_transactions ORDER BY created_at DESC LIMIT 5;"

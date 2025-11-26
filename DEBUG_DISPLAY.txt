@@ -1,0 +1,30 @@
+# Діагностика чому заявки не відображаються
+
+# 1. Перевірка API endpoint
+curl -X GET "http://localhost:3000/api/service-requests" -H "Content-Type: application/json"
+
+# 2. Перевірка з авторизацією (якщо потрібна)
+# curl -X GET "http://localhost:3000/api/service-requests" \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json"
+
+# 3. Перевірка логів API при запиті
+pm2 logs sviy-platform --lines 50
+
+# 4. Тестовий запит з curl на сервері
+curl -X GET "https://sviydlyasvoih.pp.ua/api/service-requests" -v
+
+# 5. Перевірка структури даних в БД
+psql -U postgres -d sviydlyasvoyikh -c "
+SELECT 
+  sr.service_request_id,
+  sr.title,
+  sr.client_id,
+  sr.executor_id,
+  sr.status,
+  sr.is_promoted,
+  sr.is_public,
+  sr.created_at
+FROM service_requests sr
+ORDER BY sr.created_at DESC;
+"

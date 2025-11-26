@@ -1,0 +1,24 @@
+# Перевірка створених заявок
+
+# 1. Перевірка через базу даних (PostgreSQL)
+psql -U postgres -d platform_db -c "SELECT id, title, client_id, is_promoted, promoted_until, created_at FROM service_requests ORDER BY created_at DESC LIMIT 5;"
+
+# 2. Перевірка через Prisma Studio (візуальний інтерфейс)
+cd /var/www/sviydlyasvoih/platform-svoi
+npx prisma studio
+# Відкрийте в браузері: http://localhost:5555
+# Виберіть таблицю ServiceRequest
+
+# 3. Перевірка всіх заявок конкретного користувача
+psql -U postgres -d platform_db -c "SELECT sr.id, sr.title, sr.is_promoted, sr.created_at, u.first_name, u.last_name FROM service_requests sr JOIN users u ON sr.client_id = u.user_id ORDER BY sr.created_at DESC LIMIT 10;"
+
+# 4. Перевірка UCM транзакцій (чи списалися гроші)
+psql -U postgres -d platform_db -c "SELECT id, user_id, amount, reason, description, created_at FROM ucm_transactions ORDER BY created_at DESC LIMIT 5;"
+
+# 5. Перевірка логів сервера на момент створення
+pm2 logs sviy-platform --lines 100 | grep -i "service-requests\|creating request\|оплата заявки"
+
+# 6. API запит для перевірки заявок (якщо є токен)
+# curl -X GET "http://localhost:3000/api/service-requests" \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json"

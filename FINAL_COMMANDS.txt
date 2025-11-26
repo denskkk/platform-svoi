@@ -1,9 +1,14 @@
-# ВИПРАВЛЕННЯ ПОМИЛКИ "Argument `reason` is missing"
+# ОНОВЛЕННЯ: Правильна логіка isPublic
 
+# Логіка:
+# - Заявка під послугу (serviceId) → isPublic = false (приватна)
+# - Заявка через navbar/сторінку (без serviceId) → isPublic = true (публічна)
+
+# Оновити код та перезапустити
 cd /var/www/sviydlyasvoih/platform-svoi && \
 git pull origin main && \
 rm -rf .next && \
 npm run build && \
 pm2 restart sviy-platform && \
 sleep 3 && \
-pm2 logs sviy-platform --lines 30 --nostream
+echo "✅ Готово! Перевірте створення заявок на сайті"

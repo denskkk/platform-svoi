@@ -32,9 +32,15 @@ async function createHandler(request: NextRequest) {
       priority = 'normal',
       serviceId,
       executorId,
-      isPublic = false,      // Чи це публічна заявка
+      isPublic,              // Чи це публічна заявка (буде автоматично визначено нижче)
       isPromoted = false      // Чи просувати в топ
     } = body;
+    
+    // Автоматичне визначення isPublic:
+    // - Якщо заявка під конкретну послугу (serviceId) → приватна (false)
+    // - Якщо загальна заявка (без serviceId) → публічна (true)
+    // - Можна перевизначити через body
+    const finalIsPublic = isPublic !== undefined ? isPublic : !serviceId;
     
     // Використати budgetMin/budgetMax якщо budgetFrom/budgetTo не передані
     const finalBudgetFrom = budgetFrom !== undefined ? budgetFrom : budgetMin;
@@ -114,7 +120,7 @@ async function createHandler(request: NextRequest) {
         priority,
         serviceId: serviceId ? Number(serviceId) : null,
         status: "new" as any,
-        isPublic,
+        isPublic: finalIsPublic,
         isPromoted,
         promotedUntil
       },
@@ -174,7 +180,7 @@ async function createHandler(request: NextRequest) {
         relatedEntityId: serviceRequest.id,
         meta: {
           serviceRequestId: serviceRequest.id,
-          isPublic,
+          isPublic: finalIsPublic,
           isPromoted,
           basePrice,
           promoPrice

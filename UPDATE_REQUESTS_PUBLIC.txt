@@ -1,0 +1,7 @@
+# Оновлення існуючих заявок - зробити публічними
+
+# Зробити всі заявки публічними
+psql -U postgres -d sviydlyasvoyikh -c "UPDATE service_requests SET is_public = true WHERE is_public = false;"
+
+# Перевірка результату
+psql -U postgres -d sviydlyasvoyikh -c "SELECT service_request_id, title, is_public, is_promoted FROM service_requests ORDER BY created_at DESC;"
