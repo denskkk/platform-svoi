@@ -122,7 +122,7 @@ async function handler(request: AuthenticatedRequest) {
             description: message 
               ? `Переказ для ${recipient.firstName} ${recipient.lastName}: ${message}`
               : `Переказ для ${recipient.firstName} ${recipient.lastName}`,
-            metadata: {
+            meta: {
               recipientId,
               recipientName: `${recipient.firstName} ${recipient.lastName}`,
               type: 'transfer_sent'
@@ -139,7 +139,7 @@ async function handler(request: AuthenticatedRequest) {
             description: message
               ? `Переказ від ${sender.firstName} ${sender.lastName}: ${message}`
               : `Переказ від ${sender.firstName} ${sender.lastName}`,
-            metadata: {
+            meta: {
               senderId,
               senderName: `${sender.firstName} ${sender.lastName}`,
               type: 'transfer_received'
