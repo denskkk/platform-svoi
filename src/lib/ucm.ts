@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 
 // Cache for whether ucm_transactions table exists to avoid repeated queries
 let _hasUcmTransactionsCache: boolean | null = null
+let _hasUcmKindColumnCache: boolean | null = null
 
 export async function hasUcmTransactionsTable(): Promise<boolean> {
   if (typeof _hasUcmTransactionsCache === 'boolean') return _hasUcmTransactionsCache
@@ -18,6 +19,24 @@ export async function hasUcmTransactionsTable(): Promise<boolean> {
     _hasUcmTransactionsCache = false
   }
   return _hasUcmTransactionsCache ?? false
+}
+
+// Check whether the 'kind' column exists on ucm_transactions
+export async function hasUcmKindColumn(): Promise<boolean> {
+  if (typeof _hasUcmKindColumnCache === 'boolean') return _hasUcmKindColumnCache
+  try {
+    const res: any = await prisma.$queryRaw`SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='ucm_transactions' AND column_name='kind') as exists`
+    if (Array.isArray(res) && res[0] && typeof res[0].exists === 'boolean') {
+      _hasUcmKindColumnCache = res[0].exists
+    } else if (res && typeof res.exists === 'boolean') {
+      _hasUcmKindColumnCache = res.exists
+    } else {
+      _hasUcmKindColumnCache = false
+    }
+  } catch (e) {
+    _hasUcmKindColumnCache = false
+  }
+  return _hasUcmKindColumnCache ?? false
 }
 
 // Ціни платних дій (в уцмках)
@@ -152,6 +171,7 @@ export async function chargeForAction(opts: { userId: number; amount: number; re
   const { userId, amount, reason, related } = opts
   if (amount <= 0) return
   const hasLedger = await hasUcmTransactionsTable()
+  const hasKind = await hasUcmKindColumn()
 
   return prisma.$transaction(async (tx: typeof prisma) => {
     const user = await tx.user.findUnique({ where: { id: userId }, select: { balanceUcm: true } as any })
@@ -162,17 +182,16 @@ export async function chargeForAction(opts: { userId: number; amount: number; re
     }
     await tx.user.update({ where: { id: userId }, data: { balanceUcm: { decrement: amount } } as any })
     if (hasLedger) {
-      await (tx as any).ucmTransaction.create({
-        data: {
-          userId,
-          kind: 'debit',
-          amount,
-          reason,
-          relatedEntityType: related?.type || null,
-          relatedEntityId: related?.id || null,
-          meta: {},
-        }
-      })
+      const data: any = {
+        userId,
+        amount,
+        reason,
+        relatedEntityType: related?.type || null,
+        relatedEntityId: related?.id || null,
+        meta: {},
+      }
+      if (hasKind) data.kind = 'debit'
+      await (tx as any).ucmTransaction.create({ data })
     }
   })
 }
@@ -190,6 +209,7 @@ export async function chargePaidAction(opts: {
 
   try {
     const hasLedger = await hasUcmTransactionsTable()
+    const hasKind = await hasUcmKindColumn()
 
     await prisma.$transaction(async (tx: typeof prisma) => {
       // Перевіряємо баланс
@@ -215,17 +235,16 @@ export async function chargePaidAction(opts: {
 
       // Створюємо транзакцію
       if (hasLedger) {
-        await (tx as any).ucmTransaction.create({
-          data: {
-            userId,
-            kind: 'debit',
-            amount,
-            reason: actionType,
-            relatedEntityType: relatedEntityType || null,
-            relatedEntityId: relatedEntityId || null,
-            meta: {},
-          }
-        })
+        const data: any = {
+          userId,
+          amount,
+          reason: actionType,
+          relatedEntityType: relatedEntityType || null,
+          relatedEntityId: relatedEntityId || null,
+          meta: {},
+        }
+        if (hasKind) data.kind = 'debit'
+        await (tx as any).ucmTransaction.create({ data })
       }
 
       // Логуємо платну дію

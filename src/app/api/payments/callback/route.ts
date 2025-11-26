@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { hasUcmKindColumn } from '@/lib/ucm'
 import { verifyCallbackSignature, CallbackPayload } from '@/lib/wayforpay'
 
 export async function POST(request: NextRequest) {
@@ -59,10 +60,11 @@ export async function POST(request: NextRequest) {
           data: { balanceUcm: { increment: payment.amount } }
         })
         if (hasLedger) {
+          const hasKind = await hasUcmKindColumn()
           await tx.ucmTransaction.create({
             data: {
               userId: payment.userId,
-              kind: 'credit',
+              ...(hasKind ? { kind: 'credit' as const } : {}),
               amount: payment.amount,
               reason: 'topup',
               relatedEntityType: 'payment',

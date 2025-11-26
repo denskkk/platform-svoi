@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { hasUcmKindColumn } from '@/lib/ucm';
 import { withAuth } from '@/lib/authMiddleware';
 
 const prisma = new PrismaClient();
@@ -64,18 +65,18 @@ async function handler(request: NextRequest) {
 
     // Виконати транзакцію
     const result = await prisma.$transaction(async (tx) => {
+      const hasKind = await hasUcmKindColumn();
       // Створити запис транзакції
-      const transaction = await (tx as any).ucmTransaction.create({
-        data: {
-          userId: Number(targetUserId),
-          kind: 'credit',
-          amount: Number(amount),
-          reason: String(reason),
-          relatedEntityType: 'admin_grant',
-          relatedEntityId: userId,
-          meta: { description: description || `Видано адміністратором` }
-        }
-      });
+      const data: any = {
+        userId: Number(targetUserId),
+        amount: Number(amount),
+        reason: String(reason),
+        relatedEntityType: 'admin_grant',
+        relatedEntityId: userId,
+        meta: { description: description || `Видано адміністратором` }
+      }
+      if (hasKind) data.kind = 'credit'
+      const transaction = await (tx as any).ucmTransaction.create({ data });
 
       // Оновити баланс користувача
       const updatedUser = await tx.user.update({

@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { ensureUserReferralCode, awardReferral, hasUcmTransactionsTable } from '@/lib/ucm';
+import { hasUcmKindColumn, hasUcmTransactionsTable, ensureUserReferralCode, awardReferral } from '@/lib/ucm';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
@@ -251,13 +251,14 @@ export async function POST(request: NextRequest) {
     const START_BONUS = 50;
     try {
       const hasLedger = await hasUcmTransactionsTable();
+      const hasKind = await hasUcmKindColumn();
       await prisma.$transaction(async (tx: any) => {
         await tx.user.update({ where: { id: result.user.id }, data: { balanceUcm: { increment: START_BONUS } } });
         if (hasLedger) {
           await tx.ucmTransaction.create({
             data: {
               userId: result.user.id,
-              kind: 'credit',
+              ...(hasKind ? { kind: 'credit' as const } : {}),
               amount: START_BONUS,
               reason: 'signup_bonus',
               relatedEntityType: null,

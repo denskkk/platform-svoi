@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/api-middleware'
-import { chargeForAction, PAID_ACTION_COSTS, PROMO_ACTION_EXTRAS, hasUcmTransactionsTable } from '@/lib/ucm'
+import { chargeForAction, PAID_ACTION_COSTS, PROMO_ACTION_EXTRAS, hasUcmTransactionsTable, hasUcmKindColumn } from '@/lib/ucm'
 
 export async function POST(request: NextRequest) {
   const { user, error } = await requireAuth(request)
@@ -100,13 +100,14 @@ export async function POST(request: NextRequest) {
       if (paid && paidAmount && paidAmount > 0) {
         try {
           const hasLedger = await hasUcmTransactionsTable()
+          const hasKind = await hasUcmKindColumn()
           await prisma.$transaction(async (tx: typeof prisma) => {
             await tx.user.update({ where: { id: userId }, data: { balanceUcm: { increment: paidAmount } } })
             if (hasLedger) {
               await tx.ucmTransaction.create({
                 data: {
                   userId,
-                  kind: 'credit',
+                  ...(hasKind ? { kind: 'credit' as const } : {}),
                   amount: paidAmount,
                   reason: 'refund_request_failure',
                   relatedEntityType: 'request',

@@ -1,5 +1,5 @@
 import { prisma } from './prisma';
-import { hasUcmTransactionsTable } from './ucm';
+import { hasUcmTransactionsTable, hasUcmKindColumn } from './ucm';
 
 /**
  * Способы заработать уцмки на платформе
@@ -85,13 +85,10 @@ export async function awardUcmForAction(
     if (uniqueActions.includes(action)) {
       // Guard queries against missing ledger table on older or partially migrated DBs
       if (await hasUcmTransactionsTable()) {
-        const existing = await prisma.ucmTransaction.findFirst({
-          where: {
-            userId,
-            reason: description,
-            kind: 'credit'
-          }
-        });
+        const hasKind = await hasUcmKindColumn();
+        const where: any = { userId, reason: description };
+        if (hasKind) where.kind = 'credit';
+        const existing = await prisma.ucmTransaction.findFirst({ where });
         if (existing) {
           console.log(`[awardUcmForAction] User ${userId} already received reward for ${action}`);
           return null;
@@ -107,16 +104,14 @@ export async function awardUcmForAction(
       // Check ledger exists first; we can skip daily limit check if ledger missing
       let todayReward = null;
       if (await hasUcmTransactionsTable()) {
-        todayReward = await prisma.ucmTransaction.findFirst({
-        where: {
+        const hasKind = await hasUcmKindColumn();
+        const where: any = {
           userId,
           reason: description,
-          kind: 'credit',
-          createdAt: {
-            gte: today
-          }
-        }
-      });
+          createdAt: { gte: today }
+        };
+        if (hasKind) where.kind = 'credit';
+        todayReward = await prisma.ucmTransaction.findFirst({ where });
       }
 
       if (todayReward) {
@@ -130,6 +125,7 @@ export async function awardUcmForAction(
     console.log(`[awardUcmForAction] hasLedger=${hasLedger} for user=${userId}, action=${action}, amount=${amount}`);
     if (hasLedger) {
       try {
+        const hasKind = await hasUcmKindColumn();
         const results = await prisma.$transaction([
           // Увеличиваем баланс
           prisma.user.update({
@@ -144,12 +140,12 @@ export async function awardUcmForAction(
           prisma.ucmTransaction.create({
             data: {
               userId,
-              kind: 'credit',
+              ...(hasKind ? { kind: 'credit' as const } : {}),
               amount,
               reason: description,
               relatedEntityType: 'earning',
               relatedEntityId: userId,
-              meta: metadata ? JSON.stringify(metadata) : null
+              meta: metadata ?? {}
             }
           })
         ]);
@@ -308,14 +304,17 @@ export async function getUserEarningProgress(userId: number) {
     let transactions: any[] = [];
     const hasLedger = await hasUcmTransactionsTable();
     if (hasLedger) {
+      const hasKind = await hasUcmKindColumn();
+      const where: any = { userId };
+      if (hasKind) {
+        where.kind = 'credit';
+      } else {
+        const creditReasons = Object.values(EARNING_DESCRIPTIONS);
+        where.reason = { in: creditReasons } as any;
+      }
       transactions = await prisma.ucmTransaction.findMany({
-        where: {
-          userId,
-          kind: 'credit'
-        },
-        orderBy: {
-          createdAt: 'desc'
-        }
+        where,
+        orderBy: { createdAt: 'desc' }
       });
     } else {
       transactions = [];

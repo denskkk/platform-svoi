@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { withAuth } from '@/lib/authMiddleware';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // Перевірка доступу адміністратора
 async function checkAdmin(userId: number) {
@@ -167,7 +165,7 @@ async function handler(request: NextRequest) {
 
     // Отримати останнє повідомлення для кожної переписки
     const conversationsWithLastMessage = await Promise.all(
-      conversations.map(async (conv) => {
+      conversations.map(async (conv: any) => {
         const lastMessage = await prisma.message.findFirst({
           where: { conversationId: conv.id },
           orderBy: { createdAt: 'desc' },
@@ -175,7 +173,7 @@ async function handler(request: NextRequest) {
             content: true,
             createdAt: true,
             isRead: true
-          }
+          } as any
         });
 
         return {

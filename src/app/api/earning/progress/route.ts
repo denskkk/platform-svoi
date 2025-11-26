@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api-middleware';
 import { getUserEarningProgress, EARNING_REWARDS, EARNING_DESCRIPTIONS } from '@/lib/earning';
 import { prisma } from '@/lib/prisma';
-import { hasUcmTransactionsTable } from '@/lib/ucm';
+import { hasUcmTransactionsTable, hasUcmKindColumn } from '@/lib/ucm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,13 +25,16 @@ export async function GET(request: NextRequest) {
     // Получить общую сумму заработанного, если ledger доступен
     let totalEarned = 0;
     if (await hasUcmTransactionsTable()) {
-      const transactions = await prisma.ucmTransaction.findMany({
-        where: {
-          userId,
-          kind: 'credit'
-        }
-      });
-
+      const hasKind = await hasUcmKindColumn();
+      const where: any = { userId };
+      if (hasKind) {
+        where.kind = 'credit';
+      } else {
+        // Fallback: credit transactions are those whose reason equals an earning description
+        const creditReasons = Object.values(EARNING_DESCRIPTIONS);
+        where.reason = { in: creditReasons } as any;
+      }
+      const transactions = await prisma.ucmTransaction.findMany({ where });
       totalEarned = transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
     }
 
