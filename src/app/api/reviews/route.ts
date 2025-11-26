@@ -239,7 +239,7 @@ export async function GET(request: NextRequest) {
       5: 0
     };
 
-    ratingDistribution.forEach((r) => {
+    ratingDistribution.forEach((r: any) => {
       stats[r.rating] = r._count.rating;
     });
 
