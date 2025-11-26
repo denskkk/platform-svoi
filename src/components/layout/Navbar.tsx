@@ -336,15 +336,16 @@ export function Navbar() {
                     className="flex items-center space-x-2 px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
                   >
                     <UserOrCompanyAvatar user={user} className="w-8 h-8 rounded-full object-cover" />
-                    <span className="font-medium text-neutral-700 flex flex-col items-start leading-tight">
-                      <span>{user?.businessInfo?.companyName || user?.firstName}</span>
+                    <div className="flex flex-col items-start leading-tight max-w-[120px]">
+                      <span className="font-medium text-neutral-700 truncate text-sm">
+                        {user?.businessInfo?.companyName || user?.firstName}
+                      </span>
                       {balance !== null && (
-                        <span className="text-[11px] text-neutral-500 font-normal">{balance.toFixed(2)} уцмка</span>
+                        <span className="text-[11px] text-neutral-500 font-normal">
+                          {balance.toFixed(2)} уцмка
+                        </span>
                       )}
-                      {profileCompletionPct !== null && profileCompletionPct < 100 && (
-                        <span className="text-[10px] text-indigo-600 font-semibold">Профіль {profileCompletionPct}%</span>
-                      )}
-                    </span>
+                    </div>
                   </button>
 
                   {showProfileMenu && (
