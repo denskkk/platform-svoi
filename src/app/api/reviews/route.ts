@@ -88,8 +88,57 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Перевірити чи вже є відгук між цими двома користувачами (глобальний, без serviceRequestId)
+    // Через унікальний індекс (reviewer_id, reviewed_id) друга спроба дає P2002
+    // Тому підтримуємо оновлення існуючого відгуку замість помилки
+    const existingPairReview = await prisma.review.findFirst({
+      where: {
+        reviewerId: auth.user.userId,
+        reviewedId,
+        // Якщо додаємо з serviceRequestId і вже є глобальний відгук, оновимо його
+      }
+    });
+
+    if (existingPairReview && !serviceRequestId) {
+      // Оновлення існуючого відгуку (глобальний кейс)
+      const updatedReview = await prisma.$transaction(async (tx: any) => {
+        const rev = await tx.review.update({
+          where: { id: existingPairReview.id },
+          data: {
+            rating,
+            comment: comment || null,
+            photos: Array.isArray(photos) ? photos : []
+          },
+          include: {
+            reviewer: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+            serviceRequest: { select: { id: true, title: true } }
+          }
+        });
+
+        // Перерахувати рейтинг користувача
+        const allReviews = await tx.review.findMany({
+          where: { reviewedId, isVisible: true },
+          select: { rating: true }
+        });
+        const avgRating = allReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / allReviews.length;
+        await tx.user.update({
+          where: { id: reviewedId },
+          data: { avgRating: new Decimal(avgRating.toFixed(2)), totalReviews: allReviews.length }
+        });
+        return rev;
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'Відгук оновлено',
+        review: updatedReview
+      }, { status: 200 });
+    }
+
     // Створити відгук з оновленням рейтингу
-    const review = await prisma.$transaction(async (tx: any) => {
+    let review;
+    try {
+      review = await prisma.$transaction(async (tx: any) => {
       const newReview = await tx.review.create({
         data: {
           reviewerId: auth.user.userId,
@@ -148,8 +197,48 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      return newReview;
-    });
+        return newReview;
+      });
+    } catch (e: any) {
+      // Перехопити унікальний індекс (P2002) та спробувати оновити існуючий відгук
+      if (e?.code === 'P2002') {
+        const existing = await prisma.review.findFirst({
+          where: { reviewerId: auth.user.userId, reviewedId }
+        });
+        if (existing) {
+          review = await prisma.$transaction(async (tx: any) => {
+            const upd = await tx.review.update({
+              where: { id: existing.id },
+              data: {
+                rating,
+                comment: comment || null,
+                photos: Array.isArray(photos) ? photos : []
+              },
+              include: {
+                reviewer: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
+                serviceRequest: { select: { id: true, title: true } }
+              }
+            });
+            const allReviews = await tx.review.findMany({
+              where: { reviewedId, isVisible: true },
+              select: { rating: true }
+            });
+            const avgRating = allReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / allReviews.length;
+            await tx.user.update({
+              where: { id: reviewedId },
+              data: { avgRating: new Decimal(avgRating.toFixed(2)), totalReviews: allReviews.length }
+            });
+            return upd;
+          });
+          return NextResponse.json({
+            success: true,
+            message: 'Відгук оновлено',
+            review
+          }, { status: 200 });
+        }
+      }
+      throw e; // Якщо це інша помилка - пробросити вище
+    }
 
     return NextResponse.json({
       success: true,
