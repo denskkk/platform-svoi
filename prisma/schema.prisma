@@ -816,12 +816,12 @@ model UcmTransaction {
   id                Int                 @id @default(autoincrement())
   userId            Int                 @map("user_id")
   user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kind              String              @default("credit") @db.VarChar(50)
+  kind              String?             @db.VarChar(50)
   amount            Decimal             @db.Decimal(12, 2)
   reason            String              @db.VarChar(50)
   relatedEntityType String?             @map("related_entity_type") @db.VarChar(50)
   relatedEntityId   Int?                @map("related_entity_id")
-  meta              Json                @default("{}")
+  meta              Json?
   description       String?             @db.Text
   createdAt         DateTime            @default(now()) @map("created_at")
 
