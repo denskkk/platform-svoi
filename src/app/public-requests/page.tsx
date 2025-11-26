@@ -35,6 +35,13 @@ export default function PublicRequestsPage() {
 
   useEffect(() => {
     loadRequests();
+    
+    // Оновлювати список кожні 10 секунд для нових заявок
+    const interval = setInterval(() => {
+      loadRequests();
+    }, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -46,6 +53,7 @@ export default function PublicRequestsPage() {
       const token = localStorage.getItem('token');
 
       const response = await fetch('/api/public-requests', {
+        cache: 'no-store',
         headers: token ? {
           'Authorization': `Bearer ${token}`
         } : {}

@@ -87,8 +87,9 @@ function PublicRequestFormContent() {
       const updatedUser = { ...currentUser, balanceUcm: Number(currentUser.balanceUcm) - totalCost };
       localStorage.setItem('user', JSON.stringify(updatedUser));
 
-      // Перенаправити на сторінку публічних заявок
-      router.push('/public-requests');
+      // Перенаправити на сторінку публічних заявок з параметром для скидання кешу
+      router.push(`/public-requests?refresh=${Date.now()}`);
+      router.refresh(); // Додатково примусово оновити
     } catch (err: any) {
       setError(err.message || 'Помилка створення заявки');
     } finally {
