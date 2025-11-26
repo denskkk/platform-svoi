@@ -44,14 +44,11 @@ export default function PublicRequestsPage() {
   const loadRequests = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
 
       const response = await fetch('/api/public-requests', {
-        headers: {
+        headers: token ? {
           'Authorization': `Bearer ${token}`
-        }
+        } : {}
       });
 
       if (!response.ok) {
