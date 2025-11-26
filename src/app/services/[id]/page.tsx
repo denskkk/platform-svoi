@@ -103,9 +103,12 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         const data = await response.json();
         const activeStatuses = ['new', 'viewed', 'accepted', 'in_progress', 'completed'];
         const hasActive = data.requests?.some((req: any) => 
-          activeStatuses.includes(req.status) && req.serviceId === parseInt(params.id)
+          activeStatuses.includes(req.status) && 
+          req.serviceId && 
+          req.serviceId === parseInt(params.id)
         );
         setHasActiveRequest(hasActive);
+        console.log('Active request check:', { requests: data.requests?.length, hasActive, serviceId: params.id });
       }
     } catch (err) {
       console.error('Помилка перевірки заявок:', err);

@@ -101,10 +101,7 @@ export default function CreateRequestForm() {
 
       if (serviceId && !serviceMissing) {
         payload.serviceId = parseInt(serviceId);
-      }
-
-      if (executorId) {
-        payload.executorId = parseInt(executorId);
+        // executorId буде автоматично взятий з послуги на сервері
       }
 
       const response = await fetch('/api/service-requests', {

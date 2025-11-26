@@ -68,7 +68,10 @@ async function createHandler(request: NextRequest) {
       }
       // Автоматично встановлюємо виконавця як власника послуги
       finalExecutorId = service.userId;
+      console.log(`[service-requests/create] Service ${serviceId} owner: ${service.userId}, setting as executor`);
     }
+    
+    console.log(`[service-requests/create] Creating request: client=${userId}, executor=${finalExecutorId}, service=${serviceId}`);
 
     // Створити заявку
     const serviceRequest = await prisma.serviceRequest.create({
@@ -101,6 +104,17 @@ async function createHandler(request: NextRequest) {
             phone: true
           }
         },
+        executor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            city: true,
+            avatarUrl: true,
+            phone: true
+          }
+        },
         service: {
           select: {
             id: true,
@@ -115,6 +129,24 @@ async function createHandler(request: NextRequest) {
         }
       }
     });
+    
+    // Створити сповіщення для виконавця
+    if (finalExecutorId) {
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: finalExecutorId,
+            type: 'service_request_new',
+            title: 'Нова заявка',
+            message: `Ви отримали нову заявку на послугу: "${title}"`,
+            relatedEntityType: 'ServiceRequest',
+            relatedEntityId: serviceRequest.id
+          }
+        });
+      } catch (err) {
+        console.error('Помилка створення сповіщення:', err);
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -172,6 +204,8 @@ async function listHandler(request: NextRequest) {
       where.executorId = null;
       where.status = { in: ['new', 'viewed'] };
     }
+    
+    console.log(`[service-requests/list] User ${userId}, type=${type}, where=`, JSON.stringify(where));
 
     // Додаткові фільтри
     if (status) where.status = status;
