@@ -337,6 +337,14 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     <span>Написати</span>
                   </Link>
 
+                  <Link
+                    href={`/requests/create?serviceId=${service.id}&executorId=${service.user.id}`}
+                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    <Gift className="w-5 h-5" />
+                    <span>Подати заявку</span>
+                  </Link>
+
                   {currentUser && (
                     <TransferUcmModal
                       recipientId={service.user.id}
