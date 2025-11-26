@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Star, AlertCircle } from 'lucide-react';
 
-export default function CreateReviewPage() {
+function CreateReviewForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestId = searchParams.get('requestId');
@@ -279,5 +279,25 @@ export default function CreateReviewPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CreateReviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-12 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <CreateReviewForm />
+    </Suspense>
   );
 }
