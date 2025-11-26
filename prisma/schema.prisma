@@ -813,7 +813,7 @@ model Payment {
 // ========================================
 
 model UcmTransaction {
-  id                Int                 @id @default(autoincrement()) @map("tx_id")
+  id                Int                 @id @default(autoincrement())
   userId            Int                 @map("user_id")
   user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   kind              String              @default("credit") @db.VarChar(50)
