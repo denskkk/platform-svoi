@@ -1,12 +1,9 @@
-# ФІНАЛЬНІ КОМАНДИ (всі PM2 процеси вже видалені)
+# ВИПРАВЛЕННЯ ПОМИЛКИ "Argument `reason` is missing"
 
 cd /var/www/sviydlyasvoih/platform-svoi && \
 git pull origin main && \
-pm2 flush && \
-pm2 start ecosystem.config.js --update-env && \
-pm2 save && \
+rm -rf .next && \
+npm run build && \
+pm2 restart sviy-platform && \
 sleep 3 && \
-pm2 list && \
-echo "" && \
-echo "=== ЛОГИ ===" && \
-pm2 logs sviy-platform --lines 50 --nostream
+pm2 logs sviy-platform --lines 30 --nostream

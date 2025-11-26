@@ -166,10 +166,12 @@ async function createHandler(request: NextRequest) {
     await prisma.ucmTransaction.create({
       data: {
         userId,
-        type: 'debit',
+        kind: 'service_request',
         amount: totalPrice,
+        reason: isPromoted ? 'service_request_promo' : 'service_request',
         description: `Оплата заявки "${title}"${isPromoted ? ' (з просуванням в ТОП)' : ''}`,
-        balanceAfter: Number(user.balanceUcm) - totalPrice,
+        relatedEntityType: 'ServiceRequest',
+        relatedEntityId: serviceRequest.id,
         meta: {
           serviceRequestId: serviceRequest.id,
           isPublic,
