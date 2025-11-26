@@ -24,6 +24,7 @@ export default function CreateRequestForm() {
     budgetMin: '',
     budgetMax: '',
     city: '',
+    isPromoted: false,
   });
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function CreateRequestForm() {
         budgetMin: formData.budgetMin ? parseFloat(formData.budgetMin) : undefined,
         budgetMax: formData.budgetMax ? parseFloat(formData.budgetMax) : undefined,
         city: formData.city,
+        isPromoted: formData.isPromoted,
       };
 
       if (serviceId && !serviceMissing) {
@@ -254,6 +256,30 @@ export default function CreateRequestForm() {
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="Київ"
               />
+            </div>
+
+            {/* Просування в ТОП */}
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-4">
+              <label className="flex items-start cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isPromoted}
+                  onChange={(e) => setFormData({ ...formData, isPromoted: e.target.checked })}
+                  className="mt-1 w-5 h-5 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-500"
+                />
+                <div className="ml-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-semibold text-gray-900">🔥 Просунути в ТОП</span>
+                    <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full">+2 UCM</span>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Ваша заявка буде показуватись першою протягом <strong>3 днів</strong> і отримає більше відгуків від виконавців
+                  </p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    💰 Вартість: <strong>{formData.isPromoted ? '7 UCM' : '5 UCM'}</strong> {formData.isPromoted && '(5 UCM за заявку + 2 UCM за просування)'}
+                  </p>
+                </div>
+              </label>
             </div>
 
             {/* Кнопки */}

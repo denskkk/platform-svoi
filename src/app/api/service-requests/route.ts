@@ -31,7 +31,9 @@ async function createHandler(request: NextRequest) {
       deadline,
       priority = 'normal',
       serviceId,
-      executorId
+      executorId,
+      isPublic = false,      // Чи це публічна заявка
+      isPromoted = false      // Чи просувати в топ
     } = body;
     
     // Використати budgetMin/budgetMax якщо budgetFrom/budgetTo не передані
@@ -73,6 +75,27 @@ async function createHandler(request: NextRequest) {
     
     console.log(`[service-requests/create] Creating request: client=${userId}, executor=${finalExecutorId}, service=${serviceId}`);
 
+    // Розрахунок вартості заявки
+    const basePrice = 5; // 5 UCM за будь-яку заявку
+    const promoPrice = isPromoted ? 2 : 0; // +2 UCM за просування
+    const totalPrice = basePrice + promoPrice;
+
+    // Перевірка балансу користувача
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { ucmBalance: true }
+    });
+
+    if (!user || user.ucmBalance < totalPrice) {
+      return NextResponse.json(
+        { error: `Недостатньо коштів. Потрібно ${totalPrice} UCM (${basePrice} UCM за заявку${promoPrice > 0 ? ` + ${promoPrice} UCM за просування` : ''})` },
+        { status: 400 }
+      );
+    }
+
+    // Розрахунок promotedUntil (3 дні від зараз, якщо isPromoted)
+    const promotedUntil = isPromoted ? new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) : null;
+
     // Створити заявку
     const serviceRequest = await prisma.serviceRequest.create({
       data: {
@@ -91,6 +114,9 @@ async function createHandler(request: NextRequest) {
         priority,
         serviceId: serviceId ? Number(serviceId) : null,
         status: "new" as any,
+        isPublic,
+        isPromoted,
+        promotedUntil
       },
       include: {
         client: {
@@ -126,6 +152,30 @@ async function createHandler(request: NextRequest) {
               }
             }
           }
+        }
+      }
+    });
+    
+    // Списати UCM з балансу користувача
+    await prisma.user.update({
+      where: { id: userId },
+      data: { ucmBalance: { decrement: totalPrice } }
+    });
+
+    // Створити транзакцію UCM
+    await prisma.ucmTransaction.create({
+      data: {
+        userId,
+        type: 'debit',
+        amount: totalPrice,
+        description: `Оплата заявки "${title}"${isPromoted ? ' (з просуванням в ТОП)' : ''}`,
+        balanceAfter: user.ucmBalance - totalPrice,
+        meta: {
+          serviceRequestId: serviceRequest.id,
+          isPublic,
+          isPromoted,
+          basePrice,
+          promoPrice
         }
       }
     });

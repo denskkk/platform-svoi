@@ -919,6 +919,11 @@ model ServiceRequest {
   priceUcm          Decimal?              @map("price_ucm") @db.Decimal(12, 2) // Ціна в уцмках
   isPaid            Boolean               @default(false) @map("is_paid")
   
+  // Публічність і просування
+  isPublic          Boolean               @default(false) @map("is_public") // Чи відображається в публічних заявках
+  isPromoted        Boolean               @default(false) @map("is_promoted") // Чи в топі
+  promotedUntil     DateTime?             @map("promoted_until") // До якої дати в топі
+  
   // Статус
   status            ServiceRequestStatus  @default(new)
   

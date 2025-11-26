@@ -244,6 +244,12 @@ export function Navbar() {
               Послуги
             </Link>
             <Link 
+              href="/public-requests" 
+              className="text-neutral-700 hover:text-primary-600 transition-colors"
+            >
+              Заявки
+            </Link>
+            <Link 
               href="/about" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
@@ -479,6 +485,13 @@ export function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               Послуги
+            </Link>
+            <Link 
+              href="/public-requests" 
+              className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Заявки
             </Link>
             <Link 
               href="/about" 
