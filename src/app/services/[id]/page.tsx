@@ -55,6 +55,14 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [hasActiveRequest, setHasActiveRequest] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState('');
 
   useEffect(() => {
     // Получить текущего пользователя
@@ -127,10 +135,72 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       }
 
       setService(data.service);
+      // Після завантаження послуги - завантажити відгуки про виконавця
+      if (data.service?.user?.id) {
+        loadReviews(data.service.user.id);
+      }
     } catch (err: any) {
       setError(err.message || 'Помилка завантаження послуги');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReviews = async (userId: number) => {
+    try {
+      setLoadingReviews(true);
+      const res = await fetch(`/api/reviews?userId=${userId}&limit=10`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setReviews(data.reviews || []);
+    } catch (e) {
+      console.error('Помилка завантаження відгуків', e);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const submitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!service?.user?.id || !currentUser) return;
+    if (currentUser.id === service.user.id) {
+      setReviewError('Не можна залишити відгук про себе');
+      return;
+    }
+    if (reviewRating === 0) {
+      setReviewError('Оберіть рейтинг');
+      return;
+    }
+    setSubmittingReview(true);
+    setReviewError('');
+    setReviewSuccess('');
+    try {
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const payload = {
+        reviewedId: service.user.id,
+        rating: reviewRating,
+        comment: reviewComment.trim() || undefined
+      };
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Помилка надсилання відгуку');
+      setReviewSuccess('Відгук додано!');
+      setReviewComment('');
+      setReviewRating(0);
+      // Оновити відгуки та дані послуги (для рейтингу)
+      loadReviews(service.user.id);
+      loadService();
+    } catch (err: any) {
+      setReviewError(err.message || 'Помилка створення відгуку');
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -288,6 +358,93 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     <Trash2 className="w-4 h-4 mr-2" />
                     Видалити
                   </button>
+                </div>
+              )}
+            </div>
+
+            {/* Відгуки про виконавця */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4 flex items-center">
+                <Star className="w-6 h-6 text-amber-400 fill-current mr-2" /> Відгуки про виконавця
+              </h2>
+              {/* Форма додавання відгуку */}
+              {currentUser && service.user.id !== currentUser.id && (
+                <form onSubmit={submitReview} className="mb-8 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Ваш рейтинг</label>
+                    <div className="flex gap-2">
+                      {[1,2,3,4,5].map(star => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className="focus:outline-none transition-transform hover:scale-110"
+                        >
+                          <Star className={`w-8 h-8 ${star <= (hoverRating || reviewRating) ? 'fill-amber-400 text-amber-400' : 'text-neutral-300'}`} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="reviewComment" className="block text-sm font-medium text-neutral-700 mb-2">Коментар (необов'язково)</label>
+                    <textarea
+                      id="reviewComment"
+                      value={reviewComment}
+                      onChange={e => setReviewComment(e.target.value)}
+                      rows={4}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                      placeholder="Опишіть ваш досвід співпраці..."
+                    />
+                  </div>
+                  {reviewError && <p className="text-sm text-red-600">{reviewError}</p>}
+                  {reviewSuccess && <p className="text-sm text-green-600">{reviewSuccess}</p>}
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      disabled={submittingReview || reviewRating===0}
+                      className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    >
+                      {submittingReview ? 'Надсилання...' : 'Залишити відгук'}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Список відгуків */}
+              {loadingReviews ? (
+                <div className="text-neutral-600">Завантаження відгуків...</div>
+              ) : reviews.length === 0 ? (
+                <p className="text-neutral-500">Відгуків ще немає.</p>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map(r => (
+                    <div key={r.id} className="border border-neutral-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Star className="w-4 h-4 text-amber-400 fill-current" />
+                          <span className="font-medium">{r.rating}</span>
+                        </div>
+                        <span className="text-xs text-neutral-500">{new Date(r.createdAt).toLocaleDateString('uk-UA')}</span>
+                      </div>
+                      {r.comment && (
+                        <p className="text-sm text-neutral-700 mb-2 whitespace-pre-line">{r.comment}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        {r.reviewer?.avatarUrl ? (
+                          <img src={r.reviewer.avatarUrl} className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-semibold">
+                            {r.reviewer?.firstName?.[0]}{r.reviewer?.lastName?.[0]}
+                          </div>
+                        )}
+                        <Link href={`/profile/${r.reviewer?.id}`} className="text-sm text-neutral-800 hover:text-primary-600 font-medium">
+                          {r.reviewer?.firstName} {r.reviewer?.lastName}
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
