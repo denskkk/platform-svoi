@@ -162,6 +162,8 @@ async function createHandler(request: NextRequest) {
       }
     });
     
+    console.log(`[service-requests/create] Created request ID ${serviceRequest.id}: isPublic=${finalIsPublic}, isPromoted=${isPromoted}, status=${serviceRequest.status}`);
+    
     // Списати UCM з балансу користувача
     await prisma.user.update({
       where: { id: userId },

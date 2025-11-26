@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
       where: {
         isPublic: true,
         status: {
-          in: ['new', 'viewed']
+          notIn: ['completed', 'paid', 'cancelled', 'rejected']
         }
       },
       include: {
@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
         { createdAt: 'desc' }
       ]
     });
+
+    console.log(`[public-requests] Знайдено публічних заявок: ${publicRequests.length}`);
 
     return NextResponse.json({
       success: true,
