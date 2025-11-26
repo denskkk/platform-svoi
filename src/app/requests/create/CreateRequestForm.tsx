@@ -13,6 +13,7 @@ export default function CreateRequestForm() {
 
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [service, setService] = useState<any>(null);
+  const [serviceMissing, setServiceMissing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -46,9 +47,12 @@ export default function CreateRequestForm() {
   const loadService = async () => {
     try {
       const response = await fetch(`/api/services/${serviceId}`);
+      if (!response.ok) {
+        setServiceMissing(true);
+        return;
+      }
       const data = await response.json();
-
-      if (response.ok) {
+      if (data?.service) {
         setService(data.service);
         setFormData(prev => ({
           ...prev,
@@ -58,9 +62,12 @@ export default function CreateRequestForm() {
           budgetMax: data.service.priceTo?.toString() || '',
           city: data.service.city || prev.city,
         }));
+      } else {
+        setServiceMissing(true);
       }
     } catch (err) {
       console.error('Помилка завантаження послуги:', err);
+      setServiceMissing(true);
     } finally {
       setLoading(false);
     }
@@ -92,7 +99,7 @@ export default function CreateRequestForm() {
         city: formData.city,
       };
 
-      if (serviceId) {
+      if (serviceId && !serviceMissing) {
         payload.serviceId = parseInt(serviceId);
       }
 
@@ -146,8 +153,12 @@ export default function CreateRequestForm() {
           <h1 className="text-3xl font-bold text-neutral-900 mb-6">
             Подати заявку
           </h1>
-
-          {service && (
+          {serviceMissing && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800 font-medium">Обрана послуга недоступна або видалена. Ви можете все одно створити загальну заявку без привʼязки до цієї послуги.</p>
+            </div>
+          )}
+          {service && !serviceMissing && (
             <div className="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
               <p className="text-sm text-primary-800">
                 Ви подаєте заявку на послугу: <strong>{service.title}</strong>
