@@ -95,8 +95,8 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
 
             {/* Additional meta */}
             <div className="mt-6 text-sm text-neutral-600 space-y-2">
-              {req.budgetFrom && <div>Бюджет: від {Number(req.budgetFrom)} {req.priceUcm ? 'уцм' : 'грн'}</div>}
-              {req.budgetTo && <div>До: {Number(req.budgetTo)} {req.priceUcm ? 'уцм' : 'грн'}</div>}
+              {req.budgetFrom && <div>Бюджет: від {Number(req.budgetFrom)} УЦМ</div>}
+              {req.budgetTo && <div>До: {Number(req.budgetTo)} УЦМ</div>}
               {req.deadlineAt && <div>Термін: {new Date(req.deadlineAt).toLocaleDateString('uk-UA')}</div>}
             </div>
 

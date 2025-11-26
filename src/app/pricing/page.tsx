@@ -72,7 +72,7 @@ export default function PricingPage() {
     {
       name: 'Розширений',
       type: 'extended',
-      price: '0 грн на 3 міс, далі 199 грн/міс',
+      price: '0 УЦМ на 3 міс, далі 199 УЦМ/міс',
       icon: Zap,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
@@ -90,7 +90,7 @@ export default function PricingPage() {
     {
       name: 'Бізнес',
       type: 'business',
-      price: '0 грн на 3 міс, далі 499 грн/міс',
+      price: '0 УЦМ на 3 міс, далі 499 УЦМ/міс',
       icon: Sparkles,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
@@ -109,7 +109,7 @@ export default function PricingPage() {
     {
       name: 'Бізнес Преміум',
       type: 'business_premium',
-      price: '0 грн на 3 міс, далі 999 грн/міс',
+      price: '0 УЦМ на 3 міс, далі 999 УЦМ/міс',
       icon: Crown,
       color: 'text-yellow-600',
       bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',

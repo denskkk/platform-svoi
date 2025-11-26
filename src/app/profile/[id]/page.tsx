@@ -836,11 +836,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             {(service.priceFrom || service.priceTo) && (
                               <div className="text-primary-600 font-medium">
                                 {service.priceFrom && service.priceTo ? (
-                                  `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || 'грн'}`
+                                  `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || 'УЦМ'}`
                                 ) : service.priceFrom ? (
-                                  `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
+                                  `від ${service.priceFrom} ${service.priceUnit || 'УЦМ'}`
                                 ) : (
-                                  `до ${service.priceTo} ${service.priceUnit || 'грн'}`
+                                  `до ${service.priceTo} ${service.priceUnit || 'УЦМ'}`
                                 )}
                               </div>
                             )}

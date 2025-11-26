@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
       description: body.description,
       priceFrom: safePriceFrom,
       priceTo: safePriceTo,
-      priceUnit: body.priceUnit || 'грн',
+      priceUnit: body.priceUnit || 'УЦМ',
       city: body.city,
       region: body.region || null,
       address: body.address || null,

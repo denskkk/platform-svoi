@@ -770,7 +770,7 @@ export default function EditBusinessProfilePage() {
                             name="investmentAmount"
                             value={formData.investmentAmount}
                             onChange={handleChange}
-                            placeholder="Наприклад: від 500 000 до 1 000 000 грн"
+                            placeholder="Наприклад: від 500 000 до 1 000 000 УЦМ"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
@@ -962,7 +962,7 @@ export default function EditBusinessProfilePage() {
                               <div>
                                 <input
                                   type="text"
-                                  placeholder="Зарплата (грн)"
+                                  placeholder="Зарплата (УЦМ)"
                                   value={vacancy.salary}
                                   onChange={(e) => updateVacancy(index, 'salary', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"

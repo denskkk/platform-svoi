@@ -212,7 +212,7 @@ export default function CreateRequestForm() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="budgetMin" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Бюджет від (грн)
+                  Бюджет від (УЦМ)
                 </label>
                 <input
                   type="number"
@@ -227,7 +227,7 @@ export default function CreateRequestForm() {
               </div>
               <div>
                 <label htmlFor="budgetMax" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Бюджет до (грн)
+                  Бюджет до (УЦМ)
                 </label>
                 <input
                   type="number"

@@ -22,7 +22,7 @@ export default function CreateServicePage() {
     description: '',
     priceFrom: '',
     priceTo: '',
-    priceUnit: 'грн',
+    priceUnit: 'УЦМ',
     city: '',
     region: '',
     address: '',
@@ -403,11 +403,11 @@ export default function CreateServicePage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   // Allow selecting unit for all users
                 >
-                  <option value="грн">грн</option>
+                  <option value="УЦМ">УЦМ</option>
                   <option value="уцм">уцм</option>
-                  <option value="грн/год">грн/год</option>
-                  <option value="грн/день">грн/день</option>
-                  <option value="грн/м²">грн/м²</option>
+                  <option value="УЦМ/год">УЦМ/год</option>
+                  <option value="УЦМ/день">УЦМ/день</option>
+                  <option value="УЦМ/м²">УЦМ/м²</option>
                   <option value="договірна">договірна</option>
                 </select>
               </div>

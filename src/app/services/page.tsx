@@ -325,11 +325,11 @@ export default async function ServicesPage({
                       service.priceFrom ? `${service.priceFrom} ${service.priceUnit || 'уцмок'}` : 'За домовленістю'
                     ) : (
                       service.priceFrom && service.priceTo
-                        ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
+                        ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'УЦМ'}`
                         : service.priceFrom
-                        ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
+                        ? `від ${service.priceFrom} ${service.priceUnit || 'УЦМ'}`
                         : service.priceTo
-                        ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
+                        ? `до ${service.priceTo} ${service.priceUnit || 'УЦМ'}`
                         : 'За домовленістю'
                     )}
                   </div>
