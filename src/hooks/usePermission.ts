@@ -89,13 +89,14 @@ export function usePermission(permission: keyof typeof PERMISSIONS) {
  */
 export function useIsBusiness() {
   const { accountType } = useCurrentUser();
-  return accountType === 'business' || accountType === 'business_premium';
+  return accountType === 'business';
 }
 
 /**
- * Hook для перевірки чи користувач має преміум
+ * Hook для перевірки чи користувач має базовий або бізнес акаунт
  */
-export function useIsPremium() {
+export function useIsRegistered() {
   const { accountType } = useCurrentUser();
-  return accountType === 'business_premium';
+  return accountType === 'basic' || accountType === 'business';
+}
 }
