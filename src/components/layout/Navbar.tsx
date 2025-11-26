@@ -94,6 +94,11 @@ export function Navbar() {
       syncWithServer()
     }, 100)
 
+    // Защита: установить isLoading = false через 3 секунды в любом случае
+    const fallbackTimer = setTimeout(() => {
+      setIsLoading(false)
+    }, 3000)
+
     const onStorage = (e: StorageEvent) => {
       if (e.key === 'user') readUser()
     }
@@ -108,6 +113,7 @@ export function Navbar() {
 
     return () => {
       clearTimeout(timer)
+      clearTimeout(fallbackTimer)
       window.removeEventListener('storage', onStorage)
       window.removeEventListener('auth:changed', onAuthChanged as EventListener)
       window.removeEventListener('visibilitychange', onFocus)
