@@ -47,8 +47,8 @@ export async function POST(
         );
       }
 
-      // Заявка должна быть открыта
-      if (serviceRequest.status !== 'OPEN') {
+      // Заявка должна быть открыта (new или viewed)
+      if (!['new', 'viewed'].includes(serviceRequest.status)) {
         return NextResponse.json(
           { error: 'Request is no longer open' },
           { status: 400 }
@@ -69,7 +69,7 @@ export async function POST(
         prisma.serviceRequestResponse.update({
           where: { id: responseId },
           data: { 
-            status: 'ACCEPTED',
+            status: 'accepted',
             isSelected: true
           }
         }),
@@ -79,13 +79,13 @@ export async function POST(
             requestId,
             id: { not: responseId }
           },
-          data: { status: 'REJECTED' }
+          data: { status: 'rejected' }
         }),
         // Обновляем заявку
         prisma.serviceRequest.update({
           where: { id: requestId },
           data: {
-            status: 'IN_PROGRESS',
+            status: 'in_progress',
             executorId: selectedResponse.executorId,
             finalPrice: selectedResponse.proposedPrice
           }
