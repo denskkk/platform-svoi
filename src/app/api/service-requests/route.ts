@@ -73,7 +73,7 @@ async function createHandler(request: NextRequest) {
         deadline: deadline ? new Date(deadline) : null,
         priority,
         serviceId: serviceId ? Number(serviceId) : null,
-        // Оmit explicit status to avoid enum type mismatch (DB default applies)
+        status: "new" as any,
       },
       include: {
         client: {
