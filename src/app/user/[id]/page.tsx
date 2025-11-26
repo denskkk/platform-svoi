@@ -8,6 +8,13 @@ import Image from 'next/image';
 import { MapPin, Star, Mail, Phone, Facebook, Instagram, Linkedin, Globe, Send, ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
+function safeRating(val: any): string {
+  if (val === null || val === undefined) return '0.0';
+  const num = Number(val);
+  if (isNaN(num)) return '0.0';
+  return num.toFixed(1);
+}
+
 async function getUserProfile(id: string) {
   try {
     const userId = parseInt(id);
@@ -163,7 +170,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                   <div className="text-right">
                     <div className="flex items-center gap-1 text-2xl font-bold text-gray-900">
                       <Star className="w-6 h-6 text-yellow-400 fill-current" />
-                      {user.avgRating.toFixed(1)}
+                      {safeRating(user.avgRating)}
                     </div>
                     <p className="text-sm text-gray-500">{user.totalReviews} відгуків</p>
                   </div>

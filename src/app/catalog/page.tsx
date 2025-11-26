@@ -105,7 +105,7 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <span className="font-medium">{translateAccountType(u.accountType)}</span>
                     {u.totalReviews > 0 && (
-                      <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{u.avgRating.toFixed(1)}</span>
+                      <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{(() => { const n = Number(u.avgRating); return isNaN(n) ? '0.0' : n.toFixed(1); })()}</span>
                     )}
                   </div>
                 </Link>
