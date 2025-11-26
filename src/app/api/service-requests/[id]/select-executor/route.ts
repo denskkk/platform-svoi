@@ -89,7 +89,7 @@ export async function POST(
             executor: {
               connect: { id: selectedResponse.executorId }
             },
-            finalPrice: selectedResponse.proposedPrice
+            agreedPrice: selectedResponse.proposedPrice
           }
         }),
         // Создаем уведомление исполнителю
