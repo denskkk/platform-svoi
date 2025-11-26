@@ -103,7 +103,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                 Назад
               </Link>
               <Link
-                href="/login"
+                href="/auth/login"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
               >
                 Увійти
@@ -360,13 +360,13 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
           </p>
           <div className="flex gap-4 justify-center">
             <Link
-              href="/login"
+              href="/auth/login"
               className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
             >
               Увійти
             </Link>
             <Link
-              href="/register"
+              href="/auth/register"
               className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition"
             >
               Зареєструватися

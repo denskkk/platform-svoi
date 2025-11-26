@@ -297,7 +297,7 @@ function ViewerRegisterForm() {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Вже є акаунт?{' '}
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+              <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
                 Увійти
               </Link>
             </p>

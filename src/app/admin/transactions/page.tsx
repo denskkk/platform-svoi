@@ -17,7 +17,7 @@ export default function AdminTransactionsPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
 

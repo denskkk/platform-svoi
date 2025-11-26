@@ -24,7 +24,7 @@ function CreateReviewForm() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
     
@@ -38,7 +38,7 @@ function CreateReviewForm() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        router.push('/login');
+        router.push('/auth/login');
         return;
       }
 
@@ -86,7 +86,7 @@ function CreateReviewForm() {
     e.preventDefault();
     
     if (!currentUser) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
 
