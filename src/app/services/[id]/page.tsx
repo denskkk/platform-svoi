@@ -7,6 +7,7 @@ import { ArrowLeft, MapPin, Phone, Mail, MessageCircle, User, Edit, Trash2, Star
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
 import { TransferUcmModal } from '@/components/ui/TransferUcmModal';
+import { useToast } from '@/components/ui/Toast';
 
 interface Service {
   id: number;
@@ -46,6 +47,7 @@ interface Service {
 
 export default function ServiceDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const toast = useToast();
   const [service, setService] = useState<Service | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +111,6 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
           req.serviceId === parseInt(params.id)
         );
         setHasActiveRequest(hasActive);
-        console.log('Active request check:', { requests: data.requests?.length, hasActive, serviceId: params.id });
       }
     } catch (err) {
       console.error('Помилка перевірки заявок:', err);
@@ -156,7 +157,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       // Перенаправить на профиль
       router.push(`/profile/${currentUser.id}`);
     } catch (err: any) {
-      alert(err.message || 'Помилка видалення послуги');
+      toast.error(err.message || 'Помилка видалення послуги');
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);

@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/Toast';
 
 export default function CreateServiceRequestPage() {
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -47,7 +49,7 @@ export default function CreateServiceRequestPage() {
       const data = await res.json();
       router.push(`/service-requests/${data.request.id}`);
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

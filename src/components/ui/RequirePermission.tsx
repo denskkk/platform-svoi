@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { usePermission } from '@/hooks/usePermission';
 import { PERMISSIONS } from '@/lib/permissions';
 import { Lock, Crown, Sparkles } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface RequirePermissionProps {
   permission: keyof typeof PERMISSIONS;
@@ -87,10 +88,11 @@ export function PermissionButton({
   disabled = false
 }: PermissionButtonProps) {
   const { hasAccess, errorMessage } = usePermission(permission);
+  const toast = useToast();
 
   const handleClick = () => {
     if (!hasAccess) {
-      alert(errorMessage);
+      toast.warning(errorMessage || 'Доступ заборонено');
       return;
     }
     onClick?.();

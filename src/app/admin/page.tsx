@@ -14,6 +14,7 @@ import {
   Search,
   Filter
 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface AdminStats {
   users: {
@@ -37,6 +38,7 @@ interface AdminStats {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const toast = useToast();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function AdminDashboard() {
     
     // Перевірити чи користувач адміністратор
     if (!user.isAdmin) {
-      alert('Доступ заборонено. Тільки для адміністраторів.');
+      toast.error('Доступ заборонено. Тільки для адміністраторів.');
       router.push('/');
       return;
     }

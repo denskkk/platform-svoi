@@ -1,6 +1,7 @@
 "use client"
 import React from 'react'
 import { formatUCM } from '@/lib/utils'
+import { useToast } from '@/components/ui/Toast'
 
 type Props = {
   amount: number
@@ -11,6 +12,7 @@ type Props = {
 
 export function PayButton({ amount, description, className, children }: Props) {
   const [loading, setLoading] = React.useState(false)
+  const toast = useToast();
 
   const handlePay = async () => {
     try {
@@ -55,7 +57,7 @@ export function PayButton({ amount, description, className, children }: Props) {
       form.submit()
     } catch (e) {
       console.error(e)
-      alert('Сталася помилка під час створення платежу')
+      toast.error('Сталася помилка під час створення платежу')
     } finally {
       setLoading(false)
     }

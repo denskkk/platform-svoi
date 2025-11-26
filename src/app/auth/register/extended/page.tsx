@@ -7,9 +7,11 @@ import {
   ArrowLeft, User, Mail, Phone, MapPin, GraduationCap, Briefcase,
   Home, Car, Heart, Users, PawPrint, Utensils, Dumbbell
 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 export default function RegisterExtendedPage() {
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('basic');
@@ -19,10 +21,10 @@ export default function RegisterExtendedPage() {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
       // Немає акаунту — редирект на базову реєстрацію
-      alert('Спочатку потрібно створити Базовий акаунт, а потім покращити до Розширеного.');
+      toast.warning('Спочатку потрібно створити Базовий акаунт, а потім покращити до Розширеного.');
       router.push('/auth/register/basic');
     }
-  }, [router]);
+  }, [router, toast]);
   
   const [formData, setFormData] = useState({
     // Основна інформація (з базового)

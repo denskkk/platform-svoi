@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Gift
 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface PaidAction {
   type: string;
@@ -114,6 +115,7 @@ const ACCOUNT_TYPES = [
 
 export default function UpgradePage() {
   const router = useRouter();
+  const toast = useToast();
   const [user, setUser] = useState<any>(null);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -165,7 +167,7 @@ export default function UpgradePage() {
     const targetIndex = ACCOUNT_TYPES.findIndex(t => t.type === targetType);
 
     if (targetIndex <= currentIndex) {
-      alert('Ви не можете знизити тип акаунту');
+      toast.warning('Ви не можете знизити тип акаунту');
       return;
     }
 
@@ -189,14 +191,14 @@ export default function UpgradePage() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Акаунт успішно оновлено!');
+        toast.success('Акаунт успішно оновлено!');
         await loadUserData();
       } else {
-        alert(data.error || 'Помилка оновлення акаунту');
+        toast.error(data.error || 'Помилка оновлення акаунту');
       }
     } catch (error) {
       console.error('Error upgrading account:', error);
-      alert('Помилка оновлення акаунту');
+      toast.error('Помилка оновлення акаунту');
     } finally {
       setUpgrading(false);
     }

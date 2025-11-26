@@ -147,7 +147,6 @@ export default function CreateServicePage() {
       if (response.ok && data.url) {
         // Повертаємо URL з cache-busting параметром для миттєвого відображення
         const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
-        console.log('[Upload Service Image] Зображення успішно завантажено:', urlWithTimestamp);
         return urlWithTimestamp;
       }
       

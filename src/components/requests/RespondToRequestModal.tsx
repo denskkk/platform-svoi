@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface RespondToRequestModalProps {
   requestId: number;
@@ -16,6 +17,7 @@ export function RespondToRequestModal({
   onClose,
   onSuccess
 }: RespondToRequestModalProps) {
+  const toast = useToast();
   const [proposedPrice, setProposedPrice] = useState('');
   const [estimatedDays, setEstimatedDays] = useState('');
   const [comment, setComment] = useState('');
@@ -25,7 +27,7 @@ export function RespondToRequestModal({
     e.preventDefault();
     
     if (!proposedPrice || !comment) {
-      alert('Заповніть всі обов\'язкові поля');
+      toast.warning('Заповніть всі обов\'язкові поля');
       return;
     }
 
@@ -47,11 +49,11 @@ export function RespondToRequestModal({
         throw new Error(error.error || 'Помилка відправки пропозиції');
       }
 
-      alert('Вашу пропозицію успішно відправлено!');
+      toast.success('Вашу пропозицію успішно відправлено!');
       onSuccess();
       onClose();
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

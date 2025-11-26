@@ -68,7 +68,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
   const loadProfile = async () => {
     try {
-      console.log('Завантаження профілю:', params.id);
       // Додаємо cache-busting параметр для отримання свіжих даних
       const cacheBuster = `t=${Date.now()}`;
       const response = await fetch(`/api/profile/${params.id}?${cacheBuster}`, {
@@ -80,8 +79,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         }
       });
       const data = await response.json();
-
-      console.log('Отримано дані профілю:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Помилка завантаження профілю');

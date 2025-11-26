@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { RespondToRequestModal } from '@/components/requests/RespondToRequestModal';
 import { ExecutorResponseCard } from '@/components/requests/ExecutorResponseCard';
+import { useToast } from '@/components/ui/Toast';
 
 const statusColors: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',
@@ -30,6 +31,7 @@ const statusLabels: Record<string, string> = {
 
 export default function ServiceRequestDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const toast = useToast();
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -57,7 +59,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       const data = await res.json();
       setRequest(data.request);
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
       router.push('/service-requests');
     } finally {
       setLoading(false);
@@ -83,9 +85,9 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       }
 
       await loadRequest();
-      alert('Успішно оновлено!');
+      toast.success('Успішно оновлено!');
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setActionLoading(false);
     }
@@ -107,9 +109,9 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       }
 
       await loadRequest();
-      alert('Оплачено успішно!');
+      toast.success('Оплачено успішно!');
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setActionLoading(false);
     }
@@ -133,9 +135,9 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       }
 
       await loadRequest();
-      alert('Виконавця обрано! Заявка переведена в роботу.');
+      toast.success('Виконавця обрано! Заявка переведена в роботу.');
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setSelectingExecutor(false);
     }

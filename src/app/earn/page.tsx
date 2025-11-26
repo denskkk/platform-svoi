@@ -17,6 +17,7 @@ import {
   Lock,
   Crown
 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface EarningProgress {
   action: string;
@@ -60,6 +61,7 @@ const ACTION_ICONS: Record<string, any> = {
 
 export default function EarnPage() {
   const router = useRouter();
+  const toast = useToast();
   const [user, setUser] = useState<any>(null);
   const [progress, setProgress] = useState<EarningProgress[]>([]);
   const [balance, setBalance] = useState<number>(0);
@@ -158,7 +160,7 @@ export default function EarnPage() {
     
     const link = `${window.location.origin}/auth/register?ref=${user.referralCode}`;
     navigator.clipboard.writeText(link);
-    alert('Реферальне посилання скопійовано!');
+    toast.success('Реферальне посилання скопійовано!');
   };
 
   if (loading) {

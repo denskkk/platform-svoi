@@ -13,6 +13,7 @@ import {
   Shield,
   Mail
 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface Message {
   content: string;
@@ -58,6 +59,7 @@ interface ConversationDetail {
 
 export default function AdminMessagesPage() {
   const router = useRouter();
+  const toast = useToast();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<ConversationDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +107,7 @@ export default function AdminMessagesPage() {
       setTotalPages(data.pagination.totalPages);
     } catch (err: any) {
       console.error(err);
-      alert('Помилка завантаження переписок');
+      toast.error('Помилка завантаження переписок');
     } finally {
       setLoading(false);
     }
@@ -127,7 +129,7 @@ export default function AdminMessagesPage() {
       setSelectedConversation(data);
     } catch (err: any) {
       console.error(err);
-      alert('Помилка завантаження повідомлень');
+      toast.error('Помилка завантаження повідомлень');
     } finally {
       setMessagesLoading(false);
     }

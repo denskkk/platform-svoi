@@ -18,6 +18,7 @@ import {
   Gift,
   Shield
 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 
 interface User {
   id: number;
@@ -37,6 +38,7 @@ interface User {
 
 export default function AdminUsersManagePage() {
   const router = useRouter();
+  const toast = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -94,7 +96,7 @@ export default function AdminUsersManagePage() {
       setTotalPages(data.pagination.totalPages);
     } catch (err: any) {
       console.error(err);
-      alert('Помилка завантаження користувачів');
+      toast.error('Помилка завантаження користувачів');
     } finally {
       setLoading(false);
     }
@@ -107,13 +109,13 @@ export default function AdminUsersManagePage() {
 
   const handleGrantUCM = async () => {
     if (!selectedUser || !grantAmount || !grantReason) {
-      alert('Заповніть всі обов\'язкові поля');
+      toast.warning('Заповніть всі обов\'язкові поля');
       return;
     }
 
     const amount = parseFloat(grantAmount);
     if (isNaN(amount) || amount <= 0) {
-      alert('Сума повинна бути більше 0');
+      toast.warning('Сума повинна бути більше 0');
       return;
     }
 
@@ -138,7 +140,7 @@ export default function AdminUsersManagePage() {
       }
 
       const data = await response.json();
-      alert(data.message);
+      toast.success(data.message);
       
       // Оновити список користувачів
       loadUsers();
@@ -151,7 +153,7 @@ export default function AdminUsersManagePage() {
       setGrantDescription('');
       
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setProcessing(false);
     }
@@ -178,13 +180,13 @@ export default function AdminUsersManagePage() {
       }
 
       const data = await response.json();
-      alert(data.message);
+      toast.success(data.message);
       
       // Оновити список
       loadUsers();
       
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
