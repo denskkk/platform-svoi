@@ -1,0 +1,13 @@
+# Швидкі команди для деплою (скопіюйте всі разом)
+
+cd /var/www/sviydlyasvoih/platform-svoi && \
+pm2 stop sviy-platform && \
+git stash && \
+git pull origin main && \
+rm -rf .next && \
+npx prisma generate && \
+npm run build && \
+pm2 start ecosystem.config.js && \
+pm2 save && \
+sleep 3 && \
+pm2 logs sviy-platform --lines 30 --nostream

@@ -9,8 +9,14 @@ Unknown field `ucmBalance` for select statement on model `User`
 В API використовувалось поле `ucmBalance`, але в Prisma schema воно називається `balanceUcm`.
 
 ## Виправлення
-Оновлено файл: `src/app/api/service-requests/route.ts`
+Оновлено 2 файли:
+
+### 1. `src/app/api/service-requests/route.ts`
 - Замінено `ucmBalance` → `balanceUcm` (2 місця)
+
+### 2. `src/app/public-requests/create/page.tsx`
+- Замінено `ucmBalance` → `balanceUcm` (5 місць)
+- Додано `Number()` для безпечного приведення типів Decimal
 
 ## Деплой на сервер
 
@@ -21,7 +27,7 @@ chmod +x deploy-paid-requests.sh
 ./deploy-paid-requests.sh
 ```
 
-### Варіант 2: Вручну
+### Варіант 2: Вручну (РЕКОМЕНДОВАНО)
 ```bash
 cd /var/www/sviydlyasvoih/platform-svoi
 
@@ -29,7 +35,11 @@ cd /var/www/sviydlyasvoih/platform-svoi
 pm2 stop sviy-platform
 
 # Оновити код
+git stash
 git pull origin main
+
+# Видалити старий білд
+rm -rf .next
 
 # Генерувати Prisma
 npx prisma generate
@@ -41,8 +51,8 @@ npm run build
 pm2 start ecosystem.config.js
 pm2 save
 
-# Перевірити логи
-pm2 logs sviy-platform --lines 20
+# Перевірити логи (без tailing)
+pm2 logs sviy-platform --lines 30 --nostream
 ```
 
 ### Варіант 3: Швидкий restart (якщо код вже на сервері)

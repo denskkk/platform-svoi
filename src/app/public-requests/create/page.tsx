@@ -55,8 +55,8 @@ function PublicRequestFormContent() {
 
       const totalCost = formData.isPromoted ? 7 : 5;
       
-      if (currentUser.ucmBalance < totalCost) {
-        throw new Error(`Недостатньо коштів. Потрібно ${totalCost} UCM (ваш баланс: ${currentUser.ucmBalance} UCM)`);
+      if (Number(currentUser.balanceUcm) < totalCost) {
+        throw new Error(`Недостатньо коштів. Потрібно ${totalCost} UCM (ваш баланс: ${currentUser.balanceUcm} UCM)`);
       }
 
       const payload = {
@@ -84,7 +84,7 @@ function PublicRequestFormContent() {
       }
 
       // Оновити баланс користувача
-      const updatedUser = { ...currentUser, ucmBalance: currentUser.ucmBalance - totalCost };
+      const updatedUser = { ...currentUser, balanceUcm: Number(currentUser.balanceUcm) - totalCost };
       localStorage.setItem('user', JSON.stringify(updatedUser));
 
       // Перенаправити на сторінку публічних заявок
@@ -133,14 +133,14 @@ function PublicRequestFormContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Ваш баланс:</p>
-                <p className="text-2xl font-bold text-blue-600">{currentUser?.ucmBalance || 0} UCM</p>
+                <p className="text-2xl font-bold text-blue-600">{currentUser?.balanceUcm || 0} UCM</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Вартість заявки:</p>
                 <p className="text-2xl font-bold text-gray-900">{totalCost} UCM</p>
               </div>
             </div>
-            {currentUser?.ucmBalance < totalCost && (
+            {Number(currentUser?.balanceUcm || 0) < totalCost && (
               <div className="mt-3 text-sm text-red-600 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4" />
                 Недостатньо коштів для створення заявки
@@ -326,7 +326,7 @@ function PublicRequestFormContent() {
               </button>
               <button
                 type="submit"
-                disabled={submitting || currentUser?.ucmBalance < totalCost}
+                disabled={submitting || Number(currentUser?.balanceUcm || 0) < totalCost}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
                 {submitting ? 'Створення...' : `Створити заявку (${totalCost} UCM)`}
