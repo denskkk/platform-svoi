@@ -168,11 +168,26 @@ async function updateHandler(
       updateData.status = 'cancelled';
     }
 
-    // Виконавець може прийняти заявку
-    if (body.action === 'accept' && !serviceRequest.executorId) {
-      updateData.executorId = userId;
+    // Виконавець може прийняти заявку (тільки той, кому вона адресована)
+    if (body.action === 'accept') {
+      // Перевірка: заявка повинна бути адресована цьому користувачу
+      if (serviceRequest.executorId !== userId) {
+        return NextResponse.json(
+          { error: 'Ви не можете прийняти цю заявку - вона не адресована вам' },
+          { status: 403 }
+        );
+      }
+      
+      if (!body.agreedPrice) {
+        return NextResponse.json(
+          { error: 'Вкажіть ціну для прийняття заявки' },
+          { status: 400 }
+        );
+      }
+      
       updateData.status = 'accepted';
       updateData.acceptedAt = new Date();
+      updateData.agreedPrice = new Decimal(body.agreedPrice);
       
       // Створити повідомлення клієнту
       await prisma.notification.create({
@@ -180,7 +195,7 @@ async function updateHandler(
           userId: serviceRequest.clientId,
           type: 'service_request_accepted',
           title: 'Заявку прийнято',
-          message: `Виконавець прийняв вашу заявку "${serviceRequest.title}"`,
+          message: `Виконавець прийняв вашу заявку "${serviceRequest.title}" за ціною ${body.agreedPrice} УЦМ`,
           relatedEntityType: 'ServiceRequest',
           relatedEntityId: requestId
         }

@@ -30,7 +30,8 @@ async function createHandler(request: NextRequest) {
       desiredDate,
       deadline,
       priority = 'normal',
-      serviceId
+      serviceId,
+      executorId
     } = body;
     
     // Використати budgetMin/budgetMax якщо budgetFrom/budgetTo не передані
@@ -52,21 +53,28 @@ async function createHandler(request: NextRequest) {
       );
     }
 
-    // Якщо переданий serviceId, перевіряємо що така послуга існує
+    // Якщо переданий serviceId, перевіряємо що така послуга існує і беремо executorId з неї
+    let finalExecutorId = executorId;
     if (serviceId) {
-      const serviceExists = await prisma.service.findUnique({ where: { id: Number(serviceId) } });
-      if (!serviceExists) {
+      const service = await prisma.service.findUnique({ 
+        where: { id: Number(serviceId) },
+        select: { id: true, userId: true }
+      });
+      if (!service) {
         return NextResponse.json(
           { error: 'Послугу не знайдено або вона недоступна' },
           { status: 400 }
         );
       }
+      // Автоматично встановлюємо виконавця як власника послуги
+      finalExecutorId = service.userId;
     }
 
     // Створити заявку
     const serviceRequest = await prisma.serviceRequest.create({
       data: {
         clientId: userId,
+        executorId: finalExecutorId || null,
         title,
         description,
         category,
@@ -140,7 +148,7 @@ async function listHandler(request: NextRequest) {
     const status = searchParams.get('status');
     const category = searchParams.get('category');
     const city = searchParams.get('city');
-    const type = searchParams.get('type'); // 'my' (створені мною), 'available' (доступні), 'assigned' (призначені мені)
+    const type = searchParams.get('type'); // 'my' (створені мною), 'tome' (надіслані мені), 'assigned' (в роботі у мене)
     const serviceId = searchParams.get('serviceId');
 
     const skip = (page - 1) * limit;
@@ -149,13 +157,20 @@ async function listHandler(request: NextRequest) {
 
     // Фільтр по типу
     if (type === 'my') {
+      // Заявки, які я створив
       where.clientId = userId;
-    } else if (type === 'assigned') {
+    } else if (type === 'tome') {
+      // Заявки, які надіслані мені (я виконавець)
       where.executorId = userId;
+      where.status = { in: ['new', 'viewed'] }; // Тільки нові та переглянуті
+    } else if (type === 'assigned') {
+      // Заявки в роботі (я виконавець і заявка прийнята)
+      where.executorId = userId;
+      where.status = { in: ['accepted', 'in_progress', 'completed', 'paid'] };
     } else if (type === 'available') {
-      // Доступні заявки - нові або переглянуті, але не призначені
-      where.status = { in: ['new', 'viewed'] };
+      // Доступні заявки - без виконавця
       where.executorId = null;
+      where.status = { in: ['new', 'viewed'] };
     }
 
     // Додаткові фільтри

@@ -53,7 +53,7 @@ export default function ServiceRequestsPage() {
   const router = useRouter();
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'my' | 'available' | 'assigned'>('available');
+  const [filter, setFilter] = useState<'tome' | 'my' | 'assigned' | 'all'>('tome');
 
   useEffect(() => {
     loadRequests();
@@ -101,24 +101,14 @@ export default function ServiceRequestsPage() {
         <div className="bg-white rounded-xl shadow-md p-4 mb-6">
           <div className="flex gap-2 flex-wrap">
             <button
-              onClick={() => setFilter('available')}
+              onClick={() => setFilter('tome')}
               className={`px-4 py-2 rounded-lg font-medium transition ${
-                filter === 'available'
+                filter === 'tome'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              📋 Доступні
-            </button>
-            <button
-              onClick={() => setFilter('my')}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
-                filter === 'my'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              📝 Мої заявки
+              📩 Заявки мені
             </button>
             <button
               onClick={() => setFilter('assigned')}
@@ -129,6 +119,16 @@ export default function ServiceRequestsPage() {
               }`}
             >
               🔨 В роботі
+            </button>
+            <button
+              onClick={() => setFilter('my')}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                filter === 'my'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              📝 Мої заявки
             </button>
             <button
               onClick={() => setFilter('all')}

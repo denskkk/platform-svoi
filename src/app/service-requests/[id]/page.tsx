@@ -31,8 +31,16 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   useEffect(() => {
+    // Отримати ID поточного користувача
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setCurrentUserId(user.id);
+    }
+    
     loadRequest();
   }, []);
 
@@ -211,52 +219,83 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
           {/* Дії */}
           <div className="border-t pt-6">
             <div className="flex gap-3 flex-wrap">
-              {request.status === 'new' || request.status === 'viewed' ? (
-                <button
-                  onClick={() => {
-                    const price = prompt('Введіть ціну в УЦМ:');
-                    if (price) handleAction('accept', Number(price));
-                  }}
-                  disabled={actionLoading}
-                  className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
-                >
-                  ✓ Прийняти заявку
-                </button>
-              ) : null}
+              {/* Дії для ВИКОНАВЦЯ */}
+              {currentUserId === request.executor?.id && (
+                <>
+                  {(request.status === 'new' || request.status === 'viewed') && (
+                    <button
+                      onClick={() => {
+                        const price = prompt('Введіть ціну в УЦМ:');
+                        if (price) handleAction('accept', Number(price));
+                      }}
+                      disabled={actionLoading}
+                      className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
+                    >
+                      ✓ Прийняти заявку
+                    </button>
+                  )}
 
-              {request.status === 'accepted' && request.executor ? (
-                <button
-                  onClick={() => handleAction('start')}
-                  disabled={actionLoading}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
-                >
-                  🔨 Почати роботу
-                </button>
-              ) : null}
+                  {request.status === 'accepted' && (
+                    <button
+                      onClick={() => handleAction('start')}
+                      disabled={actionLoading}
+                      className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                    >
+                      🔨 Почати роботу
+                    </button>
+                  )}
 
-              {request.status === 'in_progress' && request.executor ? (
-                <button
-                  onClick={() => handleAction('complete')}
-                  disabled={actionLoading}
-                  className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition disabled:opacity-50"
-                >
-                  ✓ Завершити роботу
-                </button>
-              ) : null}
+                  {request.status === 'in_progress' && (
+                    <button
+                      onClick={() => handleAction('complete')}
+                      disabled={actionLoading}
+                      className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition disabled:opacity-50"
+                    >
+                      ✓ Завершити роботу
+                    </button>
+                  )}
+                </>
+              )}
 
-              {request.status === 'completed' && !request.isPaid && request.client ? (
-                <button
-                  onClick={handlePay}
-                  disabled={actionLoading}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50"
-                >
-                  💳 Оплатити {request.agreedPrice} УЦМ
-                </button>
-              ) : null}
+              {/* Дії для КЛІЄНТА */}
+              {currentUserId === request.client?.id && (
+                <>
+                  {request.status === 'completed' && !request.isPaid && (
+                    <button
+                      onClick={handlePay}
+                      disabled={actionLoading}
+                      className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50"
+                    >
+                      💳 Оплатити {request.agreedPrice} УЦМ
+                    </button>
+                  )}
 
+                  {(request.status === 'new' || request.status === 'viewed') && (
+                    <button
+                      onClick={() => handleAction('cancel')}
+                      disabled={actionLoading}
+                      className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50"
+                    >
+                      ✕ Скасувати заявку
+                    </button>
+                  )}
+                </>
+              )}
+
+              {/* Написати повідомлення */}
+              {request.executor && currentUserId && (
+                <Link
+                  href={`/chat?with=${currentUserId === request.client?.id ? request.executor.id : request.client?.id}`}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition"
+                >
+                  💬 Написати {currentUserId === request.client?.id ? 'виконавцю' : 'клієнту'}
+                </Link>
+              )}
+
+              {/* Відгук після оплати */}
               {request.status === 'paid' && (
                 <Link
-                  href={`/reviews/create?requestId=${request.id}&userId=${request.executor?.id || request.client.id}`}
+                  href={`/reviews/create?requestId=${request.id}&userId=${currentUserId === request.client?.id ? request.executor?.id : request.client?.id}`}
                   className="px-6 py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition"
                 >
                   ⭐ Залишити відгук
