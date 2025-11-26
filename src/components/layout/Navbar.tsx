@@ -13,7 +13,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Изменено с true на false
   const [unreadCount, setUnreadCount] = useState(0)
   const [balance, setBalance] = useState<number | null>(null)
   const [earnIncompleteCount, setEarnIncompleteCount] = useState(0)
@@ -25,11 +25,19 @@ export function Navbar() {
     const readUser = () => {
       try {
         const storedUser = localStorage.getItem('user')
-        setUser(storedUser ? JSON.parse(storedUser) : null)
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null
+        setUser(parsedUser)
+        // Если пользователь есть в localStorage, сразу показываем его данные
+        if (parsedUser) {
+          setIsLoading(false)
+        }
       } catch {
         setUser(null)
       }
     }
+
+    // Сначала читаем из localStorage для мгновенного отображения
+    readUser()
 
     const syncWithServer = async () => {
       try {
@@ -107,7 +115,11 @@ export function Navbar() {
     const onAuthChanged = () => readUser()
     window.addEventListener('auth:changed', onAuthChanged as EventListener)
 
-    const onFocus = () => readUser()
+    const onFocus = () => {
+      readUser()
+      // При фокусе также синхронизируем с сервером
+      syncWithServer()
+    }
     window.addEventListener('visibilitychange', onFocus)
     window.addEventListener('focus', onFocus)
 
