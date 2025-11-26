@@ -247,8 +247,9 @@ async function listHandler(request: NextRequest) {
 
     // Фільтр по типу
     if (type === 'my') {
-      // Заявки, які я створив
+      // Заявки, які я створив (без скасованих та відхилених)
       where.clientId = userId;
+      where.status = { notIn: ['cancelled', 'rejected'] };
     } else if (type === 'tome') {
       // Заявки, які надіслані мені (я виконавець)
       where.executorId = userId;
