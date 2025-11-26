@@ -72,8 +72,9 @@ async function deleteUsersExceptMaksym() {
     await prisma.review.deleteMany({ where: { OR: [{ reviewerId: user.id }, { reviewedId: user.id }] } });
     await prisma.message.deleteMany({ where: { OR: [{ senderId: user.id }, { receiverId: user.id }] } });
     await prisma.conversation.deleteMany({ where: { OR: [{ user1Id: user.id }, { user2Id: user.id }] } });
-    await prisma.ucmTransaction.deleteMany({ where: { OR: [{ fromUserId: user.id }, { toUserId: user.id }] } });
-    await prisma.requestResponse.deleteMany({ where: { executorId: user.id } });
+    await prisma.ucmTransaction.deleteMany({ where: { userId: user.id } });
+    await prisma.requestResponse.deleteMany({ where: { userId: user.id } });
+    await prisma.serviceRequestResponse.deleteMany({ where: { executorId: user.id } });
     
     // Оновлюємо заявки де він виконавець
     await prisma.serviceRequest.updateMany({

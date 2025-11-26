@@ -248,8 +248,9 @@ async function deleteUser(id) {
   await prisma.review.deleteMany({ where: { OR: [{ reviewerId: userId }, { reviewedId: userId }] } });
   await prisma.message.deleteMany({ where: { OR: [{ senderId: userId }, { receiverId: userId }] } });
   await prisma.conversation.deleteMany({ where: { OR: [{ user1Id: userId }, { user2Id: userId }] } });
-  await prisma.ucmTransaction.deleteMany({ where: { OR: [{ fromUserId: userId }, { toUserId: userId }] } });
-  await prisma.requestResponse.deleteMany({ where: { executorId: userId } });
+  await prisma.ucmTransaction.deleteMany({ where: { userId } });
+  await prisma.requestResponse.deleteMany({ where: { userId } });
+  await prisma.serviceRequestResponse.deleteMany({ where: { executorId: userId } });
   
   // Заявки де він виконавець
   await prisma.serviceRequest.updateMany({
