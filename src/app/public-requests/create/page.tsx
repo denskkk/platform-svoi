@@ -25,7 +25,7 @@ function PublicRequestFormContent() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
     
@@ -39,7 +39,7 @@ function PublicRequestFormContent() {
     e.preventDefault();
     
     if (!currentUser) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
 
