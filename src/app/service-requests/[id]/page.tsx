@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { RespondToRequestModal } from '@/components/requests/RespondToRequestModal';
+import { ExecutorResponseCard } from '@/components/requests/ExecutorResponseCard';
 
 const statusColors: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',
@@ -34,6 +35,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
   const [actionLoading, setActionLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [showRespondModal, setShowRespondModal] = useState(false);
+  const [selectingExecutor, setSelectingExecutor] = useState(false);
 
   useEffect(() => {
     // Отримати ID поточного користувача
@@ -113,6 +115,32 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
     }
   };
 
+  const handleSelectExecutor = async (responseId: number) => {
+    if (!confirm('Обрати цього виконавця?')) return;
+    
+    setSelectingExecutor(true);
+    try {
+      const res = await fetch(`/api/service-requests/${params.id}/select-executor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ responseId })
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error);
+      }
+
+      await loadRequest();
+      alert('Виконавця обрано! Заявка переведена в роботу.');
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setSelectingExecutor(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -142,11 +170,28 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{request.title}</h1>
               {request.category && (
                 <p className="text-gray-500">Категорія: {request.category}</p>
-              )}
+          )}
+        </div>
+
+        {/* Відгуки виконавців на публічну заявку */}
+        {request.isPublic && currentUserId === request.client?.id && request.responses?.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Пропозиції виконавців ({request.responses.length})
+            </h2>
+            <div className="space-y-4">
+              {request.responses.map((response: any) => (
+                <ExecutorResponseCard
+                  key={response.id}
+                  response={response}
+                  onSelect={handleSelectExecutor}
+                  isSelecting={selectingExecutor}
+                />
+              ))}
             </div>
           </div>
-
-          {/* Опис */}
+        )}
+      </div>          {/* Опис */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Опис роботи</h2>
             <p className="text-gray-700 whitespace-pre-wrap">{request.description}</p>

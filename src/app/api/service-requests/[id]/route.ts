@@ -79,6 +79,24 @@ async function getHandler(
           orderBy: {
             createdAt: 'desc'
           }
+        },
+        responses: {
+          include: {
+            executor: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                profession: true,
+                avatarUrl: true,
+                avgRating: true,
+                totalReviews: true,
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'asc'
+          }
         }
       }
     });
