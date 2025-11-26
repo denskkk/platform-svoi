@@ -86,7 +86,9 @@ export async function POST(
           where: { id: requestId },
           data: {
             status: 'in_progress',
-            executorId: selectedResponse.executorId,
+            executor: {
+              connect: { id: selectedResponse.executorId }
+            },
             finalPrice: selectedResponse.proposedPrice
           }
         }),
