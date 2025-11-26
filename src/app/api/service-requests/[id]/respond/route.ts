@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { authMiddleware } from '@/lib/auth-middleware';
+import { withAuth } from '@/lib/authMiddleware';
 
 // POST /api/service-requests/[id]/respond - Відгукнутись на публічну заявку
-export async function POST(
+async function postHandler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const authResult = await authMiddleware(request);
-  if (authResult.error || !authResult.user) {
+  const userId = (request as any).user?.userId;
+  
+  if (!userId) {
     return NextResponse.json(
-      { error: authResult.error || 'Необхідна авторизація' },
+      { error: 'Необхідна авторизація' },
       { status: 401 }
     );
   }
@@ -53,7 +54,7 @@ export async function POST(
       );
     }
 
-    if (serviceRequest.clientId === authResult.user.id) {
+    if (serviceRequest.clientId === userId) {
       return NextResponse.json(
         { error: 'Ви не можете відгукнутись на власну заявку' },
         { status: 403 }
@@ -72,7 +73,7 @@ export async function POST(
       where: {
         requestId_executorId: {
           requestId,
-          executorId: authResult.user.id
+          executorId: userId
         }
       }
     });
@@ -88,7 +89,7 @@ export async function POST(
     const response = await prisma.serviceRequestResponse.create({
       data: {
         requestId,
-        executorId: authResult.user.id,
+        executorId: userId,
         proposedPrice,
         comment,
         estimatedDays,
@@ -117,13 +118,22 @@ export async function POST(
       });
     }
 
+    // Отримати дані користувача для сповіщення
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        firstName: true,
+        lastName: true
+      }
+    });
+
     // Створити сповіщення для клієнта
     await prisma.notification.create({
       data: {
         userId: serviceRequest.clientId,
         type: 'request_response_new',
         title: 'Новий відгук на заявку',
-        message: `${authResult.user.firstName} ${authResult.user.lastName} запропонував ціну ${proposedPrice} УЦМ на вашу заявку "${serviceRequest.title}"`,
+        message: `${user?.firstName} ${user?.lastName} запропонував ціну ${proposedPrice} УЦМ на вашу заявку "${serviceRequest.title}"`,
         relatedEntityType: 'ServiceRequest',
         relatedEntityId: requestId
       }
@@ -140,4 +150,11 @@ export async function POST(
       { status: 500 }
     );
   }
+}
+
+export async function POST(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
+  return withAuth(request, (req) => postHandler(req, context));
 }
