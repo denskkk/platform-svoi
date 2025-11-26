@@ -18,6 +18,7 @@ export function Navbar() {
   const [balance, setBalance] = useState<number | null>(null)
   const [earnIncompleteCount, setEarnIncompleteCount] = useState(0)
   const [profileCompletionPct, setProfileCompletionPct] = useState<number | null>(null)
+  const [newRequestsCount, setNewRequestsCount] = useState(0)
   // navbar no longer opens the request modal directly; create page handles request flow
 
   useEffect(() => {
@@ -57,6 +58,19 @@ export function Navbar() {
             if (unreadRes.ok) {
               const unreadData = await unreadRes.json()
               setUnreadCount(unreadData.unreadCount || 0)
+            }
+          } catch {
+            // ignore
+          }
+          
+          // Загрузка новых заявок
+          try {
+            const requestsRes = await fetch('/api/service-requests/new-count', {
+              credentials: 'include',
+            })
+            if (requestsRes.ok) {
+              const requestsData = await requestsRes.json()
+              setNewRequestsCount(requestsData.count || 0)
             }
           } catch {
             // ignore
@@ -112,6 +126,17 @@ export function Navbar() {
         if (res.ok) {
           const data = await res.json()
           setUnreadCount(data.unreadCount || 0)
+        }
+      } catch {}
+      
+      // Також оновлюємо кількість нових заявок
+      try {
+        const requestsRes = await fetch('/api/service-requests/new-count', {
+          credentials: 'include',
+        })
+        if (requestsRes.ok) {
+          const requestsData = await requestsRes.json()
+          setNewRequestsCount(requestsData.count || 0)
         }
       } catch {}
     }
@@ -351,6 +376,25 @@ export function Navbar() {
                       </Link>
                       <div className="border-t border-neutral-200 my-2"></div>
                       <Link
+                        href="/service-requests?type=tome"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        <span>📩 Заявки мені</span>
+                        {newRequestsCount > 0 && (
+                          <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
+                            {newRequestsCount}
+                          </span>
+                        )}
+                      </Link>
+                      <Link
+                        href="/service-requests?type=my"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        <span>📝 Мої заявки</span>
+                      </Link>
+                      <Link
                         href="/chat"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
                         onClick={() => setShowProfileMenu(false)}
@@ -512,6 +556,25 @@ export function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     + Створити заявку
+                  </Link>
+                  <Link
+                    href="/service-requests?type=tome"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors flex items-center justify-between"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>📩 Заявки мені</span>
+                    {newRequestsCount > 0 && (
+                      <span className="ml-2 bg-green-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
+                        {newRequestsCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    href="/service-requests?type=my"
+                    className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    📝 Мої заявки
                   </Link>
                   <Link
                     href="/favorites"
