@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/authMiddleware';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/public-requests - Отримати всі публічні заявки
-async function getHandler(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const publicRequests = await prisma.serviceRequest.findMany({
       where: {
@@ -41,5 +40,3 @@ async function getHandler(request: NextRequest) {
     );
   }
 }
-
-export const GET = withAuth(getHandler);
