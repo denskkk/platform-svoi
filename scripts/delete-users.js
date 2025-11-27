@@ -139,20 +139,13 @@ async function deleteUserWithRelations(userId) {
     });
     console.log(`   ✓ UCM транзакции: ${ucmDeleted.count}`);
 
-    // 5. Удаляем ответы на заявки (как исполнитель)
+    // 5. Ответы на заявки (как исполнитель)
     const responsesDeleted = await prisma.serviceRequestResponse.deleteMany({
       where: { executorId: userId }
     });
     console.log(`   ✓ Ответы на заявки: ${responsesDeleted.count}`);
 
-    // 6. Обновляем заявки где он исполнитель
-    const requestsUpdated = await prisma.serviceRequest.updateMany({
-      where: { acceptedExecutorId: userId },
-      data: { acceptedExecutorId: null }
-    });
-    console.log(`   ✓ Обновлено заявок (убран как исполнитель): ${requestsUpdated.count}`);
-
-    // 7. Удаляем ответы на его заявки
+    // 6. Удаляем ответы на его заявки
     const userRequests = await prisma.serviceRequest.findMany({
       where: { clientId: userId },
       select: { id: true }
@@ -167,31 +160,31 @@ async function deleteUserWithRelations(userId) {
     }
     console.log(`   ✓ Ответы на его заявки: ${requestResponsesDeleted}`);
 
-    // 8. Удаляем его заявки
+    // 7. Удаляем его заявки
     const clientRequestsDeleted = await prisma.serviceRequest.deleteMany({
       where: { clientId: userId }
     });
     console.log(`   ✓ Заявки клиента: ${clientRequestsDeleted.count}`);
 
-    // 9. Удаляем услуги
+    // 8. Удаляем услуги
     const servicesDeleted = await prisma.service.deleteMany({
       where: { userId: userId }
     });
     console.log(`   ✓ Услуги: ${servicesDeleted.count}`);
 
-    // 10. Удаляем бизнес информацию
+    // 9. Удаляем бизнес информацию
     const businessDeleted = await prisma.businessInfo.deleteMany({
       where: { userId: userId }
     });
     console.log(`   ✓ Бизнес информация: ${businessDeleted.count}`);
 
-    // 11. Удаляем сессии
+    // 10. Удаляем сессии
     const sessionsDeleted = await prisma.session.deleteMany({
       where: { userId: userId }
     });
     console.log(`   ✓ Сессии: ${sessionsDeleted.count}`);
 
-    // 12. Наконец, удаляем самого пользователя
+    // 11. Наконец, удаляем самого пользователя
     await prisma.user.delete({
       where: { id: userId }
     });
