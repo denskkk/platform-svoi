@@ -3,22 +3,23 @@
 import Link from 'next/link'
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { cities } from '@/lib/constants'
 
 function RegisterIndividualForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
     city: '',
   })
-  // Keep registration simple; extended profile will be filled in questionnaire
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -26,43 +27,41 @@ function RegisterIndividualForm() {
     e.preventDefault()
     setError('')
     
+    // Валідація обов'язкових полів
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
+      setError('Заповніть всі обов\'язкові поля')
+      return
+    }
+
     // Валідація паролів
     if (formData.password !== formData.confirmPassword) {
       setError('Паролі не співпадають')
       return
     }
 
-    if (formData.password.length < 8) {
-      setError('Пароль має бути мінімум 8 символів')
+    if (formData.password.length < 6) {
+      setError('Пароль має містити мінімум 6 символів')
       return
     }
 
     setLoading(true)
 
     try {
-      // Розділити ім'я на firstName та lastName
-      const nameParts = formData.name.trim().split(' ')
-      const firstName = nameParts[0] || formData.name
-      const lastName = nameParts.slice(1).join(' ') || 'User'
-
-      // Аватар и соцсети остаются опциональными при регистрации.
-      // Пользователь сможет добавить или изменить их позже в разделе редактирования профиля.
-
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName,
-          lastName,
-          email: formData.email,
-          phone: formData.phone,
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || undefined,
           password: formData.password,
-          city: formData.city,
+          city: formData.city || undefined,
           role: 'user',
+          accountType: 'basic',
           ref: searchParams?.get('ref') || undefined,
-          // Simple registration: social links / avatar are handled later in profile
         }),
       })
 
@@ -76,7 +75,7 @@ function RegisterIndividualForm() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
 
-      // Перейти на анкету — регистрация закончена, подробную анкету пользователь заполнит далее
+      // Перейти на анкету для заповнення детального профілю
       router.push('/auth/questionnaire')
     } catch (err: any) {
       setError(err.message || 'Помилка реєстрації')
@@ -88,6 +87,15 @@ function RegisterIndividualForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
+        {/* Back Button */}
+        <Link
+          href="/auth/register"
+          className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6 transition"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Назад до вибору типу
+        </Link>
+
         {/* Заголовок */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
@@ -95,10 +103,10 @@ function RegisterIndividualForm() {
             <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
           </Link>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            👤 Звичайний профіль
+            👤 Звичайний Профіль
           </h1>
           <p className="text-neutral-600">
-            Створи профіль і почни пропонувати свої послуги
+            Створіть профіль і почніть пропонувати свої послуги
           </p>
         </div>
 
@@ -111,24 +119,46 @@ function RegisterIndividualForm() {
           )}
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Ім'я */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
-                Як тебе звати?
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-neutral-400" />
+            {/* Ім'я та Прізвище */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
+                  Ім&apos;я *
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-neutral-400" />
+                  </div>
+                  <input
+                    id="firstName"
+                    type="text"
+                    required
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Олександр"
+                  />
                 </div>
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Наприклад: Олександр"
-                />
+              </div>
+
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
+                  Прізвище *
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-neutral-400" />
+                  </div>
+                  <input
+                    id="lastName"
+                    type="text"
+                    required
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Петренко"
+                  />
+                </div>
               </div>
             </div>
 
@@ -201,7 +231,7 @@ function RegisterIndividualForm() {
             {/* Пароль */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                Пароль
+                Пароль *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -214,7 +244,7 @@ function RegisterIndividualForm() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="block w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Мінімум 8 символів"
+                  placeholder="Мінімум 6 символів"
                 />
                 <button
                   type="button"
@@ -233,7 +263,7 @@ function RegisterIndividualForm() {
             {/* Підтвердження пароля */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
-                Підтвердження пароля
+                Підтвердіть пароль *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -241,13 +271,24 @@ function RegisterIndividualForm() {
                 </div>
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Повтори пароль"
+                  className="block w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Повторіть пароль"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-neutral-400 hover:text-neutral-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-neutral-400 hover:text-neutral-600" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -255,18 +296,31 @@ function RegisterIndividualForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
-              {loading ? 'Реєструємо...' : 'Продовжити'}
+              {loading ? 'Реєструємо...' : '🚀 Продовжити до анкети'}
             </button>
           </form>
           
 
-          {/* Повернутись */}
-          <div className="mt-6 text-center">
-            <Link href="/auth/register" className="text-sm text-neutral-600 hover:text-neutral-900">
-              ← Повернутись до вибору типу профілю
-            </Link>
+          {/* Додаткова інформація */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-center text-sm text-gray-600">
+              Бізнес-акаунт?{' '}
+              <Link href="/auth/register/business" className="text-primary-600 hover:text-primary-700 font-semibold">
+                Реєструйтесь тут
+              </Link>
+            </p>
+          </div>
+
+          {/* Вхід */}
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Вже є акаунт?{' '}
+              <Link href="/auth/login" className="text-primary-600 hover:text-primary-700 font-semibold">
+                Увійти
+              </Link>
+            </p>
           </div>
         </div>
       </div>

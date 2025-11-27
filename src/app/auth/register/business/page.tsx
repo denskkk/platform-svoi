@@ -114,10 +114,6 @@ function BusinessRegistrationForm() {
     { id: "seeking", name: "Що шукаєте", icon: Target },
   ];
 
-  if (isPremium) {
-    tabs.push({ id: "premium", name: "Преміум", icon: Crown });
-  }
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -180,16 +176,16 @@ function BusinessRegistrationForm() {
 
     // Валідація
     if (
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !formData.email.trim() ||
       !formData.password
     ) {
       setError("Заповніть всі обов'язкові особисті дані");
       return;
     }
 
-    if (!formData.companyName) {
+    if (!formData.companyName.trim()) {
       setError("Вкажіть назву компанії");
       return;
     }
@@ -258,25 +254,25 @@ function BusinessRegistrationForm() {
         },
         body: JSON.stringify({
           user: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            email: formData.email.trim(),
             password: formData.password,
-            phone: formData.phone,
-            city: formData.city,
+            phone: formData.phone.trim() || undefined,
+            city: formData.city.trim() || undefined,
             role: "business",
             accountType: "business",
             ref: refCode,
           },
           business: {
-            companyName: formData.companyName,
-            companyCode: formData.companyCode,
-            city: formData.city,
-            businessCategory: formData.businessCategory,
-            companyType: formData.companyType,
-            offerType: formData.offerType,
-            description: formData.description,
-            website: formData.website,
+            companyName: formData.companyName.trim(),
+            companyCode: formData.companyCode.trim() || undefined,
+            city: formData.city.trim() || undefined,
+            businessCategory: formData.businessCategory || undefined,
+            companyType: formData.companyType || undefined,
+            offerType: formData.offerType || undefined,
+            description: formData.description.trim() || undefined,
+            website: formData.website.trim() || undefined,
             seekingPartner: formData.seekingPartner,
             seekingInvestor: formData.seekingInvestor,
             seekingCustomer: formData.seekingCustomer,
@@ -347,28 +343,17 @@ function BusinessRegistrationForm() {
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className={`${
-            isPremium
-              ? "bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600"
-              : "bg-gradient-to-r from-orange-500 to-red-500"
-          } px-8 py-6`}>
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                {isPremium ? (
-                  <Crown className="w-6 h-6 text-white" />
-                ) : (
-                  <Building2 className="w-6 h-6 text-white" />
-                )}
+                <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-                  {isPremium && <Sparkles className="w-6 h-6" />}
-                  Бізнес {isPremium && "Преміум"} Акаунт
+                  🏢 Бізнес Акаунт
                 </h1>
                 <p className="text-white/90 mt-1">
-                  {isPremium
-                    ? "Максимальна видимість та можливості"
-                    : "Для підприємців та компаній"}
+                  Для підприємців та компаній
                 </p>
               </div>
             </div>
@@ -479,6 +464,7 @@ function BusinessRegistrationForm() {
                       required
                       value={formData.password}
                       onChange={handleChange}
+                      placeholder="Мінімум 6 символів"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
@@ -493,6 +479,7 @@ function BusinessRegistrationForm() {
                       required
                       value={formData.confirmPassword}
                       onChange={handleChange}
+                      placeholder="Повторіть пароль"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
@@ -1039,115 +1026,14 @@ function BusinessRegistrationForm() {
               </div>
             )}
 
-            {/* Tab: Premium */}
-            {activeTab === "premium" && isPremium && (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 p-6 rounded-xl border-2 border-yellow-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Crown className="w-6 h-6 text-yellow-600" />
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Преміум можливості
-                    </h3>
-                  </div>
-                  <p className="text-sm text-gray-700 mb-4">
-                    Активуйте функції для максимальної видимості вашого бізнесу
-                  </p>
-
-                  <div className="space-y-3">
-                    <label className="flex items-start gap-3 p-4 bg-white border border-yellow-300 rounded-lg hover:bg-yellow-50 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="offerToCustomers"
-                        checked={formData.offerToCustomers}
-                        onChange={handleChange}
-                        className="w-5 h-5 text-yellow-600 mt-0.5"
-                      />
-                      <div>
-                        <div className="font-medium flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-yellow-600" />
-                          Пропонувати споживачам
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Система автоматично показуватиме вас потенційним
-                          клієнтам
-                        </div>
-                      </div>
-                    </label>
-
-                    <label className="flex items-start gap-3 p-4 bg-white border border-yellow-300 rounded-lg hover:bg-yellow-50 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="offerToPartners"
-                        checked={formData.offerToPartners}
-                        onChange={handleChange}
-                        className="w-5 h-5 text-yellow-600 mt-0.5"
-                      />
-                      <div>
-                        <div className="font-medium flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-yellow-600" />
-                          Пропонувати партнерам
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Знаходьте ділових партнерів автоматично
-                        </div>
-                      </div>
-                    </label>
-
-                    <label className="flex items-start gap-3 p-4 bg-white border border-yellow-300 rounded-lg hover:bg-yellow-50 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="offerToInvestors"
-                        checked={formData.offerToInvestors}
-                        onChange={handleChange}
-                        className="w-5 h-5 text-yellow-600 mt-0.5"
-                      />
-                      <div>
-                        <div className="font-medium flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-yellow-600" />
-                          Пропонувати інвесторам
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Показувати ваш бізнес потенційним інвесторам
-                        </div>
-                      </div>
-                    </label>
-
-                    <label className="flex items-start gap-3 p-4 bg-white border border-yellow-300 rounded-lg hover:bg-yellow-50 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="wantsUCMAnalysis"
-                        checked={formData.wantsUCMAnalysis}
-                        onChange={handleChange}
-                        className="w-5 h-5 text-yellow-600 mt-0.5"
-                      />
-                      <div>
-                        <div className="font-medium flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-yellow-600" />
-                          Аналіз від команди УЦМ
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Отримайте професійний аналіз та рекомендації для
-                          покращення бізнесу
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Кнопки */}
             <div className="flex gap-4 pt-6 border-t border-gray-200 mt-8">
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-1 ${
-                  isPremium
-                    ? "bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 hover:from-yellow-500 hover:via-amber-600 hover:to-yellow-700"
-                    : "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-                } text-white py-3 px-6 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg`}
+                className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
-                {loading ? "Реєструємо..." : "Зареєструватися"}
+                {loading ? "Реєструємо..." : "🚀 Зареєструватися"}
               </button>
               <Link
                 href="/auth/register"
@@ -1173,25 +1059,9 @@ function BusinessRegistrationForm() {
         </div>
 
         {/* Info */}
-        <div className={`mt-6 border rounded-xl p-4 ${
-          isPremium
-            ? "bg-yellow-50 border-yellow-200"
-            : "bg-orange-50 border-orange-200"
-        }`}>
-          <p className={`text-sm ${isPremium ? "text-yellow-800" : "text-orange-800"}`}>
-            {isPremium ? (
-              <>
-                � <strong>Бізнес Преміум:</strong> Автоматичні пропозиції,
-                пріоритет у пошуку та аналіз від УЦМ. Максимальна видимість для
-                вашого бізнесу!
-              </>
-            ) : (
-              <>
-                🏢 <strong>Бізнес акаунт:</strong> Пошук партнерів, інвесторів
-                та споживачів. Завжди можна покращити до Преміум для
-                автоматичних пропозицій!
-              </>
-            )}
+        <div className="mt-6 border rounded-xl p-4 bg-orange-50 border-orange-200">
+          <p className="text-sm text-orange-800">
+            🏢 <strong>Бізнес акаунт:</strong> Створіть бізнес-профіль, шукайте партнерів, інвесторів та споживачів. Публікуйте вакансії та розвивайте свою мережу!
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone, ArrowLeft } from 'lucide-react';
 import { saveUser, saveToken } from '@/lib/client-auth';
 
 function ViewerRegisterForm() {
@@ -31,14 +31,20 @@ function ViewerRegisterForm() {
     e.preventDefault();
     setError('');
 
-    // Валідація
+    // Валідація обов'язкових полів
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
+      setError('Заповніть всі обов\'язкові поля');
+      return;
+    }
+
+    // Валідація паролів
     if (formData.password !== formData.confirmPassword) {
       setError('Паролі не співпадають');
       return;
     }
 
-    if (formData.password.length < 8) {
-      setError('Пароль має містити мінімум 8 символів');
+    if (formData.password.length < 6) {
+      setError('Пароль має містити мінімум 6 символів');
       return;
     }
 
@@ -51,13 +57,14 @@ function ViewerRegisterForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
           password: formData.password,
-          phone: formData.phone || undefined,
-          city: formData.city || undefined, // Не відправляти порожній рядок
-          role: 'user', // Глядач = звичайний користувач
+          phone: formData.phone.trim() || undefined,
+          city: formData.city.trim() || undefined,
+          role: 'user',
+          accountType: 'basic',
           ref: searchParams?.get('ref') || undefined,
         }),
       });
@@ -93,18 +100,27 @@ function ViewerRegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto">
+        {/* Back Button */}
+        <Link
+          href="/auth/register"
+          className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6 transition"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Назад до вибору типу
+        </Link>
+
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-bold text-blue-600 mb-4 inline-block">
             Свій для Своїх
           </Link>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Реєстрація Глядача
+            👁️ Реєстрація Глядача
           </h2>
           <p className="text-gray-600">
-            Створіть акаунт для пошуку та замовлення послуг
+            Швидка реєстрація для пошуку та замовлення послуг
           </p>
         </div>
 
@@ -231,7 +247,7 @@ function ViewerRegisterForm() {
                   value={formData.password}
                   onChange={handleChange}
                   className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Мінімум 8 символів"
+                  placeholder="Мінімум 6 символів"
                 />
                 <button
                   type="button"
@@ -241,9 +257,6 @@ function ViewerRegisterForm() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Мінімум 8 символів, має містити букви та цифри
-              </p>
             </div>
 
             {/* Підтвердження паролю */}
@@ -277,9 +290,9 @@ function ViewerRegisterForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-lg"
             >
-              {loading ? 'Реєстрація...' : 'Зареєструватися як Глядач'}
+              {loading ? 'Реєстрація...' : '🚀 Зареєструватися'}
             </button>
           </form>
 
@@ -287,8 +300,8 @@ function ViewerRegisterForm() {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-center text-sm text-gray-600">
               Хочете надавати послуги?{' '}
-              <Link href="/auth/register/business" className="text-blue-600 hover:text-blue-700 font-semibold">
-                Зареєструватися як Підприємець
+              <Link href="/auth/register/individual" className="text-blue-600 hover:text-blue-700 font-semibold">
+                Реєструйтесь як Виконавець
               </Link>
             </p>
           </div>
