@@ -34,7 +34,8 @@ async function showUsers() {
       _count: {
         select: {
           services: true,
-          clientRequests: true,
+          serviceRequestsCreated: true,
+          serviceRequestsAccepted: true,
         }
       }
     },
@@ -48,7 +49,7 @@ async function showUsers() {
     const adminBadge = user.isAdmin ? '👑 ' : '';
     console.log(`ID: ${user.id} | ${adminBadge}${user.firstName} ${user.lastName}`);
     console.log(`   Email: ${user.email} | Роль: ${user.role}`);
-    console.log(`   Услуг: ${user._count.services} | Заявок: ${user._count.clientRequests}`);
+    console.log(`   Услуг: ${user._count.services} | Заявок: ${user._count.serviceRequestsCreated}`);
     console.log('-'.repeat(70));
   });
 
@@ -66,8 +67,8 @@ async function deleteUserWithRelations(userId) {
       _count: {
         select: {
           services: true,
-          clientRequests: true,
-          executorRequests: true,
+          serviceRequestsCreated: true,
+          serviceRequestsAccepted: true,
           reviewsGiven: true,
           reviewsReceived: true,
         }
@@ -84,8 +85,8 @@ async function deleteUserWithRelations(userId) {
   console.log(`   👤 ${user.firstName} ${user.lastName} (${user.email})`);
   console.log(`   🗑️  Будет удалено:`);
   console.log(`      - Услуг: ${user._count.services}`);
-  console.log(`      - Заявок клиента: ${user._count.clientRequests}`);
-  console.log(`      - Заявок исполнителя: ${user._count.executorRequests}`);
+  console.log(`      - Заявок создано: ${user._count.serviceRequestsCreated}`);
+  console.log(`      - Заявок принято: ${user._count.serviceRequestsAccepted}`);
   console.log(`      - Отзывов дано: ${user._count.reviewsGiven}`);
   console.log(`      - Отзывов получено: ${user._count.reviewsReceived}`);
 
@@ -146,8 +147,8 @@ async function deleteUserWithRelations(userId) {
 
     // 6. Обновляем заявки где он исполнитель
     const requestsUpdated = await prisma.serviceRequest.updateMany({
-      where: { executorId: userId },
-      data: { executorId: null }
+      where: { acceptedExecutorId: userId },
+      data: { acceptedExecutorId: null }
     });
     console.log(`   ✓ Обновлено заявок (убран как исполнитель): ${requestsUpdated.count}`);
 
@@ -159,7 +160,7 @@ async function deleteUserWithRelations(userId) {
 
     let requestResponsesDeleted = 0;
     for (const req of userRequests) {
-      const deleted = await prisma.requestResponse.deleteMany({
+      const deleted = await prisma.serviceRequestResponse.deleteMany({
         where: { requestId: req.id }
       });
       requestResponsesDeleted += deleted.count;

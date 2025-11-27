@@ -23,8 +23,8 @@ async function viewAllUsers() {
         _count: {
           select: {
             services: true,
-            clientRequests: true,
-            executorRequests: true,
+            serviceRequestsCreated: true,
+            serviceRequestsAccepted: true,
           }
         }
       },
@@ -47,7 +47,7 @@ async function viewAllUsers() {
       console.log(`   🔑 Роль: ${user.role}${user.isAdmin ? ' (ADMIN)' : ''}`);
       console.log(`   💼 Тип аккаунта: ${user.accountType}`);
       console.log(`   📅 Создан: ${user.createdAt.toLocaleDateString('uk-UA')}`);
-      console.log(`   📊 Услуг: ${user._count.services} | Заявок клиента: ${user._count.clientRequests} | Заявок исполнителя: ${user._count.executorRequests}`);
+      console.log(`   📊 Услуг: ${user._count.services} | Заявок создано: ${user._count.serviceRequestsCreated} | Заявок принято: ${user._count.serviceRequestsAccepted}`);
       console.log('   ' + '-'.repeat(76));
     });
 
