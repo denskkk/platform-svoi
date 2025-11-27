@@ -7,8 +7,9 @@
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone, ArrowLeft, Upload, X, Facebook, Instagram, Send } from 'lucide-react';
 import { saveUser, saveToken } from '@/lib/client-auth';
+import Image from 'next/image';
 
 function ViewerRegisterForm() {
   const router = useRouter();
@@ -21,11 +22,37 @@ function ViewerRegisterForm() {
     confirmPassword: '',
     phone: '',
     city: '',
+    instagram: '',
+    facebook: '',
+    telegram: '',
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Файл занадто великий. Максимум 5MB');
+        return;
+      }
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +78,12 @@ function ViewerRegisterForm() {
     setLoading(true);
 
     try {
+      // Конвертуємо аватар в base64 якщо є
+      let avatarBase64 = null;
+      if (avatarFile) {
+        avatarBase64 = avatarPreview; // вже є base64 з FileReader
+      }
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -66,6 +99,12 @@ function ViewerRegisterForm() {
           role: 'user',
           accountType: 'basic',
           ref: searchParams?.get('ref') || undefined,
+          avatarBase64: avatarBase64,
+          socialLinks: {
+            instagram: formData.instagram.trim() || undefined,
+            facebook: formData.facebook.trim() || undefined,
+            telegram: formData.telegram.trim() || undefined,
+          },
         }),
       });
 
@@ -133,6 +172,44 @@ function ViewerRegisterForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Аватар */}
+            <div className="flex flex-col items-center mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Фото профілю (необов&apos;язково)
+              </label>
+              <div className="relative">
+                {avatarPreview ? (
+                  <div className="relative w-32 h-32">
+                    <Image
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      fill
+                      className="rounded-full object-cover border-4 border-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeAvatar}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-full cursor-pointer hover:border-blue-500 transition-colors bg-gray-50">
+                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                    <span className="text-xs text-gray-500 text-center px-2">Завантажити фото</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Макс. 5MB</p>
+            </div>
+
             {/* Ім'я та Прізвище */}
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -283,6 +360,72 @@ function ViewerRegisterForm() {
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
+              </div>
+            </div>
+
+            {/* Соціальні мережі */}
+            <div className="border-t border-gray-200 pt-4 mt-4">
+              <h3 className="text-md font-semibold text-gray-900 mb-3">
+                Соціальні мережі (необов&apos;язково)
+              </h3>
+              
+              <div className="space-y-3">
+                {/* Instagram */}
+                <div>
+                  <label htmlFor="instagram" className="block text-xs font-medium text-gray-700 mb-1">
+                    Instagram
+                  </label>
+                  <div className="relative">
+                    <Instagram className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-pink-500" />
+                    <input
+                      id="instagram"
+                      name="instagram"
+                      type="text"
+                      value={formData.instagram}
+                      onChange={handleChange}
+                      className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="@username"
+                    />
+                  </div>
+                </div>
+
+                {/* Facebook */}
+                <div>
+                  <label htmlFor="facebook" className="block text-xs font-medium text-gray-700 mb-1">
+                    Facebook
+                  </label>
+                  <div className="relative">
+                    <Facebook className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-600" />
+                    <input
+                      id="facebook"
+                      name="facebook"
+                      type="text"
+                      value={formData.facebook}
+                      onChange={handleChange}
+                      className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="facebook.com/username"
+                    />
+                  </div>
+                </div>
+
+                {/* Telegram */}
+                <div>
+                  <label htmlFor="telegram" className="block text-xs font-medium text-gray-700 mb-1">
+                    Telegram
+                  </label>
+                  <div className="relative">
+                    <Send className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-500" />
+                    <input
+                      id="telegram"
+                      name="telegram"
+                      type="text"
+                      value={formData.telegram}
+                      onChange={handleChange}
+                      className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="@username"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 

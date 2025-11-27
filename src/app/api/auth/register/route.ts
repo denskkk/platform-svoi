@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       ref,
       referralCode,
       avatarUrl,
+      avatarBase64,
       socialLinks,
     } = body;
 
@@ -104,6 +105,53 @@ export async function POST(request: NextRequest) {
     // Хешування пароля
     const passwordHash = await hashPassword(password);
 
+  // Обробка avatarBase64 якщо передано
+  let finalAvatarUrl = avatarUrl;
+  if (avatarBase64 && avatarBase64.startsWith('data:image/')) {
+    try {
+      const { writeFile, mkdir } = await import('fs/promises');
+      const { join } = await import('path');
+      const { existsSync } = await import('fs');
+      const sharp = await import('sharp');
+      
+      // Витягуємо base64 дані
+      const base64Data = avatarBase64.split(',')[1];
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      // Створюємо унікальне ім'я файлу
+      const timestamp = Date.now();
+      const filename = `avatar-${timestamp}.webp`;
+      
+      // Шлях до папки uploads
+      const baseUploadsRoot = process.env.UPLOADS_DIR || join(process.cwd(), 'public', 'uploads');
+      const uploadsDir = join(baseUploadsRoot, 'avatars');
+      
+      // Створюємо папку якщо не існує
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true });
+      }
+      
+      // Оптимізуємо зображення
+      const optimizedBuffer = await sharp.default(buffer)
+        .resize(400, 400, {
+          fit: 'cover',
+          position: 'center',
+        })
+        .webp({ quality: 85 })
+        .toBuffer();
+      
+      // Зберігаємо файл
+      const filePath = join(uploadsDir, filename);
+      await writeFile(filePath, optimizedBuffer);
+      
+      // Встановлюємо URL для БД
+      finalAvatarUrl = `/uploads/avatars/${filename}`;
+    } catch (err) {
+      console.error('Error saving avatar:', err);
+      // Продовжуємо реєстрацію без аватару
+    }
+  }
+
   // Створення користувача з усіма полями
   const now = new Date();
 
@@ -138,7 +186,7 @@ export async function POST(request: NextRequest) {
           email,
           phone: phone || null,
           city: city || null,
-          avatarUrl: avatarUrl || null,
+          avatarUrl: finalAvatarUrl || null,
           socialLinks: socialLinks ? socialLinks : null,
           passwordHash,
           isVerified: false,

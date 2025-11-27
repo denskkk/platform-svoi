@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff, ArrowLeft, Upload, X, Facebook, Instagram, Send } from 'lucide-react'
 import { cities } from '@/lib/constants'
+import Image from 'next/image'
 
 function RegisterIndividualForm() {
   const router = useRouter()
@@ -17,11 +18,37 @@ function RegisterIndividualForm() {
     password: '',
     confirmPassword: '',
     city: '',
+    instagram: '',
+    facebook: '',
+    telegram: '',
   })
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Файл занадто великий. Максимум 5MB')
+        return
+      }
+      setAvatarFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeAvatar = () => {
+    setAvatarFile(null)
+    setAvatarPreview('')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,6 +74,12 @@ function RegisterIndividualForm() {
     setLoading(true)
 
     try {
+      // Конвертуємо аватар в base64 якщо є
+      let avatarBase64 = null
+      if (avatarFile) {
+        avatarBase64 = avatarPreview // вже є base64 з FileReader
+      }
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -62,6 +95,12 @@ function RegisterIndividualForm() {
           role: 'user',
           accountType: 'basic',
           ref: searchParams?.get('ref') || undefined,
+          avatarBase64: avatarBase64,
+          socialLinks: {
+            instagram: formData.instagram.trim() || undefined,
+            facebook: formData.facebook.trim() || undefined,
+            telegram: formData.telegram.trim() || undefined,
+          },
         }),
       })
 
@@ -119,6 +158,44 @@ function RegisterIndividualForm() {
           )}
           
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Аватар */}
+            <div className="flex flex-col items-center mb-6">
+              <label className="block text-sm font-medium text-neutral-700 mb-3">
+                Фото профілю (необов&apos;язково)
+              </label>
+              <div className="relative">
+                {avatarPreview ? (
+                  <div className="relative w-32 h-32">
+                    <Image
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      fill
+                      className="rounded-full object-cover border-4 border-primary-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeAvatar}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-full cursor-pointer hover:border-primary-500 transition-colors bg-neutral-50">
+                    <Upload className="w-8 h-8 text-neutral-400 mb-2" />
+                    <span className="text-xs text-neutral-500 text-center px-2">Завантажити фото</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+              <p className="text-xs text-neutral-500 mt-2">Макс. 5MB</p>
+            </div>
+
             {/* Ім'я та Прізвище */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -289,6 +366,75 @@ function RegisterIndividualForm() {
                     <Eye className="h-5 w-5 text-neutral-400 hover:text-neutral-600" />
                   )}
                 </button>
+              </div>
+            </div>
+
+            {/* Соціальні мережі */}
+            <div className="border-t border-gray-200 pt-5 mt-5">
+              <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+                Соціальні мережі (необов&apos;язково)
+              </h3>
+              
+              <div className="space-y-4">
+                {/* Instagram */}
+                <div>
+                  <label htmlFor="instagram" className="block text-sm font-medium text-neutral-700 mb-2">
+                    Instagram
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Instagram className="h-5 w-5 text-pink-500" />
+                    </div>
+                    <input
+                      id="instagram"
+                      type="text"
+                      value={formData.instagram}
+                      onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                      className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="@username"
+                    />
+                  </div>
+                </div>
+
+                {/* Facebook */}
+                <div>
+                  <label htmlFor="facebook" className="block text-sm font-medium text-neutral-700 mb-2">
+                    Facebook
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Facebook className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <input
+                      id="facebook"
+                      type="text"
+                      value={formData.facebook}
+                      onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
+                      className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="facebook.com/username"
+                    />
+                  </div>
+                </div>
+
+                {/* Telegram */}
+                <div>
+                  <label htmlFor="telegram" className="block text-sm font-medium text-neutral-700 mb-2">
+                    Telegram
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Send className="h-5 w-5 text-blue-500" />
+                    </div>
+                    <input
+                      id="telegram"
+                      type="text"
+                      value={formData.telegram}
+                      onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
+                      className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="@username"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
