@@ -41,9 +41,7 @@ export function PopularProfiles() {
               Познайомся з нашими <span className="font-semibold text-accent-600">найкращими</span> фахівцями
             </p>
           </div>
-          <SkeletonGrid columns={4} count={4}>
-            <UserCardSkeleton />
-          </SkeletonGrid>
+          <SkeletonGrid count={4} type="user" />
         </div>
       </section>
     )
