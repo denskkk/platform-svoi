@@ -1,11 +1,14 @@
 /**
- * Публічна сторінка каталогу людей (користувачів) з пошуком та фільтрами
+ * Сторінка каталогу людей (користувачів) з пошуком та фільтрами
+ * ДОСТУП ТІЛЬКИ ДЛЯ ЗАРЕЄСТРОВАНИХ КОРИСТУВАЧІВ
  */
 import Link from 'next/link';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { Search, MapPin, Star, Users } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { translateAccountType } from '@/lib/translations';
+import { redirect } from 'next/navigation';
+import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -41,6 +44,19 @@ async function fetchUsers(q?: string, city?: string) {
 
 // Catalog of users (discovery)
 export default async function CatalogUsersPage({ searchParams }: { searchParams?: { q?: string; city?: string } }) {
+  // Перевірка авторизації - тільки зареєстровані користувачі можуть переглядати каталог
+  const cookieStore = cookies();
+  const token = cookieStore.get('token')?.value;
+  
+  if (!token) {
+    redirect('/auth/login?redirect=/catalog');
+  }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    redirect('/auth/login?redirect=/catalog');
+  }
+
   const q = searchParams?.q;
   const city = searchParams?.city;
   const users = await fetchUsers(q, city);

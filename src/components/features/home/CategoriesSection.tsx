@@ -50,7 +50,7 @@ export function CategoriesSection() {
             return (
               <Link
                 key={category.id}
-                href={`/catalog?category=${category.slug}`}
+                href={`/services?category=${category.slug}`}
                 className="group relative bg-white hover:bg-gradient-to-br hover:from-primary-50 hover:to-accent-50 rounded-2xl p-6 transition-all duration-300 hover:shadow-2xl border-2 border-neutral-100 hover:border-primary-300 card-hover"
               >
                 <div className="flex items-start justify-between">
@@ -96,7 +96,7 @@ export function CategoriesSection() {
               Не знайшли потрібну категорію?
             </p>
             <Link
-              href="/catalog"
+              href="/services"
               className="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary-700 font-bold rounded-xl hover:bg-yellow-50 transition-all duration-300 hover:shadow-xl transform hover:scale-105 btn-glow"
             >
               <span>Переглянути всі послуги</span>

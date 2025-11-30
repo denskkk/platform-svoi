@@ -1,14 +1,18 @@
 /**
- * Публічна сторінка каталогу послуг (БЕЗ потреби реєстрації)
+ * Сторінка каталогу послуг
+ * ДОСТУП ТІЛЬКИ ДЛЯ ЗАРЕЄСТРОВАНИХ КОРИСТУВАЧІВ
  */
 
 import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { Search, MapPin, Star, ArrowRight } from 'lucide-react';
 import { formatRating } from '@/lib/format';
 import { prisma } from '@/lib/prisma';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { expandSearchQuery, detectCategoryFromQuery, calculateRelevance } from '@/lib/searchKeywords';
+import { verifyToken } from '@/lib/auth';
 
 // Позначаємо сторінку як динамічну
 export const dynamic = 'force-dynamic';
@@ -184,6 +188,19 @@ export default async function ServicesPage({
 }: { 
   searchParams?: { q?: string; city?: string; category?: string } 
 }) {
+  // Перевірка авторизації - тільки зареєстровані користувачі можуть переглядати послуги
+  const cookieStore = cookies();
+  const token = cookieStore.get('token')?.value;
+  
+  if (!token) {
+    redirect('/auth/login?redirect=/services');
+  }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    redirect('/auth/login?redirect=/services');
+  }
+
   const q = searchParams?.q;
   const city = searchParams?.city;
   const category = searchParams?.category;
