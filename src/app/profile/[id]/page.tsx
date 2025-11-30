@@ -36,6 +36,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
+    // Перевірка авторизації
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push(`/auth/login?returnUrl=/profile/${params.id}`);
+      return;
+    }
+
     // Получить текущего пользователя
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
