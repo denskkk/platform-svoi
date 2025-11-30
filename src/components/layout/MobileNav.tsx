@@ -6,6 +6,7 @@ import { Home, Search, MessageCircle, User, UserPlus, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
+import { silentFetch } from '@/lib/silentFetch'
 
 const navItems = [
   { href: '/', icon: Home, label: 'Головна' },
@@ -33,7 +34,7 @@ export function MobileNav() {
         try { token = localStorage.getItem('token') } catch {}
         const headers: Record<string, string> = {}
         if (token) headers['Authorization'] = `Bearer ${token}`
-        const res = await fetch('/api/auth/me', { credentials: 'include', headers })
+        const res = await silentFetch('/api/auth/me', { credentials: 'include', headers })
         if (res.ok) {
           const data = await res.json()
           setUser(data.user)

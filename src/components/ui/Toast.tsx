@@ -65,34 +65,107 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 }
 
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
-  const icons = {
-    success: <CheckCircle className="w-5 h-5" />,
-    error: <XCircle className="w-5 h-5" />,
-    warning: <AlertCircle className="w-5 h-5" />,
-    info: <Info className="w-5 h-5" />
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(onClose, 300);
   };
 
-  const colors = {
-    success: 'bg-green-50 border-green-500 text-green-800',
-    error: 'bg-red-50 border-red-500 text-red-800',
-    warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
-    info: 'bg-blue-50 border-blue-500 text-blue-800'
+  useEffect(() => {
+    // Автоматичне закриття через 5 секунд
+    const timer = setTimeout(handleClose, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const styles = {
+    success: {
+      bg: 'bg-gradient-to-r from-green-50 to-emerald-50',
+      border: 'border-green-200',
+      iconBg: 'bg-green-500',
+      icon: <CheckCircle className="w-5 h-5 text-white" />,
+      text: 'text-green-800',
+      progressBar: 'bg-green-500',
+    },
+    error: {
+      bg: 'bg-gradient-to-r from-red-50 to-rose-50',
+      border: 'border-red-200',
+      iconBg: 'bg-red-500',
+      icon: <XCircle className="w-5 h-5 text-white" />,
+      text: 'text-red-800',
+      progressBar: 'bg-red-500',
+    },
+    warning: {
+      bg: 'bg-gradient-to-r from-yellow-50 to-orange-50',
+      border: 'border-yellow-200',
+      iconBg: 'bg-yellow-500',
+      icon: <AlertCircle className="w-5 h-5 text-white" />,
+      text: 'text-yellow-800',
+      progressBar: 'bg-yellow-500',
+    },
+    info: {
+      bg: 'bg-gradient-to-r from-blue-50 to-cyan-50',
+      border: 'border-blue-200',
+      iconBg: 'bg-blue-500',
+      icon: <Info className="w-5 h-5 text-white" />,
+      text: 'text-blue-800',
+      progressBar: 'bg-blue-500',
+    },
   };
+
+  const style = styles[toast.type];
 
   return (
     <div
-      className={`flex items-center gap-3 min-w-[320px] max-w-md p-4 rounded-lg border-l-4 shadow-lg ${colors[toast.type]} animate-slide-in-right`}
+      className={`
+        ${style.bg} ${style.border}
+        flex items-start gap-3 min-w-[320px] max-w-md p-4 rounded-xl border-2 shadow-2xl
+        transform transition-all duration-300 ease-out backdrop-blur-sm
+        ${isExiting ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100 animate-slide-in-right'}
+        relative overflow-hidden
+      `}
+      role="alert"
     >
-      <div className="flex-shrink-0">
-        {icons[toast.type]}
+      {/* Іконка з градієнтом */}
+      <div className={`${style.iconBg} rounded-lg p-2 flex-shrink-0 shadow-lg animate-scale-in`}>
+        {style.icon}
       </div>
-      <p className="flex-1 text-sm font-medium">{toast.message}</p>
+
+      {/* Повідомлення */}
+      <p className={`flex-1 text-sm font-medium ${style.text} leading-relaxed pt-1`}>
+        {toast.message}
+      </p>
+
+      {/* Кнопка закриття */}
       <button
-        onClick={onClose}
-        className="flex-shrink-0 hover:opacity-70 transition-opacity"
+        onClick={handleClose}
+        className="flex-shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors p-1 rounded-lg hover:bg-white/50"
+        aria-label="Закрити"
       >
         <X className="w-4 h-4" />
       </button>
+
+      {/* Прогрес бар */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 overflow-hidden">
+        <div
+          className={`h-full ${style.progressBar} animate-progress`}
+          style={{
+            animation: 'shrink-progress 5s linear',
+          }}
+        />
+      </div>
+
+      {/* Inline стилі для анімації прогресу */}
+      <style jsx>{`
+        @keyframes shrink-progress {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+      `}</style>
     </div>
   );
 }

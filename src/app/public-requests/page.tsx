@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, MapPin, Calendar, DollarSign, TrendingUp, Clock } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { SkeletonGrid, RequestCardSkeleton } from '@/components/ui/SkeletonCard';
 
 interface PublicRequest {
   id: number;
@@ -117,42 +119,28 @@ export default function PublicRequestsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            {/* Header skeleton */}
-            <div className="space-y-3">
-              <div className="h-10 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg w-1/3"></div>
-              <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg w-1/2"></div>
-            </div>
-            
-            {/* Filters skeleton */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="h-12 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg"></div>
-                <div className="h-12 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg"></div>
-                <div className="h-12 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg"></div>
-              </div>
-            </div>
-
-            {/* Cards skeleton */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                  <div className="space-y-4">
-                    <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-3/4"></div>
-                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-full"></div>
-                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-5/6"></div>
-                    <div className="flex items-center space-x-3 pt-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-gray-200 to-gray-100 rounded-full"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-3/4"></div>
-                        <div className="h-3 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {/* Header skeleton */}
+          <div className="mb-8 space-y-3 animate-fade-in">
+            <div className="h-12 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-xl w-2/5 shimmer-effect"></div>
+            <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg w-3/5"></div>
+          </div>
+          
+          {/* Filters skeleton */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100 mb-8 animate-slide-up">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="h-14 bg-gradient-to-r from-gray-200 to-gray-100 rounded-xl shimmer-effect"></div>
+              <div className="h-14 bg-gradient-to-r from-gray-200 to-gray-100 rounded-xl shimmer-effect"></div>
+              <div className="h-14 bg-gradient-to-r from-gray-200 to-gray-100 rounded-xl shimmer-effect"></div>
             </div>
           </div>
+
+          {/* Button skeleton */}
+          <div className="mb-8 animate-slide-up">
+            <div className="h-14 w-80 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-xl shimmer-effect"></div>
+          </div>
+
+          {/* Cards skeleton */}
+          <SkeletonGrid count={6} type="request" />
         </div>
       </div>
     );
@@ -263,9 +251,15 @@ export default function PublicRequestsPage() {
         )}
 
         {/* Empty State */}
-        {filteredRequests.length === 0 && (
+        {filteredRequests.length === 0 && !loading && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Заявки не знайдено</p>
+            <EmptyState
+              icon={Search}
+              title="Заявки не знайдено"
+              description="Спробуйте змінити параметри пошуку або створіть першу публічну заявку"
+              actionLabel="Створити заявку"
+              actionHref="/public-requests/create"
+            />
           </div>
         )}
       </div>

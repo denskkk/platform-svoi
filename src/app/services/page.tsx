@@ -408,6 +408,33 @@ export default async function ServicesPage({
           </>
         )}
 
+        {/* Empty state */}
+        {services.length === 0 && (
+          <div className="mt-12">
+            <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
+              <div className="mb-6 relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full animate-pulse opacity-50" />
+                </div>
+                <div className="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                  <Search className="w-10 h-10 text-white" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Послуги не знайдені</h3>
+              <p className="text-gray-600 max-w-md mb-8 leading-relaxed">
+                Спробуйте змінити параметри пошуку або перегляньте всі категорії послуг
+              </p>
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 btn-glow"
+              >
+                Переглянути всі послуги
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* CTA */}
         <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Приєднуйтесь до спільноти!</h2>

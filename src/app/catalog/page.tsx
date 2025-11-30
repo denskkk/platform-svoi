@@ -4,7 +4,7 @@
  */
 import Link from 'next/link';
 import { headers, cookies } from 'next/headers';
-import { Search, MapPin, Star, Users } from 'lucide-react';
+import { Search, MapPin, Star, Users, ArrowRight } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { translateAccountType } from '@/lib/translations';
 import { redirect } from 'next/navigation';
@@ -80,9 +80,29 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Знайдено: {users.length}</h2>
         {users.length === 0 ? (
-          <div className="bg-white p-10 rounded-lg shadow text-center text-gray-600">Нічого не знайдено.</div>
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
+            <div className="mb-6 relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-32 h-32 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full animate-pulse opacity-50" />
+              </div>
+              <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                <Users className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Користувачів не знайдено</h3>
+            <p className="text-gray-600 max-w-md mb-8 leading-relaxed">
+              Спробуйте змінити параметри пошуку або перегляньте всіх учасників спільноти
+            </p>
+            <Link
+              href="/catalog"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 btn-glow"
+            >
+              Переглянути всіх
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
             {users.map((u: any) => {
               // Для бізнес користувачів показуємо логотип компанії, якщо він є
               const displayImage = u.businessInfo?.logoUrl || u.avatarUrl;

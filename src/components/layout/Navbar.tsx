@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
+import { silentFetch } from '@/lib/silentFetch'
 // create page handles opening the request modal when needed
 
 export function Navbar() {
@@ -42,7 +43,7 @@ export function Navbar() {
     const syncWithServer = async () => {
       try {
         // Use cookie-based auth first (httpOnly cookie). Avoid relying on localStorage token.
-        const res = await fetch('/api/auth/me', {
+        const res = await silentFetch('/api/auth/me', {
           credentials: 'include',
         })
         if (res.ok) {
@@ -60,7 +61,7 @@ export function Navbar() {
           
           // Загрузка непрочитанных сообщений (cookie auth)
           try {
-            const unreadRes = await fetch('/api/conversations/unread-count', {
+            const unreadRes = await silentFetch('/api/conversations/unread-count', {
               credentials: 'include',
             })
             if (unreadRes.ok) {
@@ -73,7 +74,7 @@ export function Navbar() {
           
           // Загрузка новых заявок
           try {
-            const requestsRes = await fetch('/api/service-requests/new-count', {
+            const requestsRes = await silentFetch('/api/service-requests/new-count', {
               credentials: 'include',
             })
             if (requestsRes.ok) {
