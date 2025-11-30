@@ -80,6 +80,7 @@ export default function CreateServicePage() {
       if (typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
         const mode = params.get('mode');
+        
         if (mode === 'request') setOpenModal(true);
       }
     } catch {}
@@ -97,6 +98,25 @@ export default function CreateServicePage() {
       console.error('Error loading categories:', err);
     }
   };
+
+  // Окремий useEffect для автоматичного вибору категорії з URL
+  useEffect(() => {
+    if (categories.length === 0) return;
+    
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const categorySlug = params.get('category');
+        
+        if (categorySlug && !formData.categoryId) {
+          const category = categories.find(c => c.slug === categorySlug);
+          if (category) {
+            setFormData(prev => ({ ...prev, categoryId: category.id.toString() }));
+          }
+        }
+      }
+    } catch {}
+  }, [categories]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({

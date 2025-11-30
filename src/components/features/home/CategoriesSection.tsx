@@ -28,12 +28,11 @@ export function CategoriesSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category, index) => {
             return (
-              <Link
+              <div
                 key={category.id}
-                href={`/services?category=${category.slug}`}
                 className="group relative bg-white hover:bg-gradient-to-br hover:from-primary-50 hover:to-accent-50 rounded-2xl p-6 transition-all duration-300 hover:shadow-2xl border-2 border-neutral-100 hover:border-primary-300 card-hover"
               >
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     {/* Іконка категорії */}
                     <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary-100 to-accent-100 group-hover:from-primary-200 group-hover:to-accent-200 text-3xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
@@ -50,13 +49,22 @@ export function CategoriesSection() {
                       {category.description}
                     </p>
                   </div>
+                </div>
 
-                  {/* Стрілочка з анімацією */}
-                  <div className="ml-4 text-neutral-300 group-hover:text-primary-500 transition-all duration-300 group-hover:translate-x-1 group-hover:scale-125">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
+                {/* Дві кнопки: Переглянути та Створити */}
+                <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-neutral-100">
+                  <Link
+                    href={`/services?category=${category.slug}`}
+                    className="text-center px-3 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-medium rounded-lg transition-all duration-200 text-sm"
+                  >
+                    🔍 Знайти
+                  </Link>
+                  <Link
+                    href={`/services/create?category=${category.slug}`}
+                    className="text-center px-3 py-2 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white font-medium rounded-lg transition-all duration-200 text-sm shadow-md hover:shadow-lg"
+                  >
+                    ➕ Створити
+                  </Link>
                 </div>
 
                 {/* Акцентна лінія зліва з градієнтом */}
@@ -64,7 +72,7 @@ export function CategoriesSection() {
                 
                 {/* Світлова пляма при ховері */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-400/0 to-accent-400/0 group-hover:from-primary-400/10 group-hover:to-accent-400/10 rounded-2xl transition-all duration-300 pointer-events-none" />
-              </Link>
+              </div>
             )
           })}
         </div>
