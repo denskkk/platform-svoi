@@ -115,11 +115,43 @@ export default function PublicRequestsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-4">
-            <div className="h-12 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="animate-pulse space-y-6">
+            {/* Header skeleton */}
+            <div className="space-y-3">
+              <div className="h-10 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg w-1/3"></div>
+              <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg w-1/2"></div>
+            </div>
+            
+            {/* Filters skeleton */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="h-12 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg"></div>
+                <div className="h-12 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg"></div>
+                <div className="h-12 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg"></div>
+              </div>
+            </div>
+
+            {/* Cards skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                  <div className="space-y-4">
+                    <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-3/4"></div>
+                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-full"></div>
+                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-5/6"></div>
+                    <div className="flex items-center space-x-3 pt-4">
+                      <div className="w-10 h-10 bg-gradient-to-r from-gray-200 to-gray-100 rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-3/4"></div>
+                        <div className="h-3 bg-gradient-to-r from-gray-200 to-gray-100 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -127,26 +159,31 @@ export default function PublicRequestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4 animate-fade-in">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Публічні заявки</h1>
-          <p className="text-gray-600">Знайдіть замовлення та запропонуйте свої послуги</p>
+        <div className="mb-8 animate-slide-up">
+          <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full border border-blue-200">
+            <p className="text-sm font-semibold text-blue-700">📋 Публічні замовлення</p>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+            Публічні заявки
+          </h1>
+          <p className="text-lg text-gray-600">Знайдіть замовлення та запропонуйте свої послуги</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border-2 border-blue-100 hover:border-blue-200 transition-all animate-slide-up">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Пошук заявок..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
               />
             </div>
 
@@ -154,9 +191,9 @@ export default function PublicRequestsPage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-white font-medium"
             >
-              <option value="all">Всі категорії</option>
+              <option value="all">📂 Всі категорії</option>
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
@@ -166,9 +203,9 @@ export default function PublicRequestsPage() {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-white font-medium"
             >
-              <option value="all">Всі міста</option>
+              <option value="all">📍 Всі міста</option>
               {cities.map(city => (
                 <option key={city} value={city}>{city}</option>
               ))}
@@ -177,26 +214,30 @@ export default function PublicRequestsPage() {
         </div>
 
         {/* Create Request Button */}
-        <div className="mb-6">
+        <div className="mb-8 animate-slide-up">
           <Link
             href="/public-requests/create"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 btn-glow"
           >
-            <span>+</span>
+            <span className="text-2xl group-hover:rotate-90 transition-transform duration-300">+</span>
             <span>Створити публічну заявку (5 UCM)</span>
           </Link>
         </div>
 
         {/* Promoted Requests */}
         {promotedRequests.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-6 h-6 text-yellow-600" />
-              <h2 className="text-2xl font-bold text-gray-900">ТОП заявки</h2>
+          <div className="mb-10 animate-slide-up">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">🔥 ТОП заявки</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {promotedRequests.map(request => (
-                <RequestCard key={request.id} request={request} isPromoted={true} />
+              {promotedRequests.map((request, index) => (
+                <div key={request.id} style={{ animationDelay: `${index * 100}ms` }} className="animate-scale-in">
+                  <RequestCard request={request} isPromoted={true} />
+                </div>
               ))}
             </div>
           </div>
@@ -204,11 +245,18 @@ export default function PublicRequestsPage() {
 
         {/* Regular Requests */}
         {regularRequests.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Всі заявки</h2>
+          <div className="animate-slide-up">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <span className="text-2xl">📋</span>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">Всі заявки</h2>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {regularRequests.map(request => (
-                <RequestCard key={request.id} request={request} isPromoted={false} />
+              {regularRequests.map((request, index) => (
+                <div key={request.id} style={{ animationDelay: `${index * 50}ms` }} className="animate-scale-in">
+                  <RequestCard request={request} isPromoted={false} />
+                </div>
               ))}
             </div>
           </div>
@@ -241,68 +289,92 @@ function RequestCard({ request, isPromoted }: { request: PublicRequest; isPromot
 
   return (
     <Link href={`/service-requests/${request.id}`}>
-      <div className={`bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-6 cursor-pointer h-full ${isPromoted ? 'border-2 border-yellow-400 ring-2 ring-yellow-200' : ''}`}>
+      <div className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 cursor-pointer h-full transform hover:scale-105 ${
+        isPromoted 
+          ? 'border-4 border-yellow-400 ring-4 ring-yellow-100 bg-gradient-to-br from-yellow-50 to-orange-50' 
+          : 'border-2 border-gray-100 hover:border-blue-300'
+      }`}>
         {isPromoted && (
-          <div className="flex items-center gap-2 mb-3 text-yellow-600">
-            <TrendingUp className="w-5 h-5" />
-            <span className="font-semibold text-sm">ТОП</span>
+          <div className="flex items-center gap-2 mb-4 animate-pulse">
+            <div className="px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full shadow-md">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-white" />
+                <span className="font-bold text-sm text-white">ТОП</span>
+              </div>
+            </div>
           </div>
         )}
 
-        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">{request.title}</h3>
-        <p className="text-gray-600 mb-4 line-clamp-3">{request.description}</p>
+        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+          {request.title}
+        </h3>
+        <p className="text-gray-600 mb-4 line-clamp-3 leading-relaxed">{request.description}</p>
 
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-6">
           {request.category && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="font-medium">{request.category}</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg font-medium text-sm border border-blue-200">
+              <span>📂</span>
+              <span>{request.category}</span>
             </div>
           )}
 
-          {request.city && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <MapPin className="w-4 h-4" />
-              <span>{request.city}</span>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+            {request.city && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
+                <MapPin className="w-4 h-4 text-blue-500" />
+                <span className="font-medium">{request.city}</span>
+              </div>
+            )}
 
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <DollarSign className="w-4 h-4" />
-            <span>{formatBudget()}</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 rounded-lg border border-green-200">
+              <DollarSign className="w-4 h-4 text-green-600" />
+              <span className="font-medium text-green-700">{formatBudget()}</span>
+            </div>
+
+            {request.desiredDate && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-200">
+                <Calendar className="w-4 h-4 text-purple-600" />
+                <span className="font-medium text-purple-700">{new Date(request.desiredDate).toLocaleDateString('uk-UA')}</span>
+              </div>
+            )}
           </div>
-
-          {request.desiredDate && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar className="w-4 h-4" />
-              <span>{new Date(request.desiredDate).toLocaleDateString('uk-UA')}</span>
-            </div>
-          )}
         </div>
 
-        <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+        <div className="flex items-center gap-3 pt-4 border-t-2 border-gray-100">
           {request.client.avatarUrl ? (
             <img
               src={request.client.avatarUrl}
               alt={`${request.client.firstName} ${request.client.lastName}`}
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 shadow-md"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md ring-2 ring-blue-100 text-lg">
               {request.client.firstName[0]}{request.client.lastName[0]}
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-bold text-gray-900 truncate">
               {request.client.firstName} {request.client.lastName}
             </p>
             {request.client.city && (
-              <p className="text-xs text-gray-500 truncate">{request.client.city}</p>
+              <p className="text-xs text-gray-500 truncate flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {request.client.city}
+              </p>
             )}
           </div>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
             <Clock className="w-3 h-3" />
             <span>{new Date(request.createdAt).toLocaleDateString('uk-UA')}</span>
           </div>
+        </div>
+
+        {/* Hover indicator */}
+        <div className="mt-4 flex items-center justify-end gap-2 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-sm font-semibold">Переглянути деталі</span>
+          <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </div>
       </div>
     </Link>
