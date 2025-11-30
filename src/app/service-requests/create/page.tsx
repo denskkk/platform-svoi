@@ -40,6 +40,15 @@ export default function CreateServiceRequestPage() {
           return;
         }
 
+        const data = await res.json();
+        
+        // Глядачі не можуть створювати заявки
+        if (data.user?.accountType === 'viewer') {
+          alert('Глядачі не можуть створювати заявки. Змініть тип акаунту в налаштуваннях.');
+          router.push('/service-requests');
+          return;
+        }
+
         setIsAuthorized(true);
       } catch (error) {
         router.push('/auth/login?redirect=/service-requests/create');

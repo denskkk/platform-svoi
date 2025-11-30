@@ -324,12 +324,17 @@ export function Navbar() {
               </div>
             ) : user ? (
               <div className="hidden md:flex items-center space-x-3">
-                <Link href="/services/create" className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium">
-                  + Створити послугу
-                </Link>
-                <Link href="/requests/create" className="px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium">
-                  + Створити заявку
-                </Link>
+                {/* Глядачі не можуть створювати послуги */}
+                {user.accountType !== 'viewer' && (
+                  <Link href="/services/create" className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium">
+                    + Створити послугу
+                  </Link>
+                )}
+                {user.accountType !== 'viewer' && (
+                  <Link href="/requests/create" className="px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium">
+                    + Створити заявку
+                  </Link>
+                )}
                 <div className="relative">
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -616,7 +621,7 @@ export function Navbar() {
             )}
 
             {/* Создание контента */}
-            {user && (
+            {user && user.accountType !== 'viewer' && (
               <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
                 <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                   Створити

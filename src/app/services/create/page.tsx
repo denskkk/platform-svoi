@@ -55,6 +55,13 @@ export default function CreateServicePage() {
     setUser(userData);
     setToken(storedToken);
 
+    // Глядачі не можуть створювати послуги
+    if (userData.accountType === 'viewer') {
+      alert('Глядачі не можуть створювати послуги. Змініть тип акаунту в налаштуваннях.');
+      router.push('/services');
+      return;
+    }
+
     // If basic account: default price unit to 'уцм' but do not force the price
     try {
       if (userData && userData.accountType === 'basic') {

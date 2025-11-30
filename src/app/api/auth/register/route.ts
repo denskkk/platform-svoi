@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Дозволяємо тільки базовий безкоштовний акаунт (розширені та преміум прибрані)
-    const validAccountTypes = ['basic'];
+    // Дозволяємо базовий акаунт та акаунт глядача
+    const validAccountTypes = ['basic', 'viewer'];
     if (!validAccountTypes.includes(accountType)) {
       return NextResponse.json({ error: 'Невірний тип акаунту' }, { status: 400 });
     }

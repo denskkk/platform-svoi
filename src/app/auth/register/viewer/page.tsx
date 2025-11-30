@@ -97,7 +97,7 @@ function ViewerRegisterForm() {
           phone: formData.phone.trim() || undefined,
           city: formData.city.trim() || undefined,
           role: 'user',
-          accountType: 'basic',
+          accountType: 'viewer',
           ref: searchParams?.get('ref') || undefined,
           avatarBase64: avatarBase64,
           socialLinks: {

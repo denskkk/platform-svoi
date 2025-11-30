@@ -181,6 +181,14 @@ export async function POST(request: NextRequest) {
     const userId = Number(authResult.user.userId);
     const accountType = authResult.user.accountType;
 
+    // Глядачі не можуть створювати послуги
+    if (accountType === 'viewer') {
+      return NextResponse.json(
+        { error: 'Глядачі не можуть створювати послуги. Змініть тип акаунту в налаштуваннях.' },
+        { status: 403 }
+      );
+    }
+
     // Validate numeric price fields to avoid DB numeric overflow (Decimal(10,2) limit)
     const parseSafeNumber = (v: any): number | null => {
       if (v === undefined || v === null || v === '') return null;

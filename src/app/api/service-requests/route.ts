@@ -7,11 +7,20 @@ import { Decimal } from '@prisma/client/runtime/library';
 async function createHandler(request: NextRequest) {
   try {
     const userId = (request as any).user?.userId;
+    const accountType = (request as any).user?.accountType;
     
     if (!userId) {
       return NextResponse.json(
         { error: 'Необхідна авторизація' },
         { status: 401 }
+      );
+    }
+
+    // Глядачі не можуть створювати заявки
+    if (accountType === 'viewer') {
+      return NextResponse.json(
+        { error: 'Глядачі не можуть створювати заявки. Змініть тип акаунту в налаштуваннях.' },
+        { status: 403 }
       );
     }
 
