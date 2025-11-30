@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/Toast';
 
@@ -8,6 +8,7 @@ export default function CreateServiceRequestPage() {
   const router = useRouter();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -18,6 +19,35 @@ export default function CreateServiceRequestPage() {
     budgetTo: '',
     photos: [] as string[]
   });
+
+  // Перевірка авторизації
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          router.push('/auth/login?redirect=/service-requests/create');
+          return;
+        }
+
+        const res = await fetch('/api/auth/me', {
+          credentials: 'include',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        if (!res.ok) {
+          router.push('/auth/login?redirect=/service-requests/create');
+          return;
+        }
+
+        setIsAuthorized(true);
+      } catch (error) {
+        router.push('/auth/login?redirect=/service-requests/create');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const categories = [
     'Електрика',
@@ -54,6 +84,18 @@ export default function CreateServiceRequestPage() {
       setLoading(false);
     }
   };
+
+  // Показуємо лоадер під час перевірки авторизації
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Завантаження...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">

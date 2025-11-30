@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Heart, Mail, Phone } from 'lucide-react'
+import { Heart, Send } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -55,29 +55,18 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Контакти */}
+          {/* Адміністрація */}
           <div>
-            <h3 className="font-semibold mb-4">Контакти</h3>
-            <ul className="space-y-3">
-              <li>
-                <a 
-                  href="mailto:info@sviydliasvoyikh.ua" 
-                  className="flex items-center space-x-2 text-neutral-300 hover:text-primary-400 transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>info@sviydliasvoyikh.ua</span>
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="tel:+380123456789" 
-                  className="flex items-center space-x-2 text-neutral-300 hover:text-primary-400 transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>+380 12 345 67 89</span>
-                </a>
-              </li>
-            </ul>
+            <h3 className="font-semibold mb-4">Адміністрація</h3>
+            <a 
+              href="https://t.me/sviydlyasvoih" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-neutral-300 hover:text-primary-400 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+              <span>Свій для Своїх Адміністрація</span>
+            </a>
           </div>
         </div>
 

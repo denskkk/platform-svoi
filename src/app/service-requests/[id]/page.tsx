@@ -38,8 +38,40 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [showRespondModal, setShowRespondModal] = useState(false);
   const [selectingExecutor, setSelectingExecutor] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  // Перевірка авторизації
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          router.push('/auth/login?redirect=/service-requests');
+          return;
+        }
+
+        const res = await fetch('/api/auth/me', {
+          credentials: 'include',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        if (!res.ok) {
+          router.push('/auth/login?redirect=/service-requests');
+          return;
+        }
+
+        setIsAuthorized(true);
+      } catch (error) {
+        router.push('/auth/login?redirect=/service-requests');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
+    if (!isAuthorized) return;
+    
     // Отримати ID поточного користувача
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -48,7 +80,8 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
     }
     
     loadRequest();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthorized]);
 
   const loadRequest = async () => {
     try {

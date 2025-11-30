@@ -3,7 +3,7 @@
  */
 
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Clock, Send, Facebook, Instagram } from 'lucide-react';
+import { MapPin, Send } from 'lucide-react';
 
 export default function ContactsPage() {
   return (
@@ -27,40 +27,23 @@ export default function ContactsPage() {
             </h2>
 
             <div className="space-y-6">
-              {/* Email */}
+              {/* Telegram */}
               <div className="flex items-start">
                 <div className="bg-blue-100 p-3 rounded-lg">
-                  <Mail className="w-6 h-6 text-blue-600" />
+                  <Send className="w-6 h-6 text-blue-600" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="font-semibold text-gray-900">Email</h3>
+                  <h3 className="font-semibold text-gray-900">Telegram</h3>
                   <a
-                    href="mailto:info@sviydliasvoyikh.ua"
+                    href="https://t.me/sviydlyasvoih"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
                   >
-                    info@sviydliasvoyikh.ua
+                    Свій для Своїх Адміністрація
                   </a>
                   <p className="text-sm text-gray-500 mt-1">
-                    Відповідаємо протягом 24 годин
-                  </p>
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div className="flex items-start">
-                <div className="bg-green-100 p-3 rounded-lg">
-                  <Phone className="w-6 h-6 text-green-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="font-semibold text-gray-900">Телефон</h3>
-                  <a
-                    href="tel:+380501234567"
-                    className="text-blue-600 hover:underline"
-                  >
-                    +38 (050) 123-45-67
-                  </a>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Пн-Пт: 9:00 - 18:00 (Київ)
+                    Зв'язок з адміністрацією платформи
                   </p>
                 </div>
               </div>
@@ -80,53 +63,23 @@ export default function ContactsPage() {
                   </p>
                 </div>
               </div>
-
-              {/* Working Hours */}
-              <div className="flex items-start">
-                <div className="bg-orange-100 p-3 rounded-lg">
-                  <Clock className="w-6 h-6 text-orange-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="font-semibold text-gray-900">Години роботи</h3>
-                  <p className="text-gray-600">Понеділок - П&apos;ятниця: 9:00 - 18:00</p>
-                  <p className="text-gray-600">Субота: 10:00 - 14:00</p>
-                  <p className="text-gray-600">Неділя: Вихідний</p>
-                </div>
-              </div>
             </div>
 
             {/* Social Media */}
             <div className="mt-8 pt-8 border-t border-gray-200">
               <h3 className="font-semibold text-gray-900 mb-4">
-                Соціальні мережі
+                Зв'язок з нами
               </h3>
               <div className="flex gap-4">
                 <a
-                  href="https://facebook.com/sviydliasvoyikh"
+                  href="https://t.me/sviydlyasvoih"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="w-6 h-6" />
-                </a>
-                <a
-                  href="https://instagram.com/sviydliasvoyikh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-pink-600 text-white p-3 rounded-lg hover:bg-pink-700 transition"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-6 h-6" />
-                </a>
-                <a
-                  href="https://t.me/sviydliasvoyikh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600 transition"
+                  className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600 transition flex items-center gap-2"
                   aria-label="Telegram"
                 >
                   <Send className="w-6 h-6" />
+                  <span>Telegram</span>
                 </a>
               </div>
             </div>
@@ -292,13 +245,16 @@ export default function ContactsPage() {
             Не знайшли відповідь?
           </h2>
           <p className="text-lg mb-6 text-blue-100">
-            Напишіть нам! Ми відповімо протягом 24 годин.
+            Напишіть нам у Telegram! Ми відповімо якнайшвидше.
           </p>
           <a
-            href="mailto:info@sviydliasvoyikh.ua"
-            className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+            href="https://t.me/sviydlyasvoih"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
           >
-            Написати на email
+            <Send className="w-5 h-5" />
+            Написати в Telegram
           </a>
         </div>
       </section>

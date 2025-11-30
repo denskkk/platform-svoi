@@ -4,24 +4,6 @@ import Link from 'next/link'
 import { categories } from '@/lib/constants'
 
 export function CategoriesSection() {
-  // Іконки для категорій
-  const categoryIcons: { [key: string]: string } = {
-    'pobut': '🏠',
-    'auto': '🚗',
-    'krasa': '💇',
-    'osvita': '🎓',
-    'remont': '🔧',
-    'budivnytstvo': '🏗️',
-    'it': '💻',
-    'medytsyna': '⚕️',
-    'yurysprudentsiya': '⚖️',
-    'transport': '🚚',
-    'tvorchist': '🎨',
-    'sport': '⚽',
-    'kharchuvannya': '🍽️',
-    'torgivlya': '🛍️',
-  }
-
   return (
     <section className="py-20 bg-gradient-to-b from-neutral-50 via-white to-neutral-50 relative overflow-hidden">
       {/* Декоративні елементи фону */}
@@ -45,8 +27,6 @@ export function CategoriesSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category, index) => {
-            const icon = categoryIcons[category.slug] || '📋'
-            
             return (
               <Link
                 key={category.id}
@@ -57,7 +37,7 @@ export function CategoriesSection() {
                   <div className="flex-1">
                     {/* Іконка категорії */}
                     <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary-100 to-accent-100 group-hover:from-primary-200 group-hover:to-accent-200 text-3xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                      {icon}
+                      {category.emoji}
                     </div>
                     
                     {/* Назва */}
