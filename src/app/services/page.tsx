@@ -66,6 +66,7 @@ async function getServices(q?: string, city?: string, category?: string) {
 
     if (category) {
       where.category = { slug: category };
+      console.log('[Services Page] Filtering by category slug:', category);
     }
 
     const services = await prisma.service.findMany({
@@ -98,6 +99,11 @@ async function getServices(q?: string, city?: string, category?: string) {
         category: true,
       }
     });
+
+    console.log('[Services Page] Found services:', services.length);
+    if (category && services.length > 0) {
+      console.log('[Services Page] Sample service category:', services[0]?.category);
+    }
 
     // Also fetch active requests (promoted or public) and map to service-like shape
     try {
@@ -250,6 +256,15 @@ export default async function ServicesPage({
 
       {/* Services Grid */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {category && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-700">
+              Фільтр по категорії: <strong>{category}</strong> 
+              {services.length === 0 && ' (послуг не знайдено)'}
+            </p>
+          </div>
+        )}
+        
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
             {q ? `Результати пошуку "${q}"` : 'Доступні послуги та заявки'} ({totalCount})
