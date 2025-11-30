@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { checkAuth } from '@/lib/silentFetch'
 
 export function HeroSection() {
   const router = useRouter()
@@ -15,27 +16,8 @@ export function HeroSection() {
   // Мінімальна перевірка: якщо у localStorage є user — ховаємо CTA реєстрації
   useEffect(() => {
     const detect = async () => {
-      // Спершу перевіряємо localStorage для миттєвої відсутності миготіння
-      try {
-        const u = localStorage.getItem('user')
-        if (u) { setIsAuthed(true); return }
-      } catch {}
-
-      // Якщо у localStorage немає, пробуємо підтвердити сесію через сервер
-      try {
-        let token: string | null = null
-        try { token = localStorage.getItem('token') } catch {}
-        const headers: Record<string, string> = {}
-        if (token) headers['Authorization'] = `Bearer ${token}`
-
-        const res = await fetch('/api/auth/me', {
-          credentials: 'include',
-          headers,
-        })
-        setIsAuthed(res.ok)
-      } catch {
-        setIsAuthed(false)
-      }
+      const { isAuthed } = await checkAuth()
+      setIsAuthed(isAuthed)
     }
     detect()
   }, [])

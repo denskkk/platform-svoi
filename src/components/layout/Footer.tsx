@@ -34,22 +34,22 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/catalog" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  Каталог послуг
+                  Каталог людей
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="text-neutral-300 hover:text-primary-400 transition-colors">
+                  Послуги
+                </Link>
+              </li>
+              <li>
+                <Link href="/public-requests" className="text-neutral-300 hover:text-primary-400 transition-colors">
+                  Заявки
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="text-neutral-300 hover:text-primary-400 transition-colors">
                   Про нас
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  Як це працює
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  FAQ
                 </Link>
               </li>
             </ul>
@@ -73,11 +73,8 @@ export function Footer() {
         <div className="border-t border-neutral-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-400">
           <p>© {currentYear} СВІЙ ДЛЯ СВОЇХ. Всі права захищені.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-primary-400 transition-colors">
-              Політика конфіденційності
-            </Link>
-            <Link href="/terms" className="hover:text-primary-400 transition-colors">
-              Умови використання
+            <Link href="/contacts" className="hover:text-primary-400 transition-colors">
+              Контакти
             </Link>
           </div>
         </div>

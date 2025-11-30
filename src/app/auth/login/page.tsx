@@ -141,10 +141,10 @@ export default function LoginPage() {
                 </label>
               </div>
               <Link
-                href="/auth/forgot-password"
+                href="/contacts"
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                Забули пароль?
+                Потрібна допомога?
               </Link>
             </div>
 
