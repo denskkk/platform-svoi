@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, MapPin, Calendar, DollarSign, TrendingUp, Clock } from 'lucide-react';
 
@@ -26,6 +27,7 @@ interface PublicRequest {
 }
 
 export default function PublicRequestsPage() {
+  const router = useRouter();
   const [requests, setRequests] = useState<PublicRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<PublicRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,6 +36,13 @@ export default function PublicRequestsPage() {
   const [selectedCity, setSelectedCity] = useState<string>('all');
 
   useEffect(() => {
+    // Перевірка авторизації
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/auth/login?returnUrl=/public-requests');
+      return;
+    }
+    
     loadRequests();
     
     // Оновлювати список кожні 10 секунд для нових заявок
