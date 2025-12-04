@@ -17,6 +17,7 @@ import {
   Trash2,
   Image as ImageIcon,
 } from "lucide-react";
+import { cities } from '@/lib/constants';
 
 function BusinessRegistrationForm() {
   const router = useRouter();
@@ -76,25 +77,6 @@ function BusinessRegistrationForm() {
   // Файли для завантаження
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
-
-  const cities = [
-    "Київ",
-    "Харків",
-    "Одеса",
-    "Дніпро",
-    "Донецьк",
-    "Запоріжжя",
-    "Львів",
-    "Кривий Ріг",
-    "Миколаїв",
-    "Маріуполь",
-    "Вінниця",
-    "Херсон",
-    "Полтава",
-    "Чернігів",
-    "Черкаси",
-    "Суми",
-  ];
 
   const businessCategories = [
     { value: "education", label: "Освіта" },
