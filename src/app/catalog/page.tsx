@@ -21,29 +21,31 @@ function getBaseUrl() {
   return `${proto}://${host}`;
 }
 
-async function fetchUsers(q?: string, city?: string) {
+async function fetchUsers(q?: string, city?: string, page?: string) {
   const params = new URLSearchParams();
   if (q) params.set('q', q);
   if (city) params.set('city', city);
+  if (page) params.set('page', page);
+  params.set('limit', '30'); // Show 30 users per page
   const query = params.toString();
   const base = getBaseUrl();
-  const url = `${base}/api/users${query ? `?${query}` : ''}`;
+  const url = `${base}/api/users?${query}`;
   try {
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) {
       console.error('[catalog] /api/users responded with', res.status);
-      return [];
+      return { users: [], pagination: { page: 1, limit: 30, total: 0, pages: 0 } };
     }
     const data = await res.json();
-    return data.users || [];
+    return { users: data.users || [], pagination: data.pagination || { page: 1, limit: 30, total: 0, pages: 0 } };
   } catch (e) {
     console.error('[catalog] fetch failed for', url, e);
-    return [];
+    return { users: [], pagination: { page: 1, limit: 30, total: 0, pages: 0 } };
   }
 }
 
 // Catalog of users (discovery)
-export default async function CatalogUsersPage({ searchParams }: { searchParams?: { q?: string; city?: string } }) {
+export default async function CatalogUsersPage({ searchParams }: { searchParams?: { q?: string; city?: string; page?: string } }) {
   // Перевірка авторизації - тільки зареєстровані користувачі можуть переглядати каталог
   const cookieStore = cookies();
   const token = cookieStore.get('token')?.value;
@@ -59,7 +61,8 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
 
   const q = searchParams?.q;
   const city = searchParams?.city;
-  const users = await fetchUsers(q, city);
+  const page = searchParams?.page || '1';
+  const { users, pagination } = await fetchUsers(q, city, page);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -78,7 +81,10 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
         </div>
       </div>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Знайдено: {users.length}</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Знайдено: {pagination.total}</h2>
+          <p className="text-gray-600">Сторінка {pagination.page} з {pagination.pages}</p>
+        </div>
         {users.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
             <div className="mb-6 relative">
@@ -144,6 +150,33 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
                       <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{(() => { const n = Number(u.avgRating); return isNaN(n) ? '0.0' : n.toFixed(1); })()}</span>
                     )}
                   </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+        
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <div className="mt-12 flex justify-center gap-2">
+            {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((pageNum) => {
+              const isActive = pageNum === pagination.page;
+              const searchParamsObj = new URLSearchParams();
+              if (q) searchParamsObj.set('q', q);
+              if (city) searchParamsObj.set('city', city);
+              searchParamsObj.set('page', String(pageNum));
+              
+              return (
+                <Link
+                  key={pageNum}
+                  href={`/catalog?${searchParamsObj.toString()}`}
+                  className={`px-4 py-2 rounded-lg font-semibold transition ${
+                    isActive
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                  }`}
+                >
+                  {pageNum}
                 </Link>
               );
             })}

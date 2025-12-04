@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useRouter } from 'next/navigation';
 import { User, MapPin, Briefcase, Heart, Camera, Globe } from 'lucide-react';
+import { cities } from '@/lib/constants';
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -73,15 +74,6 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  const cities = [
-    'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
-    'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', 
-    'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', 
-    'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка',
-    'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук',
-    'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь'
-  ];
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
