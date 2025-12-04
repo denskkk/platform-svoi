@@ -1,22 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X } from 'lucide-react';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
-import { usePermission } from '@/hooks/usePermission';
 import { cities } from '@/lib/constants';
-const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
-// Permission gating removed for service creation to allow basic users to create 1 уцм services
 
-export default function CreateServicePage() {
+export default function EditServicePage() {
   const router = useRouter();
+  const params = useParams();
+  const serviceId = params?.id as string;
+  
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
   const [categories, setCategories] = useState<any[]>([]);
-  const { hasAccess, errorMessage } = usePermission('CREATE_SERVICE');
+  const [service, setService] = useState<any>(null);
   const [formData, setFormData] = useState({
     categoryId: '',
     title: '',
@@ -30,18 +29,17 @@ export default function CreateServicePage() {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [existingImageUrl, setExistingImageUrl] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [openModal, setOpenModal] = useState(false);
+  const [loadingService, setLoadingService] = useState(true);
 
   useEffect(() => {
-    // Проверить авторизацию
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     
-    // Не залогінений → реєстрація
     if (!storedUser || !storedToken) {
-      router.push('/auth/register');
+      router.push('/auth/login');
       return;
     }
 
@@ -49,39 +47,15 @@ export default function CreateServicePage() {
     setUser(userData);
     setToken(storedToken);
 
-    // Глядачі не можуть створювати послуги
     if (userData.accountType === 'viewer') {
-      alert('Глядачі не можуть створювати послуги. Змініть тип акаунту в налаштуваннях.');
+      alert('Глядачі не можуть редагувати послуги.');
       router.push('/services');
       return;
     }
 
-    // If basic account: default price unit to 'уцм' but do not force the price
-    try {
-      if (userData && userData.accountType === 'basic') {
-        setFormData(prev => ({ ...prev, priceUnit: 'уцм' }));
-      }
-    } catch {}
-    
-    // Установить город пользователя по умолчанию
-    setFormData(prev => ({
-      ...prev,
-      city: userData.city || '',
-    }));
-
-    // If URL contains ?mode=request, open the request modal automatically
-    try {
-      if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        const mode = params.get('mode');
-        
-        if (mode === 'request') setOpenModal(true);
-      }
-    } catch {}
-
-    // Загрузить категории
     loadCategories();
-  }, [router]);
+    loadService(storedToken);
+  }, [router, serviceId]);
 
   const loadCategories = async () => {
     try {
@@ -93,24 +67,53 @@ export default function CreateServicePage() {
     }
   };
 
-  // Окремий useEffect для автоматичного вибору категорії з URL
-  useEffect(() => {
-    if (categories.length === 0) return;
-    
+  const loadService = async (authToken: string) => {
     try {
-      if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        const categorySlug = params.get('category');
-        
-        if (categorySlug && !formData.categoryId) {
-          const category = categories.find(c => c.slug === categorySlug);
-          if (category) {
-            setFormData(prev => ({ ...prev, categoryId: category.id.toString() }));
-          }
-        }
+      const response = await fetch(`/api/services/${serviceId}`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Послугу не знайдено');
       }
-    } catch {}
-  }, [categories]);
+
+      const data = await response.json();
+      const svc = data.service;
+      
+      // Перевірка, чи це послуга користувача
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      if (svc.userId !== userData.id) {
+        alert('Ви можете редагувати тільки свої послуги');
+        router.push('/services');
+        return;
+      }
+
+      setService(svc);
+      setFormData({
+        categoryId: svc.categoryId?.toString() || '',
+        title: svc.title || '',
+        description: svc.description || '',
+        priceFrom: svc.priceFrom?.toString() || '',
+        priceTo: svc.priceTo?.toString() || '',
+        priceUnit: svc.priceUnit || 'УЦМ',
+        city: svc.city || '',
+        region: svc.region || '',
+        address: svc.address || '',
+      });
+      
+      if (svc.imageUrl) {
+        setExistingImageUrl(svc.imageUrl);
+      }
+      
+      setLoadingService(false);
+    } catch (err: any) {
+      console.error('Error loading service:', err);
+      setError(err.message || 'Помилка завантаження послуги');
+      setLoadingService(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -145,14 +148,15 @@ export default function CreateServicePage() {
   const removeImage = () => {
     setImageFile(null);
     setImagePreview('');
+    setExistingImageUrl('');
   };
 
   const uploadImage = async (): Promise<string | null> => {
     if (!imageFile) return null;
 
-  const formData = new FormData();
-  formData.append('file', imageFile);
-  formData.append('type', 'services');
+    const formData = new FormData();
+    formData.append('file', imageFile);
+    formData.append('type', 'services');
 
     try {
       const response = await fetch('/api/upload', {
@@ -166,7 +170,6 @@ export default function CreateServicePage() {
       const data = await response.json();
       
       if (response.ok && data.url) {
-        // Повертаємо URL з cache-busting параметром для миттєвого відображення
         const urlWithTimestamp = `${data.url}?t=${Date.now()}`;
         return urlWithTimestamp;
       }
@@ -190,15 +193,18 @@ export default function CreateServicePage() {
     setLoading(true);
 
     try {
-  let imageUrl = null;
+      let imageUrl = existingImageUrl;
       
-      // Завантажити фото якщо вибрано
+      // Завантажити нове фото якщо вибрано
       if (imageFile) {
-        imageUrl = await uploadImage();
+        const newImageUrl = await uploadImage();
+        if (newImageUrl) {
+          imageUrl = newImageUrl;
+        }
       }
 
-      const response = await fetch('/api/services', {
-        method: 'POST',
+      const response = await fetch(`/api/services/${serviceId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -207,7 +213,6 @@ export default function CreateServicePage() {
           categoryId: parseInt(formData.categoryId),
           title: formData.title,
           description: formData.description,
-          // Зберігаємо оригінальний без cache-busting (API /upload вже оптимізував файл)
           imageUrl: imageUrl ? imageUrl.split('?')[0] : null,
           priceFrom: formData.priceFrom ? parseFloat(formData.priceFrom) : null,
           priceTo: formData.priceTo ? parseFloat(formData.priceTo) : null,
@@ -221,49 +226,56 @@ export default function CreateServicePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка створення послуги');
+        throw new Error(data.error || 'Помилка оновлення послуги');
       }
 
-  // Примусово оновити профіль з cache-busting, щоб фото послуги з'явилось миттєво
-  const redirectTs = Date.now();
-  router.push(`/profile/${user.id}?t=${redirectTs}`);
+      // Перенаправити на сторінку послуги
+      router.push(`/services/${serviceId}`);
     } catch (err: any) {
-      setError(err.message || 'Помилка створення послуги');
+      setError(err.message || 'Помилка оновлення послуги');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) {
+  if (loadingService) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-gray-600">Завантаження...</div>
+        <div className="text-gray-600">Завантаження послуги...</div>
       </div>
     );
   }
 
-  
+  if (!user || !service) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-gray-600">Послугу не знайдено</div>
+      </div>
+    );
+  }
+
+  const displayImage = imagePreview || existingImageUrl;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <Link
-            href={`/profile/${user.id}`}
+            href={`/services/${serviceId}`}
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Назад до профілю
+            Назад до послуги
           </Link>
         </div>
 
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Створити послугу
+              Редагувати послугу
             </h1>
             <p className="text-gray-600">
-              Розкажіть про свою послугу або товар
+              Оновіть інформацію про вашу послугу
             </p>
           </div>
 
@@ -273,7 +285,7 @@ export default function CreateServicePage() {
             </div>
           )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Категорія */}
             <div>
               <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
@@ -335,10 +347,10 @@ export default function CreateServicePage() {
                 Фото послуги
               </label>
               
-              {imagePreview ? (
+              {displayImage ? (
                 <div className="relative inline-block">
                   <Image
-                    src={imagePreview}
+                    src={displayImage}
                     alt="Preview"
                     width={640}
                     height={320}
@@ -390,7 +402,6 @@ export default function CreateServicePage() {
                   step="0.01"
                   value={formData.priceFrom}
                   onChange={handleChange}
-                  // Allow basic users to set their service price (creation fee may still apply)
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="100"
                 />
@@ -421,7 +432,6 @@ export default function CreateServicePage() {
                   value={formData.priceUnit}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  // Allow selecting unit for all users
                 >
                   <option value="УЦМ">УЦМ</option>
                   <option value="уцм">уцм</option>
@@ -491,17 +501,16 @@ export default function CreateServicePage() {
                 disabled={loading}
                 className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Створюємо...' : 'Створити послугу'}
+                {loading ? 'Зберігаємо...' : 'Зберегти зміни'}
               </button>
               <Link
-                href={`/profile/${user.id}`}
+                href={`/services/${serviceId}`}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center"
               >
                 Скасувати
               </Link>
             </div>
           </form>
-          
         </div>
       </div>
     </div>
