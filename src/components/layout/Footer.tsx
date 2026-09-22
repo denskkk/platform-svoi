@@ -73,6 +73,12 @@ export function Footer() {
         <div className="border-t border-neutral-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-400">
           <p>© {currentYear} СВІЙ ДЛЯ СВОЇХ. Всі права захищені.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
+            <Link href="/privacy" className="hover:text-primary-400 transition-colors">
+              Політика конфіденційності
+            </Link>
+            <Link href="/account-deletion" className="hover:text-primary-400 transition-colors">
+              Видалення акаунта
+            </Link>
             <Link href="/contacts" className="hover:text-primary-400 transition-colors">
               Контакти
             </Link>

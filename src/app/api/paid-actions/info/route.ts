@@ -5,8 +5,12 @@
 
 import { NextResponse } from 'next/server'
 import { PAID_ACTION_COSTS, PAID_ACTION_DESCRIPTIONS } from '@/lib/ucm'
+import { isPaymentsEnabled } from '@/lib/featureFlags'
 
 export async function GET() {
+  if (!isPaymentsEnabled()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
   try {
     const actions = Object.keys(PAID_ACTION_COSTS).map(key => ({
       type: key,

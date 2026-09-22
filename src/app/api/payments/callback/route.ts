@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hasUcmKindColumn } from '@/lib/ucm'
 import { verifyCallbackSignature, CallbackPayload } from '@/lib/wayforpay'
+import { isPaymentsEnabled } from '@/lib/featureFlags'
 
 export async function POST(request: NextRequest) {
+  if (!isPaymentsEnabled()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
   try {
     const body = (await request.json()) as Partial<CallbackPayload>
     if (!body || !body.orderReference || !body.merchantSignature) {

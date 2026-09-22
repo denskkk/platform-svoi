@@ -12,6 +12,14 @@
 
 # production
 /build
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/capacitor-cordova-android-plugins/build/
+/android/.idea/
+/android/local.properties
+/.idea/
+*.tgz
 
 # misc
 .DS_Store
@@ -23,6 +31,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel

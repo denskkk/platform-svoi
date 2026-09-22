@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/api-middleware'
 import { prisma } from '@/lib/prisma'
 import { buildWayForPayFormPayload, makeOrderReference, WAYFORPAY_ENDPOINT } from '@/lib/wayforpay'
+import { isPaymentsEnabled } from '@/lib/featureFlags'
 
 export async function POST(request: NextRequest) {
+  if (!isPaymentsEnabled()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
   const { user, error } = await requireAuth(request)
   if (error) return error
 

@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "cap:sync": "npx cap sync android",
+    "build:mobile": "npm run build && npm run cap:sync",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
@@ -15,6 +17,8 @@
     ,"db:clear": "node scripts/clear-database.js"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
@@ -28,6 +32,7 @@
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",

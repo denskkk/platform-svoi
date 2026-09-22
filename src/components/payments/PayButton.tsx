@@ -2,6 +2,7 @@
 import React from 'react'
 import { formatUCM } from '@/lib/utils'
 import { useToast } from '@/components/ui/Toast'
+import { isPaymentsEnabled } from '@/lib/featureFlags'
 
 type Props = {
   amount: number
@@ -15,6 +16,10 @@ export function PayButton({ amount, description, className, children }: Props) {
   const toast = useToast();
 
   const handlePay = async () => {
+    if (!isPaymentsEnabled()) {
+      toast.warning('Функція тимчасово недоступна')
+      return
+    }
     try {
       setLoading(true)
       const token = typeof window !== 'undefined' ? (localStorage.getItem('token') || '') : ''
@@ -26,7 +31,7 @@ export function PayButton({ amount, description, className, children }: Props) {
         },
         body: JSON.stringify({ amount, description }),
       })
-      if (!res.ok) throw new Error('Не вдалося створити платіж')
+      if (!res.ok) throw new Error('Не вдалося виконати дію')
       const data = await res.json()
       const { payUrl, payload } = data
 
@@ -57,7 +62,7 @@ export function PayButton({ amount, description, className, children }: Props) {
       form.submit()
     } catch (e) {
       console.error(e)
-      toast.error('Сталася помилка під час створення платежу')
+      toast.error('Сталася помилка')
     } finally {
       setLoading(false)
     }

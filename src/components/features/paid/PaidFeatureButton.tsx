@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { Coins, AlertCircle, Loader2 } from 'lucide-react'
+import { isPaymentsEnabled } from '@/lib/featureFlags'
 
 interface PaidFeatureButtonProps {
   actionType: 'partner_search' | 'job_request' | 'service_request' | 'employee_search' | 'investor_search' | 'advanced_search'
@@ -37,10 +38,15 @@ export function PaidFeatureButton({
 }: PaidFeatureButtonProps) {
   const [loading, setLoading] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const paymentsEnabled = isPaymentsEnabled()
 
   const insufficientFunds = userBalance < cost
 
   const handleClick = () => {
+    if (!paymentsEnabled) {
+      onError?.('Функція тимчасово недоступна')
+      return
+    }
     if (insufficientFunds) {
       onError?.('Недостатньо уцмок на балансі')
       return
@@ -152,7 +158,7 @@ export function PaidFeatureButton({
   return (
     <button
       onClick={handleClick}
-      disabled={disabled || loading || insufficientFunds}
+      disabled={disabled || loading || insufficientFunds || !paymentsEnabled}
       className={`relative ${className} ${
         insufficientFunds
           ? 'opacity-50 cursor-not-allowed'
@@ -160,10 +166,12 @@ export function PaidFeatureButton({
       }`}
     >
       {children}
-      <div className="flex items-center gap-1 text-xs mt-1">
-        <Coins className="w-3 h-3" />
-        <span>{cost} уцмок</span>
-      </div>
+      {paymentsEnabled && (
+        <div className="flex items-center gap-1 text-xs mt-1">
+          <Coins className="w-3 h-3" />
+          <span>{cost} уцмок</span>
+        </div>
+      )}
       {insufficientFunds && (
         <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
           <AlertCircle className="w-4 h-4" />

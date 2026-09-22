@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { hasUcmKindColumn } from '@/lib/ucm';
 import { withAuth } from '@/lib/authMiddleware';
+import { isPaymentsEnabled } from '@/lib/featureFlags';
 
 const prisma = new PrismaClient();
 
@@ -21,6 +22,9 @@ async function checkAdmin(userId: number) {
 // POST /api/admin/grant-ucm - Видати УЦМ користувачу
 async function handler(request: NextRequest) {
   try {
+    if (!isPaymentsEnabled()) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
     const userId = (request as any).user?.userId;
     
     if (!userId) {

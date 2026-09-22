@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
+import { isPaymentsEnabled } from '@/lib/featureFlags'
 
 /**
  * POST /api/ucm/transfer
@@ -8,6 +9,9 @@ import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
  */
 async function handler(request: AuthenticatedRequest) {
   try {
+    if (!isPaymentsEnabled()) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     if (!request.user?.userId) {
       return NextResponse.json(
         { error: 'Необхідна авторизація' },

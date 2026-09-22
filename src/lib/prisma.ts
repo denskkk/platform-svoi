@@ -33,6 +33,7 @@ declare global {
 
 // Створити один екземпляр Prisma Client з оптимізаціями
 const rawDbUrl = process.env.DATABASE_URL;
+const dbUrl = rawDbUrl || 'postgresql://build:build@localhost:5432/build?schema=public';
 
 if (process.env.NODE_ENV === 'production') {
   // Log once at startup (safe, masked)
@@ -45,7 +46,7 @@ export const prisma = global.prisma || new PrismaClient({
   // КРИТИЧНО: Connection pooling для 100+ користувачів
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
+      url: dbUrl,
     },
   },
   

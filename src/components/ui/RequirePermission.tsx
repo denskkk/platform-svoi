@@ -10,6 +10,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { PERMISSIONS } from '@/lib/permissions';
 import { Lock, Crown, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { isPaymentsEnabled } from '@/lib/featureFlags';
 
 interface RequirePermissionProps {
   permission: keyof typeof PERMISSIONS;
@@ -28,6 +29,7 @@ export function RequirePermission({
   showUpgradeButton = true 
 }: RequirePermissionProps) {
   const { hasAccess, errorMessage, loading } = usePermission(permission);
+  const paymentsEnabled = isPaymentsEnabled();
 
   if (loading) {
     return (
@@ -56,7 +58,7 @@ export function RequirePermission({
       <p className="text-neutral-600 mb-4">
         {errorMessage}
       </p>
-      {showUpgradeButton && (
+      {showUpgradeButton && paymentsEnabled && (
         <Link
           href="/pricing"
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:shadow-lg hover:scale-105"

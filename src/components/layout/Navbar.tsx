@@ -285,6 +285,12 @@ export function Navbar() {
             >
               Контакти
             </Link>
+            <Link 
+              href="/privacy" 
+              className="text-neutral-700 hover:text-primary-600 transition-colors"
+            >
+              Конфіденційність
+            </Link>
           </div>
 
           {/* Права частина */}
@@ -312,6 +318,12 @@ export function Navbar() {
                       title={`${unreadCount} непрочитаних`}
                     >
                       {unreadCount > 99 ? '99+' : unreadCount}
+                <Link 
+                  href="/privacy" 
+                  className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition-colors"
+                >
+                  <span>Конфіденційність</span>
+                </Link>
                     </span>
                   )}
                 </Link>

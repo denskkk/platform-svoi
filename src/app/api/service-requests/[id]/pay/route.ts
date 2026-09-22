@@ -3,6 +3,7 @@ import { withAuth } from '@/lib/authMiddleware';
 import { prisma } from '@/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
 import { hasUcmTransactionsTable, hasUcmKindColumn } from '@/lib/ucm';
+import { isPaymentsEnabled } from '@/lib/featureFlags';
 
 // POST /api/service-requests/[id]/pay - Оплатити заявку в УЦМ
 async function handler(
@@ -10,6 +11,9 @@ async function handler(
   { params }: { params: { id: string } }
 ) {
   try {
+    if (!isPaymentsEnabled()) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
     const userId = (request as any).user?.userId;
     
     if (!userId) {
