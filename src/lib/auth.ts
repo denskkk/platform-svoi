@@ -7,10 +7,18 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '7d') as string;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'your-refresh-secret';
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const REFRESH_TOKEN_EXPIRES_IN = (process.env.REFRESH_TOKEN_EXPIRES_IN || '30d') as string;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is required. Set it in the environment before starting the app.');
+}
+
+if (!REFRESH_TOKEN_SECRET) {
+  throw new Error('REFRESH_TOKEN_SECRET is required. Set it in the environment before starting the app.');
+}
 
 export interface JWTPayload {
   userId: number;

@@ -2,8 +2,11 @@ const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
 
-// Use production database URL
-const DATABASE_URL = 'postgresql://admin:admin123@45.130.43.116:5432/sviydliasvoyikh';
+const DATABASE_URL = process.env.DATABASE_URL;
+
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL is required. Export it before running this migration script.');
+}
 
 const prisma = new PrismaClient({
   datasources: {

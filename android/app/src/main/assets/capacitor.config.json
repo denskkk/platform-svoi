@@ -1,5 +1,9 @@
 {
 	"appId": "com.svoi.platform",
 	"appName": "Свій для Своїх",
-	"webDir": "out"
+	"webDir": "out",
+	"server": {
+		"url": "https://sviydlyasvoih.com.ua",
+		"cleartext": false
+	}
 }

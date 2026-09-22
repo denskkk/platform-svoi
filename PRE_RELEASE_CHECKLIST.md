@@ -1,0 +1,31 @@
+# Pre-release checklist
+
+- [ ] Clone repository into a clean environment
+- [ ] Install dependencies with `npm install`
+- [ ] Copy `.env.example` to `.env` and fill real values
+- [ ] Ensure `.env` is local-only and not tracked
+- [ ] Ensure `DATABASE_URL` points to the correct PostgreSQL instance
+- [ ] Ensure `JWT_SECRET` and `REFRESH_TOKEN_SECRET` are strong and unique
+- [ ] Run `npx prisma generate`
+- [ ] Run `npx prisma db push`
+- [ ] Run `npm run build`
+- [ ] Run `npm run lint`
+- [ ] Run `npx cap sync android`
+- [ ] Check `android/local.properties` is local-only and absent from Git
+- [ ] Verify `capacitor.config.ts` points to production HTTPS URL
+- [ ] Verify `NEXT_PUBLIC_SITE_URL` matches production domain
+- [ ] Verify no `localhost` remains in production configuration
+- [ ] Verify `scripts/run-migration.js` does not contain hardcoded credentials
+- [ ] Check Android package name and app id are correct
+- [ ] Check `versionCode` and `versionName` are set correctly
+- [ ] Create keystore outside GitHub
+- [ ] Create `android/key.properties` locally from example
+- [ ] Build signed release AAB
+- [ ] Test release build on device or emulator
+- [ ] Verify auth flows, profile flows, and upload flows
+- [ ] Verify payment callback flow and production domain
+- [ ] Verify admin features remain protected
+- [ ] Verify no secrets in repo or logs
+- [ ] Verify `.gitignore` prevents secrets from leaking
+- [ ] Create final GitHub commit only after secret cleanup
+- [ ] Upload AAB to Google Play Console
