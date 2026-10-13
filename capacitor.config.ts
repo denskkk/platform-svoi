@@ -11,7 +11,7 @@ type CapacitorConfig = {
 };
 
 const config: CapacitorConfig = {
-  appId: 'com.svoi.platform',
+  appId: 'com.sviydlyasvoih.android',
   appName: 'Свій для Своїх',
   webDir: 'out',
   ...(process.env.CAPACITOR_SERVER_URL

@@ -44,7 +44,7 @@ Send these outside GitHub, for example via secure file transfer or password mana
 
 ## Package name / app id
 
-- Android applicationId: `com.svoi.platform`
+- Android applicationId: `com.sviydlyasvoih.android`
 - Config source: `android/app/build.gradle` and `capacitor.config.ts`
 
 ## Versioning

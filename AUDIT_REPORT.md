@@ -45,7 +45,7 @@ Reason: the repository had a previously tracked migration script with a real pro
 
 ## Android
 
-- `android/app/build.gradle` uses `applicationId "com.svoi.platform"` and a valid Android project layout.
+- `android/app/build.gradle` uses `applicationId "com.sviydlyasvoih.android"` and a valid Android project layout.
 - `android/local.properties` is machine-specific and must not be committed.
 - Android build itself succeeded in this environment after syncing web assets.
 - Release signing is still missing and must be configured before publishing.

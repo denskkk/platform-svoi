@@ -1,4 +1,4 @@
-package com.svoi.platform;
+package com.sviydlyasvoih.android;
 
 import com.getcapacitor.BridgeActivity;
 
