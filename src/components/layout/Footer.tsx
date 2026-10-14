@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Heart, Send } from 'lucide-react'
 
 export function Footer() {
@@ -11,9 +12,13 @@ export function Footer() {
           {/* Про проєкт */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">С</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Логотип СВІЙ ДЛЯ СВОЇХ"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full"
+              />
               <span className="font-display font-bold text-lg">
                 СВІЙ ДЛЯ СВОЇХ
               </span>
@@ -72,9 +77,12 @@ export function Footer() {
 
         <div className="border-t border-neutral-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-400">
           <p>© {currentYear} СВІЙ ДЛЯ СВОЇХ. Всі права захищені.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0">
             <Link href="/privacy" className="hover:text-primary-400 transition-colors">
               Політика конфіденційності
+            </Link>
+            <Link href="/terms-of-use" className="hover:text-primary-400 transition-colors">
+              Умови використання
             </Link>
             <Link href="/account-deletion" className="hover:text-primary-400 transition-colors">
               Видалення акаунта

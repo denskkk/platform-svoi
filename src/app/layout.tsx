@@ -1,10 +1,9 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Montserrat } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { MobileNav } from '@/components/layout/MobileNav'
-import { UpgradeBanner } from '@/components/ui/UpgradeBanner'
 import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
 
@@ -18,10 +17,32 @@ const montserrat = Montserrat({
   variable: '--font-montserrat',
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sviydlyasvoih.com.ua'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'СВІЙ ДЛЯ СВОЇХ — Українська платформа послуг',
   description: 'Підтримуй своїх — знайди потрібну людину поруч. Платформа для пошуку та пропозиції послуг від українців для українців.',
   keywords: 'українські послуги, майстри, фахівці, підтримка українського, свій для своїх',
+  applicationName: 'СВІЙ ДЛЯ СВОЇХ',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'uk_UA',
+    siteName: 'СВІЙ ДЛЯ СВОЇХ',
+    title: 'СВІЙ ДЛЯ СВОЇХ — Українська платформа послуг',
+    description: 'Підтримуй своїх — знайди потрібну людину поруч.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'СВІЙ ДЛЯ СВОЇХ' }],
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#FFCA00',
 }
 
 export default function RootLayout({
@@ -35,7 +56,6 @@ export default function RootLayout({
         <ToastProvider>
           <AdminRedirect />
           <Navbar />
-          <UpgradeBanner />
           <main className="min-h-screen pb-20 md:pb-0">
             {children}
           </main>

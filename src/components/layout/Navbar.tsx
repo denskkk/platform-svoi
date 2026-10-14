@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, User, Menu, LogOut, MessageCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -16,9 +17,6 @@ export function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [isLoading, setIsLoading] = useState(false) // Изменено с true на false
   const [unreadCount, setUnreadCount] = useState(0)
-  const [balance, setBalance] = useState<number | null>(null)
-  const [earnIncompleteCount, setEarnIncompleteCount] = useState(0)
-  const [profileCompletionPct, setProfileCompletionPct] = useState<number | null>(null)
   const [newRequestsCount, setNewRequestsCount] = useState(0)
   // navbar no longer opens the request modal directly; create page handles request flow
 
@@ -49,12 +47,6 @@ export function Navbar() {
         if (res.ok) {
           const data = await res.json()
           setUser(data.user)
-          if (typeof data.user?.balanceUcm === 'number') {
-            setBalance(data.user.balanceUcm)
-          } else if (data.user?.balanceUcm) {
-            const n = Number(data.user.balanceUcm)
-            if (!Number.isNaN(n)) setBalance(n)
-          }
           try {
             localStorage.setItem('user', JSON.stringify(data.user))
           } catch {}
@@ -174,57 +166,6 @@ export function Navbar() {
     }
   }, [user])
 
-  // Fetch earning progress to show badge with remaining unique tasks
-  useEffect(() => {
-    const fetchEarn = async () => {
-      try {
-        const res = await fetch('/api/earning/progress', {
-          credentials: 'include',
-        })
-        if (!res.ok) return
-        const data = await res.json()
-        if (Array.isArray(data.progress)) {
-          const count = data.progress.filter((t: any) => !t.completed && !t.isRepeatable).length
-          setEarnIncompleteCount(count)
-        }
-      } catch {
-        // silent
-      }
-    }
-    
-    if (!isLoading && user) {
-      fetchEarn()
-      const onEarningUpdated = () => { fetchEarn(); };
-      window.addEventListener('earningUpdated', onEarningUpdated as EventListener);
-      return () => { window.removeEventListener('earningUpdated', onEarningUpdated as EventListener); };
-    }
-  }, [user, isLoading])
-
-  // Fetch profile completion percent
-  useEffect(() => {
-    const fetchCompletion = async () => {
-      try {
-        const res = await fetch('/api/earning/progress', { credentials: 'include' })
-        if (!res.ok) return
-        const data = await res.json()
-        if (Array.isArray(data.progress)) {
-          const prof = data.progress.find((p: any) => p.action === 'PROFILE_COMPLETE')
-          if (prof) {
-            const pct = prof.progressMax > 0 ? (prof.progress / prof.progressMax) * 100 : 0
-            setProfileCompletionPct(Math.round(pct))
-          }
-        }
-      } catch {}
-    }
-    
-    if (!isLoading && user) {
-      fetchCompletion()
-      const onEarningUpdated2 = () => { fetchCompletion(); };
-      window.addEventListener('earningUpdated', onEarningUpdated2 as EventListener);
-      return () => { window.removeEventListener('earningUpdated', onEarningUpdated2 as EventListener); };
-    }
-  }, [user, isLoading])
-
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
@@ -244,16 +185,24 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 gap-4">
           {/* Лого */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <span className="font-display font-bold text-lg hidden sm:block">
+          <Link href="/" className="flex items-center space-x-2 group shrink-0" aria-label="СВІЙ ДЛЯ СВОЇХ — на головну">
+            <Image
+              src="/logo.png"
+              alt="Логотип СВІЙ ДЛЯ СВОЇХ"
+              width={40}
+              height={40}
+              priority
+              className="w-10 h-10 rounded-full"
+            />
+            <span className="font-display font-bold text-sm min-[400px]:text-base sm:text-lg leading-tight whitespace-nowrap">
               СВІЙ ДЛЯ СВОЇХ
             </span>
           </Link>
 
           {/* Desktop меню */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 whitespace-nowrap text-sm lg:text-base">
             <Link 
               href="/catalog" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
@@ -286,14 +235,14 @@ export function Navbar() {
             </Link>
             <Link 
               href="/privacy" 
-              className="text-neutral-700 hover:text-primary-600 transition-colors"
+              className="hidden 2xl:block text-neutral-700 hover:text-primary-600 transition-colors"
             >
               Конфіденційність
             </Link>
           </div>
 
           {/* Права частина */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Link 
               href="/services"
               className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
@@ -317,12 +266,6 @@ export function Navbar() {
                       title={`${unreadCount} непрочитаних`}
                     >
                       {unreadCount > 99 ? '99+' : unreadCount}
-                <Link 
-                  href="/privacy" 
-                  className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition-colors"
-                >
-                  <span>Конфіденційність</span>
-                </Link>
                     </span>
                   )}
                 </Link>
@@ -338,13 +281,13 @@ export function Navbar() {
               <div className="hidden md:flex items-center space-x-3">
                 {/* Глядачі не можуть створювати послуги */}
                 {user.accountType !== 'viewer' && (
-                  <Link href="/services/create" className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium">
-                    + Створити послугу
+                  <Link href="/services/create" className="px-3 xl:px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
+                    + <span className="hidden xl:inline">Створити </span>послугу
                   </Link>
                 )}
                 {user.accountType !== 'viewer' && (
-                  <Link href="/requests/create" className="px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium">
-                    + Створити заявку
+                  <Link href="/requests/create" className="px-3 xl:px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium whitespace-nowrap">
+                    + <span className="hidden xl:inline">Створити </span>заявку
                   </Link>
                 )}
                 <div className="relative">
@@ -357,11 +300,6 @@ export function Navbar() {
                       <span className="font-medium text-neutral-700 truncate text-sm">
                         {user?.businessInfo?.companyName || user?.firstName}
                       </span>
-                      {balance !== null && (
-                        <span className="text-[11px] text-neutral-500 font-normal">
-                          {balance.toFixed(2)} уцмка
-                        </span>
-                      )}
                     </div>
                   </button>
 
@@ -380,46 +318,12 @@ export function Navbar() {
                       >
                         Мій профіль
                       </Link>
-                      {profileCompletionPct !== null && profileCompletionPct < 100 && (
-                        <div className="px-4 py-2 text-neutral-700 flex items-center justify-between text-xs">
-                          <span>Заповнено</span>
-                          <span className="font-medium text-indigo-600">{profileCompletionPct}%</span>
-                        </div>
-                      )}
-                      {balance !== null && (
-                        <div className="px-4 py-2 text-neutral-700 flex items-center justify-between">
-                          <span>Баланс</span>
-                          <span className="font-medium">{balance.toFixed(2)} уцмка</span>
-                        </div>
-                      )}
                       <Link
                         href="/profile/edit"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
                       >
                         Редагувати профіль
-                      </Link>
-                      <Link
-                        href="/earn"
-                        className="block px-4 py-2 text-green-600 hover:bg-green-50 font-medium"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        💰 Як заробити уцмки
-                        {earnIncompleteCount > 0 && (
-                          <span
-                            className="ml-2 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[11px] leading-none rounded-full bg-green-600 text-white font-semibold"
-                            title={`${earnIncompleteCount} невиконаних завдань`}
-                          >
-                            {earnIncompleteCount}
-                          </span>
-                        )}
-                      </Link>
-                      <Link
-                        href="/upgrade"
-                        className="block px-4 py-2 text-indigo-600 hover:bg-indigo-50 font-medium"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        ⚡ Покращити акаунт
                       </Link>
                       <div className="border-t border-neutral-200 my-2"></div>
                       <Link
@@ -481,21 +385,11 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium"
+                  className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
                 >
                   Створити профіль
                 </Link>
               </div>
-            )}
-
-            {/* Mobile: Показати CTA реєстрації одразу у шапці, якщо не залогінений */}
-            {!isLoading && !user && (
-              <Link
-                href="/auth/register"
-                className="md:hidden px-3 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium text-sm"
-              >
-                Створити профіль
-              </Link>
             )}
 
             <button
@@ -522,16 +416,6 @@ export function Navbar() {
                     <p className="font-semibold text-neutral-900 truncate">
                       {user?.businessInfo?.companyName || `${user?.firstName} ${user?.lastName}`}
                     </p>
-                    {balance !== null && (
-                      <p className="text-sm text-neutral-600">
-                        💰 {balance.toFixed(2)} уцмка
-                      </p>
-                    )}
-                    {profileCompletionPct !== null && profileCompletionPct < 100 && (
-                      <p className="text-xs text-indigo-600 font-medium mt-1">
-                        Профіль {profileCompletionPct}% заповнений
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -689,39 +573,38 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Заработок и улучшения */}
-            {user && (
-              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
-                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  Розвиток
-                </p>
-                <Link
-                  href="/earn"
-                  className="flex items-center justify-between px-4 py-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <div className="flex items-center">
-                    <span className="text-xl mr-3">💰</span>
-                    <span>Як заробити уцмки</span>
-                  </div>
-                  {earnIncompleteCount > 0 && (
-                    <span className="bg-green-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
-                      {earnIncompleteCount}
-                    </span>
-                  )}
-                </Link>
-                <Link
-                  href="/upgrade"
-                  className="flex items-center px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">⚡</span>
-                  <span>Покращити акаунт</span>
-                </Link>
-              </div>
-            )}
+            {/* Правова інформація (у мобільному застосунку футер прихований) */}
+            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+              <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                Інформація
+              </p>
+              <Link
+                href="/privacy"
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">🔒</span>
+                <span>Політика конфіденційності</span>
+              </Link>
+              <Link
+                href="/terms-of-use"
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">📄</span>
+                <span>Умови використання</span>
+              </Link>
+              <Link
+                href="/account-deletion"
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">🗑️</span>
+                <span>Видалення акаунта</span>
+              </Link>
+            </div>
 
-            {/* Авторизация / Выход */}
+            {/* Авторизація / Вихід */}
             <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1 pb-4">
               {user ? (
                 <>

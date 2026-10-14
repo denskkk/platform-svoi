@@ -1,4 +1,12 @@
 /** @type {import('next').NextConfig} */
+const siteHost = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://sviydlyasvoih.com.ua').hostname
+  } catch {
+    return 'sviydlyasvoih.com.ua'
+  }
+})()
+
 const nextConfig = {
   reactStrictMode: true,
   
@@ -15,8 +23,9 @@ const nextConfig = {
   // Оптимізація зображень
   // Замінено deprecated `images.domains` на `images.remotePatterns`
   images: {
-    // Разрешаем загрузку изображений с localhost (dev) по HTTP/HTTPS
+    // Дозволяємо зображення з боєвого домену та localhost (dev)
     remotePatterns: [
+      { protocol: 'https', hostname: siteHost },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'localhost' },
     ],

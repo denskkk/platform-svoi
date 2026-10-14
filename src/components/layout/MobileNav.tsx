@@ -85,7 +85,7 @@ export function MobileNav() {
             <span className="text-xs font-semibold">Створити профіль</span>
           </Link>
           <Link
-            href="/catalog"
+            href="/auth/register/viewer"
             className={cn('flex flex-col items-center justify-center space-y-1 text-neutral-700 hover:text-primary-600')}
           >
             <Eye className="w-6 h-6" />
