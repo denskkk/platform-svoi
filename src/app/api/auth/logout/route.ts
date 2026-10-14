@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthCookie } from '@/lib/cookies';
+import { hashToken } from '@/lib/auth';
 import { removeAuthCookie } from '@/lib/cookies';
 
 export async function POST(request: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     // Якщо є токен — спробуємо видалити сесію (не критично, якщо не знайдено)
     if (token) {
       try {
-        await prisma.session.deleteMany({ where: { tokenHash: token } });
+        await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
       } catch (e) {
         // Ігноруємо помилку видалення сесії, вихід все одно відбудеться
         console.warn('Logout: failed to delete session by tokenHash');

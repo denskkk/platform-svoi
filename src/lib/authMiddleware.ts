@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { getAuthCookie } from '@/lib/cookies';
 
 export interface AuthenticatedRequest extends NextRequest {
@@ -51,8 +52,19 @@ export async function withAuth(
   }
 
   // Додаємо дані користувача до request
+  const dbUser = await prisma.user.findUnique({
+    where: { id: Number(payload.userId) },
+    select: { isActive: true, accountType: true, role: true }
+  });
+  if (!dbUser || !dbUser.isActive) {
+    return NextResponse.json(
+      { error: 'Акаунт не знайдено або деактивовано' },
+      { status: 401 }
+    );
+  }
+
   const authenticatedReq = request as AuthenticatedRequest;
-  authenticatedReq.user = payload;
+  authenticatedReq.user = { ...payload, accountType: dbUser.accountType, role: dbUser.role };
 
   return handler(authenticatedReq);
 }

@@ -17,6 +17,35 @@ export interface AuthenticatedRequest extends NextRequest {
 }
 
 /**
+ * Повертає актуальні дані користувача, якщо він існує та активний (інакше null)
+ */
+export async function loadActiveUser(userId: number) {
+  const user = await prisma.user.findUnique({
+    where: { id: Number(userId) },
+    select: { id: true, isActive: true, accountType: true, role: true }
+  });
+  return user && user.isActive ? user : null;
+}
+
+/**
+ * Перевірка користувача для чату: існує й активний; для запису (створення діалогу / відправка) — не «Глядач».
+ * Повертає NextResponse з помилкою або null, якщо все гаразд.
+ */
+export async function guardChatUser(userId: number, options: { write: boolean }): Promise<NextResponse | null> {
+  const dbUser = await loadActiveUser(userId);
+  if (!dbUser) {
+    return NextResponse.json({ error: 'Акаунт не знайдено або деактивовано' }, { status: 401 });
+  }
+  if (options.write && dbUser.accountType === 'viewer') {
+    return NextResponse.json(
+      { error: 'Глядачі не можуть писати у чаті. Перейдіть на звичайний профіль на сторінці свого профілю.' },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
+/**
  * Перевірити що користувач авторизований
  */
 export async function requireAuth(request: NextRequest): Promise<{ user: any; error?: NextResponse }> {
@@ -46,7 +75,19 @@ export async function requireAuth(request: NextRequest): Promise<{ user: any; er
       };
     }
 
-    return { user: decoded };
+    // Користувач мусить існувати й бути активним; тип акаунту беремо з БД (токен може бути застарілим)
+    const dbUser = await loadActiveUser(decoded.userId);
+    if (!dbUser) {
+      return {
+        user: null,
+        error: NextResponse.json(
+          { error: 'Акаунт не знайдено або деактивовано' },
+          { status: 401 }
+        )
+      };
+    }
+
+    return { user: { ...decoded, accountType: dbUser.accountType, role: dbUser.role } };
   } catch (error) {
     return {
       user: null,
@@ -94,47 +135,6 @@ export async function requireAuthWithPermission(
   const permissionError = requirePermission(user.accountType, permission);
   if (permissionError) {
     return { user, error: permissionError };
-  }
-
-  // Додатково: перевірка активної підписки для платних функцій
-  const paidPermissions: Array<keyof typeof PERMISSIONS> = [
-    'CREATE_REQUEST','VIEW_REQUESTS','SEND_MESSAGE','VIEW_MESSAGES',
-    'CREATE_SERVICE','EDIT_SERVICE','DELETE_SERVICE','RESPOND_TO_REQUEST',
-    'VIEW_BUSINESS_PROFILE','EDIT_BUSINESS_PROFILE','SEARCH_PARTNERS','SEARCH_INVESTORS','SEARCH_CUSTOMERS',
-    'AUTO_PROPOSALS','UCM_ANALYSIS','PRIORITY_SEARCH','ADVANCED_ANALYTICS',
-  ];
-
-  if (paidPermissions.includes(permission)) {
-    try {
-      const dbUser = await prisma.user.findUnique({
-        where: { id: user.userId },
-        select: { accountType: true, subscriptionActive: true, subscriptionExpiresAt: true }
-      });
-      const now = new Date();
-      const isExpired = dbUser?.subscriptionExpiresAt ? new Date(dbUser.subscriptionExpiresAt) < now : false;
-      const isActive = Boolean(dbUser?.subscriptionActive) && !isExpired;
-
-      // Для базового акаунту платні функції не дозволені — вже відфільтровано вище по accountType
-      // Для інших — потрібна активна підписка
-      if (dbUser && dbUser.accountType !== 'basic' && !isActive) {
-        return {
-          user,
-          error: NextResponse.json(
-            {
-              error: 'Потрібна активна підписка для використання цієї функції. Ваш пробний період завершено.',
-              permission,
-              accountType: dbUser.accountType,
-              subscriptionActive: dbUser.subscriptionActive,
-              subscriptionExpiresAt: dbUser.subscriptionExpiresAt,
-            },
-            { status: 403 }
-          )
-        };
-      }
-    } catch (e) {
-      // У випадку збоїв перевірки — не блокуємо запит, але логуючи
-      console.warn('[requireAuthWithPermission] Не вдалося перевірити підписку:', e);
-    }
   }
 
   return { user };

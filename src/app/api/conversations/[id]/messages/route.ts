@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
+import { guardChatUser } from '@/lib/api-middleware';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,6 +60,9 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    const readGuard = await guardChatUser(userId, { write: false });
+    if (readGuard) return readGuard;
 
     // Проверяем доступ к диалогу
     const conversation = await prisma.conversation.findFirst({
@@ -171,6 +175,9 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    const writeGuard = await guardChatUser(userId, { write: true });
+    if (writeGuard) return writeGuard;
 
     const body = await request.json();
     const { content } = body;

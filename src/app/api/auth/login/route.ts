@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { comparePassword, generateToken } from '@/lib/auth';
+import { comparePassword, generateToken, hashToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
 
@@ -59,7 +59,6 @@ export async function POST(request: NextRequest) {
         accountType: true,
         avatarUrl: true,
         city: true,
-        balanceUcm: true,
         isAdmin: true,
         isVerified: true,
         isActive: true,
@@ -98,7 +97,7 @@ export async function POST(request: NextRequest) {
     await prisma.session.create({
       data: {
         userId: user.id,
-        tokenHash: token,
+        tokenHash: hashToken(token),
         expiresAt,
         ipAddress: request.ip || 'unknown',
         userAgent: request.headers.get('user-agent') || 'unknown',

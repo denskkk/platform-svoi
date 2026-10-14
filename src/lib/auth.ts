@@ -6,19 +6,20 @@
 
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { createHash, randomUUID } from 'crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required. Set it in the environment before starting the app.`);
+  }
+  return value;
+}
+
+const JWT_SECRET: string = requireEnv('JWT_SECRET');
 const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '7d') as string;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET: string = requireEnv('REFRESH_TOKEN_SECRET');
 const REFRESH_TOKEN_EXPIRES_IN = (process.env.REFRESH_TOKEN_EXPIRES_IN || '30d') as string;
-
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET is required. Set it in the environment before starting the app.');
-}
-
-if (!REFRESH_TOKEN_SECRET) {
-  throw new Error('REFRESH_TOKEN_SECRET is required. Set it in the environment before starting the app.');
-}
 
 export interface JWTPayload {
   userId: number;
@@ -46,9 +47,18 @@ export async function comparePassword(password: string, hash: string): Promise<b
  * Створити JWT токен
  */
 export function generateToken(payload: JWTPayload): string {
+  // jwtid робить кожен токен унікальним (інакше два входи в одну секунду дають однаковий токен)
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN
+    expiresIn: JWT_EXPIRES_IN,
+    jwtid: randomUUID()
   } as SignOptions);
+}
+
+/**
+ * SHA-256 хеш токена для збереження в таблиці сесій (сам токен у БД не зберігаємо)
+ */
+export function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
 }
 
 /**
@@ -56,7 +66,8 @@ export function generateToken(payload: JWTPayload): string {
  */
 export function generateRefreshToken(payload: JWTPayload): string {
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-    expiresIn: REFRESH_TOKEN_EXPIRES_IN
+    expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    jwtid: randomUUID()
   } as SignOptions);
 }
 

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { MessageCircle, Send, ArrowLeft } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { ReportButton } from '@/components/ui/ReportButton';
+import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 
 interface Conversation {
   id: number;
@@ -319,6 +321,8 @@ function ChatPageContent() {
           </div>
         )}
 
+        <ViewerUpgradeNotice className="mx-4 mt-4" />
+
         <div className="flex-1 flex overflow-hidden">
           {/* Список диалогов */}
           <div className="w-full md:w-1/3 bg-white border-r border-neutral-200 overflow-y-auto">
@@ -402,6 +406,13 @@ function ChatPageContent() {
                       >
                         Переглянути профіль
                       </Link>
+                    </div>
+                    <div className="ml-auto">
+                      <ReportButton
+                        reportedUserId={selectedConv.otherUser.id}
+                        contentType="user"
+                        label="Поскаржитися"
+                      />
                     </div>
                   </div>
                 </div>

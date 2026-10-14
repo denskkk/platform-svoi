@@ -52,23 +52,28 @@ export async function GET() {
     if (categories.length < 15) {
       for (let i = 0; i < defaultCategories.length; i++) {
         const c = defaultCategories[i];
-        await prisma.category.upsert({
-          where: { slug: c.slug },
-          update: {
-            name: c.name,
-            emoji: c.emoji || null,
-            description: c.description || null,
-            sortOrder: i + 1,
-          },
-          create: {
-            name: c.name,
-            slug: c.slug,
-            emoji: c.emoji || null,
-            description: c.description || null,
-            sortOrder: i + 1,
-            isActive: true,
-          }
-        });
+        try {
+          await prisma.category.upsert({
+            where: { slug: c.slug },
+            update: {
+              name: c.name,
+              emoji: c.emoji || null,
+              description: c.description || null,
+              sortOrder: i + 1,
+            },
+            create: {
+              name: c.name,
+              slug: c.slug,
+              emoji: c.emoji || null,
+              description: c.description || null,
+              sortOrder: i + 1,
+              isActive: true,
+            }
+          });
+        } catch (e) {
+          // Конфлікт унікальних значень (наприклад, назва вже зайнята) не повинен ламати весь список
+          console.warn(`[categories] не вдалося синхронізувати категорію ${c.slug}:`, (e as any)?.code || e);
+        }
       }
       
       // Перечитаємо оновлені категорії

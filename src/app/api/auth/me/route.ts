@@ -16,7 +16,7 @@ async function handler(request: AuthenticatedRequest) {
       );
     }
 
-    // Отримати повну інформацію про користувача з БД (включно з балансом)
+    // Отримати повну інформацію про користувача з БД
     const user = await prisma.user.findUnique({
       where: { id: request.user.userId },
       select: {
@@ -31,7 +31,6 @@ async function handler(request: AuthenticatedRequest) {
         avatarUrl: true,
         isVerified: true,
         createdAt: true,
-        balanceUcm: true,
         businessInfo: {
           select: {
             companyName: true,

@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
+import { guardChatUser } from '@/lib/api-middleware';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +43,9 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = decoded.userId;
+
+    const readGuard = await guardChatUser(userId, { write: false });
+    if (readGuard) return readGuard;
 
     // Получаем все диалоги пользователя
     const conversations = await prisma.conversation.findMany({
@@ -161,6 +165,9 @@ export async function POST(request: NextRequest) {
     const userId = decoded.userId;
     const body = await request.json();
     const { otherUserId } = body;
+
+    const writeGuard = await guardChatUser(userId, { write: true });
+    if (writeGuard) return writeGuard;
 
     if (!otherUserId) {
       return NextResponse.json(
