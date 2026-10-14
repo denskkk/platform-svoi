@@ -4,7 +4,7 @@ export const metadata = {
 }
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = '28 січня 2026'
+  const lastUpdated = '14 жовтня 2026'
 
   return (
     <div className="bg-neutral-50">
@@ -32,8 +32,8 @@ export default function PrivacyPolicyPage() {
               Володілець (оператор) персональних даних: команда проєкту «СВІЙ ДЛЯ СВОЇХ».
             </p>
             <p>
-              Контакти для звернень з питань приватності: <a className="text-blue-600 hover:underline" href="https://t.me/sviydlyasvoih" target="_blank" rel="noopener noreferrer">https://t.me/sviydlyasvoih</a>.
-              Для проходження модерації Google Play часто зручніше також мати офіційний e‑mail підтримки/приватності.
+              Контакти для звернень з питань приватності: <a className="text-blue-600 hover:underline" href="https://t.me/sviydlyasvoih" target="_blank" rel="noopener noreferrer">https://t.me/sviydlyasvoih</a>{' '}
+              або e‑mail <a className="text-blue-600 hover:underline" href="mailto:support@sviydlyasvoih.com.ua">support@sviydlyasvoih.com.ua</a>.
             </p>
           </div>
 
@@ -164,8 +164,9 @@ export default function PrivacyPolicyPage() {
             </ul>
             <p>
               Щоб реалізувати ці права, зв’яжіться з нами через контакти з розділу 1.
-              Запит на видалення акаунта також можна подати за інструкцією на сторінці{' '}
-              <a className="text-blue-600 hover:underline" href="/account-deletion">/account-deletion</a>.
+              Видалити акаунт можна самостійно на сторінці{' '}
+              <a className="text-blue-600 hover:underline" href="/account-deletion">/account-deletion</a>
+              {' '}(в застосунку або на сайті).
             </p>
           </div>
 

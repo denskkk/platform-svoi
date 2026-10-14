@@ -1,21 +1,23 @@
+import { DeleteAccountForm } from '@/components/ui/DeleteAccountForm'
+
 export const metadata = {
   title: 'Видалення акаунта та даних — СВІЙ ДЛЯ СВОЇХ',
   description:
-    'Інструкція, як запросити видалення акаунта та пов’язаних даних у застосунку/сайті «СВІЙ ДЛЯ СВОЇХ» (Svoi Platform).',
+    'Як видалити акаунт та пов’язані дані у застосунку/на сайті «СВІЙ ДЛЯ СВОЇХ» (Svoi Platform).',
 }
 
 export default function AccountDeletionPage() {
   const appName = 'СВІЙ ДЛЯ СВОЇХ (Svoi Platform)'
   const telegramUrl = 'https://t.me/sviydlyasvoih'
   const supportEmail = 'support@sviydlyasvoih.com.ua'
-  const lastUpdated = '28 січня 2026'
+  const lastUpdated = '14 жовтня 2026'
 
   return (
     <div className="bg-neutral-50">
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            Запит на видалення акаунта та даних
+            Видалення акаунта та даних
           </h1>
           <p className="text-gray-600">Дата останнього оновлення: {lastUpdated}</p>
         </div>
@@ -23,14 +25,22 @@ export default function AccountDeletionPage() {
         <div className="bg-white rounded-lg shadow-md p-6 sm:p-8 space-y-8 text-gray-800 leading-relaxed">
           <div className="space-y-3">
             <p>
-              Ця сторінка описує, як користувачі {appName} можуть запросити видалення
-              акаунта та пов’язаних з ним даних. Посилання на цю сторінку може бути
-              використано в Google Play.
+              Ця сторінка описує, як користувачі {appName} можуть видалити
+              акаунт та пов’язані з ним дані.
             </p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">1) Як подати запит</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Видалити акаунт зараз</h2>
+            <p>
+              Якщо ви увійшли у свій профіль, видалити акаунт можна одразу на цій сторінці —
+              в застосунку або на сайті.
+            </p>
+            <DeleteAccountForm />
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">1) Якщо не можете увійти — подайте запит</h2>
             <ol className="list-decimal pl-6 space-y-2">
               <li>
                 Підготуйте інформацію для ідентифікації акаунта: e-mail, номер телефону
