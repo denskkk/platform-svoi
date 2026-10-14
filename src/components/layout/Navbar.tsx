@@ -202,7 +202,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop меню */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 whitespace-nowrap text-sm lg:text-base">
+          <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 whitespace-nowrap text-sm xl:text-base">
             <Link 
               href="/catalog" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
@@ -233,19 +233,13 @@ export function Navbar() {
             >
               Контакти
             </Link>
-            <Link 
-              href="/privacy" 
-              className="hidden 2xl:block text-neutral-700 hover:text-primary-600 transition-colors"
-            >
-              Конфіденційність
-            </Link>
           </div>
 
           {/* Права частина */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-3 xl:space-x-4 shrink-0">
             <Link 
               href="/services"
-              className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+              className="hidden sm:inline-flex p-2 hover:bg-neutral-100 rounded-lg transition-colors"
               aria-label="Пошук"
               title="Пошук послуг"
             >
@@ -256,7 +250,7 @@ export function Navbar() {
               {user && (
                 <Link
                   href="/chat"
-                  className="relative md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                  className="relative lg:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
                   aria-label="Повідомлення"
                 >
                   <MessageCircle className="w-5 h-5 text-neutral-600" />
@@ -273,34 +267,34 @@ export function Navbar() {
 
             {isLoading ? (
               // Показываем загрузку
-              <div className="hidden md:flex items-center space-x-3">
+              <div className="hidden lg:flex items-center space-x-3">
                 <div className="w-24 h-10 bg-neutral-200 rounded-lg animate-pulse"></div>
                 <div className="w-32 h-10 bg-neutral-200 rounded-lg animate-pulse"></div>
               </div>
             ) : user ? (
-              <div className="hidden md:flex items-center space-x-3">
+              <div className="hidden lg:flex items-center space-x-3">
                 {/* Глядачі не можуть створювати послуги */}
                 {user.accountType !== 'viewer' && (
-                  <Link href="/services/create" className="px-3 xl:px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
-                    + <span className="hidden xl:inline">Створити </span>послугу
+                  <Link href="/services/create" className="hidden xl:inline-block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
+                    + Послуга
                   </Link>
                 )}
                 {user.accountType !== 'viewer' && (
-                  <Link href="/requests/create" className="px-3 xl:px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium whitespace-nowrap">
-                    + <span className="hidden xl:inline">Створити </span>заявку
+                  <Link href="/requests/create" className="hidden xl:inline-block px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium whitespace-nowrap">
+                    + Заявка
                   </Link>
                 )}
                 <div className="relative">
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center space-x-2 px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                    className="flex items-center space-x-2 px-2 xl:px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                    aria-label="Меню профілю"
+                    aria-expanded={showProfileMenu}
                   >
-                    <UserOrCompanyAvatar user={user} className="w-8 h-8 rounded-full object-cover" />
-                    <div className="flex flex-col items-start leading-tight max-w-[120px]">
-                      <span className="font-medium text-neutral-700 truncate text-sm">
-                        {user?.businessInfo?.companyName || user?.firstName}
-                      </span>
-                    </div>
+                    <UserOrCompanyAvatar user={user} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                    <span className="block max-w-[110px] xl:max-w-[140px] truncate font-medium text-neutral-700 text-sm">
+                      {user?.businessInfo?.companyName || user?.firstName}
+                    </span>
                   </button>
 
                   {showProfileMenu && (
@@ -325,6 +319,24 @@ export function Navbar() {
                       >
                         Редагувати профіль
                       </Link>
+                      {user.accountType !== 'viewer' && (
+                        <div className="xl:hidden">
+                          <Link
+                            href="/services/create"
+                            className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                            onClick={() => setShowProfileMenu(false)}
+                          >
+                            ➕ Створити послугу
+                          </Link>
+                          <Link
+                            href="/requests/create"
+                            className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                            onClick={() => setShowProfileMenu(false)}
+                          >
+                            ➕ Створити заявку
+                          </Link>
+                        </div>
+                      )}
                       <div className="border-t border-neutral-200 my-2"></div>
                       <Link
                         href="/service-requests?type=tome"
@@ -376,10 +388,10 @@ export function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-3">
+              <div className="hidden lg:flex items-center space-x-2 xl:space-x-3">
                 <Link
                   href="/auth/login"
-                  className="px-4 py-2 text-neutral-700 hover:text-primary-600 transition-colors"
+                  className="px-3 xl:px-4 py-2 text-neutral-700 hover:text-primary-600 transition-colors whitespace-nowrap"
                 >
                   Увійти
                 </Link>
@@ -393,9 +405,10 @@ export function Navbar() {
             )}
 
             <button
-              className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Меню"
+              aria-expanded={isMenuOpen}
             >
               <Menu className="w-6 h-6 text-neutral-600" />
             </button>
@@ -405,7 +418,7 @@ export function Navbar() {
 
       {/* Mobile меню */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-neutral-200 bg-white shadow-lg max-h-[calc(100vh-64px)] overflow-y-auto">
+        <div className="lg:hidden border-t border-neutral-200 bg-white shadow-lg max-h-[calc(100dvh-64px)] overflow-y-auto overscroll-contain">
           <div className="px-3 py-3 space-y-1">
             {/* Профиль пользователя вверху (если залогинен) */}
             {user && (
@@ -605,7 +618,7 @@ export function Navbar() {
             </div>
 
             {/* Авторизація / Вихід */}
-            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1 pb-4">
+            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1 pb-24 md:pb-4">
               {user ? (
                 <>
                   <button

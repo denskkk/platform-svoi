@@ -38,9 +38,9 @@ export default function CreateServicePage() {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     
-    // Не залогінений → реєстрація
+    // Не залогінений → сторінка входу (з поверненням сюди після входу)
     if (!storedUser || !storedToken) {
-      router.push('/auth/register');
+      router.push('/auth/login?redirect=/services/create');
       return;
     }
 

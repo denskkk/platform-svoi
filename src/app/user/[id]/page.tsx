@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, Star, Mail, Phone, Facebook, Instagram, Linkedin, Globe, Send, ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import { GuestOnly } from '@/components/ui/AuthGate';
 
 function safeRating(val: any): string {
   if (val === null || val === undefined) return '0.0';
@@ -360,6 +361,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
         )}
 
         {/* CTA для незалогінених */}
+        <GuestOnly>
         <div className="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Хочете залишити відгук?</h2>
           <p className="text-lg mb-6 text-blue-100">
@@ -380,6 +382,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
             </Link>
           </div>
         </div>
+        </GuestOnly>
       </main>
     </div>
   );

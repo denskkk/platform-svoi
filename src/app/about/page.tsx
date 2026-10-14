@@ -3,6 +3,7 @@
  */
 
 import Link from 'next/link';
+import { AboutCTA } from './AboutCTA';
 
 export default function AboutPage() {
   return (
@@ -22,7 +23,7 @@ export default function AboutPage() {
               <p className="text-gray-600 leading-relaxed">
                 Ми створили платформу, яка об'єднує українську діаспору та широку спільноту 
                 для взаємодопомоги у веденні бізнесу та отриманні послуг. Наша мета — підтримати своїх, 
-                створити довірливу спільноту, де кожен може знайти перевірені 
+                створити довірливу спільноту, де кожен може знайти потрібні 
                 послуги від людей, які поділяють спільні цінності.
               </p>
             </section>
@@ -114,28 +115,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg text-center">
-              <h2 className="text-3xl font-bold mb-4">
-                Приєднуйтесь до нашої спільноти!
-              </h2>
-              <p className="text-lg mb-6 text-blue-100">
-                Разом ми сильніші. Разом ми будуємо майбутнє.
-              </p>
-              <div className="flex gap-4 justify-center flex-wrap">
-                <Link
-                  href="/auth/register"
-                  className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
-                >
-                  Зареєструватися
-                </Link>
-                <Link
-                  href="/contacts"
-                  className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition"
-                >
-                  Зв'язатися з нами
-                </Link>
-              </div>
-            </section>
+            <AboutCTA />
           </div>
         </div>
       </section>

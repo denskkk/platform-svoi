@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Search, MessageCircle, User, UserPlus, Eye } from 'lucide-react'
+import { Home, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
@@ -48,10 +48,19 @@ export function MobileNav() {
 
     readLocal()
     verify()
+
+    // Оновлюємо навігацію одразу після входу/виходу, без перезавантаження сторінки
+    const onAuthChanged = () => { readLocal(); verify() }
+    window.addEventListener('auth:changed', onAuthChanged)
+    return () => window.removeEventListener('auth:changed', onAuthChanged)
   }, [])
 
   // Поки йде перевірка — показуємо звичну навігацію, аби уникнути стрибків
   const isAuthed = !!user
+  // Глядачі не можуть писати повідомлення — замість чату показуємо "Обране"
+  const items = user?.accountType === 'viewer'
+    ? navItems.map((item) => (item.href === '/chat' ? { href: '/favorites', icon: Heart, label: 'Обране' } : item))
+    : navItems
 
   if (loading) {
     return (
@@ -100,7 +109,7 @@ export function MobileNav() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-200 shadow-lg">
       <div className="grid grid-cols-4 h-16">
-        {navItems.map((item) => {
+        {items.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
           return (
@@ -108,12 +117,12 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center space-y-1 transition-colors',
+                'flex flex-col items-center justify-center space-y-1 transition-colors min-w-0 px-1',
                 isActive ? 'text-primary-600' : 'text-neutral-500 hover:text-primary-500'
               )}
             >
               <Icon className="w-6 h-6" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <span className="text-[11px] min-[360px]:text-xs font-medium truncate max-w-full">{item.label}</span>
             </Link>
           )
         })}

@@ -210,6 +210,7 @@ export default async function ServicesPage({
   const q = searchParams?.q;
   const city = searchParams?.city;
   const category = searchParams?.category;
+  const canCreate = decoded.accountType !== 'viewer';
   const { services, requests } = await getServices(q, city, category) as any;
   const totalCount = (services?.length || 0) + (requests?.length || 0);
 
@@ -220,7 +221,7 @@ export default async function ServicesPage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">Каталог послуг</h1>
           <p className="text-xl text-blue-100 mb-6">
-            Знайдіть перевірені послуги від членів нашої громади
+            Знайдіть послуги від членів нашої громади
           </p>
 
           {/* Search */}
@@ -273,13 +274,24 @@ export default async function ServicesPage({
 
         {services.length === 0 && (!requests || requests.length === 0) ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md">
-            <p className="text-gray-600 text-lg mb-4">Поки що немає доступних послуг</p>
-            <Link
-              href="/auth/register"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
-            >
-              Стати першим!
-            </Link>
+            <p className="text-gray-600 text-lg mb-4">
+              {q || city || category ? 'За вашим запитом нічого не знайдено' : 'Поки що немає доступних послуг'}
+            </p>
+            {canCreate ? (
+              <Link
+                href="/services/create"
+                className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
+              >
+                Створити першу послугу
+              </Link>
+            ) : (
+              <Link
+                href="/catalog"
+                className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
+              >
+                Переглянути каталог людей
+              </Link>
+            )}
           </div>
         ) : (
           <>
@@ -449,19 +461,21 @@ export default async function ServicesPage({
           </div>
         )}
 
-        {/* CTA */}
-        <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Приєднуйтесь до спільноти!</h2>
-          <p className="text-lg mb-6 text-blue-100">
-            Знаходьте перевірених спеціалістів та надійних людей поруч
-          </p>
-          <Link
-            href="/auth/register"
-            className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
-          >
-            Зареєструватися
-          </Link>
-        </div>
+        {/* CTA (сторінка доступна тільки авторизованим користувачам) */}
+        {canCreate && (
+          <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
+            <h2 className="text-3xl font-bold mb-4">Є що запропонувати?</h2>
+            <p className="text-lg mb-6 text-blue-100">
+              Створіть власну послугу — вас зможуть знайти люди поруч
+            </p>
+            <Link
+              href="/services/create"
+              className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+            >
+              Створити послугу
+            </Link>
+          </div>
+        )}
       </main>
 
     </div>

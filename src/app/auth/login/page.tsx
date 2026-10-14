@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveUser, saveToken } from '@/lib/client-auth'
+import { getSafeRedirect } from '@/components/ui/AuthGate'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
@@ -39,8 +40,12 @@ export default function LoginPage() {
       }
       
       // Якщо користувач адміністратор - перехід на адмін-панель
+      const redirectTo = getSafeRedirect(new URLSearchParams(window.location.search).get('redirect'), '')
       if (data.user?.isAdmin) {
         router.push('/admin')
+      } else if (redirectTo) {
+        // Повертаємо на сторінку, з якої перекинуло на вхід
+        router.push(redirectTo)
       } else {
         // Звичайний користувач - на профіль
         const target = data?.user?.id ? `/profile/${data.user.id}` : '/catalog'
