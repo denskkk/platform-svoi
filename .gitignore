@@ -55,6 +55,8 @@ next-env.d.ts
 /public/uploads/
 
 # Android signing & secrets
+/android/release-keystore.jks
+/android/key.properties
 **/*.jks
 **/*.keystore
 **/key.properties
