@@ -57,6 +57,8 @@ next-env.d.ts
 # Android signing & secrets
 /android/release-keystore.jks
 /android/key.properties
+# Play Console review test accounts (public repo — never commit)
+/materials/google_play/test_users_credentials.csv
 **/*.jks
 **/*.keystore
 **/key.properties
