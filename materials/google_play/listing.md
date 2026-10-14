@@ -8,7 +8,15 @@ Draft texts for Play Console → Grow → Store presence → Main store listing.
 |---|---|---|
 | App icon | `app_icon_512.png` | 512×512, 32-bit PNG, full-bleed (Play applies the rounded mask) |
 | Feature graphic | `feature_graphic_1024x500.png` | 1024×500, 24-bit PNG, no alpha |
-| Phone screenshots | `screenshots/01_home.png` … `04_login.png` | 1080×1920 (9:16), 24-bit PNG |
+| Phone screenshots (upload in order) | `screenshots/01_home.png` … `08_login.png` | 1080×1920 (9:16), 24-bit PNG |
+
+## URLs
+
+| Play Console field | URL |
+|---|---|
+| Privacy policy (App content → Privacy policy) | https://sviydlyasvoih.com.ua/privacy |
+| Delete account URL (App content → Data safety) | https://sviydlyasvoih.com.ua/account-deletion |
+| Website (Store settings → Contact details) | https://sviydlyasvoih.com.ua |
 
 ## App name (≤ 30 chars)
 
