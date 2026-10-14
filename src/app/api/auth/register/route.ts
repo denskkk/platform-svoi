@@ -44,7 +44,6 @@ export async function POST(request: NextRequest) {
       password, 
       phone, 
       city, 
-      role = 'user',
       accountType = 'basic',
       educationLevel,
       educationDetails,
@@ -153,7 +152,7 @@ export async function POST(request: NextRequest) {
     const created = await prisma.$transaction(async (tx: typeof prisma) => {
       const newUser = await tx.user.create({
         data: {
-          role,
+          role: 'user',
           accountType,
           firstName,
           middleName: middleName || null,

@@ -51,18 +51,19 @@ const nextConfig = {
     } : false,
   },
 
+  // Файли, завантажені користувачами вже після збірки, Next.js зі `public/` не віддає —
+  // тому /uploads/* віддається через API-роут (див. src/app/api/uploads).
+  async rewrites() {
+    return {
+      fallback: [
+        { source: '/uploads/:path*', destination: '/api/uploads/:path*' },
+      ],
+    };
+  },
+
   // Headers для кешування та безпеки
   async headers() {
     return [
-      {
-        source: '/uploads/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
       {
         source: '/:path*.{jpg,jpeg,png,gif,webp,avif,svg,ico}',
         headers: [

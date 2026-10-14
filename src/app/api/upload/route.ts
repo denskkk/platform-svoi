@@ -2,39 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
-import jwt from 'jsonwebtoken';
 import sharp from 'sharp';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getAuthCookie } from '@/lib/cookies';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+import { verifyToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting: 10 завантажень на годину
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
-    
-    const rateLimit = checkRateLimit(`upload:${ip}`, {
-      interval: 60 * 60 * 1000, // 1 година
-      maxRequests: 10
-    });
-
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { 
-          error: 'Занадто багато завантажень. Спробуйте через годину.',
-          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
-        },
-        { 
-          status: 429,
-          headers: {
-            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString()
-          }
-        }
-      );
-    }
-
     // Проверка авторизации - спочатку cookie, потім header
     let token = getAuthCookie(request);
     
@@ -52,12 +26,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    try {
-      jwt.verify(token, JWT_SECRET);
-    } catch (err) {
+    const payload = verifyToken(token);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Невалідний токен' },
         { status: 401 }
+      );
+    }
+
+    // Rate limiting: 60 завантажень на годину на користувача
+    // (редагування бізнес-профілю одразу завантажує фото, логотип і банер)
+    const rateLimit = checkRateLimit(`upload:user:${payload.userId}`, {
+      interval: 60 * 60 * 1000, // 1 година
+      maxRequests: 60
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Занадто багато завантажень. Спробуйте пізніше.',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString()
+          }
+        }
       );
     }
 
@@ -115,7 +110,7 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     
-    const timestamp = Date.now();
+    const timestamp = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const filename = `${safeDir.slice(0, -1)}-${timestamp}.webp`; // name prefix from type; зберігаємо як WebP
     
     // Путь к папке uploads

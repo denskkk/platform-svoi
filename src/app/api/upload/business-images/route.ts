@@ -8,9 +8,24 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
 import sharp from 'sharp';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Ендпоінт використовується при реєстрації бізнесу (користувача ще не існує),
+    // тому захищаємо його лімітом за IP.
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
+    const rateLimit = checkRateLimit(`upload-business:${ip}`, {
+      interval: 60 * 60 * 1000,
+      maxRequests: 10,
+    });
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Занадто багато завантажень. Спробуйте пізніше.' },
+        { status: 429 }
+      );
+    }
     console.log('[Upload Business Images] Отримано запит на завантаження зображень');
     
     const formData = await request.formData();
@@ -39,7 +54,7 @@ export async function POST(request: NextRequest) {
     } = {};
 
     // Створити директорії, якщо їх не існує
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadsDir = process.env.UPLOADS_DIR || path.join(process.cwd(), 'public', 'uploads');
     const logosDir = path.join(uploadsDir, 'logos');
     const bannersDir = path.join(uploadsDir, 'banners');
 

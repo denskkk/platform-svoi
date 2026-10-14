@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
       password, 
       phone, 
       city, 
-      role = 'business',
       accountType = 'business',
     } = userData;
 
@@ -139,7 +138,7 @@ export async function POST(request: NextRequest) {
       // Створення користувача
       const user = await tx.user.create({
         data: {
-          role,
+          role: 'business',
           accountType,
           firstName,
           lastName,
