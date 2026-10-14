@@ -7,12 +7,12 @@ export type AccountType = 'viewer' | 'basic' | 'business';
 export const PERMISSIONS = {
   // Базові можливості
   VIEW_CATALOG: ['viewer', 'basic', 'business'] as AccountType[],
-  VIEW_PROFILE: ['basic', 'business'] as AccountType[],
-  EDIT_PROFILE: ['basic', 'business'] as AccountType[],
+  VIEW_PROFILE: ['viewer', 'basic', 'business'] as AccountType[],
+  EDIT_PROFILE: ['viewer', 'basic', 'business'] as AccountType[],
   
   // Обране
-  ADD_TO_FAVORITES: ['basic', 'business'] as AccountType[],
-  VIEW_FAVORITES: ['basic', 'business'] as AccountType[],
+  ADD_TO_FAVORITES: ['viewer', 'basic', 'business'] as AccountType[],
+  VIEW_FAVORITES: ['viewer', 'basic', 'business'] as AccountType[],
   
   // Послуги
   CREATE_SERVICE: ['basic', 'business'] as AccountType[],
@@ -40,7 +40,6 @@ export const PERMISSIONS = {
   
   // Додаткові функції (доступні через платні опції в профілі)
   AUTO_PROPOSALS: ['business'] as AccountType[],
-  UCM_ANALYSIS: ['business'] as AccountType[],
   PRIORITY_SEARCH: ['business'] as AccountType[],
   ADVANCED_ANALYTICS: ['business'] as AccountType[],
 };
@@ -87,7 +86,6 @@ export function getPermissionError(permission: keyof typeof PERMISSIONS): string
     CREATE_REQUEST: `Створення заявок доступне з акаунту "${minTypeName}". Зареєструйтесь.`,
     SEND_MESSAGE: `Надсилання повідомлень доступне з акаунту "${minTypeName}". Зареєструйтесь.`,
     AUTO_PROPOSALS: 'Автоматичні пропозиції - це платна опція. Активуйте в профілі.',
-    UCM_ANALYSIS: 'Аналіз спільноти - це платна опція. Активуйте в профілі.',
   };
   
   return messages[permission] || `Ця функція доступна з акаунту "${minTypeName}". Зареєструйтесь.`;

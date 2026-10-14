@@ -1,39 +1,45 @@
-import { requireAuthWithPermission } from '@/lib/api-middleware';
 /**
- * GET /api/favorites
- * Отримати обрані профілі користувача
- * 
- * POST /api/favorites
- * Додати в обране
- * 
- * DELETE /api/favorites
- * Видалити з обраного
+ * GET    /api/favorites                    — список обраних профілів
+ * GET    /api/favorites?targetUserId=ID    — чи є профіль в обраному { isFavorite }
+ * POST   /api/favorites { targetUserId }   — додати в обране
+ * DELETE /api/favorites?targetUserId=ID    — прибрати з обраного
+ *
+ * Авторизація: httpOnly cookie або заголовок Authorization: Bearer <token>
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, getTokenFromHeader } from '@/lib/auth';
+import { requireAuthWithPermission } from '@/lib/api-middleware';
 
-// GET - Отримати обрані
+export const dynamic = 'force-dynamic';
+
+function parseTargetId(value: unknown): number | null {
+  const id = Number(value);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
     const auth = await requireAuthWithPermission(request, 'VIEW_FAVORITES');
     if (auth.error) return auth.error;
+    const userId = Number(auth.user.userId);
+
+    const targetParam = new URL(request.url).searchParams.get('targetUserId');
+    if (targetParam !== null) {
+      const targetUserId = parseTargetId(targetParam);
+      if (!targetUserId) {
+        return NextResponse.json({ error: 'Вкажіть користувача' }, { status: 400 });
+      }
+      const existing = await prisma.favorite.findUnique({
+        where: { userId_targetUserId: { userId, targetUserId } },
+        select: { id: true },
+      });
+      return NextResponse.json({ isFavorite: !!existing });
+    }
 
     const favorites = await prisma.favorite.findMany({
-      where: {
-        userId: auth.user.userId
-      },
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
       include: {
         targetUser: {
           select: {
@@ -42,149 +48,73 @@ export async function GET(request: NextRequest) {
             lastName: true,
             avatarUrl: true,
             city: true,
-            bio: true,
+            profession: true,
             avgRating: true,
             totalReviews: true,
             isVerified: true,
-          }
-        }
+            accountType: true,
+            businessInfo: { select: { companyName: true, logoUrl: true } },
+          },
+        },
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
     });
 
     return NextResponse.json({ favorites });
-
   } catch (error) {
     console.error('Get favorites error:', error);
-    return NextResponse.json(
-      { error: 'Помилка сервера' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
   }
 }
 
-// POST - Додати в обране
 export async function POST(request: NextRequest) {
   try {
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
     const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
     if (auth.error) return auth.error;
+    const userId = Number(auth.user.userId);
 
-    const body = await request.json();
-    const { targetUserId } = body;
-
+    const body = await request.json().catch(() => ({}));
+    const targetUserId = parseTargetId(body?.targetUserId);
     if (!targetUserId) {
-      return NextResponse.json(
-        { error: 'Вкажіть користувача' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Вкажіть користувача' }, { status: 400 });
+    }
+    if (targetUserId === userId) {
+      return NextResponse.json({ error: 'Не можна додати себе в обране' }, { status: 400 });
     }
 
-    // Перевірка чи вже в обраному
-    const existing = await prisma.favorite.findUnique({
-      where: {
-        userId_targetUserId: {
-          userId: auth.user.userId,
-          targetUserId
-        }
-      }
-    });
-
-    if (existing) {
-      return NextResponse.json(
-        { error: 'Вже в обраному' },
-        { status: 409 }
-      );
+    const target = await prisma.user.findUnique({ where: { id: targetUserId }, select: { id: true } });
+    if (!target) {
+      return NextResponse.json({ error: 'Користувача не знайдено' }, { status: 404 });
     }
 
-    const favorite = await prisma.favorite.create({
-      data: {
-        userId: auth.user.userId,
-        targetUserId,
-      },
-      include: {
-        targetUser: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          }
-        }
-      }
+    await prisma.favorite.upsert({
+      where: { userId_targetUserId: { userId, targetUserId } },
+      create: { userId, targetUserId },
+      update: {},
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Додано в обране!',
-      favorite,
-    }, { status: 201 });
-
+    return NextResponse.json({ success: true, isFavorite: true, message: 'Додано в обране!' }, { status: 201 });
   } catch (error) {
     console.error('Add favorite error:', error);
-    return NextResponse.json(
-      { error: 'Помилка сервера' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
   }
 }
 
-// DELETE - Видалити з обраного
 export async function DELETE(request: NextRequest) {
   try {
-    const authorization = request.headers.get('authorization');
-    const token = getTokenFromHeader(authorization);
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Необхідна авторизація' },
-        { status: 401 }
-      );
-    }
-
-  const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
+    const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
     if (auth.error) return auth.error;
+    const userId = Number(auth.user.userId);
 
-    const { searchParams } = new URL(request.url);
-    const targetUserId = searchParams.get('targetUserId');
-
+    const targetUserId = parseTargetId(new URL(request.url).searchParams.get('targetUserId'));
     if (!targetUserId) {
-      return NextResponse.json(
-        { error: 'Вкажіть користувача' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Вкажіть користувача' }, { status: 400 });
     }
 
-    await prisma.favorite.delete({
-      where: {
-        userId_targetUserId: {
-          userId: auth.user.userId,
-          targetUserId: parseInt(targetUserId)
-        }
-      }
-    });
+    await prisma.favorite.deleteMany({ where: { userId, targetUserId } });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Видалено з обраного!',
-    });
-
+    return NextResponse.json({ success: true, isFavorite: false, message: 'Видалено з обраного!' });
   } catch (error) {
     console.error('Delete favorite error:', error);
-    return NextResponse.json(
-      { error: 'Помилка сервера' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
   }
 }

@@ -5,14 +5,16 @@ import { useState, useEffect } from 'react';
 // (uploads are served from /uploads/* by nginx)
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift } from 'lucide-react';
+import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift, LogOut } from 'lucide-react';
 import { formatRating } from '@/lib/format';
+import { logout } from '@/lib/client-auth';
+import { useToast } from '@/components/ui/Toast';
 import { PermissionButton } from '@/components/ui/RequirePermission';
+import { ReportButton } from '@/components/ui/ReportButton';
+import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
 import { ServiceImage } from '@/components/ui/ServiceImage';
-import { EarnQuickList } from '@/components/ui/EarnQuickList';
-import { TransferUcmModal } from '@/components/ui/TransferUcmModal';
 import { 
   translateCategory, 
   translateOfferType, 
@@ -29,11 +31,70 @@ import {
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const toast = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const authHeaders = (): Record<string, string> => {
+    try {
+      const token = localStorage.getItem('token');
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    } catch {
+      return {};
+    }
+  };
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    await logout();
+    try { window.dispatchEvent(new Event('auth:changed')); } catch {}
+    router.push('/');
+  };
+
+  // Стан «в обраному» для чужого профілю
+  useEffect(() => {
+    if (!currentUser || String(currentUser.id) === String(params.id)) {
+      setIsFavorite(false);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/favorites?targetUserId=${params.id}`, { credentials: 'include', headers: authHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (!cancelled && d) setIsFavorite(!!d.isFavorite); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, params.id]);
+
+  const toggleFavorite = async () => {
+    const next = !isFavorite;
+    setIsFavorite(next);
+    try {
+      const res = next
+        ? await fetch('/api/favorites', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ targetUserId: Number(params.id) }),
+          })
+        : await fetch(`/api/favorites?targetUserId=${params.id}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: authHeaders(),
+          });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Не вдалося оновити обране');
+      toast.success(next ? 'Додано в обране' : 'Видалено з обраного');
+    } catch (e: any) {
+      setIsFavorite(!next);
+      toast.error(e.message || 'Не вдалося оновити обране');
+    }
+  };
 
   useEffect(() => {
     // Перевірка авторизації
@@ -138,6 +199,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-neutral-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ViewerUpgradeNotice className="mb-6" />
         {/* Банер компанії (для бізнес акаунтів) */}
         {profile?.businessInfo?.bannerUrl && (
           <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
@@ -174,13 +236,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     </div>
                   )}
                   {profile.isVerified && (
-                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white" title="Перевірений користувач">
                       <span className="text-white text-xl">✓</span>
-                    </div>
-                  )}
-                  {(profile as any).ucmVerified && (
-                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white" title="Перевірено УЦМ">
-                      <span className="text-white text-xl font-bold">✓</span>
                     </div>
                   )}
                 </div>
@@ -194,12 +251,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           {profile.firstName} {profile.middleName ? `${profile.middleName} ` : ''}{profile.lastName}
                         </h1>
                         <AccountTypeBadge accountType={profile.accountType || 'basic'} size="sm" />
-                        {(profile as any).ucmVerified && (
+                        {profile.isVerified && (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold rounded-full shadow-md">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Перевірено УЦМ
+                            Перевірений
                           </span>
                         )}
                       </div>
@@ -248,15 +305,27 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     {/* Дії */}
                     <div className="flex flex-wrap items-center gap-2">
                       {isOwnProfile ? (
-                        <Link
-                          href="/profile/edit"
-                          className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Редагувати
-                        </Link>
+                        <>
+                          <Link
+                            href="/profile/edit"
+                            className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Редагувати
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={handleLogout}
+                            disabled={loggingOut}
+                            className="flex items-center px-5 py-2.5 border-2 border-red-300 text-red-600 hover:bg-red-50 font-medium rounded-lg transition-all duration-200 disabled:opacity-50"
+                          >
+                            <LogOut className="w-4 h-4 mr-2" />
+                            {loggingOut ? 'Виходимо...' : 'Вийти'}
+                          </button>
+                        </>
                       ) : (
                         <>
+                          {currentUser?.accountType !== 'viewer' && (
                           <Link
                             href={`/chat?with=${profile.id}`}
                             className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
@@ -264,20 +333,10 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             <MessageCircle className="w-4 h-4 mr-2" />
                             Написати
                           </Link>
-                          {currentUser && currentUser.balanceUcm !== undefined && (
-                            <TransferUcmModal
-                              recipientId={profile.id}
-                              recipientName={`${profile.firstName} ${profile.lastName}`}
-                              currentUserBalance={Number(currentUser.balanceUcm || 0)}
-                              onSuccess={() => {
-                                // Перезавантажити профіль після успішного переказу
-                                loadProfile()
-                              }}
-                            />
                           )}
                           <PermissionButton
                             permission="ADD_TO_FAVORITES"
-                            onClick={() => setIsFavorite(!isFavorite)}
+                            onClick={toggleFavorite}
                             className={`p-2.5 rounded-lg border-2 transition-all duration-200 shadow-sm hover:shadow-md ${
                               isFavorite
                                 ? 'border-red-500 bg-red-50 text-red-500'
@@ -286,6 +345,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           >
                             <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
                           </PermissionButton>
+                          <ReportButton
+                            reportedUserId={profile.id}
+                            contentType="user"
+                            label="Поскаржитися"
+                            className="inline-flex items-center gap-1.5 px-3 py-2.5 text-sm text-neutral-500 hover:text-red-600 border border-neutral-200 hover:border-red-200 rounded-lg bg-white transition-colors"
+                          />
                         </>
                       )}
                     </div>
@@ -841,11 +906,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             {(service.priceFrom || service.priceTo) && (
                               <div className="text-primary-600 font-medium">
                                 {service.priceFrom && service.priceTo ? (
-                                  `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || 'УЦМ'}`
+                                  `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || 'грн'}`
                                 ) : service.priceFrom ? (
-                                  `від ${service.priceFrom} ${service.priceUnit || 'УЦМ'}`
+                                  `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
                                 ) : (
-                                  `до ${service.priceTo} ${service.priceUnit || 'УЦМ'}`
+                                  `до ${service.priceTo} ${service.priceUnit || 'грн'}`
                                 )}
                               </div>
                             )}
@@ -920,33 +985,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
           {/* Бічна панель */}
           <div className="space-y-6 static">
-            {/* Баланс і покращення - тільки для власного профілю */}
-            {isOwnProfile && (
-              <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-xl p-6 text-white">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                    <span className="text-2xl">💰</span>
-                  </div>
-                  <h3 className="text-xl font-bold">Баланс</h3>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="text-4xl font-bold mb-1">
-                    {Number(profile.balanceUcm || 0).toFixed(2)}
-                  </div>
-                  <div className="text-yellow-100 text-sm">уцмок</div>
-                </div>
-
-                <Link
-                  href="/upgrade"
-                  className="flex items-center justify-center gap-2 w-full bg-white text-orange-600 font-bold py-3 px-4 rounded-xl hover:bg-yellow-50 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <span className="text-lg">⚡</span>
-                  <span>Покращити профіль</span>
-                </Link>
-              </div>
-            )}
-
             {/* Контакти */}
             <div className="bg-gradient-to-br from-white to-primary-50/30 rounded-2xl shadow-lg border border-neutral-100 p-6 static">
               <div className="flex items-center gap-2 mb-4">
@@ -977,6 +1015,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
               {!isOwnProfile && (
                 <>
+                  {currentUser?.accountType !== 'viewer' && (
                   <Link
                     href={`/chat?with=${profile.id}`}
                     className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg mb-3"
@@ -984,6 +1023,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     <MessageCircle className="w-5 h-5" />
                     <span>Написати</span>
                   </Link>
+                  )}
 
                   {profile.phone && (
                     <a
@@ -1370,7 +1410,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           )}
 
           {/* Переваги та використання сервісів - тільки для звичайних користувачів, не для бізнесу */}
-          {(!profile.businessInfo && profile.accountType !== 'basic' && (profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length > 0 || asList(profile.usesBusinessServices).length > 0 || asList(profile.beautyServices).length > 0 || profile.readyToSwitchToUCM === true)) && (
+          {(!profile.businessInfo && profile.accountType !== 'basic' && (profile.restaurantFrequency || profile.cuisinePreference || asList(profile.usesServices).length > 0 || asList(profile.usesBusinessServices).length > 0 || asList(profile.beautyServices).length > 0)) && (
             <div className="bg-gradient-to-br from-white to-primary-50/20 rounded-2xl shadow-lg border border-neutral-100 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
@@ -1389,12 +1429,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
                     <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Улюблена кухня</p>
                     <p className="font-medium text-neutral-900">{profile.cuisinePreference}</p>
-                  </div>
-                )}
-                {profile.readyToSwitchToUCM === true && (
-                  <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Готовий перейти на учасників</p>
-                    <p className="font-medium text-neutral-900">Так</p>
                   </div>
                 )}
               </div>
@@ -1431,28 +1465,43 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             </div>
           )}
 
-          {/* CTA for upgrade (visible on own profile with basic type) */}
+          {/* CTA (видно на власному профілі з basic-типом) */}
           {isOwnProfile && profile.accountType === 'basic' && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <UpgradeAccountCTA currentType={profile.accountType} />
             </div>
           )}
-        </div>
-        {/* Бокова панель: баланс та швидкі завдання */}
-        <div className="space-y-4">
-          <div className="p-4 rounded-2xl border bg-white shadow-sm">
-            <div className="text-sm text-neutral-500 mb-1">Баланс</div>
-            <div className="text-2xl font-semibold">{profile.balanceUcm ?? 0} <span className="text-xs font-medium text-neutral-500">уцм</span></div>
-            <div className="mt-3 flex gap-2">
-              <Link href="/upgrade" className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-700 transition">
-                <Gift className="w-3 h-3 mr-1" /> Апгрейд
-              </Link>
-              <Link href="/earn" className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition">
-                Заробити
-              </Link>
+
+          {/* Керування акаунтом */}
+          {isOwnProfile && (
+            <div className="bg-white rounded-2xl shadow-md p-6">
+              <h2 className="text-xl font-bold text-neutral-900 mb-4">Акаунт</h2>
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="w-full inline-flex items-center justify-center px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <LogOut className="w-5 h-5 mr-2 shrink-0" />
+                  {loggingOut ? 'Виходимо...' : 'Вийти'}
+                </button>
+                <Link
+                  href="/favorites"
+                  className="w-full inline-flex items-center justify-center px-5 py-3 border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 font-semibold rounded-lg transition-colors"
+                >
+                  <Heart className="w-5 h-5 mr-2 shrink-0" />
+                  Обране
+                </Link>
+                <Link
+                  href="/account-deletion"
+                  className="text-center text-sm text-neutral-500 hover:text-red-600 transition-colors py-1"
+                >
+                  Видалити акаунт
+                </Link>
+              </div>
             </div>
-          </div>
-          <EarnQuickList />
+          )}
         </div>
       </div>
     </div>
