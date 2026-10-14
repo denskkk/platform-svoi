@@ -1,7 +1,10 @@
 {
-	"appId": "com.svoi.platform",
+	"appId": "com.sviy_dlya_svoih.android",
 	"appName": "Свій для Своїх",
 	"webDir": "out",
+	"android": {
+		"adjustMarginsForEdgeToEdge": "auto"
+	},
 	"server": {
 		"url": "https://sviydlyasvoih.com.ua",
 		"cleartext": false
