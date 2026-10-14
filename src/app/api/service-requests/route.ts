@@ -19,7 +19,7 @@ async function createHandler(request: NextRequest) {
     // Глядачі не можуть створювати заявки
     if (accountType === 'viewer') {
       return NextResponse.json(
-        { error: 'Глядачі не можуть створювати заявки. Змініть тип акаунту в налаштуваннях.' },
+        { error: 'Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.' },
         { status: 403 }
       );
     }
@@ -41,8 +41,7 @@ async function createHandler(request: NextRequest) {
       priority = 'normal',
       serviceId,
       executorId,
-      isPublic,              // Чи це публічна заявка (буде автоматично визначено нижче)
-      isPromoted = false      // Чи просувати в топ
+      isPublic              // Чи це публічна заявка (буде автоматично визначено нижче)
     } = body;
     
     // Автоматичне визначення isPublic:
@@ -90,27 +89,6 @@ async function createHandler(request: NextRequest) {
     
     console.log(`[service-requests/create] Creating request: client=${userId}, executor=${finalExecutorId}, service=${serviceId}`);
 
-    // Розрахунок вартості заявки
-    const basePrice = 5; // 5 UCM за будь-яку заявку
-    const promoPrice = isPromoted ? 2 : 0; // +2 UCM за просування
-    const totalPrice = basePrice + promoPrice;
-
-    // Перевірка балансу користувача
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { balanceUcm: true }
-    });
-
-    if (!user || Number(user.balanceUcm) < totalPrice) {
-      return NextResponse.json(
-        { error: `Недостатньо коштів. Потрібно ${totalPrice} UCM (${basePrice} UCM за заявку${promoPrice > 0 ? ` + ${promoPrice} UCM за просування` : ''})` },
-        { status: 400 }
-      );
-    }
-
-    // Розрахунок promotedUntil (3 дні від зараз, якщо isPromoted)
-    const promotedUntil = isPromoted ? new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) : null;
-
     // Створити заявку
     const serviceRequest = await prisma.serviceRequest.create({
       data: {
@@ -129,9 +107,7 @@ async function createHandler(request: NextRequest) {
         priority,
         serviceId: serviceId ? Number(serviceId) : null,
         status: "new" as any,
-        isPublic: finalIsPublic,
-        isPromoted,
-        promotedUntil
+        isPublic: finalIsPublic
       },
       include: {
         client: {
@@ -171,33 +147,7 @@ async function createHandler(request: NextRequest) {
       }
     });
     
-    console.log(`[service-requests/create] Created request ID ${serviceRequest.id}: isPublic=${finalIsPublic}, isPromoted=${isPromoted}, status=${serviceRequest.status}`);
-    
-    // Списати UCM з балансу користувача
-    await prisma.user.update({
-      where: { id: userId },
-      data: { balanceUcm: { decrement: totalPrice } }
-    });
-
-    // Створити транзакцію UCM
-    await prisma.ucmTransaction.create({
-      data: {
-        userId,
-        kind: 'service_request',
-        amount: totalPrice,
-        reason: isPromoted ? 'service_request_promo' : 'service_request',
-        description: `Оплата заявки "${title}"${isPromoted ? ' (з просуванням в ТОП)' : ''}`,
-        relatedEntityType: 'ServiceRequest',
-        relatedEntityId: serviceRequest.id,
-        meta: {
-          serviceRequestId: serviceRequest.id,
-          isPublic: finalIsPublic,
-          isPromoted,
-          basePrice,
-          promoPrice
-        }
-      }
-    });
+    console.log(`[service-requests/create] Created request ID ${serviceRequest.id}: isPublic=${finalIsPublic}, status=${serviceRequest.status}`);
     
     // Створити сповіщення для виконавця
     if (finalExecutorId) {
@@ -332,9 +282,7 @@ async function listHandler(request: NextRequest) {
           }
         },
         orderBy: [
-          // ТОП оголошення зверху (якщо ще активні)
-          { isPromoted: 'desc' },
-          // Потім сортуємо за датою створення (новіші зверху)
+          // Новіші зверху
           { createdAt: 'desc' }
         ],
         skip,
@@ -343,18 +291,8 @@ async function listHandler(request: NextRequest) {
       prisma.serviceRequest.count({ where })
     ]);
 
-    // Фільтруємо просунуті заявки - показуємо тільки ті, що ще активні
-    const now = new Date();
-    const filteredRequests = requests.map((req: any) => {
-      // Якщо заявка промоутнута, але термін минув - знімаємо флаг
-      if (req.isPromoted && req.promotedUntil && req.promotedUntil < now) {
-        return { ...req, isPromoted: false, promotedUntil: null };
-      }
-      return req;
-    });
-
     return NextResponse.json({
-      requests: filteredRequests,
+      requests,
       pagination: {
         page,
         limit,

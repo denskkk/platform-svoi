@@ -44,7 +44,7 @@ export default function CreateServiceRequestPage() {
         
         // Глядачі не можуть створювати заявки
         if (data.user?.accountType === 'viewer') {
-          alert('Глядачі не можуть створювати заявки. Змініть тип акаунту в налаштуваннях.');
+          alert('Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.');
           router.push('/service-requests');
           return;
         }
@@ -193,7 +193,7 @@ export default function CreateServiceRequestPage() {
             {/* Бюджет */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Орієнтовний бюджет (УЦМ)
+                Орієнтовний бюджет (грн)
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <input

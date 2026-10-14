@@ -2,7 +2,7 @@
 
 ## What this app does
 
-This project is a marketplace/community platform with user profiles, public requests, business profiles, chat, service listings, referral logic, UCM balance transactions, and payment flows. The backend is implemented as Next.js API routes and Prisma models.
+This project is a free marketplace/community platform with user profiles, public requests, business profiles, chat, service listings and reviews. The backend is implemented as Next.js API routes and Prisma models.
 
 ## Project type
 
@@ -38,7 +38,6 @@ Send these outside GitHub, for example via secure file transfer or password mana
 - `DATABASE_URL` value
 - `JWT_SECRET`
 - `REFRESH_TOKEN_SECRET`
-- WayForPay credentials if enabled
 - any Firebase `google-services.json` if later added
 - any external SMTP or Cloudinary credentials
 
@@ -90,7 +89,7 @@ cd android
 - `*.jks`, `*.keystore`
 - `key.properties`
 - `google-services.json`
-- API keys and payment credentials
+- API keys and third-party credentials
 - uploaded user files from `public/uploads/`
 
 ## What to hand over separately

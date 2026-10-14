@@ -93,11 +93,11 @@ async function viewRequests() {
     console.log(`  ${i + 1}. [ID: ${request.id}] ${request.title}`);
     console.log(`     Клієнт: ${request.client.firstName} ${request.client.lastName} (ID: ${request.client.id})`);
     console.log(`     Статус: ${request.status}`);
-    console.log(`     Бюджет: ${request.budgetFrom || 'н/д'} - ${request.budgetTo || 'н/д'} УЦМ`);
+    console.log(`     Бюджет: ${request.budgetFrom || 'н/д'} - ${request.budgetTo || 'н/д'} грн`);
     console.log(`     Відгуків виконавців: ${request.responses.length}`);
     if (request.executor) {
       console.log(`     Виконавець: ${request.executor.firstName} ${request.executor.lastName} (ID: ${request.executorId})`);
-      console.log(`     Узгоджена ціна: ${request.agreedPrice} УЦМ`);
+      console.log(`     Узгоджена ціна: ${request.agreedPrice} грн`);
     }
     console.log(`     Створено: ${request.createdAt.toLocaleString('uk-UA')}`);
     console.log('');
@@ -133,7 +133,6 @@ async function viewProfiles() {
     console.log(`     Телефон: ${user.phone || 'не вказано'}`);
     console.log(`     Місто: ${user.city || 'не вказано'}`);
     console.log(`     Тип акаунту: ${user.accountType}`);
-    console.log(`     Баланс УЦМ: ${user.balanceUcm}`);
     console.log(`     Послуг: ${user._count.services}`);
     console.log(`     Заявок створено: ${user._count.serviceRequestsCreated}`);
     console.log(`     Заявок прийнято: ${user._count.serviceRequestsAccepted}`);
@@ -248,7 +247,6 @@ async function deleteUser(id) {
   await prisma.review.deleteMany({ where: { OR: [{ reviewerId: userId }, { reviewedId: userId }] } });
   await prisma.message.deleteMany({ where: { OR: [{ senderId: userId }, { receiverId: userId }] } });
   await prisma.conversation.deleteMany({ where: { OR: [{ user1Id: userId }, { user2Id: userId }] } });
-  await prisma.ucmTransaction.deleteMany({ where: { userId } });
   await prisma.requestResponse.deleteMany({ where: { userId } });
   await prisma.serviceRequestResponse.deleteMany({ where: { executorId: userId } });
   
@@ -294,7 +292,6 @@ async function cleanAll() {
   await prisma.review.deleteMany({});
   await prisma.message.deleteMany({});
   await prisma.conversation.deleteMany({});
-  await prisma.ucmTransaction.deleteMany({});
   await prisma.requestResponse.deleteMany({});
   await prisma.serviceRequest.deleteMany({});
   await prisma.service.deleteMany({});

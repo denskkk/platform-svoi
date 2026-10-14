@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveUser, saveToken } from '@/lib/client-auth'
@@ -58,7 +59,7 @@ export default function LoginPage() {
         {/* Логотип */}
         <div className="text-center">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <img src="/sitelogo.png" alt="Логотип" className="w-12 h-12 object-contain" />
+            <Image src="/logo.png" alt="Логотип СВІЙ ДЛЯ СВОЇХ" width={48} height={48} className="w-12 h-12 rounded-full" />
             <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
           </Link>
           <h2 className="text-3xl font-bold text-neutral-900 mb-2">

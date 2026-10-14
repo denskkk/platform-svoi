@@ -8,6 +8,7 @@ import { ServiceImage } from '@/components/ui/ServiceImage'
 import { MapPin, ArrowLeft } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
+import { ReportButton } from '@/components/ui/ReportButton'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -59,7 +60,6 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
           <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
             <div className="mb-4 text-sm text-blue-600 font-semibold">
               {req.type === 'job' ? 'Робота' : req.type === 'partner' ? 'Пошук партнера' : req.type === 'service' ? 'Запит на послугу' : 'Запит'}
-              {req.isPaid && req.priceUcm ? ` · промо за ${Number(req.priceUcm)} уцм` : ''}
             </div>
 
             <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">{req.title}</h1>
@@ -95,13 +95,14 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
 
             {/* Additional meta */}
             <div className="mt-6 text-sm text-neutral-600 space-y-2">
-              {req.budgetFrom && <div>Бюджет: від {Number(req.budgetFrom)} УЦМ</div>}
-              {req.budgetTo && <div>До: {Number(req.budgetTo)} УЦМ</div>}
+              {req.budgetFrom && <div>Бюджет: від {Number(req.budgetFrom)} грн</div>}
+              {req.budgetTo && <div>До: {Number(req.budgetTo)} грн</div>}
               {req.deadlineAt && <div>Термін: {new Date(req.deadlineAt).toLocaleDateString('uk-UA')}</div>}
             </div>
 
-            <div className="mt-6">
+            <div className="mt-6 flex items-center justify-between gap-4 flex-wrap">
               <Link href={`/chat?with=${req.user.id}`} className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg">Написати автору</Link>
+              <ReportButton reportedUserId={req.user.id} contentType="request" contentId={req.id} label="Поскаржитися на заявку" />
             </div>
           </div>
         </div>

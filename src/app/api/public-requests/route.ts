@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
         }
       },
       orderBy: [
-        { isPromoted: 'desc' },
         { createdAt: 'desc' }
       ]
     });

@@ -54,7 +54,7 @@ export function CTASection() {
         
         <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-2xl mx-auto drop-shadow-lg">
           {isAuthed 
-            ? 'Покращуйте свій профіль та отримуйте більше можливостей!' 
+            ? 'Знаходьте потрібні послуги або пропонуйте свої — разом ми сильніші!' 
             : 'Приєднуйтесь до платформи та знайдіть потрібні послуги або запропонуйте свої'
           }
         </p>
@@ -82,38 +82,21 @@ export function CTASection() {
           {isAuthed === true && (
             <>
               <Link
-                href="/upgrade"
-                className="group px-8 py-4 bg-white hover:bg-yellow-50 text-orange-600 font-bold rounded-lg transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center space-x-2"
+                href="/services/create"
+                className="group px-8 py-4 bg-white hover:bg-yellow-50 text-primary-700 font-bold rounded-lg transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center space-x-2"
               >
-                <span className="text-xl">⚡</span>
-                <span>Покращити профіль</span>
+                <span>Додати послугу</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
-                href="/services/create"
+                href="/catalog"
                 className="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold rounded-lg transition-all duration-300"
               >
-                Додати послугу
+                Знайти фахівця
               </Link>
             </>
           )}
-        </div>
-
-        {/* Статистика */}
-        <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-          <div className="text-white">
-            <div className="text-4xl font-bold mb-2">1000+</div>
-            <div className="text-white/80">Активних користувачів</div>
-          </div>
-          <div className="text-white">
-            <div className="text-4xl font-bold mb-2">500+</div>
-            <div className="text-white/80">Успішних угод</div>
-          </div>
-          <div className="text-white">
-            <div className="text-4xl font-bold mb-2">24</div>
-            <div className="text-white/80">Міста України</div>
-          </div>
         </div>
       </div>
     </section>

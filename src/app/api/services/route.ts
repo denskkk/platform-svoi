@@ -9,10 +9,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission, requireAuth } from '@/lib/api-middleware';
-import { chargeForAction } from '@/lib/ucm';
 import { apiCache, invalidateCache } from '@/lib/cache';
 import { getAuthCookie } from '@/lib/cookies';
-import { awardUcmForAction } from '@/lib/earning';
 
 // GET - Отримати послуги з фільтрами
 export async function GET(request: NextRequest) {
@@ -135,8 +133,6 @@ export async function GET(request: NextRequest) {
           description: r.description,
           city: r.city,
           createdAt: r.createdAt,
-          isPaid: r.isPaid,
-          priceUcm: r.priceUcm,
         }));
       } catch (err) {
         console.warn('Failed to load requests for services listing:', err);
@@ -184,7 +180,7 @@ export async function POST(request: NextRequest) {
     // Глядачі не можуть створювати послуги
     if (accountType === 'viewer') {
       return NextResponse.json(
-        { error: 'Глядачі не можуть створювати послуги. Змініть тип акаунту в налаштуваннях.' },
+        { error: 'Глядачі не можуть створювати послуги. Перейдіть на звичайний профіль на сторінці свого профілю.' },
         { status: 403 }
       );
     }
@@ -210,7 +206,7 @@ export async function POST(request: NextRequest) {
       description: body.description,
       priceFrom: safePriceFrom,
       priceTo: safePriceTo,
-      priceUnit: body.priceUnit || 'УЦМ',
+      priceUnit: body.priceUnit || 'грн',
       city: body.city,
       region: body.region || null,
       address: body.address || null,
@@ -218,16 +214,6 @@ export async function POST(request: NextRequest) {
 
     if (body.imageUrl) {
       serviceData.imageUrl = body.imageUrl;
-    }
-
-    // If user is basic — charge a small creation fee (1 уцм) but do NOT overwrite the service's price
-    if (accountType === 'basic') {
-      try {
-        await chargeForAction({ userId, amount: 1, reason: 'create_service', related: { type: 'service' } });
-      } catch (e: any) {
-        console.error('[create service] failed charging basic user:', e?.message || e);
-        return NextResponse.json({ error: 'Недостатньо уцмок на балансі' }, { status: 402 });
-      }
     }
 
     const service = await prisma.service.create({
@@ -253,20 +239,6 @@ export async function POST(request: NextRequest) {
 
     // Інвалідувати кеш послуг (бо створили нову)
     invalidateCache('services:');
-
-
-    // Нарахувати бонус за першу послугу
-    try {
-      const userServices = await prisma.service.count({
-        where: { userId: authResult.user.userId }
-      });
-      
-      if (userServices === 1) {
-        await awardUcmForAction(authResult.user.userId, 'FIRST_SERVICE');
-      }
-    } catch (error) {
-      console.error('Error awarding first service bonus:', error);
-    }
 
     return NextResponse.json({
       success: true,

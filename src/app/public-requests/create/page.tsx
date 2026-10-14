@@ -19,7 +19,6 @@ function PublicRequestFormContent() {
     budgetMin: '',
     budgetMax: '',
     city: '',
-    isPromoted: false,
   });
 
   useEffect(() => {
@@ -28,7 +27,7 @@ function PublicRequestFormContent() {
       router.push('/auth/login');
       return;
     }
-    
+
     const user = JSON.parse(storedUser);
     setCurrentUser(user);
     setFormData(prev => ({ ...prev, city: user.city || '' }));
@@ -37,7 +36,7 @@ function PublicRequestFormContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!currentUser) {
       router.push('/auth/login');
       return;
@@ -53,12 +52,6 @@ function PublicRequestFormContent() {
       };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const totalCost = formData.isPromoted ? 7 : 5;
-      
-      if (Number(currentUser.balanceUcm) < totalCost) {
-        throw new Error(`Недостатньо коштів. Потрібно ${totalCost} UCM (ваш баланс: ${currentUser.balanceUcm} UCM)`);
-      }
-
       const payload = {
         title: formData.title,
         description: formData.description,
@@ -67,7 +60,6 @@ function PublicRequestFormContent() {
         budgetMax: formData.budgetMax ? parseFloat(formData.budgetMax) : undefined,
         city: formData.city,
         isPublic: true,  // Це публічна заявка
-        isPromoted: formData.isPromoted,
       };
 
       const response = await fetch('/api/service-requests', {
@@ -82,10 +74,6 @@ function PublicRequestFormContent() {
       if (!response.ok) {
         throw new Error(data.error || 'Помилка створення заявки');
       }
-
-      // Оновити баланс користувача
-      const updatedUser = { ...currentUser, balanceUcm: Number(currentUser.balanceUcm) - totalCost };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
 
       // Перенаправити на сторінку публічних заявок з параметром для скидання кешу
       router.push(`/public-requests?refresh=${Date.now()}`);
@@ -105,8 +93,6 @@ function PublicRequestFormContent() {
     );
   }
 
-  const totalCost = formData.isPromoted ? 7 : 5;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -125,28 +111,8 @@ function PublicRequestFormContent() {
               Створити публічну заявку
             </h1>
             <p className="text-neutral-600">
-              Опишіть, що вам потрібно, і виконавці самі запропонують свої послуги
+              Опишіть, що вам потрібно, і виконавці самі запропонують свої послуги. Публікація безкоштовна.
             </p>
-          </div>
-
-          {/* Баланс користувача */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Ваш баланс:</p>
-                <p className="text-2xl font-bold text-blue-600">{currentUser?.balanceUcm || 0} UCM</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Вартість заявки:</p>
-                <p className="text-2xl font-bold text-gray-900">{totalCost} UCM</p>
-              </div>
-            </div>
-            {Number(currentUser?.balanceUcm || 0) < totalCost && (
-              <div className="mt-3 text-sm text-red-600 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4" />
-                Недостатньо коштів для створення заявки
-              </div>
-            )}
           </div>
 
           {error && (
@@ -221,7 +187,7 @@ function PublicRequestFormContent() {
               <div>
                 <label htmlFor="budgetMin" className="block text-sm font-medium text-neutral-700 mb-2">
                   <DollarSign className="w-4 h-4 inline mr-1" />
-                  Бюджет від (UCM)
+                  Бюджет від (грн)
                 </label>
                 <input
                   type="number"
@@ -231,13 +197,13 @@ function PublicRequestFormContent() {
                   value={formData.budgetMin}
                   onChange={(e) => setFormData({ ...formData, budgetMin: e.target.value })}
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="50"
+                  placeholder="500"
                 />
               </div>
               <div>
                 <label htmlFor="budgetMax" className="block text-sm font-medium text-neutral-700 mb-2">
                   <DollarSign className="w-4 h-4 inline mr-1" />
-                  Бюджет до (UCM)
+                  Бюджет до (грн)
                 </label>
                 <input
                   type="number"
@@ -247,7 +213,7 @@ function PublicRequestFormContent() {
                   value={formData.budgetMax}
                   onChange={(e) => setFormData({ ...formData, budgetMax: e.target.value })}
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="200"
+                  placeholder="2000"
                 />
               </div>
             </div>
@@ -269,53 +235,6 @@ function PublicRequestFormContent() {
               />
             </div>
 
-            {/* Просування в ТОП */}
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-5">
-              <label className="flex items-start cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isPromoted}
-                  onChange={(e) => setFormData({ ...formData, isPromoted: e.target.checked })}
-                  className="mt-1 w-5 h-5 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-500"
-                />
-                <div className="ml-3 flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg font-bold text-gray-900">🔥 Просунути в ТОП</span>
-                    <span className="px-3 py-1 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full">+2 UCM</span>
-                  </div>
-                  <p className="text-sm text-gray-700 mb-2">
-                    Ваша заявка буде показуватись <strong>першою</strong> протягом <strong>3 днів</strong> і отримає в рази більше відгуків від виконавців
-                  </p>
-                  <div className="flex items-center gap-4 text-xs text-gray-600">
-                    <span>✅ Показується зверху</span>
-                    <span>✅ Виділяється візуально</span>
-                    <span>✅ 3 дні у топі</span>
-                  </div>
-                </div>
-              </label>
-            </div>
-
-            {/* Підсумок */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-2">Підсумок</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Публікація заявки:</span>
-                  <span className="font-medium">5 UCM</span>
-                </div>
-                {formData.isPromoted && (
-                  <div className="flex justify-between text-yellow-700">
-                    <span>Просування в ТОП (3 дні):</span>
-                    <span className="font-medium">+2 UCM</span>
-                  </div>
-                )}
-                <div className="flex justify-between pt-2 border-t border-gray-300 font-bold text-lg">
-                  <span>Всього:</span>
-                  <span className="text-blue-600">{totalCost} UCM</span>
-                </div>
-              </div>
-            </div>
-
             {/* Кнопки */}
             <div className="flex gap-4 pt-4">
               <button
@@ -327,10 +246,10 @@ function PublicRequestFormContent() {
               </button>
               <button
                 type="submit"
-                disabled={submitting || Number(currentUser?.balanceUcm || 0) < totalCost}
+                disabled={submitting}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
-                {submitting ? 'Створення...' : `Створити заявку (${totalCost} UCM)`}
+                {submitting ? 'Створення...' : 'Створити заявку'}
               </button>
             </div>
           </form>

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff, ArrowLeft, Upload, X, Facebook, Instagram, Send } from 'lucide-react'
 import { cities } from '@/lib/constants'
 import Image from 'next/image'
+import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox'
 
 function RegisterIndividualForm() {
   const router = useRouter()
@@ -28,6 +29,7 @@ function RegisterIndividualForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [consent, setConsent] = useState(false)
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -71,6 +73,11 @@ function RegisterIndividualForm() {
       return
     }
 
+    if (!consent) {
+      setError('Підтвердьте згоду з Умовами використання та Політикою конфіденційності')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -94,7 +101,6 @@ function RegisterIndividualForm() {
           city: formData.city || undefined,
           role: 'user',
           accountType: 'basic',
-          ref: searchParams?.get('ref') || undefined,
           avatarBase64: avatarBase64,
           socialLinks: {
             instagram: formData.instagram.trim() || undefined,
@@ -138,7 +144,7 @@ function RegisterIndividualForm() {
         {/* Заголовок */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <img src="/sitelogo.png" alt="Логотип" className="w-12 h-12 object-contain" />
+            <Image src="/logo.png" alt="Логотип СВІЙ ДЛЯ СВОЇХ" width={48} height={48} className="w-12 h-12 rounded-full" />
             <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
           </Link>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">
@@ -436,6 +442,11 @@ function RegisterIndividualForm() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Згода з умовами */}
+            <div className="mt-6">
+              <ConsentCheckbox checked={consent} onChange={setConsent} />
             </div>
 
             {/* Кнопка реєстрації */}

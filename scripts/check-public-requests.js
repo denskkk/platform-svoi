@@ -16,7 +16,6 @@ async function checkPublicRequests() {
         title: true,
         status: true,
         isPublic: true,
-        isPromoted: true,
         createdAt: true,
         client: {
           select: {
@@ -36,7 +35,6 @@ async function checkPublicRequests() {
       console.log(`     Клієнт: ${req.client.firstName} ${req.client.lastName} (ID: ${req.client.id})`);
       console.log(`     Статус: ${req.status}`);
       console.log(`     Публічна: ${req.isPublic ? '✅ ТАК' : '❌ НІ'}`);
-      console.log(`     Просувається: ${req.isPromoted ? '⭐ ТАК' : 'НІ'}`);
       console.log(`     Створена: ${req.createdAt.toLocaleString('uk-UA')}`);
       console.log('');
     });
@@ -50,7 +48,6 @@ async function checkPublicRequests() {
         id: true,
         title: true,
         status: true,
-        isPromoted: true,
         createdAt: true
       },
       orderBy: { createdAt: 'desc' }
@@ -69,8 +66,7 @@ async function checkPublicRequests() {
       select: {
         id: true,
         title: true,
-        status: true,
-        isPromoted: true
+        status: true
       }
     });
 
@@ -79,7 +75,7 @@ async function checkPublicRequests() {
     if (activePublicRequests.length > 0) {
       console.log('Список активних публічних заявок:\n');
       activePublicRequests.forEach((req, i) => {
-        console.log(`  ${i + 1}. [ID: ${req.id}] ${req.title} (${req.status})${req.isPromoted ? ' ⭐' : ''}`);
+        console.log(`  ${i + 1}. [ID: ${req.id}] ${req.title} (${req.status})`);
       });
       console.log('');
     }

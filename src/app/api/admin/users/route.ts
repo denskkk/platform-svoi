@@ -62,9 +62,7 @@ async function handler(request: NextRequest) {
           phone: true,
           city: true,
           region: true,
-          balanceUcm: true,
           isAdmin: true,
-          ucmVerified: true,
           isVerified: true,
           isActive: true,
           createdAt: true,
@@ -87,64 +85,10 @@ async function handler(request: NextRequest) {
       prisma.user.count({ where })
     ]);
     
-    // Для кожного користувача отримати детальну статистику транзакцій
-    const usersWithStats = await Promise.all(
-      users.map(async (user: any) => {
-        let ucmSent = { _sum: { amount: 0 } };
-        let ucmReceived = { _sum: { amount: 0 } };
-        let recentTransactions: any[] = [];
-        
-        try {
-          [
-            ucmSent,
-            ucmReceived,
-            recentTransactions
-          ] = await Promise.all([
-          // Скільки УЦМ відправлено
-          (prisma as any).ucmTransaction.aggregate({
-            where: {
-              userId: user.id,
-              amount: { lt: 0 }
-            },
-            _sum: { amount: true }
-          }),
-          
-          // Скільки УЦМ отримано
-          (prisma as any).ucmTransaction.aggregate({
-            where: {
-              userId: user.id,
-              amount: { gt: 0 }
-            },
-            _sum: { amount: true }
-          }),
-          
-          // Останні 5 транзакцій
-          (prisma as any).ucmTransaction.findMany({
-            where: { userId: user.id },
-            select: {
-              id: true,
-              amount: true,
-              reason: true,
-              description: true,
-              createdAt: true
-            },
-            orderBy: { createdAt: 'desc' },
-            take: 5
-          })
-        ]);
-        } catch (err) {
-          console.log('Error loading user transactions:', err);
-          // Використовувати дефолтні значення
-        }
-        
-        return {
-          ...user,
-          servicesCount: user._count?.services || 0,
-          ucmSent: Math.abs(ucmSent._sum.amount || 0),
-          ucmReceived: ucmReceived._sum.amount || 0
-        };
-      })
-    );
+    const usersWithStats = users.map((user: any) => ({
+      ...user,
+      servicesCount: user._count?.services || 0
+    }));
     
     return NextResponse.json({
       success: true,

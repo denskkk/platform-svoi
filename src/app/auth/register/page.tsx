@@ -24,11 +24,11 @@ export default function RegisterPage() {
       color: 'bg-neutral-500',
       hoverColor: 'hover:bg-neutral-600',
       price: 'Безкоштовно',
-      description: 'Перегляд та замовлення послуг',
+      description: 'Перегляд профілів і послуг',
       features: [
         'Перегляд профілів та послуг',
-        'Замовлення послуг',
         'Збереження обраного',
+        'Безкоштовний перехід на звичайний профіль',
       ],
       limitations: []
     },
@@ -182,7 +182,7 @@ export default function RegisterPage() {
           <div className="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-xl p-6">
             <h4 className="font-semibold text-blue-900 mb-2">💡 Порада</h4>
             <p className="text-sm text-blue-800">
-              Оберіть <strong>Глядач</strong> для пошуку та замовлення послуг, 
+              Оберіть <strong>Глядач</strong> для пошуку та перегляду фахівців, 
               <strong>Звичайний</strong> якщо надаєте послуги, або <strong>Бізнес</strong> для компаній.
             </p>
           </div>

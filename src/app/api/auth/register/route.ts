@@ -5,8 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { hasUcmKindColumn, hasUcmTransactionsTable, ensureUserReferralCode, awardReferral } from '@/lib/ucm';
-import { hashPassword, generateToken } from '@/lib/auth';
+import { hashPassword, generateToken, hashToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
 
@@ -49,11 +48,7 @@ export async function POST(request: NextRequest) {
       accountType = 'basic',
       educationLevel,
       educationDetails,
-      ucmMember,
-      ucmSupporter,
       employmentStatus,
-      ref,
-      referralCode,
       avatarUrl,
       avatarBase64,
       socialLinks,
@@ -155,26 +150,6 @@ export async function POST(request: NextRequest) {
   // Створення користувача з усіма полями
   const now = new Date();
 
-    // Convert boolean values to strings for ucmMember and ucmSupporter
-    const convertToYesNo = (value: any): string | null => {
-      if (value === undefined || value === null) return null;
-      if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
-      if (typeof value === 'string') {
-        if (value.toLowerCase() === 'yes' || value === 'Так') return 'Так';
-        if (value.toLowerCase() === 'no' || value === 'Ні') return 'Ні';
-      }
-      return null;
-    };
-
-    // Визначимо інвайтера за рефкодом, якщо передано.
-    // Поддерживаем несколько источников: тело запроса (`ref`/`referralCode`), query-параметр и cookie `ref` (установлен при редіректі /r/:code).
-    const cookieRef = request.cookies.get('ref')?.value;
-    const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || cookieRef || undefined as any;
-    const inviter = refCode
-      ? await prisma.user.findFirst({ where: { referralCode: { equals: String(refCode), mode: 'insensitive' } }, select: { id: true, email: true } })
-      : null;
-
-    // Створимо користувача у транзакції (реферальні дії виконаємо після commit)
     const created = await prisma.$transaction(async (tx: typeof prisma) => {
       const newUser = await tx.user.create({
         data: {
@@ -192,14 +167,11 @@ export async function POST(request: NextRequest) {
           isVerified: false,
           educationLevel: educationLevel || null,
           educationDetails: educationDetails || null,
-          ucmMember: convertToYesNo(ucmMember),
-          ucmSupporter: convertToYesNo(ucmSupporter),
           employmentStatus: employmentStatus || null,
-          // Підписки немає, все безкоштовно, оплата лише за внутрішні функції
+          // Підписки немає, платформа безкоштовна
           subscriptionActive: false,
           subscriptionStartedAt: null,
           subscriptionExpiresAt: null,
-          referredById: inviter && inviter.email !== email ? inviter.id : null,
         },
         select: {
           id: true,
@@ -221,43 +193,6 @@ export async function POST(request: NextRequest) {
       return newUser
     });
 
-    // Після успішної транзакції генеруємо реф-код та нараховуємо бонуси (позатранзакційно)
-    try {
-      await ensureUserReferralCode(created.id);
-      if (inviter && inviter.email !== email) {
-        await awardReferral({ inviterId: inviter.id, inviteeId: created.id, code: String(refCode) });
-      }
-    } catch (e) {
-      // Логуємо, але не блокуємо реєстрацію у випадку проблем з реферальною системою
-      console.warn('[register] referral post-processing failed', e);
-    }
-
-    // Нарахувати стартовий бонус користувачу (наприклад 5 уцмок) та записати транзакцію
-    const START_BONUS = 5;
-    try {
-      const hasLedger = await hasUcmTransactionsTable();
-      const hasKind = await hasUcmKindColumn();
-      await prisma.$transaction(async (tx: typeof prisma) => {
-        await tx.user.update({ where: { id: created.id }, data: { balanceUcm: { increment: START_BONUS } } });
-        if (hasLedger) {
-          await tx.ucmTransaction.create({
-            data: {
-              userId: created.id,
-              ...(hasKind ? { kind: 'credit' as const } : {}),
-              amount: START_BONUS,
-              reason: 'signup_bonus',
-              relatedEntityType: null,
-              relatedEntityId: null,
-              meta: {},
-            }
-          });
-        }
-      });
-    } catch (e) {
-      console.warn('[register] failed to apply start bonus', e);
-    }
-
-    // Підтягнемо оновлені дані користувача (щоб повернути balanceUcm) перед відправкою відповіді
     const returnedUser = await prisma.user.findUnique({
       where: { id: created.id },
       select: {
@@ -275,7 +210,6 @@ export async function POST(request: NextRequest) {
         subscriptionStartedAt: true,
         subscriptionExpiresAt: true,
         createdAt: true,
-        balanceUcm: true,
       }
     });
 
@@ -294,7 +228,7 @@ export async function POST(request: NextRequest) {
     await prisma.session.create({
       data: {
         userId: created.id,
-        tokenHash: token,
+        tokenHash: hashToken(token),
         expiresAt,
         ipAddress: request.ip || 'unknown',
         userAgent: request.headers.get('user-agent') || 'unknown',
@@ -311,13 +245,6 @@ export async function POST(request: NextRequest) {
 
     // ТАКОЖ зберегти токен в httpOnly cookie для безпеки
     setAuthCookie(response, token);
-
-    // Очистити cookie `ref` якщо він був встановлений при редіректі
-    try {
-      response.cookies.set('ref', '', { path: '/', maxAge: 0 });
-    } catch (e) {
-      // ignore
-    }
 
     return response;
 

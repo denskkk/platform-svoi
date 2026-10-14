@@ -62,15 +62,6 @@ enum RequestType {
   other           // Інше
 }
 
-enum PaidActionType {
-  partner_search     // Пошук пари/партнера - 5 уцмок
-  job_request        // Заявка на пошук роботи - 3 уцмки
-  service_request    // Заявка на послугу - 3 уцмки
-  employee_search    // Пошук працівника - 4 уцмки
-  investor_search    // Пошук інвестора - 5 уцмок
-  advanced_search    // Розширений пошук - 2 уцмки
-}
-
 enum RequestStatus {
   active          // Активна
   in_progress     // В процесі
@@ -89,11 +80,6 @@ enum ReportStatus {
   in_review
   resolved
   rejected
-}
-
-enum UcmTransactionKind {
-  credit
-  debit
 }
 
 enum ServiceRequestStatus {
@@ -123,10 +109,6 @@ model User {
   email        String   @unique @db.VarChar(150)
   phone        String?  @db.VarChar(30)
   passwordHash String   @map("password_hash") @db.VarChar(255)
-  
-  // УЦМ (Українська Цивільна Місія)
-  ucmMember    String? @map("ucm_member") @db.VarChar(50) // Участник команди УЦМ (так/ні/цікаво)
-  ucmSupporter String? @map("ucm_supporter") @db.VarChar(50) // Підтримуєш проєкти УЦМ (так/ні/цікаво)
   
   // Локація
   city         String?  @db.VarChar(100)
@@ -201,7 +183,6 @@ model User {
   
   // Бізнес-спеціалісти (для підприємців)
   usesBusinessServices Json? @map("uses_business_services") @default("{}") // Бухгалтер/Юрист/СММ/Рекламщик/Веб-спеціаліст
-  readyToSwitchToUCM String? @map("ready_to_switch_ucm") @db.VarChar(50) // Готовий перейти на спеціалістів УЦМ (так/ні/цікаво)
   
   // Мета використання сайту
   siteUsageGoal Json? @map("site_usage_goal") @default("[]") // масив цілей використання платформи
@@ -222,7 +203,6 @@ model User {
   isVerified   Boolean  @default(false) @map("is_verified")
   isActive     Boolean  @default(true) @map("is_active")
   isAdmin      Boolean  @default(false) @map("is_admin") // Чи є користувач адміністратором
-  ucmVerified  Boolean  @default(false) @map("ucm_verified") // Перевірено УЦМ (значок для надійних користувачів)
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
   lastLogin    DateTime? @map("last_login")
@@ -246,17 +226,6 @@ model User {
   sessions           Session[]
   searchLogs         SearchLog[]
   subscriptions      Subscription[]
-  payments           Payment[]
-  balanceUcm         Decimal  @default(0.00) @map("balance_ucm") @db.Decimal(12, 2) // Баланс у внутрішній валюті «уцмка»
-  // Реферали та транзакції уцмок
-  referralCode       String?  @unique @map("referral_code") @db.VarChar(50)
-  referredById       Int?     @map("referred_by_id")
-  referredBy         User?    @relation("ReferredBy", fields: [referredById], references: [id], onDelete: SetNull)
-  ucmTransactions    UcmTransaction[]
-  paidActions        PaidAction[]
-  referralsInvited   User[]   @relation("ReferredBy")
-  referralsAsInviter Referral[] @relation("RefInviter")
-  referralsAsInvitee Referral[] @relation("RefInvitee")
   serviceRequestsCreated ServiceRequest[] @relation("RequestCreator")
   serviceRequestsAccepted ServiceRequest[] @relation("RequestExecutor")
   executorResponses  ServiceRequestResponse[] @relation("ExecutorResponses") // Відгуки виконавця на заявки
@@ -418,7 +387,6 @@ model BusinessInfo {
   offerToCustomers Boolean @default(false) @map("offer_to_customers") // Пропонувати споживачам
   offerToPartners  Boolean @default(false) @map("offer_to_partners") // Пропонувати партнерам
   offerToInvestors Boolean @default(false) @map("offer_to_investors") // Пропонувати інвесторам
-  wantsUCMAnalysis Boolean @default(false) @map("wants_ucm_analysis") // Потребує аналізу від УЦМ
   
   // Додаткова інформація
   yearFounded   Int?     @map("year_founded")
@@ -639,10 +607,6 @@ model Request {
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
   completedAt   DateTime?     @map("completed_at")
-  // Платні опції
-  isPaid        Boolean       @default(false) @map("is_paid")
-  priceUcm      Decimal?      @map("price_ucm") @db.Decimal(12, 2)
-  promoted      Boolean       @default(false) @map("promoted")
   expiresAt     DateTime?     @map("expires_at")
   metadata      Json?         @default("{}")
   
@@ -802,97 +766,6 @@ model Message {
 }
 
 // ========================================
-// PAYMENTS (WayForPay)
-// ========================================
-
-model Payment {
-  id              Int       @id @default(autoincrement()) @map("payment_id")
-  userId          Int       @map("user_id")
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider        String    @default("wayforpay") @db.VarChar(50)
-  orderReference  String    @unique @map("order_reference") @db.VarChar(100)
-  amount          Decimal   @db.Decimal(12, 2)
-  currency        String    @default("UAH") @db.VarChar(10)
-  description     String?   @db.Text
-  status          String    @default("new") @db.VarChar(30)
-  invoiceUrl      String?   @map("invoice_url") @db.VarChar(255)
-  rawRequest      Json?     @map("raw_request")
-  rawResponse     Json?     @map("raw_response")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-
-  @@index([userId])
-  @@index([status])
-  @@map("payments")
-}
-
-// ========================================
-// UCM TRANSACTIONS (ledger)
-// ========================================
-
-model UcmTransaction {
-  id                Int                 @id @default(autoincrement())
-  userId            Int                 @map("user_id")
-  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kind              String?             @db.VarChar(50)
-  amount            Decimal             @db.Decimal(12, 2)
-  reason            String              @db.VarChar(50)
-  relatedEntityType String?             @map("related_entity_type") @db.VarChar(50)
-  relatedEntityId   Int?                @map("related_entity_id")
-  meta              Json?
-  description       String?             @db.Text
-  createdAt         DateTime            @default(now()) @map("created_at")
-
-  @@index([userId])
-  @@index([createdAt])
-  @@index([userId, reason])
-  @@index([userId, createdAt])
-  @@map("ucm_transactions")
-}
-
-// ========================================
-// PAID ACTIONS (Платні дії користувачів)
-// ========================================
-
-model PaidAction {
-  id                Int              @id @default(autoincrement()) @map("paid_action_id")
-  userId            Int              @map("user_id")
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  actionType        PaidActionType   @map("action_type")
-  amount            Decimal          @db.Decimal(12, 2) // Сума списання
-  relatedEntityType String?          @map("related_entity_type") @db.VarChar(50) // Request, Search тощо
-  relatedEntityId   Int?             @map("related_entity_id")
-  description       String?          @db.Text
-  success           Boolean          @default(true) // Чи успішно виконано дію
-  errorMessage      String?          @map("error_message") @db.Text
-  createdAt         DateTime         @default(now()) @map("created_at")
-
-  @@index([userId, createdAt(sort: Desc)])
-  @@index([actionType])
-  @@map("paid_actions")
-}
-
-// ========================================
-// REFERRALS
-// ========================================
-
-model Referral {
-  id            Int      @id @default(autoincrement()) @map("referral_id")
-  code          String   @db.VarChar(50)
-  inviterId     Int      @map("inviter_id")
-  inviteeId     Int      @unique @map("invitee_id")
-  inviter       User     @relation("RefInviter", fields: [inviterId], references: [id], onDelete: Cascade)
-  invitee       User     @relation("RefInvitee", fields: [inviteeId], references: [id], onDelete: Cascade)
-  bonusInviter  Decimal  @map("bonus_inviter") @db.Decimal(12, 2)
-  bonusInvitee  Decimal  @map("bonus_invitee") @db.Decimal(12, 2)
-  createdAt     DateTime @default(now()) @map("created_at")
-
-  @@index([code])
-  @@index([inviterId])
-  @@map("referrals")
-}
-
-// ========================================
 // SERVICE REQUESTS (Заявки на послуги/роботи)
 // ========================================
 
@@ -914,17 +787,13 @@ model ServiceRequest {
   // Медіа
   photos            Json                  @default("[]") // Масив URL фотографій
   
-  // Бюджет і оплата
+  // Бюджет
   budgetFrom        Decimal?              @map("budget_from") @db.Decimal(10, 2)
   budgetTo          Decimal?              @map("budget_to") @db.Decimal(10, 2)
   agreedPrice       Decimal?              @map("agreed_price") @db.Decimal(10, 2)
-  priceUcm          Decimal?              @map("price_ucm") @db.Decimal(12, 2) // Ціна в уцмках
-  isPaid            Boolean               @default(false) @map("is_paid")
   
-  // Публічність і просування
+  // Публічність
   isPublic          Boolean               @default(false) @map("is_public") // Чи відображається в публічних заявках
-  isPromoted        Boolean               @default(false) @map("is_promoted") // Чи в топі
-  promotedUntil     DateTime?             @map("promoted_until") // До якої дати в топі
   
   // Статус
   status            ServiceRequestStatus  @default(new)
@@ -942,7 +811,6 @@ model ServiceRequest {
   updatedAt         DateTime              @updatedAt @map("updated_at")
   acceptedAt        DateTime?             @map("accepted_at")
   completedAt       DateTime?             @map("completed_at")
-  paidAt            DateTime?             @map("paid_at")
   
   // Зв'язки
   client            User                  @relation("RequestCreator", fields: [clientId], references: [id], onDelete: Cascade)

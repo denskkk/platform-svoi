@@ -18,14 +18,15 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { cities } from '@/lib/constants';
+import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox';
 
 function BusinessRegistrationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isPremium = searchParams?.get("premium") === "true";
-  const refCode = searchParams?.get('ref') || undefined;
   
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("basic");
 
@@ -52,7 +53,6 @@ function BusinessRegistrationForm() {
     offerToCustomers: false,
     offerToPartners: false,
     offerToInvestors: false,
-    wantsUCMAnalysis: false,
     // Детальні поля пошуку
     partnerType: "",
     partnerSphere: "",
@@ -182,6 +182,11 @@ function BusinessRegistrationForm() {
       return;
     }
 
+    if (!consent) {
+      setError("Підтвердьте згоду з Умовами використання та Політикою конфіденційності");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -244,7 +249,6 @@ function BusinessRegistrationForm() {
             city: formData.city.trim() || undefined,
             role: "business",
             accountType: "business",
-            ref: refCode,
           },
           business: {
             companyName: formData.companyName.trim(),
@@ -262,7 +266,6 @@ function BusinessRegistrationForm() {
             offerToCustomers: isPremium ? formData.offerToCustomers : false,
             offerToPartners: isPremium ? formData.offerToPartners : false,
             offerToInvestors: isPremium ? formData.offerToInvestors : false,
-            wantsUCMAnalysis: isPremium ? formData.wantsUCMAnalysis : false,
             // Детальна інформація пошуку
             partnerSearchDetails,
             investorSearchDetails,
@@ -777,7 +780,7 @@ function BusinessRegistrationForm() {
                             name="investmentAmount"
                             value={formData.investmentAmount}
                             onChange={handleChange}
-                            placeholder="Наприклад: від 500 000 до 1 000 000 УЦМ"
+                            placeholder="Наприклад: від 500 000 до 1 000 000 грн"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
@@ -969,7 +972,7 @@ function BusinessRegistrationForm() {
                               <div>
                                 <input
                                   type="text"
-                                  placeholder="Зарплата (УЦМ)"
+                                  placeholder="Зарплата (грн)"
                                   value={vacancy.salary}
                                   onChange={(e) => updateVacancy(index, 'salary', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -1008,8 +1011,13 @@ function BusinessRegistrationForm() {
               </div>
             )}
 
+            {/* Згода з умовами */}
+            <div className="pt-6 border-t border-gray-200 mt-8">
+              <ConsentCheckbox checked={consent} onChange={setConsent} />
+            </div>
+
             {/* Кнопки */}
-            <div className="flex gap-4 pt-6 border-t border-gray-200 mt-8">
+            <div className="flex gap-4 pt-6 mt-2">
               <button
                 type="submit"
                 disabled={loading}

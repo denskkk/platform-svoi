@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone, ArrowLeft, Upload, X, Facebook, Instagram, Send } from 'lucide-react';
 import { saveUser, saveToken } from '@/lib/client-auth';
 import Image from 'next/image';
+import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox';
 
 function ViewerRegisterForm() {
   const router = useRouter();
@@ -32,6 +33,7 @@ function ViewerRegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,6 +77,11 @@ function ViewerRegisterForm() {
       return;
     }
 
+    if (!consent) {
+      setError('Підтвердьте згоду з Умовами використання та Політикою конфіденційності');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -98,7 +105,6 @@ function ViewerRegisterForm() {
           city: formData.city.trim() || undefined,
           role: 'user',
           accountType: 'viewer',
-          ref: searchParams?.get('ref') || undefined,
           avatarBase64: avatarBase64,
           socialLinks: {
             instagram: formData.instagram.trim() || undefined,
@@ -159,7 +165,7 @@ function ViewerRegisterForm() {
             👁️ Реєстрація Глядача
           </h2>
           <p className="text-gray-600">
-            Швидка реєстрація для пошуку та замовлення послуг
+            Швидка реєстрація для пошуку та перегляду фахівців
           </p>
         </div>
 
@@ -427,6 +433,11 @@ function ViewerRegisterForm() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Згода з умовами */}
+            <div className="mt-6">
+              <ConsentCheckbox checked={consent} onChange={setConsent} />
             </div>
 
             {/* Submit Button */}

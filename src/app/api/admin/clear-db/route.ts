@@ -9,6 +9,11 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    // Небезпечна операція: у production ендпоінт вимкнений повністю
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
     const provided = request.headers.get('x-admin-secret') || '';
     const expected = process.env.ADMIN_SECRET || '';
     if (!expected || provided !== expected) {

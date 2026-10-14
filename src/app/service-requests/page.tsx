@@ -14,8 +14,6 @@ interface ServiceRequest {
   budgetTo: number | null;
   status: string;
   createdAt: string;
-  isPromoted: boolean;
-  promotedUntil: string | null;
   client: {
     id: number;
     firstName: string;
@@ -210,34 +208,12 @@ export default function ServiceRequestsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {requests.map((request) => {
-              // Перевіряємо чи заявка в топі
-              const isPromoted = request.isPromoted && request.promotedUntil && new Date(request.promotedUntil) > new Date();
-              
               return (
                 <Link
                   key={request.id}
                   href={`/service-requests/${request.id}`}
-                  className={`bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 border ${
-                    isPromoted 
-                      ? 'border-yellow-400 border-2 ring-2 ring-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50' 
-                      : 'border-gray-100 hover:border-blue-200'
-                  }`}
+                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 border border-gray-100 hover:border-blue-200"
                 >
-                  {/* ТОП Бейдж */}
-                  {isPromoted && (
-                    <div className="mb-3 flex items-center gap-2">
-                      <div className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full text-xs font-bold shadow-md flex items-center gap-1">
-                        <span>🔥</span>
-                        <span>ТОП ОГОЛОШЕННЯ</span>
-                      </div>
-                      {request.promotedUntil && (
-                        <span className="text-xs text-gray-500">
-                          до {new Date(request.promotedUntil).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
                   {/* Статус */}
                   <div className="flex items-center justify-between mb-3">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[request.status]}`}>
@@ -249,7 +225,7 @@ export default function ServiceRequestsPage() {
                   </div>
 
                   {/* Назва */}
-                  <h3 className={`font-bold text-lg mb-2 line-clamp-2 ${isPromoted ? 'text-gray-900' : 'text-gray-900'}`}>
+                  <h3 className="font-bold text-lg mb-2 line-clamp-2 text-gray-900">
                     {request.title}
                   </h3>
 
@@ -271,10 +247,10 @@ export default function ServiceRequestsPage() {
                         <span>💰</span>
                         <span>
                           {request.budgetFrom && request.budgetTo
-                            ? `${request.budgetFrom}-${request.budgetTo} УЦМ`
+                            ? `${request.budgetFrom}-${request.budgetTo} грн`
                             : request.budgetFrom
-                            ? `від ${request.budgetFrom} УЦМ`
-                            : `до ${request.budgetTo} УЦМ`}
+                            ? `від ${request.budgetFrom} грн`
+                            : `до ${request.budgetTo} грн`}
                         </span>
                       </div>
                     )}

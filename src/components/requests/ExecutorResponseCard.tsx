@@ -74,7 +74,7 @@ export function ExecutorResponseCard({ response, onSelect, isSelecting, requestH
           <div>
             <span className="text-sm text-neutral-600">Ціна:</span>
             <p className="text-2xl font-bold text-primary-600">
-              {response.proposedPrice} УЦМ
+              {response.proposedPrice} грн
             </p>
           </div>
           {response.estimatedDays && (

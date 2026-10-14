@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { 
   Users, 
   MessageSquare, 
-  DollarSign, 
   TrendingUp, 
   Activity,
   Shield,
@@ -28,12 +27,6 @@ interface AdminStats {
   messages: {
     total: number;
   };
-  ucm: {
-    totalTransactions: number;
-    totalInCirculation: number;
-    topUsers: any[];
-    byType: any[];
-  };
 }
 
 export default function AdminDashboard() {
@@ -43,7 +36,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'messages' | 'transactions'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'messages'>('overview');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -156,7 +149,7 @@ export default function AdminDashboard() {
             <div>
               <h1 className="text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
                 <Shield className="w-10 h-10 text-primary-500" />
-                Адмін-панель УЦМ
+                Адмін-панель
               </h1>
               <p className="text-neutral-600">
                 Детальна бізнес-статистика платформи СВІЙ ДЛЯ СВОЇХ
@@ -184,7 +177,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Користувачі */}
           <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-transparent hover:border-blue-500 transition-all">
             <div className="flex items-center justify-between mb-4">
@@ -228,24 +221,6 @@ export default function AdminDashboard() {
               {stats?.messages.total.toLocaleString()}
             </div>
           </div>
-
-          {/* УЦМ */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-transparent hover:border-amber-500 transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-amber-100 rounded-xl">
-                <DollarSign className="w-6 h-6 text-amber-600" />
-              </div>
-              <span className="text-sm text-neutral-500">УЦМ в обігу</span>
-            </div>
-            <div className="mb-2">
-              <div className="text-3xl font-bold text-neutral-900">
-                {stats?.ucm.totalInCirculation.toLocaleString()}
-              </div>
-              <div className="text-sm text-neutral-600 mt-1">
-                Транзакцій: {stats?.ucm.totalTransactions.toLocaleString()}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Tabs */}
@@ -282,14 +257,10 @@ export default function AdminDashboard() {
               Переписки
             </button>
             <button
-              onClick={() => setActiveTab('transactions')}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
-                activeTab === 'transactions'
-                  ? 'bg-primary-500 text-white shadow-md'
-                  : 'text-neutral-600 hover:bg-neutral-100'
-              }`}
+              onClick={() => router.push('/admin/reports')}
+              className="flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
             >
-              Транзакції
+              Скарги
             </button>
           </div>
         </div>
@@ -323,54 +294,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Топ користувачів по УЦМ */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-neutral-900 mb-4">
-                  Топ-10 користувачів по балансу УЦМ
-                </h2>
-                <div className="space-y-3">
-                  {stats?.ucm.topUsers.map((user: any, index: number) => (
-                    <div key={user.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="font-medium text-neutral-900">
-                            {user.firstName} {user.lastName}
-                          </div>
-                          <div className="text-sm text-neutral-600">{user.city}</div>
-                        </div>
-                      </div>
-                      <div className="text-lg font-bold text-amber-600">
-                        {user.balanceUcm.toLocaleString()} уцм
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Статистика транзакцій по типах */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-neutral-900 mb-4">
-                  Транзакції по типах
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {stats?.ucm.byType.map((type: any) => (
-                    <div key={type.reason} className="p-4 bg-neutral-50 rounded-lg">
-                      <div className="font-medium text-neutral-900 mb-2">{type.reason}</div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-neutral-600">Кількість:</span>
-                        <span className="font-bold">{type._count.id}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-neutral-600">Сума:</span>
-                        <span className="font-bold">{type._sum.amount?.toLocaleString()} уцм</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </>
           )}
 
@@ -401,22 +324,6 @@ export default function AdminDashboard() {
                   className="text-primary-500 hover:text-primary-600 font-medium"
                 >
                   Перейти до переписок →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'transactions' && (
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">
-                Історія транзакцій
-              </h2>
-              <div className="text-center py-8 text-neutral-600">
-                <button 
-                  onClick={() => router.push('/admin/transactions')} 
-                  className="text-primary-500 hover:text-primary-600 font-medium"
-                >
-                  Перейти до транзакцій →
                 </button>
               </div>
             </div>

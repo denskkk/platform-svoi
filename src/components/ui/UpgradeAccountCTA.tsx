@@ -10,9 +10,9 @@ export function UpgradeAccountCTA({ currentType }: { currentType: string }) {
 
   return (
     <div className="border-2 border-dashed border-blue-300 rounded-2xl p-6 bg-blue-50/40 text-center">
-      <h3 className="text-lg font-semibold text-neutral-900 mb-2">Розширити можливості</h3>
+      <h3 className="text-lg font-semibold text-neutral-900 mb-2">Потрібна допомога?</h3>
       <p className="text-sm text-neutral-600 mb-4">
-        Ваш поточний рівень: <strong>{currentType}</strong>. Замість переходу на апгрейд ви можете створити заявку прямо зараз.
+        Опишіть, що вам потрібно, і виконавці відгукнуться на вашу заявку. Це безкоштовно.
       </p>
       <button
         onClick={() => setOpen(true)}

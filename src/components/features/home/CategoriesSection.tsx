@@ -77,7 +77,7 @@ export function CategoriesSection() {
             Обери свою категорію
           </h2>
           <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-            Знайди потрібного фахівця серед <span className="font-semibold text-primary-600">перевірених</span> українців
+            Знайди потрібного фахівця серед <span className="font-semibold text-primary-600">своїх</span> — українців
           </p>
         </div>
 

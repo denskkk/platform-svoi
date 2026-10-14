@@ -215,23 +215,6 @@ export const translateTransactionStatus = (status: string | null | undefined): s
   return translations[status] || status;
 };
 
-// Тип транзакції
-export const translateTransactionType = (type: string | null | undefined): string => {
-  if (!type) return '';
-  const translations: Record<string, string> = {
-    'referral_bonus': 'Бонус за реферала',
-    'referral_invitee': 'Бонус за реєстрацію',
-    'service_payment': 'Оплата послуги',
-    'service_received': 'Отримано за послугу',
-    'transfer_sent': 'Переказ відправлено',
-    'transfer_received': 'Переказ отримано',
-    'admin_adjustment': 'Коригування адміністратора',
-    'reward': 'Нагорода',
-    'penalty': 'Штраф'
-  };
-  return translations[type] || type;
-};
-
 // Роль користувача
 export const translateRole = (role: string | null | undefined): string => {
   if (!role) return '';
@@ -255,8 +238,7 @@ export const translatePermission = (permission: string | null | undefined): stri
     'view_users': 'Перегляд користувачів',
     'manage_users': 'Управління користувачами',
     'send_messages': 'Надсилання повідомлень',
-    'leave_reviews': 'Залишати відгуки',
-    'earn_ucm': 'Заробляти УЦМ'
+    'leave_reviews': 'Залишати відгуки'
   };
   return translations[permission] || permission;
 };
@@ -297,12 +279,6 @@ export const formatDateTime = (date: string | Date | null | undefined): string =
     hour: '2-digit',
     minute: '2-digit'
   });
-};
-
-// Форматування валюти (УЦМ)
-export const formatUCM = (amount: number | null | undefined): string => {
-  if (amount === null || amount === undefined) return '0';
-  return `${amount.toLocaleString('uk-UA')} УЦМ`;
 };
 
 // Форматування гривень

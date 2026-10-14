@@ -86,7 +86,7 @@ Reason: the repository had a previously tracked migration script with a real pro
 
 - Local `.env` files are ignored and should remain private.
 - The code now fails fast if JWT secrets are missing.
-- Other production credentials such as payment keys or Firebase JSON must remain separate from GitHub.
+- Other production credentials such as Firebase JSON must remain separate from GitHub.
 
 ## Tests
 

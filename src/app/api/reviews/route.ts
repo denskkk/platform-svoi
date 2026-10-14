@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (!serviceRequest.isPaid) {
+      if (serviceRequest.status !== 'completed' && serviceRequest.status !== 'paid') {
         return NextResponse.json(
-          { error: 'Відгук можна залишити тільки після оплати' },
+          { error: 'Відгук можна залишити тільки після виконання заявки' },
           { status: 400 }
         );
       }

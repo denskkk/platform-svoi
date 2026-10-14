@@ -148,10 +148,10 @@ async function getServices(q?: string, city?: string, category?: string) {
         description: r.description,
         imageUrl: r.metadata && r.metadata.imageUrl ? r.metadata.imageUrl : null,
         category: null,
-        // Show creator's declared budget when available; fall back to paid promotion price
-        priceFrom: r.budgetFrom ?? (r.priceUcm ? Number(r.priceUcm) : null),
+        // Показуємо бюджет, який вказав автор
+        priceFrom: r.budgetFrom ?? null,
         priceTo: null,
-        priceUnit: r.priceUcm ? 'уцмок' : undefined,
+        priceUnit: r.budgetFrom ? 'грн' : undefined,
         city: r.city,
         createdAt: r.createdAt,
         user: r.user,
@@ -297,7 +297,6 @@ export default async function ServicesPage({
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="text-sm text-yellow-800 font-semibold">{REQUEST_TYPE_LABELS[r.requestType] ? `Шукає ${REQUEST_TYPE_LABELS[r.requestType]}` : 'Запит'}</div>
-                            {r.isPaid && r.priceFrom && <div className="text-xs text-yellow-700">Промо</div>}
                           </div>
                           <Link href={`/requests/${r.id}`} className="block">
                             <h4 className="font-bold text-neutral-900 mb-2 hover:text-primary-600">{r.title}</h4>
@@ -355,14 +354,14 @@ export default async function ServicesPage({
                   {/* Price */}
                   <div className="text-lg font-semibold text-gray-900 mb-4">
                     {service.kind === 'request' ? (
-                      service.priceFrom ? `${service.priceFrom} ${service.priceUnit || 'уцмок'}` : 'За домовленістю'
+                      service.priceFrom ? `${service.priceFrom} ${service.priceUnit || 'грн'}` : 'За домовленістю'
                     ) : (
                       service.priceFrom && service.priceTo
-                        ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'УЦМ'}`
+                        ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
                         : service.priceFrom
-                        ? `від ${service.priceFrom} ${service.priceUnit || 'УЦМ'}`
+                        ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
                         : service.priceTo
-                        ? `до ${service.priceTo} ${service.priceUnit || 'УЦМ'}`
+                        ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
                         : 'За домовленістю'
                     )}
                   </div>

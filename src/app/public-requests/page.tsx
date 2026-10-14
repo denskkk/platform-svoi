@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Search, MapPin, Calendar, DollarSign, TrendingUp, Clock } from 'lucide-react';
+import { Search, MapPin, Calendar, DollarSign, Clock } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SkeletonGrid, RequestCardSkeleton } from '@/components/ui/SkeletonCard';
 
@@ -17,8 +17,6 @@ interface PublicRequest {
   budgetTo: number | null;
   desiredDate: string | null;
   createdAt: string;
-  isPromoted: boolean;
-  promotedUntil: string | null;
   client: {
     id: number;
     firstName: string;
@@ -111,9 +109,6 @@ export default function PublicRequestsPage() {
 
   const categories = Array.from(new Set(requests.map(r => r.category).filter(Boolean))) as string[];
   const cities = Array.from(new Set(requests.map(r => r.city).filter(Boolean))) as string[];
-
-  const promotedRequests = filteredRequests.filter(r => r.isPromoted && r.promotedUntil && new Date(r.promotedUntil) > new Date());
-  const regularRequests = filteredRequests.filter(r => !r.isPromoted || !r.promotedUntil || new Date(r.promotedUntil) <= new Date());
 
   if (loading) {
     return (
@@ -208,31 +203,12 @@ export default function PublicRequestsPage() {
             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 btn-glow"
           >
             <span className="text-2xl group-hover:rotate-90 transition-transform duration-300">+</span>
-            <span>Створити публічну заявку (5 UCM)</span>
+            <span>Створити публічну заявку</span>
           </Link>
         </div>
 
-        {/* Promoted Requests */}
-        {promotedRequests.length > 0 && (
-          <div className="mb-10 animate-slide-up">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900">🔥 ТОП заявки</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {promotedRequests.map((request, index) => (
-                <div key={request.id} style={{ animationDelay: `${index * 100}ms` }} className="animate-scale-in">
-                  <RequestCard request={request} isPromoted={true} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Regular Requests */}
-        {regularRequests.length > 0 && (
+        {/* Requests */}
+        {filteredRequests.length > 0 && (
           <div className="animate-slide-up">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
@@ -241,9 +217,9 @@ export default function PublicRequestsPage() {
               <h2 className="text-3xl font-bold text-gray-900">Всі заявки</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {regularRequests.map((request, index) => (
+              {filteredRequests.map((request, index) => (
                 <div key={request.id} style={{ animationDelay: `${index * 50}ms` }} className="animate-scale-in">
-                  <RequestCard request={request} isPromoted={false} />
+                  <RequestCard request={request} />
                 </div>
               ))}
             </div>
@@ -267,38 +243,23 @@ export default function PublicRequestsPage() {
   );
 }
 
-function RequestCard({ request, isPromoted }: { request: PublicRequest; isPromoted: boolean }) {
+function RequestCard({ request }: { request: PublicRequest }) {
   const formatBudget = () => {
     if (request.budgetFrom && request.budgetTo) {
-      return `${request.budgetFrom} - ${request.budgetTo} UCM`;
+      return `${request.budgetFrom} - ${request.budgetTo} грн`;
     }
     if (request.budgetFrom) {
-      return `від ${request.budgetFrom} UCM`;
+      return `від ${request.budgetFrom} грн`;
     }
     if (request.budgetTo) {
-      return `до ${request.budgetTo} UCM`;
+      return `до ${request.budgetTo} грн`;
     }
     return 'Договірна';
   };
 
   return (
     <Link href={`/service-requests/${request.id}`}>
-      <div className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 cursor-pointer h-full transform hover:scale-105 ${
-        isPromoted 
-          ? 'border-4 border-yellow-400 ring-4 ring-yellow-100 bg-gradient-to-br from-yellow-50 to-orange-50' 
-          : 'border-2 border-gray-100 hover:border-blue-300'
-      }`}>
-        {isPromoted && (
-          <div className="flex items-center gap-2 mb-4 animate-pulse">
-            <div className="px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full shadow-md">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-white" />
-                <span className="font-bold text-sm text-white">ТОП</span>
-              </div>
-            </div>
-          </div>
-        )}
-
+      <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 cursor-pointer h-full transform hover:scale-105 border-2 border-gray-100 hover:border-blue-300">
         <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
           {request.title}
         </h3>

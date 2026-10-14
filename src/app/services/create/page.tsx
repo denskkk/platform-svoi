@@ -9,7 +9,6 @@ import dynamic from 'next/dynamic';
 import { usePermission } from '@/hooks/usePermission';
 import { cities } from '@/lib/constants';
 const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
-// Permission gating removed for service creation to allow basic users to create 1 уцм services
 
 export default function CreateServicePage() {
   const router = useRouter();
@@ -23,7 +22,7 @@ export default function CreateServicePage() {
     description: '',
     priceFrom: '',
     priceTo: '',
-    priceUnit: 'УЦМ',
+    priceUnit: 'грн',
     city: '',
     region: '',
     address: '',
@@ -51,18 +50,11 @@ export default function CreateServicePage() {
 
     // Глядачі не можуть створювати послуги
     if (userData.accountType === 'viewer') {
-      alert('Глядачі не можуть створювати послуги. Змініть тип акаунту в налаштуваннях.');
+      alert('Глядачі не можуть створювати послуги. Перейдіть на звичайний профіль на сторінці свого профілю.');
       router.push('/services');
       return;
     }
 
-    // If basic account: default price unit to 'уцм' but do not force the price
-    try {
-      if (userData && userData.accountType === 'basic') {
-        setFormData(prev => ({ ...prev, priceUnit: 'уцм' }));
-      }
-    } catch {}
-    
     // Установить город пользователя по умолчанию
     setFormData(prev => ({
       ...prev,
@@ -423,11 +415,10 @@ export default function CreateServicePage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   // Allow selecting unit for all users
                 >
-                  <option value="УЦМ">УЦМ</option>
-                  <option value="уцм">уцм</option>
-                  <option value="УЦМ/год">УЦМ/год</option>
-                  <option value="УЦМ/день">УЦМ/день</option>
-                  <option value="УЦМ/м²">УЦМ/м²</option>
+                  <option value="грн">грн</option>
+                  <option value="грн/год">грн/год</option>
+                  <option value="грн/день">грн/день</option>
+                  <option value="грн/м²">грн/м²</option>
                   <option value="договірна">договірна</option>
                 </select>
               </div>

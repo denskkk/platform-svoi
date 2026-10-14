@@ -84,7 +84,7 @@ export function RespondToRequestModal({
           {/* Запропонована ціна */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Запропонована ціна (УЦМ) <span className="text-red-500">*</span>
+              Запропонована ціна (грн) <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -97,7 +97,7 @@ export function RespondToRequestModal({
               required
             />
             <p className="text-xs text-neutral-500 mt-1">
-              Вкажіть вашу ціну за виконання роботи в уцмках
+              Вкажіть вашу ціну за виконання роботи в гривнях
             </p>
           </div>
 

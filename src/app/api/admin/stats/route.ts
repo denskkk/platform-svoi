@@ -37,10 +37,7 @@ async function handler(request: NextRequest) {
       activeUsers,
       totalServices,
       totalMessages,
-      totalTransactions,
-      totalUcmInCirculation,
-      recentUsers,
-      topUsersUcm
+      recentUsers
     ] = await Promise.all([
       // Всього користувачів
       prisma.user.count(),
@@ -59,16 +56,6 @@ async function handler(request: NextRequest) {
       
       // Всього повідомлень
       prisma.message.count(),
-      
-      // Всього транзакцій
-      (prisma as any).ucmTransaction?.count().catch(() => 0) || Promise.resolve(0),
-      
-      // Всього УЦМ в обігу
-      prisma.user.aggregate({
-        _sum: {
-          balanceUcm: true
-        }
-      } as any),
       
       // Нові користувачі (за останні 7 днів)
       prisma.user.findMany({
@@ -89,39 +76,8 @@ async function handler(request: NextRequest) {
           createdAt: 'desc'
         },
         take: 10
-      }),
-      
-      // Топ користувачів по балансу УЦМ
-      prisma.user.findMany({
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          balanceUcm: true,
-          city: true
-        } as any,
-        orderBy: {
-          balanceUcm: 'desc'
-        } as any,
-        take: 10
       })
     ]);
-    
-    // Статистика по транзакціях за типами
-    let transactionsByType: any[] = [];
-    try {
-      transactionsByType = await (prisma as any).ucmTransaction.groupBy({
-        by: ['reason'],
-        _count: {
-          id: true
-        },
-        _sum: {
-          amount: true
-        }
-      });
-    } catch (err) {
-      console.log('Error loading transactions by type:', err);
-    }
     
     return NextResponse.json({
       success: true,
@@ -136,12 +92,6 @@ async function handler(request: NextRequest) {
         },
         messages: {
           total: totalMessages
-        },
-        ucm: {
-          totalTransactions: totalTransactions,
-          totalInCirculation: totalUcmInCirculation._sum.balanceUcm || 0,
-          topUsers: topUsersUcm,
-          byType: transactionsByType
         }
       }
     });

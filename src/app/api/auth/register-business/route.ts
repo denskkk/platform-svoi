@@ -5,8 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { hasUcmKindColumn, hasUcmTransactionsTable, ensureUserReferralCode, awardReferral } from '@/lib/ucm';
-import { hashPassword, generateToken } from '@/lib/auth';
+import { hashPassword, generateToken, hashToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie } from '@/lib/cookies';
 
@@ -56,8 +55,6 @@ export async function POST(request: NextRequest) {
       city, 
       role = 'business',
       accountType = 'business',
-      ref,
-      referralCode,
     } = userData;
 
     const {
@@ -75,7 +72,6 @@ export async function POST(request: NextRequest) {
       offerToCustomers,
       offerToPartners,
       offerToInvestors,
-      wantsUCMAnalysis,
       // Нові детальні поля
       partnerSearchDetails,
       investorSearchDetails,
@@ -140,11 +136,6 @@ export async function POST(request: NextRequest) {
 
     // Створення користувача та бізнесу в транзакції
     const result = await prisma.$transaction(async (tx: any) => {
-      const cookieRef = request.cookies.get('ref')?.value;
-      const refCode = referralCode || ref || request.nextUrl.searchParams.get('ref') || cookieRef || undefined;
-      const inviter = refCode
-        ? await tx.user.findFirst({ where: { referralCode: { equals: String(refCode), mode: 'insensitive' } }, select: { id: true, email: true } })
-        : null;
       // Створення користувача
       const user = await tx.user.create({
         data: {
@@ -157,11 +148,10 @@ export async function POST(request: NextRequest) {
           city: city || null,
           passwordHash,
           isVerified: false,
-          // підписка вимкнена — оплата лише за внутрішні функції
+          // підписка вимкнена — платформа безкоштовна
           subscriptionActive: false,
           subscriptionStartedAt: null,
           subscriptionExpiresAt: null,
-          referredById: inviter && inviter.email !== email ? inviter.id : null,
         },
         select: {
           id: true,
@@ -179,9 +169,6 @@ export async function POST(request: NextRequest) {
           createdAt: true,
         }
       });
-
-      // Генеруємо власний реф-код (використовуємо tx, щоб бачити незакомічений запис)
-      await ensureUserReferralCode(user.id, tx)
 
       // Створення бізнес інформації
       console.log('[Register Business API] Створення бізнес профілю з даними:', {
@@ -211,7 +198,6 @@ export async function POST(request: NextRequest) {
           offerToCustomers: false,
           offerToPartners: false,
           offerToInvestors: false,
-          wantsUCMAnalysis: false,
           // Детальна інформація пошуку
           partnerSearchDetails: partnerSearchDetails || {},
           investorSearchDetails: investorSearchDetails || {},
@@ -234,43 +220,12 @@ export async function POST(request: NextRequest) {
           offerToCustomers: true,
           offerToPartners: true,
           offerToInvestors: true,
-          wantsUCMAnalysis: true,
           createdAt: true,
         }
       });
 
-      // Нарахувати реф-бонус після створення всього
-      if (inviter && inviter.email !== email) {
-        await awardReferral({ inviterId: inviter.id, inviteeId: user.id, code: String(refCode) })
-      }
-
       return { user, business };
     });
-
-    // Нарахувати стартовий бонус для бізнес акаунту
-    const START_BONUS = 50;
-    try {
-      const hasLedger = await hasUcmTransactionsTable();
-      const hasKind = await hasUcmKindColumn();
-      await prisma.$transaction(async (tx: any) => {
-        await tx.user.update({ where: { id: result.user.id }, data: { balanceUcm: { increment: START_BONUS } } });
-        if (hasLedger) {
-          await tx.ucmTransaction.create({
-            data: {
-              userId: result.user.id,
-              ...(hasKind ? { kind: 'credit' as const } : {}),
-              amount: START_BONUS,
-              reason: 'signup_bonus',
-              relatedEntityType: null,
-              relatedEntityId: null,
-              meta: {},
-            }
-          });
-        }
-      });
-    } catch (e) {
-      console.warn('[register-business] failed to apply start bonus', e);
-    }
 
     // Генерація JWT токена
     const token = generateToken({
@@ -287,7 +242,7 @@ export async function POST(request: NextRequest) {
     await prisma.session.create({
       data: {
         userId: result.user.id,
-        tokenHash: token,
+        tokenHash: hashToken(token),
         expiresAt,
         ipAddress: request.ip || 'unknown',
         userAgent: request.headers.get('user-agent') || 'unknown',
@@ -307,13 +262,6 @@ export async function POST(request: NextRequest) {
 
     // ТАКОЖ зберегти токен в httpOnly cookie для безпеки
     setAuthCookie(response, token);
-
-    // Очистити cookie `ref` якщо він був встановлений при редіректі
-    try {
-      response.cookies.set('ref', '', { path: '/', maxAge: 0 });
-    } catch (e) {
-      // ignore
-    }
 
     return response;
 

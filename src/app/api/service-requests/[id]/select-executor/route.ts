@@ -98,7 +98,7 @@ export async function POST(
             userId: selectedResponse.executorId,
             type: 'REQUEST_ACCEPTED',
             title: 'Вас обрали виконавцем!',
-            message: `${serviceRequest.client.firstName} обрав ваше пропозицію на суму ${selectedResponse.proposedPrice} УЦМ`,
+            message: `${serviceRequest.client.firstName} обрав ваше пропозицію на суму ${selectedResponse.proposedPrice} грн`,
             relatedEntityType: 'ServiceRequest',
             relatedEntityId: requestId
           }

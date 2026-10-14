@@ -56,19 +56,13 @@ async function deleteAllExcept35() {
       });
       console.log('   ✓ Разговоры');
 
-      // 4. UCM транзакции
-      await prisma.ucmTransaction.deleteMany({
-        where: { userId: user.id }
-      });
-      console.log('   ✓ UCM транзакции');
-
-      // 5. Ответы на заявки (как исполнитель)
+      // 4. Ответы на заявки (как исполнитель)
       await prisma.serviceRequestResponse.deleteMany({
         where: { executorId: user.id }
       });
       console.log('   ✓ Ответы на заявки');
 
-      // 6. Удаляем ответы на его заявки
+      // 5. Удаляем ответы на его заявки
       const userRequests = await prisma.serviceRequest.findMany({
         where: { clientId: user.id },
         select: { id: true }

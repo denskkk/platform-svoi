@@ -6,7 +6,6 @@
  * - Отзывами (reviews)
  * - Сообщениями (messages)
  * - Бизнес информацией (businessInfo)
- * - UCM транзакциями
  */
 
 const { PrismaClient } = require('@prisma/client');
@@ -133,19 +132,13 @@ async function deleteUserWithRelations(userId) {
     });
     console.log(`   ✓ Разговоры: ${conversationsDeleted.count}`);
 
-    // 4. Удаляем UCM транзакции
-    const ucmDeleted = await prisma.ucmTransaction.deleteMany({
-      where: { userId: userId }
-    });
-    console.log(`   ✓ UCM транзакции: ${ucmDeleted.count}`);
-
-    // 5. Ответы на заявки (как исполнитель)
+    // 4. Ответы на заявки (как исполнитель)
     const responsesDeleted = await prisma.serviceRequestResponse.deleteMany({
       where: { executorId: userId }
     });
     console.log(`   ✓ Ответы на заявки: ${responsesDeleted.count}`);
 
-    // 6. Удаляем ответы на его заявки
+    // 5. Удаляем ответы на его заявки
     const userRequests = await prisma.serviceRequest.findMany({
       where: { clientId: userId },
       select: { id: true }

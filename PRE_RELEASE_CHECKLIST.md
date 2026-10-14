@@ -23,7 +23,7 @@
 - [ ] Build signed release AAB
 - [ ] Test release build on device or emulator
 - [ ] Verify auth flows, profile flows, and upload flows
-- [ ] Verify payment callback flow and production domain
+- [ ] Verify privacy policy, terms of use and account deletion pages open on the production domain
 - [ ] Verify admin features remain protected
 - [ ] Verify no secrets in repo or logs
 - [ ] Verify `.gitignore` prevents secrets from leaking

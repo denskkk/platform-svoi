@@ -15,7 +15,7 @@ async function checkAdmin(userId: number) {
   }
 }
 
-// PATCH /api/admin/users/[id]/verify - Встановити статус "Перевірено УЦМ"
+// PATCH /api/admin/users/[id]/verify - Встановити статус «Перевірений користувач»
 async function handler(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -47,8 +47,8 @@ async function handler(
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
-        ucmVerified: verified
-      } as any,
+        isVerified: verified
+      },
       select: {
         id: true,
         firstName: true,
@@ -61,11 +61,11 @@ async function handler(
     return NextResponse.json({
       success: true,
       message: verified 
-        ? `Користувач ${updatedUser.firstName} ${updatedUser.lastName} отримав статус "Перевірено УЦМ"`
-        : `Статус "Перевірено УЦМ" знято з користувача ${updatedUser.firstName} ${updatedUser.lastName}`,
+        ? `Користувач ${updatedUser.firstName} ${updatedUser.lastName} отримав статус «Перевірений»`
+        : `Статус «Перевірений» знято з користувача ${updatedUser.firstName} ${updatedUser.lastName}`,
       user: {
         ...updatedUser,
-        ucmVerified: verified
+        isVerified: verified
       }
     });
 

@@ -42,7 +42,7 @@ export function HeroSection() {
         <div className="text-center mb-12">
           {/* Слоган з градієнтною анімацією */}
           <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-primary-500/10 to-accent-500/10 rounded-full border border-primary-200">
-            <p className="text-sm font-semibold text-primary-700">🇺🇦 Українська платформа №1</p>
+            <p className="text-sm font-semibold text-primary-700">🇺🇦 Українська платформа</p>
           </div>
           
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-neutral-900 mb-6 animate-fade-in">
@@ -149,31 +149,6 @@ export function HeroSection() {
             >
               Увійти
             </Link>
-          </div>
-        )}
-
-        {/* Заклик до покращення для залогінених з анімацією */}
-        {isAuthed === true && (
-          <div className="max-w-4xl mx-auto mt-8 bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 rounded-2xl shadow-2xl p-6 animate-slide-up border-2 border-yellow-300 animate-gradient">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white">
-              <div className="text-center sm:text-left">
-                <h3 className="text-2xl font-bold mb-2 flex items-center justify-center sm:justify-start gap-2">
-                  <span className="animate-bounce">⚡</span>
-                  <span>Покращіть свій профіль</span>
-                </h3>
-                <p className="text-yellow-50">
-                  Змініть тип акаунту або купіть доступ до платних функцій
-                </p>
-              </div>
-              <Link
-                href="/upgrade"
-                className="group w-full sm:w-auto bg-white text-orange-600 font-bold px-8 py-3 rounded-xl hover:bg-yellow-50 transition-all shadow-lg hover:shadow-xl whitespace-nowrap transform hover:scale-105 duration-300"
-              >
-                <span className="inline-block group-hover:translate-x-1 transition-transform">
-                  Переглянути можливості →
-                </span>
-              </Link>
-            </div>
           </div>
         )}
       </div>

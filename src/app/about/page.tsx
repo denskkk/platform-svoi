@@ -62,7 +62,7 @@ export default function AboutPage() {
                   <ul className="text-gray-700 space-y-1 text-sm">
                     <li>✓ Безкоштовне розміщення послуг</li>
                     <li>✓ Доступ до цільової аудиторії</li>
-                    <li>✓ Система рейтингів та відгуків</li>
+                    <li>✓ Відгуки та рейтинги користувачів</li>
                     <li>✓ Особистий кабінет підприємця</li>
                   </ul>
                 </div>
@@ -71,7 +71,7 @@ export default function AboutPage() {
                     Для Споживачів
                   </h3>
                   <ul className="text-gray-700 space-y-1 text-sm">
-                    <li>✓ Перевірені постачальники послуг</li>
+                    <li>✓ Безкоштовне користування платформою</li>
                     <li>✓ Прозорі відгуки та рейтинги</li>
                     <li>✓ Пошук за категоріями та містами</li>
                     <li>✓ Пряме спілкування з виконавцями</li>
@@ -111,30 +111,6 @@ export default function AboutPage() {
                     </div>
                   </li>
                 </ul>
-              </div>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                📊 Статистика Платформи
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center bg-blue-50 p-4 rounded-lg">
-                  <div className="text-3xl font-bold text-blue-600">100+</div>
-                  <div className="text-sm text-gray-600">Користувачів</div>
-                </div>
-                <div className="text-center bg-green-50 p-4 rounded-lg">
-                  <div className="text-3xl font-bold text-green-600">50+</div>
-                  <div className="text-sm text-gray-600">Послуг</div>
-                </div>
-                <div className="text-center bg-purple-50 p-4 rounded-lg">
-                  <div className="text-3xl font-bold text-purple-600">20+</div>
-                  <div className="text-sm text-gray-600">Міст</div>
-                </div>
-                <div className="text-center bg-orange-50 p-4 rounded-lg">
-                  <div className="text-3xl font-bold text-orange-600">4.8★</div>
-                  <div className="text-sm text-gray-600">Рейтинг</div>
-                </div>
               </div>
             </section>
 

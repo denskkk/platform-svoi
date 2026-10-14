@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { RespondToRequestModal } from '@/components/requests/RespondToRequestModal';
 import { ExecutorResponseCard } from '@/components/requests/ExecutorResponseCard';
 import { useToast } from '@/components/ui/Toast';
+import { ReportButton } from '@/components/ui/ReportButton';
 
 const statusColors: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',
@@ -126,30 +127,6 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
     }
   };
 
-  const handlePay = async () => {
-    if (!confirm(`Оплатити ${request.agreedPrice} УЦМ?`)) return;
-    
-    setActionLoading(true);
-    try {
-      const res = await fetch(`/api/service-requests/${params.id}/pay`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error);
-      }
-
-      await loadRequest();
-      toast.success('Оплачено успішно!');
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   const handleSelectExecutor = async (responseId: number) => {
     if (!confirm('Обрати цього виконавця?')) return;
     
@@ -234,17 +211,17 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                 <p className="text-sm text-gray-500 mb-1">Бюджет</p>
                 <p className="font-medium">
                   💰 {request.budgetFrom && request.budgetTo
-                    ? `${request.budgetFrom}-${request.budgetTo} УЦМ`
+                    ? `${request.budgetFrom}-${request.budgetTo} грн`
                     : request.budgetFrom
-                    ? `від ${request.budgetFrom} УЦМ`
-                    : `до ${request.budgetTo} УЦМ`}
+                    ? `від ${request.budgetFrom} грн`
+                    : `до ${request.budgetTo} грн`}
                 </p>
               </div>
             )}
             {request.agreedPrice && (
               <div>
                 <p className="text-sm text-gray-500 mb-1">Узгоджена ціна</p>
-                <p className="font-medium text-green-600">✓ {request.agreedPrice} УЦМ</p>
+                <p className="font-medium text-green-600">✓ {request.agreedPrice} грн</p>
               </div>
             )}
           </div>
@@ -300,7 +277,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                   {(request.status === 'new' || request.status === 'viewed') && (
                     <button
                       onClick={() => {
-                        const price = prompt('Введіть ціну в УЦМ:');
+                        const price = prompt('Введіть ціну в грн:');
                         if (price) handleAction('accept', Number(price));
                       }}
                       disabled={actionLoading}
@@ -335,16 +312,6 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
               {/* Дії для КЛІЄНТА */}
               {currentUserId === request.client?.id && (
                 <>
-                  {request.status === 'completed' && !request.isPaid && (
-                    <button
-                      onClick={handlePay}
-                      disabled={actionLoading}
-                      className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50"
-                    >
-                      💳 Оплатити {request.agreedPrice} УЦМ
-                    </button>
-                  )}
-
                   {(request.status === 'new' || request.status === 'viewed') && (
                     <button
                       onClick={() => handleAction('cancel')}
@@ -367,14 +334,26 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                 </Link>
               )}
 
-              {/* Відгук після оплати */}
-              {request.status === 'paid' && (
+              {/* Відгук після виконання заявки */}
+              {(request.status === 'completed' || request.status === 'paid') && request.executor && currentUserId && (
                 <Link
                   href={`/reviews/create?requestId=${request.id}&userId=${currentUserId === request.client?.id ? request.executor?.id : request.client?.id}`}
                   className="px-6 py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition"
                 >
                   ⭐ Залишити відгук
                 </Link>
+              )}
+
+              {/* Скарга на автора заявки */}
+              {currentUserId && request.client?.id && currentUserId !== request.client.id && (
+                <div className="self-center">
+                  <ReportButton
+                    reportedUserId={request.client.id}
+                    contentType="request"
+                    contentId={request.id}
+                    label="Поскаржитися на заявку"
+                  />
+                </div>
               )}
             </div>
           </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Адмін-панель УЦМ — СВІЙ ДЛЯ СВОЇХ',
+  title: 'Адмін-панель — СВІЙ ДЛЯ СВОЇХ',
   description: 'Панель адміністратора для управління платформою',
 }
 

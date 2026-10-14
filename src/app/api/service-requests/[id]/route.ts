@@ -213,7 +213,7 @@ async function updateHandler(
           userId: serviceRequest.clientId,
           type: 'service_request_accepted',
           title: 'Заявку прийнято',
-          message: `Виконавець прийняв вашу заявку "${serviceRequest.title}" за ціною ${body.agreedPrice} УЦМ`,
+          message: `Виконавець прийняв вашу заявку "${serviceRequest.title}" за ціною ${body.agreedPrice} грн`,
           relatedEntityType: 'ServiceRequest',
           relatedEntityId: requestId
         }

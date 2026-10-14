@@ -133,7 +133,7 @@ async function postHandler(
         userId: serviceRequest.clientId,
         type: 'request_response_new',
         title: 'Новий відгук на заявку',
-        message: `${user?.firstName} ${user?.lastName} запропонував ціну ${proposedPrice} УЦМ на вашу заявку "${serviceRequest.title}"`,
+        message: `${user?.firstName} ${user?.lastName} запропонував ціну ${proposedPrice} грн на вашу заявку "${serviceRequest.title}"`,
         relatedEntityType: 'ServiceRequest',
         relatedEntityId: requestId
       }

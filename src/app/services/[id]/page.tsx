@@ -7,8 +7,9 @@ import { ArrowLeft, MapPin, Phone, Mail, MessageCircle, User, Edit, Trash2, Star
 import { formatRating } from '@/lib/format';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
-import { TransferUcmModal } from '@/components/ui/TransferUcmModal';
 import { useToast } from '@/components/ui/Toast';
+import { ReportButton } from '@/components/ui/ReportButton';
+import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 
 interface Service {
   id: number;
@@ -370,7 +371,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                 <Star className="w-6 h-6 text-amber-400 fill-current mr-2" /> Відгуки про виконавця
               </h2>
               {/* Форма додавання відгуку */}
-              {currentUser && service.user.id !== currentUser.id && (
+              {currentUser && currentUser.accountType !== 'viewer' && service.user.id !== currentUser.id && (
                 <form onSubmit={submitReview} className="mb-8 space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-2">Ваш рейтинг</label>
@@ -516,6 +517,10 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     </a>
                   )}
                   
+                  <ViewerUpgradeNotice />
+
+                  {currentUser?.accountType !== 'viewer' && (
+                    <>
                   <Link
                     href={`/chat?with=${service.user.id}`}
                     className="flex items-center justify-center gap-2 w-full border-2 border-primary-500 text-primary-600 hover:bg-primary-50 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
@@ -541,21 +546,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       <span>Подати заявку</span>
                     </Link>
                   )}
-
-                  {currentUser && (
-                    <TransferUcmModal
-                      recipientId={service.user.id}
-                      recipientName={service.user?.businessInfo?.companyName || `${service.user.firstName} ${service.user.lastName}`}
-                      currentUserBalance={currentUser.balanceUcm || 0}
-                      onSuccess={() => {
-                        // Оновити баланс користувача
-                        const storedUser = localStorage.getItem('user');
-                        if (storedUser) {
-                          const user = JSON.parse(storedUser);
-                          setCurrentUser(user);
-                        }
-                      }}
-                    />
+                    </>
                   )}
 
                   <Link
@@ -565,6 +556,15 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     <User className="w-5 h-5" />
                     <span>Профіль</span>
                   </Link>
+
+                  <div className="flex justify-center pt-1">
+                    <ReportButton
+                      reportedUserId={service.user.id}
+                      contentType="service"
+                      contentId={service.id}
+                      label="Поскаржитися на послугу"
+                    />
+                  </div>
                 </div>
               )}
             </div>
