@@ -124,6 +124,13 @@ export default function EditProfilePage() {
     }
   }, [router]);
 
+  // Бізнес-акаунти редагують профіль на окремій сторінці (компанія, логотип, банер)
+  useEffect(() => {
+    if (String(user?.accountType || '').startsWith('business')) {
+      router.replace('/profile/edit-business');
+    }
+  }, [user, router]);
+
   const loadProfile = async (userId: number, authToken?: string) => {
     try {
       const response = await fetch(`/api/profile/${userId}`);

@@ -235,6 +235,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       {profile.firstName?.[0]}{profile.lastName?.[0]}
                     </div>
                   )}
+                  {profile?.businessInfo?.logoUrl && profile.avatarUrl && (
+                    <ServiceImage
+                      src={`${profile.avatarUrl}${profile.avatarUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                      alt={`${profile.firstName} ${profile.lastName}`}
+                      className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full object-cover shadow-md ring-2 ring-white bg-white"
+                    />
+                  )}
                   {profile.isVerified && (
                     <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white" title="Перевірений користувач">
                       <span className="text-white text-xl">✓</span>
@@ -307,7 +314,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       {isOwnProfile ? (
                         <>
                           <Link
-                            href="/profile/edit"
+                            href={String(profile.accountType || '').startsWith('business') ? '/profile/edit-business' : '/profile/edit'}
                             className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
                           >
                             <Edit className="w-4 h-4 mr-2" />
@@ -753,19 +760,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         </a>
                       )}
                     </div>
-                  </div>
-                )}
-
-                {/* Редагувати кнопка для власника */}
-                {isOwnProfile && (
-                  <div className="mt-4 pt-4 border-t border-accent-200">
-                    <Link
-                      href="/profile/edit-business"
-                      className="inline-flex items-center px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-colors"
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Редагувати бізнес-профіль
-                    </Link>
                   </div>
                 )}
               </div>

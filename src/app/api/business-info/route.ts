@@ -15,6 +15,28 @@ import { getTokenFromHeader } from '@/lib/auth';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getAuthCookie } from '@/lib/cookies';
 
+// Деталі пошуку (партнер/інвестор/клієнт) і вакансії зберігаються як JSON;
+// приймаємо і об'єкт, і JSON-рядок, null очищає поле.
+function extractSearchDetails(body: any) {
+  const result: Record<string, unknown> = {};
+  const parse = (value: unknown, fallback: unknown) => {
+    if (value === null) return fallback;
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return fallback;
+      }
+    }
+    return value;
+  };
+  if (body.partnerSearchDetails !== undefined) result.partnerSearchDetails = parse(body.partnerSearchDetails, {});
+  if (body.investorSearchDetails !== undefined) result.investorSearchDetails = parse(body.investorSearchDetails, {});
+  if (body.customerSearchDetails !== undefined) result.customerSearchDetails = parse(body.customerSearchDetails, {});
+  if (body.employeeVacancies !== undefined) result.employeeVacancies = parse(body.employeeVacancies, []);
+  return result;
+}
+
 // GET - Отримати бізнес-профіль
 export async function GET(request: NextRequest) {
   try {
@@ -159,6 +181,7 @@ export async function POST(request: NextRequest) {
     if (body.seekingInvestor !== undefined) createData.seekingInvestor = body.seekingInvestor;
     if (body.seekingCustomer !== undefined) createData.seekingCustomer = body.seekingCustomer;
     if (body.seekingEmployee !== undefined) createData.seekingEmployee = body.seekingEmployee;
+    Object.assign(createData, extractSearchDetails(body));
 
     const businessInfo = await prisma.businessInfo.create({
       data: createData
@@ -271,6 +294,7 @@ export async function PUT(request: NextRequest) {
     if (body.seekingInvestor !== undefined) updateData.seekingInvestor = body.seekingInvestor;
     if (body.seekingCustomer !== undefined) updateData.seekingCustomer = body.seekingCustomer;
     if (body.seekingEmployee !== undefined) updateData.seekingEmployee = body.seekingEmployee;
+    Object.assign(updateData, extractSearchDetails(body));
 
     // Дані для створення (upsert.create) з дефолтами з профілю
     const createData: any = {
