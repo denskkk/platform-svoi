@@ -119,10 +119,10 @@ function ChatPageContent() {
   }, [token]);
 
   useEffect(() => {
-    if (user && token) {
+    if (user) {
       loadConversations();
     }
-  }, [user, token, loadConversations]);
+  }, [user, loadConversations]);
 
   const createConversation = useCallback(async (otherUserId: number) => {
     try {
@@ -149,7 +149,7 @@ function ChatPageContent() {
   }, [token, loadConversations]);
 
   useEffect(() => {
-    if (!withUserId || !user || !token || handledWithParam) return;
+    if (!withUserId || !user || handledWithParam) return;
 
     const otherId = parseInt(withUserId);
     if (Number.isNaN(otherId)) return;
@@ -194,18 +194,18 @@ function ChatPageContent() {
   }, [token]);
 
   useEffect(() => {
-    if (selectedConversation && token) {
+    if (selectedConversation && user) {
       loadMessages(selectedConversation);
     }
   }, [selectedConversation, token, loadMessages]);
 
   // Poll new messages periodically to simulate real-time updates
   useEffect(() => {
-    if (!selectedConversation || !token) return;
+    if (!selectedConversation || !user) return;
 
     let cancelled = false;
     const interval = setInterval(async () => {
-      if (cancelled) return;
+      if (cancelled || document.visibilityState === 'hidden') return;
       try {
         await loadMessages(selectedConversation);
         // Also refresh conversations to keep preview/unread in sync

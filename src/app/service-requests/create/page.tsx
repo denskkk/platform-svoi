@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { checkAuth as checkSession } from '@/lib/silentFetch';
 import { useToast } from '@/components/ui/Toast';
 
 export default function CreateServiceRequestPage() {
@@ -22,40 +23,37 @@ export default function CreateServiceRequestPage() {
 
   // Перевірка авторизації
   useEffect(() => {
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
     const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/auth/login?redirect=/service-requests/create');
-          return;
-        }
-
-        const res = await fetch('/api/auth/me', {
-          credentials: 'include',
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        if (!res.ok) {
-          router.push('/auth/login?redirect=/service-requests/create');
-          return;
-        }
-
-        const data = await res.json();
-        
-        // Глядачі не можуть створювати заявки
-        if (data.user?.accountType === 'viewer') {
-          alert('Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.');
-          router.push('/service-requests');
-          return;
-        }
-
-        setIsAuthorized(true);
-      } catch (error) {
+      const session = await checkSession();
+      if (cancelled) return;
+      if (session.status === 'guest') {
         router.push('/auth/login?redirect=/service-requests/create');
+        return;
       }
+      if (session.status === 'unavailable') {
+        // Немає зв'язку з сервером — це не вихід із акаунта, пробуємо ще раз
+        retryTimer = setTimeout(checkAuth, 3000);
+        return;
+      }
+
+      // Глядачі не можуть створювати заявки
+      if ((session.user as { accountType?: string } | undefined)?.accountType === 'viewer') {
+        alert('Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.');
+        router.push('/service-requests');
+        return;
+      }
+
+      setIsAuthorized(true);
     };
 
     checkAuth();
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, [router]);
 
   const categories = [

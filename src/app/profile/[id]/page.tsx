@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift, LogOut } from 'lucide-react';
 import { formatRating } from '@/lib/format';
 import { logout } from '@/lib/client-auth';
+import { checkAuth, ensureToken } from '@/lib/silentFetch';
 import { useToast } from '@/components/ui/Toast';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { ReportButton } from '@/components/ui/ReportButton';
@@ -102,21 +103,36 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    // Перевірка авторизації
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push(`/auth/login?returnUrl=/profile/${params.id}`);
-      return;
-    }
+    let cancelled = false;
 
-    // Получить текущего пользователя
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-    }
+    (async () => {
+      // Токен у localStorage може бути порожнім при живій cookie-сесії — тоді відновлюємо його
+      const token = await ensureToken();
+      if (cancelled) return;
+      if (!token) {
+        router.push(`/auth/login?redirect=/profile/${params.id}`);
+        return;
+      }
 
-    // Загрузить профиль
-    loadProfile();
+      // Отримати поточного користувача
+      let storedUser: string | null = null;
+      try { storedUser = localStorage.getItem('user'); } catch {}
+      if (storedUser) {
+        try { setCurrentUser(JSON.parse(storedUser)); } catch {}
+      } else {
+        const auth = await checkAuth();
+        if (cancelled) return;
+        if (auth.status === 'authed') {
+          setCurrentUser(auth.user);
+          try { localStorage.setItem('user', JSON.stringify(auth.user)); } catch {}
+        }
+      }
+
+      // Загрузить профиль
+      loadProfile();
+    })();
+
+    return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 

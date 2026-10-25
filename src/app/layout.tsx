@@ -7,6 +7,7 @@ import { MobileNav } from '@/components/layout/MobileNav'
 import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
+import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
         <ToastProvider>
           <AuthSessionMonitor />
+          <ServiceWorkerRegister />
           <AdminRedirect />
           <Navbar />
           <main className="min-h-screen pb-20 md:pb-0">

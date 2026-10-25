@@ -117,6 +117,18 @@ export async function refreshSession(): Promise<RefreshResult> {
   return refreshInFlight;
 }
 
+/**
+ * Токен для старих сторінок, що читають його з localStorage. Якщо там порожньо (очищене
+ * сховище WebView), але cookie-сесія жива — отримуємо токен через refresh замість виходу на логін.
+ * Повертає null лише коли сесії справді немає.
+ */
+export async function ensureToken(): Promise<string | null> {
+  const existing = getToken();
+  if (existing) return existing;
+  const result = await refreshSession();
+  return result === 'refreshed' ? getToken() : null;
+}
+
 function fetchMe() {
   return rawFetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });
 }

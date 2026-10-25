@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Search, MapPin, Calendar, DollarSign, Clock } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SkeletonGrid, RequestCardSkeleton } from '@/components/ui/SkeletonCard';
+import { ensureToken } from '@/lib/silentFetch';
 
 interface PublicRequest {
   id: number;
@@ -36,21 +37,30 @@ export default function PublicRequestsPage() {
   const [selectedCity, setSelectedCity] = useState<string>('all');
 
   useEffect(() => {
-    // Перевірка авторизації
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/auth/login?returnUrl=/public-requests');
-      return;
-    }
-    
-    loadRequests();
-    
-    // Оновлювати список кожні 10 секунд для нових заявок
-    const interval = setInterval(() => {
+    let cancelled = false;
+    let interval: ReturnType<typeof setInterval> | undefined;
+
+    (async () => {
+      // Токен у localStorage може бути порожнім при живій cookie-сесії — тоді відновлюємо його
+      const token = await ensureToken();
+      if (cancelled) return;
+      if (!token) {
+        router.push('/auth/login?redirect=/public-requests');
+        return;
+      }
+
       loadRequests();
-    }, 10000);
-    
-    return () => clearInterval(interval);
+
+      // Оновлювати список кожні 10 секунд для нових заявок (поки застосунок на екрані)
+      interval = setInterval(() => {
+        if (document.visibilityState !== 'hidden') loadRequests();
+      }, 10000);
+    })();
+
+    return () => {
+      cancelled = true;
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {

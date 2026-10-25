@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FFCA00">
+  <title>Немає зв'язку — СВІЙ ДЛЯ СВОЇХ</title>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: #fffbea; color: #222; }
+    .wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+    .card { max-width: 380px; width: 100%; text-align: center; background: #fff; border-radius: 16px; padding: 32px 24px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+    h1 { font-size: 22px; margin: 0 0 8px; }
+    p { color: #555; margin: 0 0 24px; line-height: 1.45; }
+    button { padding: 12px 24px; border: 0; border-radius: 8px; background: #e6b800; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .status { margin-top: 16px; font-size: 13px; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Немає зв'язку</h1>
+      <p>Не вдалося з'єднатися із сервером. Перевірте інтернет — ми спробуємо автоматично, а ваш вхід збережено.</p>
+      <button type="button" id="retry">Спробувати зараз</button>
+      <div class="status" id="status">Перевіряємо з'єднання…</div>
+    </div>
+  </div>
+  <script>
+    var busy = false;
+    function check() {
+      if (busy) return;
+      busy = true;
+      fetch('/api/health', { cache: 'no-store' })
+        .then(function (res) { if (res.status < 500) location.reload(); else throw new Error('server'); })
+        .catch(function () { document.getElementById('status').textContent = 'Поки без зв\u2019язку. Повторимо за кілька секунд.'; })
+        .then(function () { busy = false; });
+    }
+    document.getElementById('retry').addEventListener('click', check);
+    window.addEventListener('online', check);
+    setInterval(check, 5000);
+    check();
+  </script>
+</body>
+</html>

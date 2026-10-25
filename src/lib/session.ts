@@ -61,6 +61,20 @@ export async function createSession(user: SessionUser, request: Request) {
     },
   });
 
+  // Старі записи не потрібні: чистимо їх при кожному вході, щоб таблиця не росла безкінечно
+  const now = new Date();
+  void prisma.session
+    .deleteMany({
+      where: {
+        userId: user.id,
+        OR: [
+          { expiresAt: { lt: now } },
+          { isActive: false, createdAt: { lt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) } },
+        ],
+      },
+    })
+    .catch(() => undefined);
+
   return { token, refreshToken, sid };
 }
 

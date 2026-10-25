@@ -128,6 +128,8 @@ export function Navbar() {
   useEffect(() => {
     let timer: any;
     const fetchUnread = async () => {
+      // Свернуте застосунок не опитує сервер — менше навантаження і батареї
+      if (document.visibilityState === 'hidden') return
       try {
         const res = await fetch('/api/conversations/unread-count', {
           credentials: 'include',

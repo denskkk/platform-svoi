@@ -96,6 +96,7 @@ test('login, refresh rotation, legacy access and logout use server-verified sess
       if (!soughtEmail || soughtEmail.toLowerCase() !== storedUser.email.toLowerCase()) return [];
       return [project({ ...storedUser, isActive: active }, select)];
     }),
+    replaceMethod(prisma.session, 'deleteMany', async () => ({ count: 0 })),
     replaceMethod(prisma.session, 'create', async ({ data }) => {
       storedSession = { id: 'test-session', ...data, isActive: true };
       return storedSession;

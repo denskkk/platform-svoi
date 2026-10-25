@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { checkAuth as checkSession } from '@/lib/silentFetch';
 
 interface ServiceRequest {
   id: number;
@@ -58,31 +59,29 @@ export default function ServiceRequestsPage() {
 
   // Перевірка авторизації
   useEffect(() => {
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
     const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/auth/login?redirect=/service-requests');
-          return;
-        }
-
-        const res = await fetch('/api/auth/me', {
-          credentials: 'include',
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        if (!res.ok) {
-          router.push('/auth/login?redirect=/service-requests');
-          return;
-        }
-
-        setIsAuthorized(true);
-      } catch (error) {
+      const session = await checkSession();
+      if (cancelled) return;
+      if (session.status === 'guest') {
         router.push('/auth/login?redirect=/service-requests');
+        return;
       }
+      if (session.status === 'unavailable') {
+        // Немає зв'язку з сервером — це не вихід із акаунта, пробуємо ще раз
+        retryTimer = setTimeout(checkAuth, 3000);
+        return;
+      }
+      setIsAuthorized(true);
     };
 
     checkAuth();
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, [router]);
 
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ensureToken } from '@/lib/silentFetch';
 import Link from 'next/link';
 import { ArrowLeft, Star, AlertCircle } from 'lucide-react';
 import { formatRating } from '@/lib/format';
@@ -37,7 +38,7 @@ function CreateReviewForm() {
 
   const loadData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = await ensureToken();
       if (!token) {
         router.push('/auth/login');
         return;
