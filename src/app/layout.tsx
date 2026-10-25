@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import { MobileNav } from '@/components/layout/MobileNav'
 import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
+import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -54,6 +55,7 @@ export default function RootLayout({
     <html lang="uk">
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
         <ToastProvider>
+          <AuthSessionMonitor />
           <AdminRedirect />
           <Navbar />
           <main className="min-h-screen pb-20 md:pb-0">

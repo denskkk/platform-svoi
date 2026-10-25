@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
-import { silentFetch } from '@/lib/silentFetch'
+import { checkAuth, silentFetch } from '@/lib/silentFetch'
 // create page handles opening the request modal when needed
 
 export function Navbar() {
@@ -41,14 +41,11 @@ export function Navbar() {
     const syncWithServer = async () => {
       try {
         // Use cookie-based auth first (httpOnly cookie). Avoid relying on localStorage token.
-        const res = await silentFetch('/api/auth/me', {
-          credentials: 'include',
-        })
-        if (res.ok) {
-          const data = await res.json()
-          setUser(data.user)
+        const auth = await checkAuth()
+        if (auth.status === 'authed') {
+          setUser(auth.user)
           try {
-            localStorage.setItem('user', JSON.stringify(data.user))
+            localStorage.setItem('user', JSON.stringify(auth.user))
           } catch {}
           
           // Загрузка непрочитанных сообщений (cookie auth)
@@ -76,13 +73,14 @@ export function Navbar() {
           } catch {
             // ignore
           }
-        } else {
+        } else if (auth.status === 'guest') {
           try {
             localStorage.removeItem('user')
             localStorage.removeItem('token')
           } catch {}
           setUser(null)
         }
+        // 'unavailable' (мережа/сервер): залишаємо користувача як є, не вилогінюємо
       } catch {
         // ignore network errors for navbar
       } finally {

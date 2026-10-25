@@ -26,6 +26,30 @@ export interface JWTPayload {
   email: string;
   role: string;
   accountType?: string;
+  /** ID сесії в БД. Токени без sid — старі (до переходу на сесійну модель). */
+  sid?: string;
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isSessionId(value: unknown): value is string {
+  return typeof value === 'string' && UUID_RE.test(value);
+}
+
+/**
+ * Дістати sid з access/refresh токена (підпис перевіряється, строк дії ігнорується) —
+ * потрібно, щоб logout міг відкликати сесію і за простроченим токеном.
+ */
+export function extractSessionId(token: string): string | null {
+  for (const secret of [JWT_SECRET, REFRESH_TOKEN_SECRET]) {
+    try {
+      const payload = jwt.verify(token, secret, { ignoreExpiration: true }) as JWTPayload;
+      if (isSessionId(payload.sid)) return payload.sid;
+    } catch {
+      // спробуємо інший секрет
+    }
+  }
+  return null;
 }
 
 /**

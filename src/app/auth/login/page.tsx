@@ -21,15 +21,26 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      })
-      const data = await res.json()
+      let res: Response
+      try {
+        res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email: email.trim(), password })
+        })
+      } catch {
+        throw new Error('Немає з\'єднання із сервером. Перевірте інтернет і спробуйте ще раз.')
+      }
+      const data = await res.json().catch(() => null)
       if (!res.ok) {
-        throw new Error(data.error || 'Помилка входу')
+        if (data?.error) throw new Error(data.error)
+        throw new Error(res.status >= 500
+          ? 'Сервер тимчасово недоступний. Спробуйте за хвилину.'
+          : 'Помилка входу')
+      }
+      if (!data?.user) {
+        throw new Error('Сервер повернув некоректну відповідь. Спробуйте ще раз.')
       }
       // Зберегти користувача та токен для клієнта
       if (data.user) saveUser(data.user)
@@ -84,7 +95,7 @@ export default function LoginPage() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                Email або телефон
+              Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

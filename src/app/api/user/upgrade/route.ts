@@ -6,8 +6,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
-import { generateToken } from '@/lib/auth';
+import { hashToken } from '@/lib/auth';
 import { setAuthCookie } from '@/lib/cookies';
+import { authenticateRequestToken, buildTokens } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,28 +37,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ви вже маєте цей тип акаунту' }, { status: 400 });
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { accountType: 'basic' },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        accountType: true,
-        city: true,
-        avatarUrl: true,
-        isVerified: true,
-        isAdmin: true,
-      },
-    });
+    const auth = await authenticateRequestToken(request);
+    if (!auth.ok) {
+      return NextResponse.json({ error: 'Необхідна авторизація' }, { status: 401 });
+    }
+    const session = { id: auth.sessionId };
 
-    const token = generateToken({
-      userId: updatedUser.id,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      accountType: updatedUser.accountType,
+    const { updatedUser, token } = await prisma.$transaction(async (tx: typeof prisma) => {
+      const user = await tx.user.update({
+        where: { id: userId },
+        data: { accountType: 'basic' },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          accountType: true,
+          city: true,
+          avatarUrl: true,
+          isVerified: true,
+          isAdmin: true,
+        },
+      });
+
+      const { token: nextToken } = buildTokens(user, session.id);
+      const sessionUpdate = await tx.session.updateMany({
+        where: { id: session.id, isActive: true },
+        data: { tokenHash: hashToken(nextToken) },
+      });
+      if (sessionUpdate.count !== 1) {
+        throw new Error('Active session not found for account upgrade');
+      }
+
+      return { updatedUser: user, token: nextToken };
     });
 
     const response = NextResponse.json({

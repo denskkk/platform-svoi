@@ -51,9 +51,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const handleLogout = async () => {
     if (loggingOut) return;
     setLoggingOut(true);
-    await logout();
-    try { window.dispatchEvent(new Event('auth:changed')); } catch {}
-    router.push('/');
+    try {
+      await logout();
+      window.dispatchEvent(new Event('auth:changed'));
+      router.push('/');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Не вдалося вийти з акаунта');
+      setLoggingOut(false);
+    }
   };
 
   // Стан «в обраному» для чужого профілю

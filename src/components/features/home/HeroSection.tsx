@@ -13,7 +13,7 @@ export function HeroSection() {
   const [city, setCity] = useState('')
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null)
 
-  // Мінімальна перевірка: якщо у localStorage є user — ховаємо CTA реєстрації
+  // Show guest CTAs only after the server confirms the session is absent.
   useEffect(() => {
     const detect = async () => {
       const { isAuthed } = await checkAuth()

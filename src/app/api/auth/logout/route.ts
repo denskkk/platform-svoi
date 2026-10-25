@@ -5,13 +5,17 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getAuthCookie } from '@/lib/cookies';
-import { hashToken } from '@/lib/auth';
+import { getAuthCookie, getRefreshCookie } from '@/lib/cookies';
+import { extractSessionId, hashToken } from '@/lib/auth';
 import { removeAuthCookie } from '@/lib/cookies';
 
 export async function POST(request: NextRequest) {
   try {
-    const token = getAuthCookie(request);
+    const tokens = [
+      getAuthCookie(request),
+      getRefreshCookie(request),
+      request.headers.get('authorization')?.replace(/^Bearer\s+/i, ''),
+    ].filter((token): token is string => Boolean(token));
 
     // Створюємо відповідь одразу, cookie будемо видаляти на ній
     const response = NextResponse.json({ success: true });
@@ -19,20 +23,28 @@ export async function POST(request: NextRequest) {
     // Видаляємо cookie незалежно від наявності сесії
     removeAuthCookie(response);
 
-    // Якщо є токен — спробуємо видалити сесію (не критично, якщо не знайдено)
-    if (token) {
-      try {
-        await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
-      } catch (e) {
-        // Ігноруємо помилку видалення сесії, вихід все одно відбудеться
-        console.warn('Logout: failed to delete session by tokenHash');
-      }
+    // Revoke the matching session so a copied Bearer token cannot remain usable.
+    if (tokens.length > 0) {
+      const sessionIds = Array.from(new Set(
+        tokens.map(extractSessionId).filter((sid): sid is string => Boolean(sid))
+      ));
+      await prisma.session.updateMany({
+        where: {
+          OR: [
+            ...(sessionIds.length ? [{ id: { in: sessionIds } }] : []),
+            ...tokens.flatMap((token) => [
+              { tokenHash: hashToken(token) },
+              { refreshTokenHash: hashToken(token) },
+            ]),
+          ],
+        },
+        data: { isActive: false },
+      });
     }
 
     return response;
   } catch (error) {
     console.error('Logout error:', error);
-    // Навіть у випадку помилки спробуємо віддати відповідь із видаленою cookie
     const response = NextResponse.json({ success: false }, { status: 500 });
     removeAuthCookie(response);
     return response;

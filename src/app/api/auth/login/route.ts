@@ -5,51 +5,63 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { comparePassword, generateToken, hashToken } from '@/lib/auth';
-import { checkRateLimit } from '@/lib/rateLimit';
-import { setAuthCookie } from '@/lib/cookies';
+import { comparePassword } from '@/lib/auth';
+import { getClientIp, peekRateLimit, checkRateLimit, resetRateLimit } from '@/lib/rateLimit';
+import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
+import { createSession } from '@/lib/session';
+
+// Лічимо тільки НЕВДАЛІ спроби: успішні входи (і пристрої за спільним IP мобільного оператора)
+// не повинні блокувати інших тестувальників.
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const MAX_FAILURES_PER_ACCOUNT = 10;
+const MAX_FAILURES_PER_IP = 100;
+
+function tooManyAttempts(resetTime: number) {
+  const retryAfter = Math.max(1, Math.ceil((resetTime - Date.now()) / 1000));
+  return NextResponse.json(
+    {
+      error: `Занадто багато невдалих спроб входу. Спробуйте через ${Math.ceil(retryAfter / 60)} хв.`,
+      retryAfter,
+    },
+    { status: 429, headers: { 'Retry-After': retryAfter.toString() } }
+  );
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting: 10 спроб логіну на IP за 15 хвилин
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown';
-    
-    const rateLimit = checkRateLimit(`login:${ip}`, {
-      interval: 15 * 60 * 1000, // 15 хвилин
-      maxRequests: 10
-    });
+    const ip = getClientIp(request);
 
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { 
-          error: 'Занадто багато спроб входу. Спробуйте через 15 хвилин.',
-          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
-        },
-        { 
-          status: 429,
-          headers: {
-            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString()
-          }
-        }
-      );
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Некоректний запит' }, { status: 400 });
     }
-
-    const body = await request.json();
-    const { email, password } = body;
+    const { email, password } = body ?? {};
 
     // Валідація
-    if (!email || !password) {
+    if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
       return NextResponse.json(
         { error: 'Email та пароль обов\'язкові' },
         { status: 400 }
       );
     }
 
-    // Знайти користувача
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: {
+    const normalizedEmail = email.trim();
+    const accountKey = `login:${ip}:${normalizedEmail.toLowerCase()}`;
+    const ipKey = `login-ip:${ip}`;
+
+    const accountLimit = peekRateLimit(accountKey, MAX_FAILURES_PER_ACCOUNT);
+    if (accountLimit.limited) return tooManyAttempts(accountLimit.resetTime);
+    const ipLimit = peekRateLimit(ipKey, MAX_FAILURES_PER_IP);
+    if (ipLimit.limited) return tooManyAttempts(ipLimit.resetTime);
+
+    const registerFailure = () => {
+      checkRateLimit(accountKey, { interval: LOGIN_WINDOW_MS, maxRequests: MAX_FAILURES_PER_ACCOUNT });
+      checkRateLimit(ipKey, { interval: LOGIN_WINDOW_MS, maxRequests: MAX_FAILURES_PER_IP });
+    };
+
+    const userSelect = {
         id: true,
         email: true,
         firstName: true,
@@ -62,10 +74,24 @@ export async function POST(request: NextRequest) {
         isAdmin: true,
         isVerified: true,
         isActive: true,
-      }
+    } as const;
+
+    // Keep exact matches deterministic, then support case-insensitive legacy email values.
+    let user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: userSelect,
     });
+    if (!user) {
+      const matches = await prisma.user.findMany({
+        where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
+        select: userSelect,
+        take: 2,
+      });
+      user = matches.length === 1 ? matches[0] : null;
+    }
 
     if (!user) {
+      registerFailure();
       return NextResponse.json(
         { error: 'Невірний email або пароль' },
         { status: 401 }
@@ -75,34 +101,20 @@ export async function POST(request: NextRequest) {
     // Перевірити пароль
     const isPasswordValid = await comparePassword(password, user.passwordHash);
 
-    if (!isPasswordValid) {
+    if (!isPasswordValid || !user.isActive) {
+      registerFailure();
       return NextResponse.json(
         { error: 'Невірний email або пароль' },
         { status: 401 }
       );
     }
 
-    // Генерація JWT токена
-    const token = generateToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      accountType: user.accountType,
-    });
+    resetRateLimit(accountKey);
 
-    // Створення сесії
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 днів
-
-    await prisma.session.create({
-      data: {
-        userId: user.id,
-        tokenHash: hashToken(token),
-        expiresAt,
-        ipAddress: request.ip || 'unknown',
-        userAgent: request.headers.get('user-agent') || 'unknown',
-      }
-    });
+    const { token, refreshToken } = await createSession(
+      { id: user.id, email: user.email, role: user.role, accountType: user.accountType },
+      request
+    );
 
     // Повернути користувача без пароля
     const { passwordHash, ...userWithoutPassword } = user;
@@ -117,6 +129,7 @@ export async function POST(request: NextRequest) {
 
     // Зберегти токен в httpOnly cookie (безпечно від XSS атак)
     setAuthCookie(response, token);
+    setRefreshCookie(response, refreshToken);
 
     return response;
 

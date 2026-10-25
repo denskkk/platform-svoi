@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { AUTH_FAILURE_MESSAGES, authenticateRequestToken } from '@/lib/session';
 import { hasPermission, getPermissionError, PERMISSIONS } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 
@@ -50,30 +50,14 @@ export async function guardChatUser(userId: number, options: { write: boolean })
  */
 export async function requireAuth(request: NextRequest): Promise<{ user: any; error?: NextResponse }> {
   try {
-    // Спробувати отримати токен з cookie
-    const token = request.cookies.get('token')?.value || 
-                  request.headers.get('authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-      return {
-        user: null,
-        error: NextResponse.json(
-          { error: 'Необхідна авторизація' },
-          { status: 401 }
-        )
-      };
+    const auth = await authenticateRequestToken(request);
+    if (!auth.ok) {
+      const message = auth.reason === 'missing' ? 'Необхідна авторизація'
+        : auth.reason === 'invalid' ? 'Невалідний токен'
+        : AUTH_FAILURE_MESSAGES.ended;
+      return { user: null, error: NextResponse.json({ error: message }, { status: 401 }) };
     }
-
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return {
-        user: null,
-        error: NextResponse.json(
-          { error: 'Невалідний токен' },
-          { status: 401 }
-        )
-      };
-    }
+    const decoded = auth.payload;
 
     // Користувач мусить існувати й бути активним; тип акаунту беремо з БД (токен може бути застарілим)
     const dbUser = await loadActiveUser(decoded.userId);
@@ -89,11 +73,12 @@ export async function requireAuth(request: NextRequest): Promise<{ user: any; er
 
     return { user: { ...decoded, accountType: dbUser.accountType, role: dbUser.role } };
   } catch (error) {
+    console.error('[auth] Authentication lookup failed');
     return {
       user: null,
       error: NextResponse.json(
         { error: 'Помилка авторизації' },
-        { status: 401 }
+        { status: 500 }
       )
     };
   }

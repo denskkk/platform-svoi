@@ -66,26 +66,16 @@ export function clearAuth() {
 }
 
 /**
- * Перевірити чи користувач залогінений
- */
-export function isAuthenticated(): boolean {
-  return getUser() !== null && getToken() !== null;
-}
-
-/**
  * Вийти з системи (видалити локальні дані + викликати API logout)
  */
 export async function logout() {
   try {
-    // Викликати API для видалення сесії
     await fetch('/api/auth/logout', {
       method: 'POST',
-      credentials: 'include', // Відправити cookie
+      credentials: 'include',
     });
-  } catch (error) {
-    console.error('Logout API error:', error);
   } finally {
-    // Очистити локальне сховище в будь-якому випадку
+    // Локальні дані чистимо завжди, навіть якщо сервер недоступний
     clearAuth();
   }
 }

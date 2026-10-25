@@ -6,7 +6,7 @@ import { Home, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
-import { silentFetch } from '@/lib/silentFetch'
+import { checkAuth } from '@/lib/silentFetch'
 
 const navItems = [
   { href: '/', icon: Home, label: 'Головна' },
@@ -30,18 +30,14 @@ export function MobileNav() {
 
     const verify = async () => {
       try {
-        let token: string | null = null
-        try { token = localStorage.getItem('token') } catch {}
-        const headers: Record<string, string> = {}
-        if (token) headers['Authorization'] = `Bearer ${token}`
-        const res = await silentFetch('/api/auth/me', { credentials: 'include', headers })
-        if (res.ok) {
-          const data = await res.json()
-          setUser(data.user)
-          try { localStorage.setItem('user', JSON.stringify(data.user)) } catch {}
-        } else {
+        const auth = await checkAuth()
+        if (auth.status === 'authed') {
+          setUser(auth.user)
+          try { localStorage.setItem('user', JSON.stringify(auth.user)) } catch {}
+        } else if (auth.status === 'guest') {
           setUser(null)
         }
+        // 'unavailable' (мережа/сервер): не вилогінюємо
       } catch { /* noop */ }
       finally { setLoading(false) }
     }

@@ -13,7 +13,7 @@ interface RateLimitStore {
 const store: RateLimitStore = {};
 
 // Очищення старих записів кожні 5 хвилин
-setInterval(() => {
+const cleanupTimer = setInterval(() => {
   const now = Date.now();
   Object.keys(store).forEach(key => {
     if (store[key].resetTime < now) {
@@ -21,6 +21,7 @@ setInterval(() => {
     }
   });
 }, 5 * 60 * 1000);
+cleanupTimer.unref?.();
 
 export interface RateLimitOptions {
   interval: number; // Інтервал в мілісекундах
@@ -63,6 +64,36 @@ export function checkRateLimit(
     remaining,
     resetTime: store[key].resetTime
   };
+}
+
+/**
+ * Лише перевіряє ліміт, не збільшуючи лічильник
+ * (щоб рахувати тільки невдалі спроби, наприклад при вході)
+ */
+export function peekRateLimit(
+  identifier: string,
+  maxRequests: number
+): { limited: boolean; resetTime: number } {
+  const entry = store[identifier];
+  if (!entry || entry.resetTime < Date.now()) {
+    return { limited: false, resetTime: 0 };
+  }
+  return { limited: entry.count >= maxRequests, resetTime: entry.resetTime };
+}
+
+export function resetRateLimit(identifier: string) {
+  delete store[identifier];
+}
+
+/**
+ * IP клієнта за reverse proxy. X-Real-IP виставляє nginx ($remote_addr), його не можна підробити;
+ * X-Forwarded-For клієнт може доповнити сам, тому він лише запасний варіант.
+ */
+export function getClientIp(request: Request): string {
+  const real = request.headers.get('x-real-ip')?.trim();
+  if (real) return real.slice(0, 45);
+  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  return (forwarded || 'unknown').slice(0, 45);
 }
 
 /**

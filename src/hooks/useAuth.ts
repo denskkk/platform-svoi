@@ -8,6 +8,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { checkAuth as checkAuthSession } from '@/lib/silentFetch';
 
 interface User {
   id: number;
@@ -23,6 +24,7 @@ interface User {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<'authed' | 'guest' | 'unavailable'>('guest');
 
   // Перевіряємо чи є користувач залогінений (токен в httpOnly cookie)
   useEffect(() => {
@@ -30,25 +32,12 @@ export function useAuth() {
   }, []);
 
   async function checkAuth() {
-    try {
-      // Робимо запит на перевірку токена
-      // Cookie автоматично відправляється браузером
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include' // ВАЖЛИВО: включаємо cookies
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check error:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
+    const result = await checkAuthSession();
+    setStatus(result.status);
+    if (result.status !== 'unavailable') {
+      setUser((result.user as User | undefined) ?? null);
     }
+    setLoading(false);
   }
 
   async function login(email: string, password: string) {
@@ -67,6 +56,7 @@ export function useAuth() {
 
     // Токен НЕ повертається в JSON - він вже в httpOnly cookie
     setUser(data.user);
+    setStatus('authed');
     return data;
   }
 
@@ -94,26 +84,30 @@ export function useAuth() {
 
     // Токен НЕ повертається в JSON - він вже в httpOnly cookie
     setUser(data.user);
+    setStatus('authed');
     return data;
   }
 
   async function logout() {
     try {
-      await fetch('/api/auth/logout', {
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include' // ВАЖЛИВО: включаємо cookies
+        credentials: 'include'
       });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
+      if (!response.ok) throw new Error('Не вдалося завершити сесію на сервері');
       setUser(null);
+      setStatus('guest');
+    } catch (error) {
+      setStatus('unavailable');
+      throw error;
     }
   }
 
   return {
     user,
     loading,
-    isAuthenticated: !!user,
+    isAuthenticated: status === 'authed',
+    status,
     login,
     register,
     logout,

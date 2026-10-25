@@ -3,9 +3,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { getAuthCookie } from '@/lib/cookies';
+import { AUTH_FAILURE_MESSAGES, authenticateRequestToken } from '@/lib/session';
 
 export interface AuthenticatedRequest extends NextRequest {
   user?: {
@@ -24,32 +23,15 @@ export async function withAuth(
   request: NextRequest,
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>
 ): Promise<NextResponse> {
-  // Спочатку шукаємо токен в httpOnly cookie (безпечніше)
-  let token = getAuthCookie(request);
-
-  // Якщо немає в cookie, шукаємо в Authorization header (для зворотної сумісності)
-  if (!token) {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader?.startsWith('Bearer ')) {
-      token = authHeader.substring(7);
-    }
-  }
-
-  if (!token) {
+  // Спочатку httpOnly cookie, потім Authorization header (зворотна сумісність)
+  const auth = await authenticateRequestToken(request);
+  if (!auth.ok) {
     return NextResponse.json(
-      { error: 'Необхідна автентифікація' },
+      { error: AUTH_FAILURE_MESSAGES[auth.reason] },
       { status: 401 }
     );
   }
-
-  const payload = verifyToken(token);
-
-  if (!payload) {
-    return NextResponse.json(
-      { error: 'Невалідний або прострочений токен' },
-      { status: 401 }
-    );
-  }
+  const { payload } = auth;
 
   // Додаємо дані користувача до request
   const dbUser = await prisma.user.findUnique({
@@ -76,20 +58,20 @@ export async function withOptionalAuth(
   request: NextRequest,
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>
 ): Promise<NextResponse> {
-  let token = getAuthCookie(request);
+  const auth = await authenticateRequestToken(request);
+  if (auth.ok) {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: auth.payload.userId },
+      select: { isActive: true, accountType: true, role: true },
+    });
 
-  if (!token) {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader?.startsWith('Bearer ')) {
-      token = authHeader.substring(7);
-    }
-  }
-
-  if (token) {
-    const payload = verifyToken(token);
-    if (payload) {
+    if (dbUser?.isActive) {
       const authenticatedReq = request as AuthenticatedRequest;
-      authenticatedReq.user = payload;
+      authenticatedReq.user = {
+        ...auth.payload,
+        accountType: dbUser.accountType,
+        role: dbUser.role,
+      };
       return handler(authenticatedReq);
     }
   }

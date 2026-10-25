@@ -5,19 +5,19 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { hashPassword, generateToken, hashToken } from '@/lib/auth';
-import { checkRateLimit } from '@/lib/rateLimit';
-import { setAuthCookie } from '@/lib/cookies';
+import { hashPassword } from '@/lib/auth';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
+import { createSession } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting: 5 реєстрацій на IP за годину
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown';
+    // Rate limiting: 20 реєстрацій на IP за годину (спільний IP мобільних мереж / офісу)
+    const ip = getClientIp(request);
     
     const rateLimit = checkRateLimit(`register:${ip}`, {
       interval: 60 * 60 * 1000, // 1 година
-      maxRequests: 5
+      maxRequests: 20
     });
 
     if (!rateLimit.allowed) {
@@ -212,27 +212,15 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Генерація JWT токена
-    const token = generateToken({
-      userId: created.id,
-      email: created.email,
-      role: created.role,
-      accountType: created.accountType,
-    });
-
-    // Створення сесії
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 днів
-
-    await prisma.session.create({
-      data: {
-        userId: created.id,
-        tokenHash: hashToken(token),
-        expiresAt,
-        ipAddress: request.ip || 'unknown',
-        userAgent: request.headers.get('user-agent') || 'unknown',
-      }
-    });
+    const { token, refreshToken } = await createSession(
+      {
+        id: created.id,
+        email: created.email,
+        role: created.role,
+        accountType: created.accountType,
+      },
+      request
+    );
 
     // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
@@ -244,6 +232,7 @@ export async function POST(request: NextRequest) {
 
     // ТАКОЖ зберегти токен в httpOnly cookie для безпеки
     setAuthCookie(response, token);
+    setRefreshCookie(response, refreshToken);
 
     return response;
 
