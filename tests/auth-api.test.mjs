@@ -261,6 +261,20 @@ test('login, refresh rotation, legacy access and logout use server-verified sess
       ip: '192.0.2.61',
     }));
     assert.equal(otherDevice.status, 200);
+
+    // Типові «побічні ефекти» мобільної клавіатури не повинні блокувати вхід
+    for (const [index, typed] of ['Correct-password-123 ', ' Correct-password-123', 'correct-password-123'].entries()) {
+      const keyboard = await login(request('/api/auth/login', 'POST', {
+        body: { email: 'USER@example.com', password: typed },
+        ip: `192.0.2.7${index}`,
+      }));
+      assert.equal(keyboard.status, 200, `password variant ${JSON.stringify(typed)} should be accepted`);
+    }
+    const stillWrong = await login(request('/api/auth/login', 'POST', {
+      body: { email: storedUser.email, password: 'Totally-different-1' },
+      ip: '192.0.2.80',
+    }));
+    assert.equal(stillWrong.status, 401);
   } finally {
     for (const restore of replacements) restore();
   }

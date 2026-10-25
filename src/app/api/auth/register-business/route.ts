@@ -49,12 +49,14 @@ export async function POST(request: NextRequest) {
     const { 
       firstName, 
       lastName, 
-      email, 
+      email: rawEmail, 
       password, 
       phone, 
       city, 
       accountType = 'business',
     } = userData;
+    // Email зберігаємо у нижньому регістрі без пробілів: мобільні клавіатури самі міняють регістр
+    const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
 
     const {
       companyName,
@@ -119,8 +121,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Перевірка чи email вже існує
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    const existingUser = await prisma.user.findFirst({
+      where: { email: { equals: email, mode: 'insensitive' } },
+      select: { id: true },
     });
 
     if (existingUser) {

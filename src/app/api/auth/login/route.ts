@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { comparePassword } from '@/lib/auth';
+import { passwordMatches, passwordVariants } from '@/lib/auth';
 import { getClientIp, peekRateLimit, checkRateLimit, resetRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
 import { createSession } from '@/lib/session';
@@ -76,32 +76,28 @@ export async function POST(request: NextRequest) {
         isActive: true,
     } as const;
 
-    // Keep exact matches deterministic, then support case-insensitive legacy email values.
-    let user = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
+    // Усі акаунти з цим email без урахування регістру (у старих даних можуть бути дублі
+    // на кшталт Max@... і max@...): точний збіг перший, далі за id.
+    const matches = (await prisma.user.findMany({
+      where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
       select: userSelect,
-    });
-    if (!user) {
-      const matches = await prisma.user.findMany({
-        where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
-        select: userSelect,
-        take: 2,
-      });
-      user = matches.length === 1 ? matches[0] : null;
+      take: 5,
+    })).sort((a: any, b: any) =>
+      Number(b.email === normalizedEmail) - Number(a.email === normalizedEmail) || a.id - b.id
+    );
+
+    // Мобільні клавіатури додають пробіл після підказки або міняють регістр першої літери,
+    // тому після точного пароля пробуємо ще кілька безпечних варіантів.
+    const passwordCandidates = passwordVariants(password);
+    let user: (typeof matches)[number] | null = null;
+    for (const candidate of matches) {
+      if (await passwordMatches(passwordCandidates, candidate.passwordHash)) {
+        user = candidate;
+        break;
+      }
     }
 
-    if (!user) {
-      registerFailure();
-      return NextResponse.json(
-        { error: 'Невірний email або пароль' },
-        { status: 401 }
-      );
-    }
-
-    // Перевірити пароль
-    const isPasswordValid = await comparePassword(password, user.passwordHash);
-
-    if (!isPasswordValid || !user.isActive) {
+    if (!user || !user.isActive) {
       registerFailure();
       return NextResponse.json(
         { error: 'Невірний email або пароль' },

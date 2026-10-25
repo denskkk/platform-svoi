@@ -64,7 +64,35 @@ export async function hashPassword(password: string): Promise<string> {
  * Порівняти пароль з хешем
  */
 export async function comparePassword(password: string, hash: string): Promise<boolean> {
-  return await bcrypt.compare(password, hash);
+  try {
+    return await bcrypt.compare(password, hash);
+  } catch {
+    // Пошкоджений/порожній хеш — це «пароль не підходить», а не помилка сервера
+    return false;
+  }
+}
+
+/**
+ * Варіанти введеного пароля, які мобільні клавіатури псують найчастіше:
+ * зайві пробіли по краях і автоматична велика/мала перша літера.
+ * Точний варіант завжди перший.
+ */
+export function passwordVariants(password: string): string[] {
+  const flipFirst = (value: string) => {
+    const first = value.charAt(0);
+    const flipped = first === first.toLowerCase() ? first.toUpperCase() : first.toLowerCase();
+    return flipped + value.slice(1);
+  };
+  const trimmed = password.trim();
+  const variants = [password, trimmed, flipFirst(password), flipFirst(trimmed)];
+  return Array.from(new Set(variants)).filter((value) => value.length > 0);
+}
+
+export async function passwordMatches(candidates: string[], hash: string): Promise<boolean> {
+  for (const candidate of candidates) {
+    if (await comparePassword(candidate, hash)) return true;
+  }
+  return false;
 }
 
 /**

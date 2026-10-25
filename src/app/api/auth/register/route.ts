@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       firstName,
       middleName,
       lastName, 
-      email, 
+      email: rawEmail, 
       password, 
       phone, 
       city, 
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
       avatarBase64,
       socialLinks,
     } = body;
+    // Email зберігаємо у нижньому регістрі без пробілів: мобільні клавіатури самі міняють регістр
+    const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
 
     // Валідація обов'язкових полів
     if (!firstName || !lastName || !email || !password) {
@@ -85,8 +87,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Перевірка чи email вже існує
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    const existingUser = await prisma.user.findFirst({
+      where: { email: { equals: email, mode: 'insensitive' } },
+      select: { id: true },
     });
 
     if (existingUser) {
