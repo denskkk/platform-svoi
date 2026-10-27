@@ -81,3 +81,9 @@ android/capacitor-cordova-android-plugins/
 android/app/release/
 android/app/debug/
 android/app/src/main/assets/capacitor.config.json
+
+# App Store Connect API keys
+AuthKey_*.p8
+ios_distribution/__pycache__/
+ios_distribution/.env
+ios_distribution/binaries/
