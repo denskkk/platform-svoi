@@ -32,6 +32,8 @@ import urllib.error
 import urllib.request
 import zipfile
 
+from error_log import AscApiError, guarded
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 API = "https://api.appstoreconnect.apple.com"
 
@@ -80,7 +82,7 @@ def request(method, url, token=None, body=None, headers=None, raw=None):
             content = resp.read()
             return json.loads(content) if content and resp.headers.get_content_type() == "application/json" else None
     except urllib.error.HTTPError as e:
-        sys.exit(f"HTTP {e.code} on {method} {url}\n{e.read().decode(errors='replace')}")
+        raise AscApiError(e.code, method, url, e.read().decode(errors="replace")) from None
 
 
 def read_ipa_info(ipa_path):
@@ -179,7 +181,7 @@ def main():
     args = parser.parse_args()
     if not os.path.isfile(args.ipa):
         sys.exit(f"File not found: {args.ipa}")
-    (upload_altool if args.apple_id else upload_rest)(args.ipa)
+    guarded("upload_to_appstore", upload_altool if args.apple_id else upload_rest, args.ipa)
 
 
 if __name__ == "__main__":

@@ -34,9 +34,19 @@ Use the App Store IPA, not the Ad Hoc one.
 - `ios_ad_hoc_build_and_archive.py` - builds the Ad Hoc IPA.
 - `ios_app_store_build_and_archive.py` - builds the App Store IPA.
 - `upload_to_appstore.py` - uploads an IPA via the App Store Connect REST API.
+- `error_log.py` - error handling shared by the scripts.
+- `error_log.json` - created on failure, see [Errors](#errors) (gitignored).
 - `binaries/` - generated IPAs.
 - `AuthKey_A6QSJ3V6JG.p8` - App Store Connect API key (gitignored).
 - `.env` - holds `ASC_ISSUER_ID` (gitignored).
+
+## Errors
+
+If a script fails (HTTP 4xx/5xx from App Store Connect, network problem, failed `xcodebuild`, missing file), it prints a
+readable message and exits with code 1. For API errors the message shows the HTTP status, the request, and Apple's
+error code, title and detail, plus a hint for common cases (401, 403, 404, 409, 429, 5xx). Every failure is also
+appended to `ios_distribution/error_log.json` (a JSON array with timestamp, source, message and details). The file is
+gitignored; auth tokens are never written to it.
 
 ## Getting the secret files
 

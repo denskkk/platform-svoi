@@ -9,6 +9,8 @@ import sys
 import tempfile
 import zipfile
 
+from error_log import guarded
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 IOS_APP_DIR = os.path.join(REPO_ROOT, "ios", "App")
@@ -52,7 +54,7 @@ def prepare_web_assets():
                 'xmlns:cdv="http://cordova.apache.org/ns/1.0">\n  <access origin="*" />\n</widget>\n')
 
 
-def build_and_export(profile_file, profile_name, export_method, output_prefix):
+def _build_and_export(profile_file, profile_name, export_method, output_prefix):
     """Archive the app signed with `profile_name`, export it and save into binaries/
 
     The file is named <output_prefix>_<CFBundleShortVersionString>_<CFBundleVersion>.ipa.
@@ -91,3 +93,8 @@ def build_and_export(profile_file, profile_name, export_method, output_prefix):
         shutil.copy(ipa[0], dest)
     print(f"\nIPA saved to {dest}")
     return dest
+
+
+def build_and_export(*args, **kwargs):
+    """Run the build; failures are printed and logged to error_log.json."""
+    return guarded("ios_build", _build_and_export, *args, **kwargs)

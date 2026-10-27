@@ -86,3 +86,4 @@ android/app/src/main/assets/capacitor.config.json
 AuthKey_*.p8
 ios_distribution/__pycache__/
 ios_distribution/.env
+ios_distribution/error_log.json
