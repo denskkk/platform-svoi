@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import zipfile
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
@@ -51,8 +52,11 @@ def prepare_web_assets():
                 'xmlns:cdv="http://cordova.apache.org/ns/1.0">\n  <access origin="*" />\n</widget>\n')
 
 
-def build_and_export(profile_file, profile_name, export_method, output_name):
-    """Archive the app signed with `profile_name`, export it and save into binaries/."""
+def build_and_export(profile_file, profile_name, export_method, output_prefix):
+    """Archive the app signed with `profile_name`, export it and save into binaries/
+
+    The file is named <output_prefix>_<CFBundleShortVersionString>_(<CFBundleVersion>).ipa.
+    """
     install_profile(os.path.join(SIGNING_DIR, profile_file))
     prepare_web_assets()
     os.makedirs(BINARIES_DIR, exist_ok=True)
@@ -79,6 +83,10 @@ def build_and_export(profile_file, profile_name, export_method, output_name):
         ipa = glob.glob(os.path.join(export_dir, "*.ipa"))
         if not ipa:
             sys.exit("Export finished but no .ipa was produced.")
+        with zipfile.ZipFile(ipa[0]) as z:
+            plist_name = next(n for n in z.namelist() if n.count("/") == 2 and n.endswith(".app/Info.plist"))
+            info = plistlib.loads(z.read(plist_name))
+        output_name = f"{output_prefix}_{info['CFBundleShortVersionString']}_({info['CFBundleVersion']}).ipa"
         dest = os.path.join(BINARIES_DIR, output_name)
         shutil.copy(ipa[0], dest)
     print(f"\nIPA saved to {dest}")
