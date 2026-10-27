@@ -46,8 +46,10 @@ def prepare_web_assets():
     shutil.rmtree(public_dir, ignore_errors=True)
     shutil.copytree(os.path.join(REPO_ROOT, "out"), public_dir)
     with open(os.path.join(app_dir, "capacitor.config.json"), "w") as f:
+        # packageClassList registers native plugins (normally written by `cap sync`); keep in sync with CapApp-SPM plugins.
         json.dump({"appId": BUNDLE_ID, "appName": APP_NAME, "webDir": "out",
-                   "server": {"url": SERVER_URL, "cleartext": False}}, f, ensure_ascii=False)
+                   "server": {"url": SERVER_URL, "cleartext": False},
+                   "packageClassList": ["SafeAreaPlugin"]}, f, ensure_ascii=False)
     with open(os.path.join(app_dir, "config.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>\n'
                 '<widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" '
