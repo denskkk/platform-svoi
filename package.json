@@ -20,8 +20,10 @@
   "dependencies": {
     "@capacitor/android": "^7.4.3",
     "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.6.9",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
+    "capacitor-plugin-safe-area": "^4.0.3",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.0",
     "jsonwebtoken": "^9.0.2",

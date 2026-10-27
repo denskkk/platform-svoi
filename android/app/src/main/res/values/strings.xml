@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Свій для Своїх</string>
-    <string name="title_activity_main">Свій для Своїх</string>
+    <string name="app_name">СвійДляСвоїх</string>
+    <string name="title_activity_main">СвійДляСвоїх</string>
     <string name="package_name">com.sviy_dlya_svoih.android</string>
     <string name="custom_url_scheme">com.sviy_dlya_svoih.android</string>
 </resources>
