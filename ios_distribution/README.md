@@ -11,10 +11,10 @@ Run all commands from the repository root.
 ## Build
 
 ```sh
-# Ad Hoc IPA        -> ios_distribution/binaries/SviyDlyaSvoih-AdHoc_<version>_(<build>).ipa
+# Ad Hoc IPA        -> ios_distribution/binaries/SviyDlyaSvoih-AdHoc_<version>_<build>.ipa
 python3 ios_distribution/ios_ad_hoc_build_and_archive.py
 
-# App Store IPA     -> ios_distribution/binaries/SviyDlyaSvoih-AppStore_<version>_(<build>).ipa
+# App Store IPA     -> ios_distribution/binaries/SviyDlyaSvoih-AppStore_<version>_<build>.ipa
 python3 ios_distribution/ios_app_store_build_and_archive.py
 ```
 
@@ -23,7 +23,7 @@ The scripts are executable, so `./ios_distribution/ios_app_store_build_and_archi
 ## Upload to App Store Connect
 
 ```sh
-python3 ios_distribution/upload_to_appstore.py ios_distribution/binaries/SviyDlyaSvoih-AppStore_<version>_(<build>).ipa
+python3 ios_distribution/upload_to_appstore.py ios_distribution/binaries/SviyDlyaSvoih-AppStore_<version>_<build>.ipa
 ```
 
 Use the App Store IPA, not the Ad Hoc one.
