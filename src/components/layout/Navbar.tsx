@@ -183,7 +183,7 @@ export function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm">
+    <nav className="sticky top-0 z-50 pt-[var(--safe-area-inset-top,0px)] bg-white/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-4">
           {/* Лого */}

@@ -8,6 +8,7 @@ import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
 import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister'
+import { SafeAreaInit } from '@/components/ui/SafeAreaInit'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -56,11 +57,12 @@ export default function RootLayout({
     <html lang="uk">
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
         <ToastProvider>
+          <SafeAreaInit />
           <AuthSessionMonitor />
           <ServiceWorkerRegister />
           <AdminRedirect />
           <Navbar />
-          <main className="min-h-screen pb-20 md:pb-0">
+          <main className="min-h-screen pb-[calc(5rem+var(--safe-area-inset-bottom,0px))] md:pb-0">
             {children}
           </main>
           <Footer />
