@@ -87,3 +87,6 @@ AuthKey_*.p8
 ios_distribution/__pycache__/
 ios_distribution/.env
 ios_distribution/error_log.json
+
+# App Store review account credentials
+/materials/app_store/text_account_credentials.txt
