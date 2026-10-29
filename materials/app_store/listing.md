@@ -29,7 +29,7 @@ If you ship iPhone-only (`TARGETED_DEVICE_FAMILY = 1` in the Xcode project), the
 
 | Field | Value |
 |---|---|
-| Bundle ID | `com.svoi.platform` (from Xcode project — see note below) |
+| Bundle ID | `com.sviy-dlya-svoih.ios` |
 | SKU | `sviy-dlya-svoih-ios` |
 | Primary language | Ukrainian |
 | Primary category | Lifestyle |
@@ -93,7 +93,6 @@ Cross-check against https://sviydlyasvoih.com.ua/privacy before submitting; it m
 
 ## Things to verify before submitting
 
-1. **Bundle ID mismatch.** The Xcode project uses `com.svoi.platform`, but `ios_distribution/README.md` says the App Store Connect record is `com.sviy-dlya-svoih.ios`. The two must match.
-2. **Home-screen name.** `CFBundleDisplayName` in Info.plist is "Свій для Своїх", matching the store name. The longer name may be truncated under the icon on the home screen.
-3. **"5 UCM" in the screenshots.** The public requests screenshot shows "Створити публічну заявку (5 UCM)", which looks like an in-app currency. If UCM can be bought, Apple requires In-App Purchase (Guideline 3.1.1). If it is only earned or granted, say so in the review notes; otherwise retake the screenshot.
-4. **Screenshots show web content.** Retake them from a real iPhone 6.9" simulator or device if you want status bar and safe-area fidelity; the current set reuses the Google Play artwork.
+1. **Home-screen name.** `CFBundleDisplayName` in Info.plist is "Свій для Своїх", matching the store name. The longer name may be truncated under the icon on the home screen.
+2. **"5 UCM" in the screenshots.** The public requests screenshot shows "Створити публічну заявку (5 UCM)", which looks like an in-app currency. If UCM can be bought, Apple requires In-App Purchase (Guideline 3.1.1). If it is only earned or granted, say so in the review notes; otherwise retake the screenshot.
+3. **Screenshots show web content.** Retake them from a real iPhone 6.9" simulator or device if you want status bar and safe-area fidelity; the current set reuses the Google Play artwork.
