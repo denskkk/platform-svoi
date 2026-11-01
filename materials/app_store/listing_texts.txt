@@ -1,0 +1,45 @@
+App Store listing texts — Свій для Своїх
+Each block is pasted into the matching App Store Connect field (My Apps → app → iOS App version / App Information).
+
+=== Name (≤ 30 chars) ===
+Свій для Своїх
+
+=== Subtitle (≤ 30 chars) ===
+Знаходьте фахівців-українців
+
+=== Promotional text (≤ 170 chars, can be changed without a new build) ===
+Українська платформа, що об'єднує підприємців і споживачів на основі довіри. Знаходьте фахівців за послугою, категорією та містом.
+
+=== Keywords (≤ 100 chars, comma-separated, no spaces) ===
+українці,фахівці,послуги,підприємці,бізнес,діаспора,каталог,відгуки,заявки,майстер,спільнота,Україна
+
+=== Description (≤ 4000 chars) ===
+Свій для Своїх — українська платформа, яка об'єднує підприємців та споживачів на основі довіри та спільних цінностей.
+
+Ми створили місце, де українська діаспора та широка спільнота допомагають одне одному у веденні бізнесу та отриманні послуг. Підтримуємо бізнес всередині нашої спільноти.
+
+Що ви можете робити:
+• Знаходити фахівців серед українців — за послугою, категорією та містом
+• Створити профіль і розповісти про свої послуги
+• Переглядати категорії: все для дому, авто, краса, освіта, розваги та хобі, все для дітей та інші
+• Залишати заявки та відгуки
+
+Чому «Свій для Своїх»:
+• Довіра — усі учасники дотримуються високих етичних стандартів
+• Підтримка — кожна угода підтримує свій бізнес, свою родину, свою громаду
+• Якість — система рейтингів та відгуків допомагає підтримувати високий рівень послуг
+
+Приєднуйтесь до спільноти — створіть профіль уже сьогодні!
+
+Умови використання: https://sviydlyasvoih.com.ua/terms-of-use
+Політика конфіденційності: https://sviydlyasvoih.com.ua/privacy
+
+=== What's New in This Version (≤ 4000 chars) ===
+Перша версія застосунку в App Store. Каталог фахівців і послуг, публічні заявки, профілі, чат і відгуки.
+
+=== App Review Information → Notes ===
+Свій для Своїх is a free directory and community platform connecting Ukrainian entrepreneurs and consumers. The app is a native wrapper around our web platform https://sviydlyasvoih.com.ua.
+Sign in with the demo account above, or tap "Зайти як глядач" on the home screen to browse as a guest.
+User-generated content: every profile, service, request and chat has a "Поскаржитися" (Report) button; users accept the Terms of Use at registration (https://sviydlyasvoih.com.ua/terms-of-use).
+Account deletion: in-app and at https://sviydlyasvoih.com.ua/account-deletion (confirmed with password).
+The app is free. There are no in-app purchases or subscriptions, and no payments are processed.

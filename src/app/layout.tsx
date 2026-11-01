@@ -12,6 +12,7 @@ import { I18nProvider } from '@/i18n/client'
 import { getMessages } from '@/i18n/messages'
 import { getLocale } from '@/i18n/server'
 import { buildMetadata } from '@/i18n/metadata'
+import { SafeAreaInit } from '@/components/ui/SafeAreaInit'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -46,11 +47,12 @@ export default function RootLayout({
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
         <I18nProvider locale={locale} messages={messages}>
           <ToastProvider>
+            <SafeAreaInit />
             <AuthSessionMonitor />
             <ServiceWorkerRegister />
             <AdminRedirect />
             <Navbar />
-            <main className="min-h-screen pb-20 md:pb-0">
+            <main className="min-h-screen pb-[calc(5rem+var(--safe-area-inset-bottom,0px))] md:pb-0">
               {children}
             </main>
             <Footer />
