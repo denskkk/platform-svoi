@@ -1,12 +1,13 @@
 {
 	"appId": "com.sviy_dlya_svoih.android",
-	"appName": "Свій для Своїх",
-	"webDir": "out",
+	"appName": "Sviy dlya Svoikh",
+	"webDir": "mobile-web",
 	"android": {
 		"adjustMarginsForEdgeToEdge": "auto"
 	},
 	"server": {
 		"url": "https://sviydlyasvoih.com.ua",
-		"cleartext": false
+		"cleartext": false,
+		"errorPath": "error.html"
 	}
 }

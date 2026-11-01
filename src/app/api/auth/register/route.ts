@@ -9,8 +9,10 @@ import { hashPassword } from '@/lib/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
 import { createSession } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Rate limiting: 20 реєстрацій на IP за годину (спільний IP мобільних мереж / офісу)
     const ip = getClientIp(request);
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { 
-          error: 'Занадто багато спроб реєстрації. Спробуйте через годину.',
+          error: t('api.auth.tooManyRegistrations'),
           retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
         },
         { 
@@ -58,7 +60,7 @@ export async function POST(request: NextRequest) {
     // Валідація обов'язкових полів
     if (!firstName || !lastName || !email || !password) {
       return NextResponse.json(
-        { error: 'Заповніть всі обов\'язкові поля' },
+        { error: t('api.common.requiredFields') },
         { status: 400 }
       );
     }
@@ -66,14 +68,14 @@ export async function POST(request: NextRequest) {
     // Дозволяємо базовий акаунт та акаунт глядача
     const validAccountTypes = ['basic', 'viewer'];
     if (!validAccountTypes.includes(accountType)) {
-      return NextResponse.json({ error: 'Невірний тип акаунту' }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.invalidAccountType') }, { status: 400 });
     }
 
     // Валідація email формату
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Некоректний формат email' },
+        { error: t('api.common.invalidEmail') },
         { status: 400 }
       );
     }
@@ -81,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Валідація пароля (мінімум 6 символів для всіх типів)
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Пароль має містити мінімум 6 символів' },
+        { error: t('api.auth.passwordMin', { min: 6 }) },
         { status: 400 }
       );
     }
@@ -94,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Користувач з таким email вже існує' },
+        { error: t('api.auth.emailExists') },
         { status: 409 }
       );
     }
@@ -228,7 +230,7 @@ export async function POST(request: NextRequest) {
     // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
       success: true,
-      message: 'Реєстрація успішна!',
+      message: t('api.auth.registerSuccess'),
       user: returnedUser || created,
       token,
     }, { status: 201 });
@@ -242,7 +244,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

@@ -9,8 +9,10 @@ import { hashPassword } from '@/lib/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
 import { createSession } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Rate limiting: 20 реєстрацій на IP за годину (спільний IP мобільних мереж / офісу)
     const ip = getClientIp(request);
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { 
-          error: 'Занадто багато спроб реєстрації. Спробуйте через годину.',
+          error: t('api.auth.tooManyRegistrations'),
           retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
         },
         { 
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
     // Валідація структури запиту
     if (!userData || !businessData) {
       return NextResponse.json(
-        { error: 'Невірний формат запиту. Потрібні дані користувача та бізнесу' },
+        { error: t('api.auth.businessInvalidFormat') },
         { status: 400 }
       );
     }
@@ -85,7 +87,7 @@ export async function POST(request: NextRequest) {
     // Валідація обов'язкових полів користувача
     if (!firstName || !lastName || !email || !password) {
       return NextResponse.json(
-        { error: 'Заповніть всі обов\'язкові особисті дані' },
+        { error: t('api.auth.businessPersonalRequired') },
         { status: 400 }
       );
     }
@@ -93,21 +95,21 @@ export async function POST(request: NextRequest) {
     // Валідація обов'язкових полів бізнесу
     if (!companyName) {
       return NextResponse.json(
-        { error: 'Вкажіть назву компанії' },
+        { error: t('api.auth.companyNameRequired') },
         { status: 400 }
       );
     }
 
     // Дозволяємо тільки звичайний бізнес акаунт (преміум прибрано)
     if (accountType !== 'business') {
-      return NextResponse.json({ error: 'Невірний тип бізнес акаунту' }, { status: 400 });
+      return NextResponse.json({ error: t('api.auth.invalidBusinessType') }, { status: 400 });
     }
 
     // Валідація email формату
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Некоректний формат email' },
+        { error: t('api.common.invalidEmail') },
         { status: 400 }
       );
     }
@@ -115,7 +117,7 @@ export async function POST(request: NextRequest) {
     // Валідація пароля (мінімум 6 символів для спрощення, як у формі)
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Пароль повинен містити мінімум 6 символів' },
+        { error: t('api.auth.businessPasswordMin', { min: 6 }) },
         { status: 400 }
       );
     }
@@ -128,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Користувач з таким email вже існує' },
+        { error: t('api.auth.emailExists') },
         { status: 409 }
       );
     }
@@ -242,7 +244,7 @@ export async function POST(request: NextRequest) {
     // Створити відповідь з токеном в JSON для клієнта
     const response = NextResponse.json({
       success: true,
-      message: 'Бізнес акаунт успішно створено!',
+      message: t('api.auth.businessCreated'),
       user: {
         ...result.user,
         businessInfo: result.business
@@ -266,7 +268,7 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { error: 'Помилка сервера при реєстрації бізнесу' },
+      { error: t('api.auth.businessRegisterError') },
       { status: 500 }
     );
   }

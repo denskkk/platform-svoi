@@ -8,6 +8,7 @@ import { Search, MapPin, Star, Users, ArrowRight } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { translateAccountType } from '@/lib/translations';
 import { requireSsrAuth } from '@/lib/ssrAuth';
+import { getT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -47,6 +48,7 @@ async function fetchUsers(q?: string, city?: string, page?: string) {
 export default async function CatalogUsersPage({ searchParams }: { searchParams?: { q?: string; city?: string; page?: string } }) {
   // Перевірка авторизації - тільки зареєстровані користувачі можуть переглядати каталог
   requireSsrAuth('/catalog');
+  const { t, locale } = getT();
 
   const q = searchParams?.q;
   const city = searchParams?.city;
@@ -57,22 +59,22 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3"><Users className="w-10 h-10" />Каталог людей</h1>
-          <p className="text-indigo-100 text-lg mb-6">Знайдіть учасників спільноти за професією, містом або ім'ям.</p>
+          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3"><Users className="w-10 h-10"           />{t('catalog.title')}</h1>
+                    <p className="text-indigo-100 text-lg mb-6">{t('catalog.subtitle')}</p>
           <form action="/catalog" method="GET" className="bg-white rounded-lg p-4 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input name="q" defaultValue={q} placeholder="Пошук (ім'я, професія)..." className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900" />
+              <input name="q" defaultValue={q} placeholder={t('catalog.searchPlaceholder')} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900" />
             </div>
-            <input name="city" defaultValue={city} placeholder="Місто" className="md:w-48 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900" />
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold">Шукати</button>
+            <input name="city" defaultValue={city} placeholder={t('catalog.cityPlaceholder')} className="md:w-48 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900" />
+            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold">{t('catalog.searchButton')}</button>
           </form>
         </div>
       </div>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Знайдено: {pagination.total}</h2>
-          <p className="text-gray-600">Сторінка {pagination.page} з {pagination.pages}</p>
+          <h2 className="text-2xl font-bold text-gray-900">          {t('catalog.found', { count: pagination.total })}</h2>
+                    <p className="text-gray-600">{t('catalog.pageOf', { page: pagination.page, pages: pagination.pages })}</p>
         </div>
         {users.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
@@ -84,15 +86,15 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
                 <Users className="w-10 h-10 text-white" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Користувачів не знайдено</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3"            >{t('catalog.empty.title')}</h3>
             <p className="text-gray-600 max-w-md mb-8 leading-relaxed">
-              Спробуйте змінити параметри пошуку або перегляньте всіх учасників спільноти
+                          {t('catalog.empty.description')}
             </p>
             <Link
               href="/catalog"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 btn-glow"
             >
-              Переглянути всіх
+              {t('catalog.empty.viewAll')}
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -117,11 +119,11 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
                       <p className="font-semibold text-gray-900 text-lg flex items-center gap-1.5 flex-wrap">
                         <span>{displayName}</span>
                         {u.isVerified && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full" title="Перевірений користувач">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full" title={t('catalog.verifiedUser')}>
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Перевірений
+                            {t('catalog.verified')}
                           </span>
                         )}
                       </p>
@@ -133,7 +135,7 @@ export default async function CatalogUsersPage({ searchParams }: { searchParams?
                   </div>
                   {u.profession && <p className="text-sm text-gray-700 mb-3 line-clamp-2">{u.profession}</p>}
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span className="font-medium">{translateAccountType(u.accountType)}</span>
+                    <span className="font-medium">{translateAccountType(u.accountType, locale)}</span>
                     {u.totalReviews > 0 && (
                       <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-400 fill-current" />{(() => { const n = Number(u.avgRating); return isNaN(n) ? '0.0' : n.toFixed(1); })()}</span>
                     )}

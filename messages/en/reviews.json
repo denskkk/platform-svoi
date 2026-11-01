@@ -1,0 +1,32 @@
+{
+  "create": {
+    "loading": "Loading...",
+    "back": "Back",
+    "title": "Leave a review",
+    "aboutRequest": "Review of the request:",
+    "reviewFor": "Review for:",
+    "reviewsCount": {
+      "one": "({count} review)",
+      "other": "({count} reviews)"
+    },
+    "ratingLabel": "Rating",
+    "ratingNames": {
+      "one": "Poor",
+      "two": "Below average",
+      "three": "Average",
+      "four": "Good",
+      "five": "Excellent"
+    },
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "Tell us about your experience working together...",
+    "charCount": "{count} / 1000 characters",
+    "submit": "Submit review",
+    "submitting": "Submitting...",
+    "cancel": "Cancel",
+    "errors": {
+      "loadFailed": "Failed to load data",
+      "ratingRequired": "Please select a rating",
+      "createFailed": "Failed to create the review"
+    }
+  }
+}

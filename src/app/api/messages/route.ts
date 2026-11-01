@@ -9,9 +9,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
+import { getApiT } from '@/i18n/server';
 
 // GET - Отримати повідомлення
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'VIEW_MESSAGES');
     if (auth.error) return auth.error;
@@ -90,7 +92,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get messages error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -98,6 +100,7 @@ export async function GET(request: NextRequest) {
 
 // POST - Відправити повідомлення
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'SEND_MESSAGE');
     if (auth.error) return auth.error;
@@ -107,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     if (!receiverId || !text) {
       return NextResponse.json(
-        { error: 'Вкажіть отримувача та текст повідомлення' },
+        { error: t('api.chat.recipientAndTextRequired') },
         { status: 400 }
       );
     }
@@ -143,22 +146,22 @@ export async function POST(request: NextRequest) {
       data: {
         userId: receiverId,
         type: 'new_message',
-        title: 'Нове повідомлення',
-        message: `${auth.user.email} надіслав вам повідомлення`,
+        title: 'Нове повідомлення', // i18n-ignore
+        message: `${auth.user.email} надіслав вам повідомлення`, // i18n-ignore
         relatedUserId: auth.user.userId,
       }
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Повідомлення відправлено!',
+      message: t('api.chat.messageSent'),
       data: message,
     }, { status: 201 });
 
   } catch (error) {
     console.error('Send message error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

@@ -8,10 +8,12 @@ import { requireAuth } from '@/lib/api-middleware';
 import { comparePassword } from '@/lib/auth';
 import { removeAuthCookie } from '@/lib/cookies';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   const { user, error } = await requireAuth(request);
   if (error) return error;
 
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
     });
     if (!limit.allowed) {
       return NextResponse.json(
-        { error: 'Забагато спроб. Спробуйте пізніше.' },
+        { error: t('api.auth.tooManyAttempts') },
         { status: 429 }
       );
     }
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const password = String(body?.password || '');
     if (!password) {
-      return NextResponse.json({ error: 'Введіть пароль для підтвердження' }, { status: 400 });
+      return NextResponse.json({ error: t('api.auth.passwordRequired') }, { status: 400 });
     }
 
     const dbUser = await prisma.user.findUnique({
@@ -40,18 +42,18 @@ export async function POST(request: NextRequest) {
       select: { id: true, passwordHash: true, isAdmin: true },
     });
     if (!dbUser) {
-      return NextResponse.json({ error: 'Користувача не знайдено' }, { status: 404 });
+      return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
     }
     if (dbUser.isAdmin) {
       return NextResponse.json(
-        { error: 'Акаунт адміністратора видаляється через підтримку.' },
+        { error: t('api.auth.adminDeletionViaSupport') },
         { status: 403 }
       );
     }
 
     const valid = await comparePassword(password, dbUser.passwordHash);
     if (!valid) {
-      return NextResponse.json({ error: 'Невірний пароль' }, { status: 401 });
+      return NextResponse.json({ error: t('api.auth.wrongPassword') }, { status: 401 });
     }
 
     // Усі пов'язані записи (послуги, повідомлення, відгуки, сесії тощо) видаляються каскадно
@@ -59,14 +61,14 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
-      message: 'Акаунт та пов’язані дані видалено.',
+      message: t('api.auth.accountDeleted'),
     });
     removeAuthCookie(response);
     return response;
   } catch (e) {
     console.error('[delete-account] error', e);
     return NextResponse.json(
-      { error: 'Не вдалося видалити акаунт. Зверніться до підтримки.' },
+      { error: t('api.auth.deleteFailed') },
       { status: 500 }
     );
   }

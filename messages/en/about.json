@@ -1,0 +1,188 @@
+{
+  "title": "About the \"Sviy dlya Svoikh\" platform",
+  "overview": {
+    "title": "📱 What is Sviy dlya Svoikh?",
+    "intro": "Sviy dlya Svoikh (\"One of Our Own\") is a free online platform — a website and an Android app — where individuals and entrepreneurs publish their services, and other users find the right providers, send them requests and communicate with them directly.",
+    "details": "The platform is available in Ukrainian and English. The catalog of services and profiles can be browsed without registering."
+  },
+  "legalLinks": {
+    "title": "Important documents and help",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "support": "Support",
+    "accountDeletion": "Account Deletion"
+  },
+  "mission": {
+    "title": "🎯 Our Mission",
+    "text": "We built a platform that brings together the Ukrainian diaspora and the wider community to help one another in running businesses and finding services. Our goal is to support our own people and build a community of trust, where everyone can find the services they need from people who share common values."
+  },
+  "purpose": {
+    "title": "🧭 What the platform is for",
+    "intro": "The purpose of the platform is to help people find each other for services and business cooperation:",
+    "items": {
+      "find": "find a service provider by category and city;",
+      "publish": "present your services and business to a wide audience;",
+      "contact": "contact a provider directly — through a request or chat;",
+      "trust": "choose based on other users' reviews and ratings."
+    }
+  },
+  "why": {
+    "title": "💡 Why \"Sviy dlya Svoikh\"?",
+    "trust": {
+      "label": "Trust:",
+      "text": "All members follow high ethical standards"
+    },
+    "support": {
+      "label": "Support:",
+      "text": "Every deal supports your own business, your family and your community"
+    },
+    "quality": {
+      "label": "Quality:",
+      "text": "The ratings and reviews system helps maintain a high level of service"
+    },
+    "convenience": {
+      "label": "Convenience:",
+      "text": "Finding the service or client you need is now quick and easy"
+    }
+  },
+  "who": {
+    "title": "👥 Who can use the platform",
+    "intro": "The platform is for individuals and entrepreneurs. When registering, you choose one of three profile types:",
+    "viewer": {
+      "name": "Viewer",
+      "text": "Browse the catalog, profiles and services, and save favorites. You can switch to a regular profile for free."
+    },
+    "individual": {
+      "name": "Regular (individual)",
+      "text": "A full profile, publishing services, requests, messages and reviews."
+    },
+    "business": {
+      "name": "Business",
+      "text": "A business profile for companies and entrepreneurs: business information, services, requests, messages and reviews."
+    },
+    "free": "Using the platform and listing services is free of charge."
+  },
+  "features": {
+    "title": "🧩 Platform features",
+    "catalog": {
+      "label": "Catalog and search:",
+      "text": "find services and providers by category and city."
+    },
+    "profiles": {
+      "label": "Profiles:",
+      "text": "user profiles and business profiles with a description, contacts and photos."
+    },
+    "services": {
+      "label": "Services:",
+      "text": "publish and edit your own services with a description and images."
+    },
+    "requests": {
+      "label": "Requests:",
+      "text": "send a request to a provider, or publish an open request that other users can respond to."
+    },
+    "chat": {
+      "label": "Chat:",
+      "text": "private messages between users."
+    },
+    "favorites": {
+      "label": "Favorites:",
+      "text": "save the profiles and services you need."
+    },
+    "reviews": {
+      "label": "Reviews and ratings:",
+      "text": "rate providers from 1 to 5 and leave a comment."
+    },
+    "reports": {
+      "label": "Reports:",
+      "text": "report a user, service, request, review or message; reports are reviewed by the administration."
+    }
+  },
+  "offer": {
+    "title": "🚀 What we offer",
+    "business": {
+      "title": "For Entrepreneurs",
+      "items": {
+        "free": "✓ Free listing of services",
+        "audience": "✓ Access to your target audience",
+        "reviews": "✓ User reviews and ratings",
+        "cabinet": "✓ A personal entrepreneur account"
+      }
+    },
+    "consumers": {
+      "title": "For Customers",
+      "items": {
+        "free": "✓ Free use of the platform",
+        "reviews": "✓ Transparent reviews and ratings",
+        "search": "✓ Search by category and city",
+        "contact": "✓ Direct communication with providers"
+      }
+    }
+  },
+  "registration": {
+    "title": "📝 How registration works",
+    "steps": {
+      "choose": "Open the registration page and choose a profile type: viewer, regular or business.",
+      "fill": "Fill in the form: first name, last name, email and password (at least 6 characters). Phone, city and profile photo are optional.",
+      "done": "After registering, you are signed in right away and can complete your profile.",
+      "login": "Next time, sign in with your email and password."
+    },
+    "register": "Create a profile",
+    "login": "Log in",
+    "note": "A viewer can switch to a regular profile for free at any time."
+  },
+  "security": {
+    "title": "🔒 How user information is protected",
+    "intro": "We apply the following protection measures:",
+    "items": {
+      "passwords": "Passwords are stored only as hashes (bcrypt) — the plain-text password is never stored.",
+      "sessions": "Sign-in is maintained with session tokens in secure cookies (httpOnly; in production, sent over HTTPS only).",
+      "https": "The website and the app work over a secure HTTPS connection.",
+      "limits": "The number of sign-in and registration attempts is limited to make password guessing harder.",
+      "access": "Actions that require an account (messages, requests, reviews) are available only to signed-in users.",
+      "deletion": "You can delete your account yourself (password confirmation required) — the related data is deleted."
+    },
+    "privacyBefore": "To learn what data we collect and how we use it, read our ",
+    "privacyLink": "Privacy Policy",
+    "privacyAfter": "."
+  },
+  "values": {
+    "title": "🌟 Our Values",
+    "honesty": {
+      "label": "Honesty:",
+      "text": "Transparent relationships between all members"
+    },
+    "mutual": {
+      "label": "Mutual help:",
+      "text": "We support each other's growth"
+    },
+    "quality": {
+      "label": "Quality:",
+      "text": "We strive for high standards in everything"
+    },
+    "faith": {
+      "label": "Faith:",
+      "text": "We follow biblical principles in business"
+    }
+  },
+  "support": {
+    "title": "🛟 Support and contacts",
+    "text": "If you have questions about your account, complaints or requests regarding personal data, contact us:",
+    "emailLabel": "Email:",
+    "telegramLabel": "Telegram:",
+    "supportLink": "Support page and frequently asked questions",
+    "contactsLink": "Contacts"
+  },
+  "deletion": {
+    "title": "🗑️ How to delete your account",
+    "text": "If you are signed in, you can delete your account right away on the account deletion page (password confirmation required). If you cannot sign in, send a request to support and we will help.",
+    "link": "Account and data deletion"
+  },
+  "cta": {
+    "titleAuthed": "Thank you for being with us!",
+    "titleGuest": "Join our community!",
+    "subtitle": "Together we are stronger. Together we build the future.",
+    "register": "Sign up",
+    "services": "Browse services",
+    "contact": "Contact us"
+  }
+}

@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { checkAuth as checkSession } from '@/lib/silentFetch';
+import { useI18n } from '@/i18n/client';
+import { translateServiceRequestStatus, translateCategory } from '@/lib/translations';
+import { getCityName } from '@/lib/constants';
 
 interface ServiceRequest {
   id: number;
@@ -39,19 +42,9 @@ const statusColors: Record<string, string> = {
   rejected: 'bg-red-100 text-red-800'
 };
 
-const statusLabels: Record<string, string> = {
-  new: 'Нова',
-  viewed: 'Переглянута',
-  accepted: 'Прийнята',
-  in_progress: 'В процесі',
-  completed: 'Виконана',
-  paid: 'Оплачена',
-  cancelled: 'Скасована',
-  rejected: 'Відхилена'
-};
-
 export default function ServiceRequestsPage() {
   const router = useRouter();
+  const { t, locale, formatDate, formatNumber } = useI18n();
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'tome' | 'my' | 'assigned' | 'all'>('tome');
@@ -100,7 +93,7 @@ export default function ServiceRequestsPage() {
         credentials: 'include'
       });
 
-      if (!res.ok) throw new Error('Помилка завантаження');
+      if (!res.ok) throw new Error('Failed to load service requests');
 
       const data = await res.json();
       setRequests(data.requests || []);
@@ -117,7 +110,7 @@ export default function ServiceRequestsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Завантаження...</p>
+          <p className="text-gray-600">{t('serviceRequests.common.loading')}</p>
         </div>
       </div>
     );
@@ -129,14 +122,14 @@ export default function ServiceRequestsPage() {
         {/* Шапка */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Заявки на послуги</h1>
-            <p className="text-gray-600">Знайдіть виконавця або запропонуйте свої послуги</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('serviceRequests.list.title')}</h1>
+            <p className="text-gray-600">{t('serviceRequests.list.subtitle')}</p>
           </div>
           <Link
             href="/service-requests/create"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl"
           >
-            + Створити заявку
+            {t('serviceRequests.list.createButton')}
           </Link>
         </div>
 
@@ -151,7 +144,7 @@ export default function ServiceRequestsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              📩 Заявки мені
+              {t('serviceRequests.list.filters.tome')}
             </button>
             <button
               onClick={() => setFilter('assigned')}
@@ -161,7 +154,7 @@ export default function ServiceRequestsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              🔨 В роботі
+              {t('serviceRequests.list.filters.assigned')}
             </button>
             <button
               onClick={() => setFilter('my')}
@@ -171,7 +164,7 @@ export default function ServiceRequestsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              📝 Мої заявки
+              {t('serviceRequests.list.filters.my')}
             </button>
             <button
               onClick={() => setFilter('all')}
@@ -181,7 +174,7 @@ export default function ServiceRequestsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              🔍 Всі
+              {t('serviceRequests.list.filters.all')}
             </button>
           </div>
         </div>
@@ -190,18 +183,18 @@ export default function ServiceRequestsPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-            <p className="mt-4 text-gray-600">Завантаження...</p>
+            <p className="mt-4 text-gray-600">{t('serviceRequests.common.loading')}</p>
           </div>
         ) : requests.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center">
             <div className="text-6xl mb-4">📭</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Заявок поки немає</h3>
-            <p className="text-gray-600 mb-6">Створіть першу заявку або змініть фільтр</p>
+            <h3 className="text-xl font-semibold text-gray-900             mb-2">{t('serviceRequests.list.emptyTitle')}</h3>
+                        <p className="text-gray-600 mb-6">{t('serviceRequests.list.emptyDescription')}</p>
             <Link
               href="/service-requests/create"
               className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
             >
-              Створити заявку
+              {t('serviceRequests.common.createRequest')}
             </Link>
           </div>
         ) : (
@@ -216,10 +209,10 @@ export default function ServiceRequestsPage() {
                   {/* Статус */}
                   <div className="flex items-center justify-between mb-3">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[request.status]}`}>
-                      {statusLabels[request.status]}
+                      {translateServiceRequestStatus(request.status, locale)}
                     </span>
                     {request.category && (
-                      <span className="text-sm text-gray-500">{request.category}</span>
+                      <span className="text-sm text-gray-500">{translateCategory(request.category, locale)}</span>
                     )}
                   </div>
 
@@ -238,7 +231,7 @@ export default function ServiceRequestsPage() {
                     {request.city && (
                       <div className="flex items-center gap-2">
                         <span>📍</span>
-                        <span>{request.city}</span>
+                        <span>{getCityName(request.city, locale)}</span>
                       </div>
                     )}
                     {(request.budgetFrom || request.budgetTo) && (
@@ -246,10 +239,10 @@ export default function ServiceRequestsPage() {
                         <span>💰</span>
                         <span>
                           {request.budgetFrom && request.budgetTo
-                            ? `${request.budgetFrom}-${request.budgetTo} грн`
+                            ? t('serviceRequests.budget.range', { from: formatNumber(request.budgetFrom), to: formatNumber(request.budgetTo) })
                             : request.budgetFrom
-                            ? `від ${request.budgetFrom} грн`
-                            : `до ${request.budgetTo} грн`}
+                            ? t('serviceRequests.budget.from', { amount: formatNumber(request.budgetFrom) })
+                            : t('serviceRequests.budget.to', { amount: formatNumber(request.budgetTo ?? 0) })}
                         </span>
                       </div>
                     )}
@@ -260,14 +253,14 @@ export default function ServiceRequestsPage() {
                     {request.executor && (
                       <div className="flex items-center gap-2">
                         <span>🔨</span>
-                        <span>Виконавець: {request.executor.firstName}</span>
+                        <span>{t('serviceRequests.list.executor', { name: request.executor.firstName })}</span>
                       </div>
                     )}
                   </div>
 
                   {/* Дата */}
                   <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
-                    {new Date(request.createdAt).toLocaleDateString('uk-UA', {
+                    {formatDate(request.createdAt, {
                       day: 'numeric',
                       month: 'long',
                       hour: '2-digit',

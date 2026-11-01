@@ -1,0 +1,152 @@
+{
+  "back": "Back to account type selection",
+  "header": {
+    "title": "Business Account",
+    "subtitle": "For entrepreneurs and companies"
+  },
+  "tabs": {
+    "basic": "Basics",
+    "company": "Company",
+    "seeking": "What you're looking for"
+  },
+  "basic": {
+    "title": "Company representative details",
+    "firstName": "First name *",
+    "lastName": "Last name *",
+    "email": "Email *",
+    "phone": "Phone",
+    "password": "Password *",
+    "passwordPlaceholder": "At least 6 characters",
+    "confirmPassword": "Confirm password *",
+    "confirmPasswordPlaceholder": "Repeat your password"
+  },
+  "company": {
+    "name": "Company name *",
+    "namePlaceholder": "e.g. 'Construction Company' LLC",
+    "code": "Company registration code (EDRPOU)",
+    "city": "City of operation",
+    "cityPlaceholder": "Select a city",
+    "type": "Company type",
+    "typePlaceholder": "Select a type",
+    "types": {
+      "fop": "Sole proprietor (FOP)",
+      "tov": "LLC (TOV)",
+      "other": "Other"
+    },
+    "category": "Business category",
+    "categoryPlaceholder": "Select a category",
+    "categories": {
+      "education": "Education",
+      "products": "Food products",
+      "advertising": "Advertising and marketing",
+      "online_sales": "Online sales",
+      "offline_sales": "Offline retail",
+      "auto_service": "Auto repair and service",
+      "construction": "Construction and renovation",
+      "it": "IT and development",
+      "other": "Other"
+    },
+    "offer": "What do you offer?",
+    "offerPlaceholder": "Select",
+    "offerTypes": {
+      "service": "Service",
+      "product": "Product",
+      "both": "Services and products"
+    },
+    "description": "Short description",
+    "descriptionPlaceholder": "What your company offers...",
+    "website": "Website",
+    "logo": "Company logo",
+    "logoUpload": "Upload logo",
+    "logoHint": "Recommended size: 400x400px",
+    "banner": "Company banner",
+    "bannerUpload": "Upload banner",
+    "bannerHint": "Recommended size: 1200x400px"
+  },
+  "seeking": {
+    "title": "Who or what are you looking for?",
+    "partner": {
+      "title": "A partner",
+      "description": "Find business partners to collaborate with",
+      "type": "Partner type",
+      "typePlaceholder": "Select a type",
+      "types": {
+        "investor": "Investment partner",
+        "supplier": "Supplier",
+        "distributor": "Distributor",
+        "franchise": "Franchisee",
+        "strategic": "Strategic partner",
+        "other": "Other"
+      },
+      "sphere": "Area of collaboration",
+      "spherePlaceholder": "For example: wholesale supply, joint marketing...",
+      "collaboration": "Collaboration terms",
+      "collaborationPlaceholder": "Describe what you offer to a partner..."
+    },
+    "investor": {
+      "title": "An investor",
+      "description": "Attract investment for growth",
+      "amount": "Required investment amount",
+      "amountPlaceholder": "For example: from 500,000 to 1,000,000 UAH",
+      "term": "Payback period",
+      "termPlaceholder": "For example: 18-24 months",
+      "goals": "Investment goals",
+      "goalsPlaceholder": "How the investment will be used: expansion, equipment, marketing...",
+      "offer": "What you offer to an investor",
+      "offerPlaceholder": "Equity share, dividends, other..."
+    },
+    "customer": {
+      "title": "Customers",
+      "description": "Expand your customer base",
+      "target": "Target audience",
+      "targetPlaceholder": "Who your customers are: individuals, businesses, age group...",
+      "offer": "What you offer",
+      "offerPlaceholder": "Describe your products/services...",
+      "benefits": "Benefits for customers",
+      "benefitsPlaceholder": "Why people choose you: quality, price, speed..."
+    },
+    "employee": {
+      "title": "An employee",
+      "description": "Find people to join your team",
+      "vacancies": "Vacancies",
+      "addVacancy": "Add vacancy",
+      "empty": "Add the vacancies you want to publish",
+      "vacancyNumber": "Vacancy #{number}",
+      "position": "Position",
+      "responsibilities": "Responsibilities",
+      "requirements": "Requirements",
+      "salary": "Salary (UAH)",
+      "employmentType": "Employment type",
+      "employmentTypes": {
+        "full-time": "Full-time",
+        "part-time": "Part-time",
+        "remote": "Remote work",
+        "contract": "Contract",
+        "freelance": "Freelance"
+      },
+      "experience": "Required experience"
+    }
+  },
+  "actions": {
+    "submit": "Sign up",
+    "submitting": "Signing you up...",
+    "cancel": "Cancel"
+  },
+  "login": {
+    "prompt": "Already have an account?",
+    "link": "Sign in"
+  },
+  "info": {
+    "label": "Business account:",
+    "text": "Create a business profile, find partners, investors and customers. Post vacancies and grow your network!"
+  },
+  "errors": {
+    "requiredPersonal": "Please fill in all required personal details",
+    "companyNameRequired": "Enter the company name",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters long",
+    "consentRequired": "Please confirm your agreement to the Terms of Use and Privacy Policy",
+    "registrationFailed": "Registration failed"
+  },
+  "loading": "Loading..."
+}

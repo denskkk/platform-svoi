@@ -1,3 +1,7 @@
+'use client'
+
+import { useI18n } from '@/i18n/client'
+
 /**
  * Loading spinner component
  */
@@ -22,10 +26,11 @@ export function LoadingSpinner({ size = 'md', text }: { size?: 'sm' | 'md' | 'lg
   )
 }
 
-export function PageLoader({ text = 'Завантаження...' }: { text?: string }) {
+export function PageLoader({ text }: { text?: string }) {
+  const { t } = useI18n()
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
-      <LoadingSpinner size="lg" text={text} />
+      <LoadingSpinner size="lg" text={text ?? t('common.states.loading')} />
     </div>
   )
 }

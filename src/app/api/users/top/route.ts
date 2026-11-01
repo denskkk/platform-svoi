@@ -5,12 +5,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getApiT } from '@/i18n/server';
 
 // Позначаємо маршрут як динамічний
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '4');
@@ -64,7 +66,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get top users error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

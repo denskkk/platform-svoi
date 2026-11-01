@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth } from '@/lib/authMiddleware';
+import { getApiT } from '@/i18n/server';
 
 // POST /api/service-requests/[id]/respond - Відгукнутись на публічну заявку
 async function postHandler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const t = getApiT(request);
   const userId = (request as any).user?.userId;
   
   if (!userId) {
     return NextResponse.json(
-      { error: 'Необхідна авторизація' },
+      { error: t('api.common.authRequired') },
       { status: 401 }
     );
   }
@@ -23,14 +25,14 @@ async function postHandler(
 
     if (!proposedPrice || !comment) {
       return NextResponse.json(
-        { error: 'Заповніть всі обов\'язкові поля' },
+        { error: t('api.common.requiredFields') },
         { status: 400 }
       );
     }
 
     if (comment.length < 20) {
       return NextResponse.json(
-        { error: 'Коментар має бути мінімум 20 символів' },
+        { error: t('api.serviceRequests.commentMin', { min: 20 }) },
         { status: 400 }
       );
     }
@@ -42,28 +44,28 @@ async function postHandler(
 
     if (!serviceRequest) {
       return NextResponse.json(
-        { error: 'Заявку не знайдено' },
+        { error: t('api.serviceRequests.notFound') },
         { status: 404 }
       );
     }
 
     if (!serviceRequest.isPublic) {
       return NextResponse.json(
-        { error: 'Це приватна заявка, відгуки недоступні' },
+        { error: t('api.serviceRequests.privateNoResponses') },
         { status: 403 }
       );
     }
 
     if (serviceRequest.clientId === userId) {
       return NextResponse.json(
-        { error: 'Ви не можете відгукнутись на власну заявку' },
+        { error: t('api.serviceRequests.ownRequest') },
         { status: 403 }
       );
     }
 
     if (serviceRequest.executorId) {
       return NextResponse.json(
-        { error: 'Виконавець вже обраний для цієї заявки' },
+        { error: t('api.serviceRequests.executorAlreadySelected') },
         { status: 403 }
       );
     }
@@ -80,7 +82,7 @@ async function postHandler(
 
     if (existingResponse) {
       return NextResponse.json(
-        { error: 'Ви вже відгукнулись на цю заявку' },
+        { error: t('api.serviceRequests.alreadyResponded') },
         { status: 400 }
       );
     }
@@ -132,8 +134,8 @@ async function postHandler(
       data: {
         userId: serviceRequest.clientId,
         type: 'request_response_new',
-        title: 'Новий відгук на заявку',
-        message: `${user?.firstName} ${user?.lastName} запропонував ціну ${proposedPrice} грн на вашу заявку "${serviceRequest.title}"`,
+        title: 'Новий відгук на заявку', // i18n-ignore
+        message: `${user?.firstName} ${user?.lastName} запропонував ціну ${proposedPrice} грн на вашу заявку "${serviceRequest.title}"`, // i18n-ignore
         relatedEntityType: 'ServiceRequest',
         relatedEntityId: requestId
       }
@@ -146,7 +148,7 @@ async function postHandler(
   } catch (error) {
     console.error('[service-requests/respond] Помилка:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

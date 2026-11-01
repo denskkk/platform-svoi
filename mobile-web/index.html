@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sviy dlya Svoikh</title>
+    <style>
+      :root { color-scheme: light; font-family: sans-serif; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f5f7fb; color: #172033; }
+      main { max-width: 420px; padding: 32px; text-align: center; }
+      h1 { margin: 0 0 12px; font-size: 26px; }
+      p { margin: 0 0 20px; color: #5b6475; line-height: 1.5; }
+      button { background: #ffca00; color: #172033; border: 0; border-radius: 10px; padding: 12px 24px; font-size: 16px; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 id="title">Sviy dlya Svoikh</h1>
+      <p id="message">The service is temporarily unavailable. Check your internet connection and try again.</p>
+      <button id="retry" type="button">Try again</button>
+    </main>
+    <script>
+      (function () {
+        var SITE_URL = 'https://sviydlyasvoih.com.ua/';
+        var texts = {
+          uk: {
+            title: '\u0421\u0432\u0456\u0439 \u0434\u043b\u044f \u0421\u0432\u043e\u0457\u0445',
+            message: '\u0421\u0435\u0440\u0432\u0456\u0441 \u0442\u0438\u043c\u0447\u0430\u0441\u043e\u0432\u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0438\u0439. \u041f\u0435\u0440\u0435\u0432\u0456\u0440\u0442\u0435 \u043f\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f \u0434\u043e \u0456\u043d\u0442\u0435\u0440\u043d\u0435\u0442\u0443 \u0442\u0430 \u043f\u043e\u0432\u0442\u043e\u0440\u0456\u0442\u044c \u0441\u043f\u0440\u043e\u0431\u0443.',
+            retry: '\u0421\u043f\u0440\u043e\u0431\u0443\u0432\u0430\u0442\u0438 \u0449\u0435 \u0440\u0430\u0437'
+          }
+        };
+        var lang = (navigator.language || 'en').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
+        if (lang === 'uk') {
+          document.documentElement.lang = 'uk';
+          document.getElementById('title').textContent = texts.uk.title;
+          document.getElementById('message').textContent = texts.uk.message;
+          document.getElementById('retry').textContent = texts.uk.retry;
+        }
+        function retry() { window.location.replace(SITE_URL); }
+        document.getElementById('retry').addEventListener('click', retry);
+        window.addEventListener('online', retry);
+      })();
+    </script>
+  </body>
+</html>

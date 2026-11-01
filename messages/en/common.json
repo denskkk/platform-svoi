@@ -1,0 +1,135 @@
+{
+  "language": {
+    "label": "Interface language",
+    "switchTo": "Switch language: {language}"
+  },
+  "actions": {
+    "retry": "Retry",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "tryAgain": "Try again",
+    "goHome": "Go to home page"
+  },
+  "states": {
+    "loading": "Loading..."
+  },
+  "auth": {
+    "unavailable": "Could not verify your session. Check your connection and try again.",
+    "loginFailed": "Login failed",
+    "registerFailed": "Registration failed",
+    "logoutFailed": "Could not end the session on the server"
+  },
+  "deleteAccount": {
+    "confirmRequired": "Confirm that you understand the consequences of deletion",
+    "passwordRequired": "Enter your password",
+    "failed": "Could not delete the account",
+    "done": "Your account and related data have been deleted. Thank you for being with us.",
+    "goHome": "Go to home page",
+    "loginHintBefore": "To delete your account right away, ",
+    "loginHintLink": "log in",
+    "loginHintAfter": " to your profile and come back to this page. Or use the other methods below.",
+    "warning": "Warning: deletion is irreversible. Your profile, services, requests, reviews and messages will be deleted.",
+    "passwordLabel": "Confirm with your password",
+    "confirmLabel": "I understand that my account and all related data will be deleted permanently and cannot be restored.",
+    "deleting": "Deleting...",
+    "submit": "Delete account permanently"
+  },
+  "accountTypes": {
+    "guest": "Guest",
+    "basic": "Basic",
+    "extended": "Extended",
+    "business": "Business",
+    "businessPremium": "Business Premium"
+  },
+  "consent": {
+    "before": "I have read and agree to the",
+    "terms": "Terms of Use",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "after": "."
+  },
+  "badge": {
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "userType": {
+      "consumer": "👤 Consumer",
+      "business": "💼 Business",
+      "premium": "⭐ Premium"
+    }
+  },
+  "emptyState": {
+    "or": "or"
+  },
+  "viewerUpgrade": {
+    "failed": "Could not change the profile type",
+    "done": "Done!",
+    "title": "You are signed in as a Viewer",
+    "description": "A Viewer can browse profiles and services and save them to favorites. To chat, submit requests and leave reviews, switch to a regular profile — it's free.",
+    "wait": "Please wait...",
+    "cta": "Switch to a regular profile"
+  },
+  "pagination": {
+    "first": "First page",
+    "previous": "Previous page",
+    "next": "Next page",
+    "last": "Last page",
+    "page": "Page",
+    "of": "of"
+  },
+  "permission": {
+    "unavailable": "Feature unavailable",
+    "denied": "Access denied",
+    "premium": "Premium",
+    "business": "Business"
+  },
+  "upgradeCta": {
+    "title": "Need help?",
+    "description": "Describe what you need, and providers will respond to your request. It's free.",
+    "button": "Create a request"
+  },
+  "report": {
+    "title": "Report",
+    "reasonLabel": "Reason",
+    "describeLabel": "Describe the problem (optional)",
+    "placeholder": "What exactly violates the platform rules?",
+    "notice": "The administration will review the report and, if necessary, restrict the offender's access. Abuse of reports is prohibited.",
+    "sending": "Sending...",
+    "submit": "Submit",
+    "failed": "Could not send the report",
+    "sent": "Report sent",
+    "categories": {
+      "spam": "Spam or unwanted advertising",
+      "fraud": "Fraud",
+      "abuse": "Insults, threats, harassment",
+      "inappropriate": "Inappropriate content",
+      "fake": "Fake profile or review",
+      "other": "Other"
+    }
+  },
+  "search": {
+    "placeholder": "Search...",
+    "filters": "Filters",
+    "clear": "Clear",
+    "hide": "Hide",
+    "show": "Show",
+    "allCategories": "📂 All categories",
+    "allCities": "All cities",
+    "cityPlaceholder": "City...",
+    "find": "Search"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "description": "A temporary error occurred. Please try again — your data and login are safe.",
+    "globalDescription": "A temporary error occurred. Your login is saved — please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "It may have been deleted or the link is outdated.",
+    "toCatalog": "Go to the directory"
+  }
+}

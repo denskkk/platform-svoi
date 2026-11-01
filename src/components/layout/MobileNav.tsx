@@ -7,16 +7,20 @@ import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 import { checkAuth } from '@/lib/silentFetch'
+import { useI18n } from '@/i18n/client'
+import { localizedPath, splitLocalePrefix } from '@/i18n/routes'
 
 const navItems = [
-  { href: '/', icon: Home, label: 'Головна' },
-  { href: '/catalog', icon: Search, label: 'Пошук' },
-  { href: '/chat', icon: MessageCircle, label: 'Повідомлення' },
-  { href: '/profile', icon: User, label: 'Профіль' },
+  { href: '/', icon: Home, labelKey: 'layout.mobileNav.home' },
+  { href: '/catalog', icon: Search, labelKey: 'layout.mobileNav.search' },
+  { href: '/chat', icon: MessageCircle, labelKey: 'layout.mobileNav.messages' },
+  { href: '/profile', icon: User, labelKey: 'layout.mobileNav.profile' },
 ]
 
 export function MobileNav() {
-  const pathname = usePathname()
+  const { t, locale } = useI18n()
+  const rawPathname = usePathname()
+  const pathname = splitLocalePrefix(rawPathname || '/').path
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
@@ -55,7 +59,7 @@ export function MobileNav() {
   const isAuthed = !!user
   // Глядачі не можуть писати повідомлення — замість чату показуємо "Обране"
   const items = user?.accountType === 'viewer'
-    ? navItems.map((item) => (item.href === '/chat' ? { href: '/favorites', icon: Heart, label: 'Обране' } : item))
+    ? navItems.map((item) => (item.href === '/chat' ? { href: '/favorites', icon: Heart, labelKey: 'layout.mobileNav.favorites' } : item))
     : navItems
 
   if (loading) {
@@ -68,7 +72,7 @@ export function MobileNav() {
             return (
               <div key={item.href} className={cn('flex flex-col items-center justify-center space-y-1', isActive ? 'text-primary-600' : 'text-neutral-300')}>
                 <Icon className="w-6 h-6" />
-                <span className="text-xs font-medium">{item.label}</span>
+                <span className="text-xs font-medium">{t(item.labelKey)}</span>
               </div>
             )
           })}
@@ -87,14 +91,14 @@ export function MobileNav() {
             className={cn('flex flex-col items-center justify-center space-y-1 text-white bg-primary-500 hover:bg-primary-600 transition-colors')}
           >
             <UserPlus className="w-6 h-6" />
-            <span className="text-xs font-semibold">Створити профіль</span>
+            <span className="text-xs font-semibold">{t('layout.mobileNav.register')}</span>
           </Link>
           <Link
             href="/auth/register/viewer"
             className={cn('flex flex-col items-center justify-center space-y-1 text-neutral-700 hover:text-primary-600')}
           >
             <Eye className="w-6 h-6" />
-            <span className="text-xs font-medium">Зайти як глядач</span>
+            <span className="text-xs font-medium">{t('layout.mobileNav.viewer')}</span>
           </Link>
         </div>
       </nav>
@@ -111,14 +115,14 @@ export function MobileNav() {
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={localizedPath(item.href, locale)}
               className={cn(
                 'flex flex-col items-center justify-center space-y-1 transition-colors min-w-0 px-1',
                 isActive ? 'text-primary-600' : 'text-neutral-500 hover:text-primary-500'
               )}
             >
               <Icon className="w-6 h-6" />
-              <span className="text-[11px] min-[360px]:text-xs font-medium truncate max-w-full">{item.label}</span>
+              <span className="text-[11px] min-[360px]:text-xs font-medium truncate max-w-full">{t(item.labelKey)}</span>
             </Link>
           )
         })}

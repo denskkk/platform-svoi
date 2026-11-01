@@ -4,6 +4,7 @@
  */
 
 import { randomBytes } from 'crypto';
+import { getApiT } from '@/i18n/server';
 
 interface CsrfStore {
   [token: string]: {
@@ -84,9 +85,10 @@ export function withCsrfProtection(handler: Function) {
       const csrfToken = request.headers.get('x-csrf-token');
       
       if (!verifyCsrfToken(csrfToken)) {
+        const t = getApiT(request);
         return new Response(
           JSON.stringify({
-            error: 'Невалідний CSRF токен'
+            error: t('api.common.csrfInvalid')
           }),
           {
             status: 403,

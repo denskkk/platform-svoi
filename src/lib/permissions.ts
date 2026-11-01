@@ -2,7 +2,13 @@
  * Система прав доступу для різних типів акаунтів
  */
 
+import { createTranslator, Translator } from '@/i18n/translate';
+import { getMessages } from '@/i18n/messages';
+
 export type AccountType = 'viewer' | 'basic' | 'business';
+
+// Without an explicit translator (e.g. client hooks) the default locale is used.
+const defaultTranslator = (): Translator => createTranslator('uk', getMessages('uk'), getMessages('en'));
 
 export const PERMISSIONS = {
   // Базові можливості
@@ -65,28 +71,23 @@ export function getMinimumAccountType(permission: keyof typeof PERMISSIONS): Acc
 /**
  * Отримати назву типу акаунту українською
  */
-export function getAccountTypeName(accountType: AccountType): string {
-  const names: Record<AccountType, string> = {
-    viewer: 'Глядач',
-    basic: 'Базовий',
-    business: 'Бізнес'
-  };
-  return names[accountType];
+export function getAccountTypeName(accountType: AccountType, t: Translator = defaultTranslator()): string {
+  return t(`api.permissions.accountTypes.${accountType}`);
 }
 
 /**
  * Отримати опис обмеження для користувача
  */
-export function getPermissionError(permission: keyof typeof PERMISSIONS): string {
+export function getPermissionError(permission: keyof typeof PERMISSIONS, t: Translator = defaultTranslator()): string {
   const minType = getMinimumAccountType(permission);
-  const minTypeName = getAccountTypeName(minType);
+  const type = getAccountTypeName(minType, t);
   
-  const messages: Partial<Record<keyof typeof PERMISSIONS, string>> = {
-    CREATE_SERVICE: `Створення послуг доступне з акаунту "${minTypeName}". Зареєструйтесь.`,
-    CREATE_REQUEST: `Створення заявок доступне з акаунту "${minTypeName}". Зареєструйтесь.`,
-    SEND_MESSAGE: `Надсилання повідомлень доступне з акаунту "${minTypeName}". Зареєструйтесь.`,
-    AUTO_PROPOSALS: 'Автоматичні пропозиції - це платна опція. Активуйте в профілі.',
+  const keys: Partial<Record<keyof typeof PERMISSIONS, string>> = {
+    CREATE_SERVICE: 'api.permissions.createService',
+    CREATE_REQUEST: 'api.permissions.createRequest',
+    SEND_MESSAGE: 'api.permissions.sendMessage',
+    AUTO_PROPOSALS: 'api.permissions.autoProposals',
   };
   
-  return messages[permission] || `Ця функція доступна з акаунту "${minTypeName}". Зареєструйтесь.`;
+  return t(keys[permission] ?? 'api.permissions.default', { type });
 }

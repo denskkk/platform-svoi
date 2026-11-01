@@ -4,10 +4,74 @@ import { useState, useEffect } from 'react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useRouter } from 'next/navigation';
 import { User, MapPin, Briefcase, Heart, Camera, Globe } from 'lucide-react';
-import { cities } from '@/lib/constants';
+import { cities, getCityName } from '@/lib/constants';
+import { useI18n } from '@/i18n/client';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+
+// Stored values stay Ukrainian; only the displayed labels are translated.
+const OTHER_VALUE = 'Інше'; // i18n-ignore
+
+const OTHER_TRANSPORT_OPTIONS = [
+  { value: 'Велосипед', key: 'bicycle' }, // i18n-ignore
+  { value: 'Самокат', key: 'scooter' }, // i18n-ignore
+  { value: 'Мотоцикл', key: 'motorcycle' }, // i18n-ignore
+  { value: 'Скейт', key: 'skateboard' }, // i18n-ignore
+  { value: 'Гірський велосипед', key: 'mountainBike' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
+
+const PETS_OPTIONS = [
+  { value: 'Собака', key: 'dog' }, // i18n-ignore
+  { value: 'Кіт', key: 'cat' }, // i18n-ignore
+  { value: 'Птахи', key: 'birds' }, // i18n-ignore
+  { value: 'Риби', key: 'fish' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
+
+const HOBBIES_OPTIONS = [
+  { value: 'Читання', key: 'reading' }, // i18n-ignore
+  { value: 'Музика', key: 'music' }, // i18n-ignore
+  { value: 'Кіно', key: 'cinema' }, // i18n-ignore
+  { value: 'Подорожі', key: 'travel' }, // i18n-ignore
+  { value: 'Кулінарія', key: 'cooking' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
+
+const OUTDOOR_OPTIONS = [
+  { value: 'Похід', key: 'hiking' }, // i18n-ignore
+  { value: 'Пікнік', key: 'picnic' }, // i18n-ignore
+  { value: 'Пляж', key: 'beach' }, // i18n-ignore
+  { value: 'Парки', key: 'parks' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
+
+const LIFESTYLE_OPTIONS = [
+  { value: 'Еко', key: 'eco' }, // i18n-ignore
+  { value: 'Мінімалізм', key: 'minimalism' }, // i18n-ignore
+  { value: 'Здоровий спосіб життя', key: 'healthy' }, // i18n-ignore
+  { value: 'Вегетаріанство', key: 'vegetarian' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
+
+const SPORTS_OPTIONS = [
+  { value: 'Футбол', key: 'football' }, // i18n-ignore
+  { value: 'Біг', key: 'running' }, // i18n-ignore
+  { value: 'Тренажерний зал', key: 'gym' }, // i18n-ignore
+  { value: 'Йога', key: 'yoga' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
+
+const SITE_USAGE_GOAL_OPTIONS = [
+  { value: 'Пошук послуг', key: 'findServices' }, // i18n-ignore
+  { value: 'Пропонування послуг', key: 'offerServices' }, // i18n-ignore
+  { value: 'Нові знайомства', key: 'meetPeople' }, // i18n-ignore
+  { value: 'Бізнес-партнери', key: 'businessPartners' }, // i18n-ignore
+  { value: OTHER_VALUE, key: 'other' },
+];
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
   const [activeTab, setActiveTab] = useState('basic');
@@ -151,17 +215,17 @@ export default function EditProfilePage() {
           const otherItems = arr.filter(a => !known.includes(a));
           const filtered = arr.filter(a => known.includes(a));
           if (otherItems.length) {
-            return { values: [...filtered, 'Інше'], other: otherItems.join(', ') };
+            return { values: [...filtered, OTHER_VALUE], other: otherItems.join(', ') };
           }
           return { values: filtered, other: '' };
         };
 
-        const otherTransportKnown = ['Велосипед','Самокат','Мотоцикл','Скейт','Гірський велосипед','Інше'];
-        const petsKnown = ['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше'];
-        const hobbiesKnown = ['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше'];
-        const outdoorKnown = ['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше'];
-        const lifestyleKnown = ['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше'];
-        const sportsKnown = ['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше'];
+        const otherTransportKnown = OTHER_TRANSPORT_OPTIONS.map(o => o.value);
+        const petsKnown = PETS_OPTIONS.map(o => o.value);
+        const hobbiesKnown = HOBBIES_OPTIONS.map(o => o.value);
+        const outdoorKnown = OUTDOOR_OPTIONS.map(o => o.value);
+        const lifestyleKnown = LIFESTYLE_OPTIONS.map(o => o.value);
+        const sportsKnown = SPORTS_OPTIONS.map(o => o.value);
 
         const ot = mapOther(csvToArray(u.otherTransport), otherTransportKnown);
         const pets = mapOther(csvToArray(u.petsInfo), petsKnown);
@@ -224,7 +288,7 @@ export default function EditProfilePage() {
       }
     } catch (err) {
       console.error('Помилка завантаження профілю:', err);
-      setError('Помилка завантаження даних профілю');
+      setError(t('profileEdit.errors.loadProfile'));
     }
   };
 
@@ -244,12 +308,12 @@ export default function EditProfilePage() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 10MB');
+        setError(t('profileEdit.errors.fileTooLarge'));
         return;
       }
       
       if (!file.type.startsWith('image/')) {
-        setError('Будь ласка, оберіть зображення');
+        setError(t('profileEdit.errors.notImage'));
         return;
       }
 
@@ -287,7 +351,7 @@ export default function EditProfilePage() {
         return urlWithTimestamp;
       }
       
-      throw new Error(data.error || 'Помилка завантаження фото');
+      throw new Error(data.error || t('profileEdit.errors.uploadPhoto'));
     } catch (err: any) {
       console.error('[Upload Avatar] Помилка завантаження:', err);
       throw err;
@@ -345,7 +409,7 @@ export default function EditProfilePage() {
           carInfo: formData.carInfo || null,
           otherTransport: Array.isArray(formData.otherTransport)
             ? (formData.otherTransport
-                .map((v: string) => (v === 'Інше' && formData.otherTransportOther ? formData.otherTransportOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.otherTransportOther ? formData.otherTransportOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.otherTransport || null,
@@ -360,35 +424,35 @@ export default function EditProfilePage() {
           hasPets: formData.hasPets ? formData.hasPets === 'yes' : null,
           petsInfo: Array.isArray(formData.petsInfo)
             ? (formData.petsInfo
-                .map((v: string) => (v === 'Інше' && formData.petsInfoOther ? formData.petsInfoOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.petsInfoOther ? formData.petsInfoOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.petsInfo || null,
 
           hobbies: Array.isArray(formData.hobbies)
             ? (formData.hobbies
-                .map((v: string) => (v === 'Інше' && formData.hobbiesOther ? formData.hobbiesOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.hobbiesOther ? formData.hobbiesOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.hobbies || null,
 
           outdoorActivities: Array.isArray(formData.outdoorActivities)
             ? (formData.outdoorActivities
-                .map((v: string) => (v === 'Інше' && formData.outdoorActivitiesOther ? formData.outdoorActivitiesOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.outdoorActivitiesOther ? formData.outdoorActivitiesOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.outdoorActivities || null,
 
           lifestyle: Array.isArray(formData.lifestyle)
             ? (formData.lifestyle
-                .map((v: string) => (v === 'Інше' && formData.lifestyleOther ? formData.lifestyleOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.lifestyleOther ? formData.lifestyleOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.lifestyle || null,
 
           sports: Array.isArray(formData.sports)
             ? (formData.sports
-                .map((v: string) => (v === 'Інше' && formData.sportsOther ? formData.sportsOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.sportsOther ? formData.sportsOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.sports || null,
@@ -397,7 +461,7 @@ export default function EditProfilePage() {
           socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
           siteUsageGoal: Array.isArray(formData.siteUsageGoal)
             ? (formData.siteUsageGoal
-                .map((v: string) => (v === 'Інше' && formData.siteUsageGoalOther ? formData.siteUsageGoalOther : v))
+                .map((v: string) => (v === OTHER_VALUE && formData.siteUsageGoalOther ? formData.siteUsageGoalOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.siteUsageGoal || null,
@@ -407,17 +471,17 @@ export default function EditProfilePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка збереження');
+        throw new Error(data.error || t('profileEdit.errors.save'));
       }
 
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      setSuccess('Профіль успішно оновлено!');
+      setSuccess(t('profileEdit.success.updated'));
       setTimeout(() => {
         router.push(`/profile/${user.id}`);
       }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Помилка збереження');
+      setError(err.message || t('profileEdit.errors.save'));
     } finally {
       setLoading(false);
     }
@@ -426,7 +490,7 @@ export default function EditProfilePage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('profileEdit.loading')}</div>
       </div>
     );
   }
@@ -435,13 +499,13 @@ export default function EditProfilePage() {
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <User className="w-5 h-5 text-primary-600" />
-        Основна інформація
+        {t('profileEdit.basic.title')}
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Ім'я *
+            {t('profileEdit.basic.firstName')}
           </label>
           <input
             type="text"
@@ -455,7 +519,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Прізвище *
+            {t('profileEdit.basic.lastName')}
           </label>
           <input
             type="text"
@@ -469,7 +533,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            По батькові
+            {t('profileEdit.basic.middleName')}
           </label>
           <input
             type="text"
@@ -482,7 +546,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Телефон
+            {t('profileEdit.basic.phone')}
           </label>
           <input
             type="tel"
@@ -495,7 +559,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Вік
+            {t('profileEdit.basic.age')}
           </label>
           <input
             type="number"
@@ -510,7 +574,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Стать
+            {t('profileEdit.basic.gender')}
           </label>
           <select
             name="gender"
@@ -518,15 +582,15 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="male">Чоловіча</option>
-            <option value="female">Жіноча</option>
+            <option value="">{t('profileEdit.common.notSpecified')}</option>
+            <option value="male">{t('profileEdit.options.gender.male')}</option>
+            <option value="female">{t('profileEdit.options.gender.female')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Сімейний стан
+            {t('profileEdit.basic.maritalStatus')}
           </label>
           <select
             name="maritalStatus"
@@ -534,17 +598,17 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="single">Неодружений/неодружена</option>
-            <option value="married">Одружений/одружена</option>
-            <option value="relationship">У стосунках</option>
-            <option value="divorced">Розлучений/розлучена</option>
+            <option value="">{t('profileEdit.common.notSpecified')}</option>
+            <option value="single">{t('profileEdit.options.maritalStatus.single')}</option>
+            <option value="married">{t('profileEdit.options.maritalStatus.married')}</option>
+            <option value="relationship">{t('profileEdit.options.maritalStatus.relationship')}</option>
+            <option value="divorced">{t('profileEdit.options.maritalStatus.divorced')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Кількість дітей
+            {t('profileEdit.basic.childrenCount')}
           </label>
           <input
             type="number"
@@ -559,7 +623,7 @@ export default function EditProfilePage() {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Склад сім'ї
+            {t('profileEdit.basic.familyComposition')}
           </label>
           <textarea
             name="familyComposition"
@@ -577,13 +641,13 @@ export default function EditProfilePage() {
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <MapPin className="w-5 h-5 text-primary-600" />
-        Місце проживання & Транспорт
+        {t('profileEdit.location.title')}
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Місто *
+            {t('profileEdit.location.city')}
           </label>
           <select
             name="city"
@@ -592,16 +656,16 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Оберіть місто</option>
+            <option value="">{t('profileEdit.location.selectCity')}</option>
             {cities.map(city => (
-              <option key={city} value={city}>{city}</option>
+              <option key={city} value={city}>{getCityName(city, locale)}</option>
             ))}
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Область
+            {t('profileEdit.location.region')}
           </label>
           <input
             type="text"
@@ -614,7 +678,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Тип житла
+            {t('profileEdit.location.housingType')}
           </label>
           <select
             name="housingType"
@@ -622,16 +686,16 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="house">Будинок</option>
-            <option value="apartment">Квартира</option>
-            <option value="other">Інше</option>
+            <option value="">{t('profileEdit.common.notSpecified')}</option>
+            <option value="house">{t('profileEdit.options.housingType.house')}</option>
+            <option value="apartment">{t('profileEdit.options.housingType.apartment')}</option>
+            <option value="other">{t('profileEdit.options.housingType.other')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Проживання
+            {t('profileEdit.location.livingSituation')}
           </label>
           <select
             name="livingSituation"
@@ -639,16 +703,16 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="alone">Самостійно</option>
-            <option value="family">З родиною</option>
-            <option value="roommates">З співмешканцями</option>
+            <option value="">{t('profileEdit.common.notSpecified')}</option>
+            <option value="alone">{t('profileEdit.options.livingSituation.alone')}</option>
+            <option value="family">{t('profileEdit.options.livingSituation.family')}</option>
+            <option value="roommates">{t('profileEdit.options.livingSituation.roommates')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Чи є автомобіль?
+            {t('profileEdit.location.hasCar')}
           </label>
           <select
             name="hasCar"
@@ -656,16 +720,16 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="yes">Так</option>
-            <option value="no">Ні</option>
+            <option value="">{t('profileEdit.common.notSpecified')}</option>
+            <option value="yes">{t('profileEdit.common.yes')}</option>
+            <option value="no">{t('profileEdit.common.no')}</option>
           </select>
         </div>
 
         {formData.hasCar === 'yes' && (
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Марка та модель авто
+              {t('profileEdit.location.carInfo')}
             </label>
             <input
               type="text"
@@ -679,28 +743,28 @@ export default function EditProfilePage() {
 
         <div className={formData.hasCar === 'yes' ? '' : 'md:col-span-2'}>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Інший транспорт
+            {t('profileEdit.location.otherTransport')}
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {['Велосипед','Самокат','Мотоцикл','Скейт','Гірський велосипед','Інше'].map(opt => (
-              <label key={opt} className="inline-flex items-center gap-2">
+            {OTHER_TRANSPORT_OPTIONS.map(opt => (
+              <label key={opt.value} className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={formData.otherTransport.includes(opt)}
-                  onChange={() => handleCheckboxChange('otherTransport', opt)}
+                  checked={formData.otherTransport.includes(opt.value)}
+                  onChange={() => handleCheckboxChange('otherTransport', opt.value)}
                 />
-                <span className="text-sm">{opt}</span>
+                <span className="text-sm">{t(`profileEdit.options.otherTransport.${opt.key}`)}</span>
               </label>
             ))}
           </div>
-          {formData.otherTransport.includes('Інше') && (
+          {formData.otherTransport.includes(OTHER_VALUE) && (
             <input
               type="text"
               name="otherTransportOther"
               value={formData.otherTransportOther}
               onChange={handleChange}
               className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Опишіть інший транспорт"
+              placeholder={t('profileEdit.location.otherTransportPlaceholder')}
             />
           )}
         </div>
@@ -712,13 +776,13 @@ export default function EditProfilePage() {
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <Briefcase className="w-5 h-5 text-primary-600" />
-        Професійна діяльність
+        {t('profileEdit.profession.title')}
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Професія / Спеціальність
+            {t('profileEdit.profession.profession')}
           </label>
           <input
             type="text"
@@ -731,7 +795,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Статус зайнятості
+            {t('profileEdit.profession.employmentStatus')}
           </label>
           <select
             name="employmentStatus"
@@ -739,19 +803,19 @@ export default function EditProfilePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="employed">Працевлаштований</option>
-            <option value="unemployed">Не працевлаштований</option>
-            <option value="freelance">Фріланс</option>
-            <option value="business">Власний бізнес</option>
-            <option value="student">Студент</option>
-            <option value="retired">Пенсіонер</option>
+            <option value="">{t('profileEdit.common.notSpecified')}</option>
+            <option value="employed">{t('profileEdit.options.employmentStatus.employed')}</option>
+            <option value="unemployed">{t('profileEdit.options.employmentStatus.unemployed')}</option>
+            <option value="freelance">{t('profileEdit.options.employmentStatus.freelance')}</option>
+            <option value="business">{t('profileEdit.options.employmentStatus.business')}</option>
+            <option value="student">{t('profileEdit.options.employmentStatus.student')}</option>
+            <option value="retired">{t('profileEdit.options.employmentStatus.retired')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Місце роботи
+            {t('profileEdit.profession.workplace')}
           </label>
           <input
             type="text"
@@ -764,7 +828,7 @@ export default function EditProfilePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Освіта
+            {t('profileEdit.profession.education')}
           </label>
           <input
             type="text"
@@ -777,7 +841,7 @@ export default function EditProfilePage() {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Приватна бізнес-інформація
+            {t('profileEdit.profession.businessInfo')}
           </label>
           <textarea
             name="businessInfo"
@@ -790,7 +854,7 @@ export default function EditProfilePage() {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Пошук роботи
+            {t('profileEdit.profession.jobSeeking')}
           </label>
           <textarea
             name="jobSeeking"
@@ -808,13 +872,13 @@ export default function EditProfilePage() {
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <Heart className="w-5 h-5 text-primary-600" />
-        Інтереси та хобі
+        {t('profileEdit.interests.title')}
       </h3>
 
       {/* Pets */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Чи є домашні тварини?
+          {t('profileEdit.interests.hasPets')}
         </label>
         <select
           name="hasPets"
@@ -822,37 +886,37 @@ export default function EditProfilePage() {
           onChange={handleChange}
           className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         >
-          <option value="">Не вказано</option>
-          <option value="yes">Так</option>
-          <option value="no">Ні</option>
+          <option value="">{t('profileEdit.common.notSpecified')}</option>
+          <option value="yes">{t('profileEdit.common.yes')}</option>
+          <option value="no">{t('profileEdit.common.no')}</option>
         </select>
       </div>
 
       {formData.hasPets === 'yes' && (
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Які тварини?
+            {t('profileEdit.interests.petsInfo')}
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше'].map(opt => (
-              <label key={opt} className="inline-flex items-center gap-2">
+            {PETS_OPTIONS.map(opt => (
+              <label key={opt.value} className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={formData.petsInfo.includes(opt)}
-                  onChange={() => handleCheckboxChange('petsInfo', opt)}
+                  checked={formData.petsInfo.includes(opt.value)}
+                  onChange={() => handleCheckboxChange('petsInfo', opt.value)}
                 />
-                <span className="text-sm">{opt}</span>
+                <span className="text-sm">{t(`profileEdit.options.pets.${opt.key}`)}</span>
               </label>
             ))}
           </div>
-          {formData.petsInfo.includes('Інше') && (
+          {formData.petsInfo.includes(OTHER_VALUE) && (
             <input
               type="text"
               name="petsInfoOther"
               value={formData.petsInfoOther}
               onChange={handleChange}
               className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Опишіть інших тварин"
+              placeholder={t('profileEdit.interests.petsOtherPlaceholder')}
             />
           )}
         </div>
@@ -861,28 +925,28 @@ export default function EditProfilePage() {
       {/* Hobbies */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Хобі
+          {t('profileEdit.interests.hobbies')}
         </label>
         <div className="grid grid-cols-2 gap-2">
-          {['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
+          {HOBBIES_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.hobbies.includes(opt)}
-                onChange={() => handleCheckboxChange('hobbies', opt)}
+                checked={formData.hobbies.includes(opt.value)}
+                onChange={() => handleCheckboxChange('hobbies', opt.value)}
               />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm">{t(`profileEdit.options.hobbies.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {formData.hobbies.includes('Інше') && (
+        {formData.hobbies.includes(OTHER_VALUE) && (
           <input
             type="text"
             name="hobbiesOther"
             value={formData.hobbiesOther}
             onChange={handleChange}
             className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Опишіть інші хобі"
+            placeholder={t('profileEdit.interests.hobbiesOtherPlaceholder')}
           />
         )}
       </div>
@@ -890,28 +954,28 @@ export default function EditProfilePage() {
       {/* Outdoor activities */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Активний відпочинок
+          {t('profileEdit.interests.outdoorActivities')}
         </label>
         <div className="grid grid-cols-2 gap-2">
-          {['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
+          {OUTDOOR_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.outdoorActivities.includes(opt)}
-                onChange={() => handleCheckboxChange('outdoorActivities', opt)}
+                checked={formData.outdoorActivities.includes(opt.value)}
+                onChange={() => handleCheckboxChange('outdoorActivities', opt.value)}
               />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm">{t(`profileEdit.options.outdoorActivities.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {formData.outdoorActivities.includes('Інше') && (
+        {formData.outdoorActivities.includes(OTHER_VALUE) && (
           <input
             type="text"
             name="outdoorActivitiesOther"
             value={formData.outdoorActivitiesOther}
             onChange={handleChange}
             className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Опишіть інші активності"
+            placeholder={t('profileEdit.interests.outdoorOtherPlaceholder')}
           />
         )}
       </div>
@@ -919,28 +983,28 @@ export default function EditProfilePage() {
       {/* Lifestyle */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Спосіб життя
+          {t('profileEdit.interests.lifestyle')}
         </label>
         <div className="grid grid-cols-2 gap-2">
-          {['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
+          {LIFESTYLE_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.lifestyle.includes(opt)}
-                onChange={() => handleCheckboxChange('lifestyle', opt)}
+                checked={formData.lifestyle.includes(opt.value)}
+                onChange={() => handleCheckboxChange('lifestyle', opt.value)}
               />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm">{t(`profileEdit.options.lifestyle.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {formData.lifestyle.includes('Інше') && (
+        {formData.lifestyle.includes(OTHER_VALUE) && (
           <input
             type="text"
             name="lifestyleOther"
             value={formData.lifestyleOther}
             onChange={handleChange}
             className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Опишіть інший спосіб життя"
+            placeholder={t('profileEdit.interests.lifestyleOtherPlaceholder')}
           />
         )}
       </div>
@@ -948,28 +1012,28 @@ export default function EditProfilePage() {
       {/* Sports */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Спорт
+          {t('profileEdit.interests.sports')}
         </label>
         <div className="grid grid-cols-2 gap-2">
-          {['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
+          {SPORTS_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.sports.includes(opt)}
-                onChange={() => handleCheckboxChange('sports', opt)}
+                checked={formData.sports.includes(opt.value)}
+                onChange={() => handleCheckboxChange('sports', opt.value)}
               />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm">{t(`profileEdit.options.sports.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {formData.sports.includes('Інше') && (
+        {formData.sports.includes(OTHER_VALUE) && (
           <input
             type="text"
             name="sportsOther"
             value={formData.sportsOther}
             onChange={handleChange}
             className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Опишіть інші види спорту"
+            placeholder={t('profileEdit.interests.sportsOtherPlaceholder')}
           />
         )}
       </div>
@@ -977,7 +1041,7 @@ export default function EditProfilePage() {
       {/* Bio */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Про себе
+          {t('profileEdit.interests.bio')}
         </label>
         <textarea
           name="bio"
@@ -985,7 +1049,7 @@ export default function EditProfilePage() {
           value={formData.bio}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Розкажіть про себе..."
+          placeholder={t('profileEdit.interests.bioPlaceholder')}
         />
       </div>
     </div>
@@ -995,7 +1059,7 @@ export default function EditProfilePage() {
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <Globe className="w-5 h-5 text-primary-600" />
-        Соцмережі та мета
+        {t('profileEdit.social.title')}
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1058,33 +1122,41 @@ export default function EditProfilePage() {
 
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Мета використання платформи
+          {t('profileEdit.social.usageGoal')}
         </label>
         <div className="grid grid-cols-1 gap-2">
-          {['Пошук послуг', 'Пропонування послуг', 'Нові знайомства', 'Бізнес-партнери', 'Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
+          {SITE_USAGE_GOAL_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={formData.siteUsageGoal.includes(opt)}
-                onChange={() => handleCheckboxChange('siteUsageGoal', opt)}
+                checked={formData.siteUsageGoal.includes(opt.value)}
+                onChange={() => handleCheckboxChange('siteUsageGoal', opt.value)}
               />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm">{t(`profileEdit.options.siteUsageGoal.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {formData.siteUsageGoal.includes('Інше') && (
+        {formData.siteUsageGoal.includes(OTHER_VALUE) && (
           <input
             type="text"
             name="siteUsageGoalOther"
             value={formData.siteUsageGoalOther}
             onChange={handleChange}
             className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Опишіть іншу мету"
+            placeholder={t('profileEdit.social.usageGoalOtherPlaceholder')}
           />
         )}
       </div>
     </div>
   );
+
+  const tabs = [
+    { id: 'basic', name: t('profileEdit.tabs.basic'), icon: User },
+    { id: 'location', name: t('profileEdit.tabs.location'), icon: MapPin },
+    { id: 'profession', name: t('profileEdit.tabs.profession'), icon: Briefcase },
+    { id: 'interests', name: t('profileEdit.tabs.interests'), icon: Heart },
+    { id: 'social', name: t('profileEdit.tabs.social'), icon: Globe },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -1092,8 +1164,15 @@ export default function EditProfilePage() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary-500 to-accent-500 px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">Редагувати профіль</h1>
-            <p className="text-primary-100 mt-2">Оновіть вашу інформацію</p>
+            <h1 className="text-3xl font-bold text-white">{t('profileEdit.header.title')}</h1>
+            <p className="text-primary-100 mt-2">{t('profileEdit.header.subtitle')}</p>
+          </div>
+
+          {/* Interface language */}
+          <div className="px-8 py-6 border-b border-neutral-200">
+            <h3 className="font-semibold text-neutral-900">{t('profileEdit.language.title')}</h3>
+            <p className="text-sm text-neutral-600 mt-1 mb-3">{t('profileEdit.language.description')}</p>
+            <LanguageSwitcher variant="buttons" />
           </div>
 
           {/* Avatar */}
@@ -1120,13 +1199,13 @@ export default function EditProfilePage() {
                 />
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-900">Фото профілю</h3>
+                <h3 className="font-semibold text-neutral-900">{t('profileEdit.avatar.title')}</h3>
                 <p className="text-sm text-neutral-600 mt-1">
-                  PNG, JPG або HEIC. Макс 10MB
+                  {t('profileEdit.avatar.hint')}
                 </p>
                 {avatarFile && (
                   <p className="text-sm text-primary-600 mt-1">
-                    ✓ Нове фото: {avatarFile.name}
+                    {t('profileEdit.avatar.newPhoto', { name: avatarFile.name })}
                   </p>
                 )}
               </div>
@@ -1136,13 +1215,7 @@ export default function EditProfilePage() {
           {/* Tabs */}
           <div className="border-b border-neutral-200">
             <div className="px-8 flex space-x-8 overflow-x-auto">
-              {[
-                { id: 'basic', name: 'Основне', icon: User },
-                { id: 'location', name: 'Місце & Транспорт', icon: MapPin },
-                { id: 'profession', name: 'Професія', icon: Briefcase },
-                { id: 'interests', name: 'Інтереси', icon: Heart },
-                { id: 'social', name: 'Соцмережі', icon: Globe },
-              ].map((tab) => {
+              {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button
@@ -1190,14 +1263,14 @@ export default function EditProfilePage() {
                 onClick={() => router.back()}
                 className="flex-1 px-6 py-3 border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-neutral-50 transition-colors"
               >
-                Скасувати
+                {t('profileEdit.actions.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="flex-1 px-6 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Збереження...' : 'Зберегти зміни'}
+                {loading ? t('profileEdit.actions.saving') : t('profileEdit.actions.save')}
               </button>
             </div>
           </form>

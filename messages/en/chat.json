@@ -1,0 +1,22 @@
+{
+  "title": "Messages",
+  "loading": "Loading...",
+  "loadingChat": "Loading chat...",
+  "yesterday": "Yesterday",
+  "you": "You: ",
+  "viewProfile": "View profile",
+  "report": "Report",
+  "placeholder": "Write a message...",
+  "selectConversation": "Select a conversation to start chatting",
+  "empty": {
+    "title": "No conversations",
+    "hint": "Go to a user's profile and click \"Message\""
+  },
+  "errors": {
+    "loadConversations": "Failed to load conversations",
+    "createConversation": "Failed to create conversation",
+    "loadMessages": "Failed to load messages",
+    "sendMessage": "Failed to send message",
+    "connection": "Failed to connect to the server"
+  }
+}

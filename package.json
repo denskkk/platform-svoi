@@ -15,7 +15,10 @@
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
     "db:clear": "node scripts/clear-database.js",
-    "test:auth": "tsx --test tests/auth-api.test.mjs"
+    "test:auth": "tsx --test tests/auth-api.test.mjs",
+    "test:i18n": "tsx --test tests/i18n.test.mjs",
+    "i18n:check": "node scripts/check-i18n.mjs",
+    "i18n:check:strict": "node scripts/check-i18n.mjs --strict-source"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",

@@ -1,0 +1,44 @@
+{
+  "title": "Contact us",
+  "subtitle": "We are always happy to help. Choose the most convenient way to reach us.",
+  "telegram": {
+    "title": "Telegram",
+    "description": "The fastest way to reach the platform administration",
+    "button": "Write on Telegram"
+  },
+  "email": {
+    "title": "Email",
+    "description": "Questions about your account, complaints and personal data requests"
+  },
+  "faq": {
+    "title": "Frequently asked questions (FAQ)",
+    "register": {
+      "question": "How do I register on the platform?",
+      "answer": "Click the \"Create a profile\" button, choose a profile type and fill in the form. It only takes a few minutes!"
+    },
+    "free": {
+      "question": "Is listing services free?",
+      "answer": "Yes! Using the platform and listing services is free of charge."
+    },
+    "review": {
+      "question": "How do I leave a review?",
+      "answer": "You can leave a review after a request is completed: open the provider's profile or the request, give a rating and, if you wish, write a comment."
+    },
+    "password": {
+      "question": "What should I do if I forgot my password?",
+      "answer": "Write to the administration on Telegram or to the support email — we will help you regain access to your account after verifying your identity."
+    },
+    "delete": {
+      "question": "How do I delete my account?",
+      "before": "Instructions are available on the ",
+      "link": "account and data deletion",
+      "after": " page."
+    },
+    "report": {
+      "question": "How do I report a user or content?",
+      "before": "Send a link to the profile or content and a short description of the problem on Telegram or to the support email. For more details, see the ",
+      "link": "Terms of Service",
+      "after": "."
+    }
+  }
+}

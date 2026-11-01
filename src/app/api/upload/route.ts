@@ -6,8 +6,10 @@ import sharp from 'sharp';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getAuthCookie } from '@/lib/cookies';
 import { verifyToken } from '@/lib/auth';
+import { getApiT } from '@/i18n/server';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Проверка авторизации - спочатку cookie, потім header
     let token = getAuthCookie(request);
@@ -21,7 +23,7 @@ export async function POST(request: NextRequest) {
     
     if (!token) {
       return NextResponse.json(
-        { error: 'Не авторизовано' },
+        { error: t('api.common.notAuthorized') },
         { status: 401 }
       );
     }
@@ -29,7 +31,7 @@ export async function POST(request: NextRequest) {
     const payload = verifyToken(token);
     if (!payload) {
       return NextResponse.json(
-        { error: 'Невалідний токен' },
+        { error: t('api.common.invalidToken') },
         { status: 401 }
       );
     }
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { 
-          error: 'Занадто багато завантажень. Спробуйте пізніше.',
+          error: t('api.upload.tooMany'),
           retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
         },
         { 
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
     
     if (!file) {
       return NextResponse.json(
-        { error: 'Файл не знайдено' },
+        { error: t('api.upload.fileNotFound') },
         { status: 400 }
       );
     }
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
     ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Дозволені тільки зображення: JPG, PNG, WebP, GIF, HEIC/HEIF' },
+        { error: t('api.upload.imageTypesOnly') },
         { status: 400 }
       );
     }
@@ -92,7 +94,7 @@ export async function POST(request: NextRequest) {
     const MAX_SIZE = 10 * 1024 * 1024; // 10MB
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: 'Файл занадто великий. Максимум 10MB' },
+        { error: t('api.upload.fileTooLarge', { max: 10 }) },
         { status: 400 }
       );
     }
@@ -101,7 +103,7 @@ export async function POST(request: NextRequest) {
     const originalName = file.name;
     if (originalName.includes('..') || originalName.includes('/') || originalName.includes('\\')) {
       return NextResponse.json(
-        { error: 'Некоректна назва файлу' },
+        { error: t('api.upload.invalidFileName') },
         { status: 400 }
       );
     }
@@ -202,7 +204,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: error.message || 'Помилка завантаження файлу' },
+      { error: error.message || t('api.upload.error') },
       { status: 500 }
     );
   }

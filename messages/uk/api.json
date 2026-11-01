@@ -1,0 +1,191 @@
+{
+  "common": {
+    "serverError": "Помилка сервера",
+    "authRequired": "Необхідна авторизація",
+    "notAuthorized": "Не авторизовано",
+    "invalidToken": "Невалідний токен",
+    "wrongToken": "Невірний токен",
+    "adminOnly": "Доступ заборонено. Тільки для адміністраторів.",
+    "insufficientRights": "Недостатньо прав",
+    "userNotFound": "Користувача не знайдено",
+    "invalidData": "Невірні дані",
+    "badRequest": "Некоректний запит",
+    "requiredFields": "Заповніть всі обов'язкові поля",
+    "invalidAccountType": "Невірний тип акаунту",
+    "invalidEmail": "Некоректний формат email",
+    "tooManyRequests": "Занадто багато запитів. Спробуйте пізніше.",
+    "tooManyRequestsShort": "Забагато запитів. Спробуйте пізніше.",
+    "requestTimeout": "Запит занадто довго виконувався. Спробуйте пізніше.",
+    "csrfInvalid": "Невалідний CSRF токен",
+    "accountInactive": "Акаунт не знайдено або деактивовано",
+    "authError": "Помилка авторизації",
+    "userIdRequired": "userId обов'язковий",
+    "specifyUser": "Вкажіть користувача"
+  },
+  "session": {
+    "missing": "Необхідна автентифікація",
+    "invalid": "Невалідний або прострочений токен",
+    "ended": "Сесія завершена. Увійдіть знову."
+  },
+  "permissions": {
+    "accountTypes": {
+      "viewer": "Глядач",
+      "basic": "Базовий",
+      "business": "Бізнес"
+    },
+    "createService": "Створення послуг доступне з акаунту \"{type}\". Зареєструйтесь.",
+    "createRequest": "Створення заявок доступне з акаунту \"{type}\". Зареєструйтесь.",
+    "sendMessage": "Надсилання повідомлень доступне з акаунту \"{type}\". Зареєструйтесь.",
+    "autoProposals": "Автоматичні пропозиції - це платна опція. Активуйте в профілі.",
+    "default": "Ця функція доступна з акаунту \"{type}\". Зареєструйтесь."
+  },
+  "chat": {
+    "viewerCannotWrite": "Глядачі не можуть писати у чаті. Перейдіть на звичайний профіль на сторінці свого профілю.",
+    "noRecipient": "Не вказано ID співрозмовника",
+    "selfConversation": "Не можна створити діалог з самим собою",
+    "userInactive": "Користувач не активний",
+    "invalidConversationId": "Невірний ID діалогу",
+    "conversationNotFound": "Діалог не знайдено або немає доступу",
+    "emptyMessage": "Повідомлення не може бути порожнім",
+    "messageTooLong": "Повідомлення занадто довге (максимум {max} символів)",
+    "recipientAndTextRequired": "Вкажіть отримувача та текст повідомлення",
+    "messageSent": "Повідомлення відправлено!"
+  },
+  "admin": {
+    "statsError": "Помилка отримання статистики",
+    "conversationsStatsError": "Помилка отримання статистики переписок",
+    "messagesError": "Помилка отримання переписок",
+    "usersError": "Помилка отримання списку користувачів",
+    "verifiedMustBeBoolean": "Параметр verified повинен бути boolean",
+    "verifiedGranted": "Користувач {firstName} {lastName} отримав статус «Перевірений»",
+    "verifiedRevoked": "Статус «Перевірений» знято з користувача {firstName} {lastName}",
+    "statusUpdateError": "Помилка оновлення статусу"
+  },
+  "auth": {
+    "tooManyAttempts": "Забагато спроб. Спробуйте пізніше.",
+    "passwordRequired": "Введіть пароль для підтвердження",
+    "adminDeletionViaSupport": "Акаунт адміністратора видаляється через підтримку.",
+    "wrongPassword": "Невірний пароль",
+    "accountDeleted": "Акаунт та пов’язані дані видалено.",
+    "deleteFailed": "Не вдалося видалити акаунт. Зверніться до підтримки.",
+    "loginLocked": "Занадто багато невдалих спроб входу. Спробуйте через {minutes} хв.",
+    "emailPasswordRequired": "Email та пароль обов'язкові",
+    "invalidCredentials": "Невірний email або пароль",
+    "loginSuccess": "Вхід успішний!",
+    "sessionEnded": "Сесія завершена",
+    "originNotAllowed": "Недозволене джерело запиту",
+    "serviceUnavailable": "Сервіс тимчасово недоступний",
+    "tooManyRegistrations": "Занадто багато спроб реєстрації. Спробуйте через годину.",
+    "passwordMin": "Пароль має містити мінімум {min} символів",
+    "emailExists": "Користувач з таким email вже існує",
+    "registerSuccess": "Реєстрація успішна!",
+    "businessInvalidFormat": "Невірний формат запиту. Потрібні дані користувача та бізнесу",
+    "businessPersonalRequired": "Заповніть всі обов'язкові особисті дані",
+    "companyNameRequired": "Вкажіть назву компанії",
+    "invalidBusinessType": "Невірний тип бізнес акаунту",
+    "businessPasswordMin": "Пароль повинен містити мінімум {min} символів",
+    "businessCreated": "Бізнес акаунт успішно створено!",
+    "businessRegisterError": "Помилка сервера при реєстрації бізнесу"
+  },
+  "businessInfo": {
+    "exists": "Бізнес-профіль вже існує",
+    "created": "Бізнес-профіль створено!",
+    "updated": "Бізнес-профіль оновлено!"
+  },
+  "favorites": {
+    "selfFavorite": "Не можна додати себе в обране",
+    "added": "Додано в обране!",
+    "removed": "Видалено з обраного!"
+  },
+  "profile": {
+    "invalidUserId": "Невірний ID користувача",
+    "forbiddenUpdate": "Немає прав на оновлення цього профілю",
+    "childrenAgesInvalidJson": "childrenAges повинні бути валідним JSON",
+    "carServicesInvalidJson": "carServices повинні бути валідним JSON",
+    "invalidEducation": "Невірний рівень освіти",
+    "updated": "Профіль оновлено!"
+  },
+  "reports": {
+    "tooMany": "Забагато скарг за короткий час. Спробуйте пізніше.",
+    "invalidUser": "Невірний користувач",
+    "selfReport": "Не можна поскаржитися на себе",
+    "invalidCategory": "Невірна категорія скарги",
+    "invalidContentType": "Невірний тип матеріалу",
+    "detailsTooLong": "Опис скарги занадто довгий (макс. {max} символів)",
+    "sent": "Дякуємо! Скаргу надіслано адміністрації."
+  },
+  "requests": {
+    "createFieldsRequired": "Заповніть обовʼязкові поля (type, title, description)"
+  },
+  "reviews": {
+    "userAndRatingRequired": "Вкажіть користувача та оцінку",
+    "ratingRange": "Оцінка має бути від 1 до 5",
+    "selfReview": "Неможливо залишити відгук собі",
+    "notAllowed": "Ви не можете залишити відгук за цією заявкою",
+    "onlyAfterCompletion": "Відгук можна залишити тільки після виконання заявки",
+    "alreadyReviewed": "Ви вже залишили відгук за цією заявкою",
+    "updated": "Відгук оновлено",
+    "created": "Відгук створено!",
+    "userIdRequired": "Вкажіть userId"
+  },
+  "serviceRequests": {
+    "newCountError": "Помилка отримання кількості заявок",
+    "viewerCannotCreate": "Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.",
+    "titleDescriptionRequired": "Заповніть обов'язкові поля: назва та опис",
+    "titleTooLong": "Назва занадто довга (макс. {max} символів)",
+    "serviceUnavailable": "Послугу не знайдено або вона недоступна",
+    "createError": "Помилка створення заявки",
+    "listError": "Помилка отримання заявок",
+    "commentMin": "Коментар має бути мінімум {min} символів",
+    "notFound": "Заявку не знайдено",
+    "privateNoResponses": "Це приватна заявка, відгуки недоступні",
+    "ownRequest": "Ви не можете відгукнутись на власну заявку",
+    "executorAlreadySelected": "Виконавець вже обраний для цієї заявки",
+    "alreadyResponded": "Ви вже відгукнулись на цю заявку",
+    "getError": "Помилка отримання заявки",
+    "notAddressedToYou": "Ви не можете прийняти цю заявку - вона не адресована вам",
+    "priceRequired": "Вкажіть ціну для прийняття заявки",
+    "nothingToUpdate": "Немає даних для оновлення або недостатньо прав",
+    "updateError": "Помилка оновлення заявки",
+    "cannotDeleteStatus": "Неможливо видалити заявку в цьому статусі",
+    "deleted": "Заявку видалено",
+    "deleteError": "Помилка видалення заявки",
+    "selectExecutor": {
+      "responseIdRequired": "Вкажіть ID відгуку",
+      "clientOnly": "Лише замовник може обрати виконавця",
+      "notOpen": "Заявка вже не відкрита",
+      "responseNotFound": "Відгук не знайдено",
+      "success": "Виконавця успішно обрано",
+      "failed": "Не вдалося обрати виконавця"
+    }
+  },
+  "services": {
+    "viewerCannotCreate": "Глядачі не можуть створювати послуги. Перейдіть на звичайний профіль на сторінці свого профілю.",
+    "created": "Послугу створено!",
+    "notFound": "Послугу не знайдено",
+    "forbiddenUpdate": "Немає прав на оновлення цієї послуги",
+    "updated": "Послугу оновлено!",
+    "forbiddenDelete": "Немає прав на видалення цієї послуги",
+    "deleted": "Послугу видалено!"
+  },
+  "upload": {
+    "tooMany": "Занадто багато завантажень. Спробуйте пізніше.",
+    "noFile": "Не надано жодного файлу для завантаження",
+    "logoNotImage": "Логотип має бути зображенням",
+    "logoTooLarge": "Розмір логотипу не повинен перевищувати {max}MB",
+    "bannerNotImage": "Банер має бути зображенням",
+    "bannerTooLarge": "Розмір банера не повинен перевищувати {max}MB",
+    "imagesUploaded": "Зображення успішно завантажені",
+    "imagesError": "Помилка при завантаженні зображень",
+    "fileNotFound": "Файл не знайдено",
+    "imageTypesOnly": "Дозволені тільки зображення: JPG, PNG, WebP, GIF, HEIC/HEIF",
+    "fileTooLarge": "Файл занадто великий. Максимум {max}MB",
+    "invalidFileName": "Некоректна назва файлу",
+    "error": "Помилка завантаження файлу"
+  },
+  "user": {
+    "alreadyHasType": "Ви вже маєте цей тип акаунту",
+    "upgraded": "Тепер у вас звичайний профіль!",
+    "upgradeError": "Помилка оновлення акаунту"
+  }
+}

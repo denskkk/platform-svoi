@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import { Eye } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
 
 /**
  * Підказка для акаунта «Глядач»: пояснює обмеження та дає безкоштовний перехід на «Звичайний» профіль.
  */
 export function ViewerUpgradeNotice({ className = '' }: { className?: string }) {
+  const { t } = useI18n();
   const toast = useToast();
   const [isViewer, setIsViewer] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,7 +45,7 @@ export function ViewerUpgradeNotice({ className = '' }: { className?: string }) 
         body: JSON.stringify({ accountType: 'basic' }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Не вдалося змінити тип профілю');
+      if (!res.ok) throw new Error(data.error || t('common.viewerUpgrade.failed'));
 
       try {
         const stored = localStorage.getItem('user');
@@ -53,10 +55,10 @@ export function ViewerUpgradeNotice({ className = '' }: { className?: string }) 
         window.dispatchEvent(new Event('auth:changed'));
       } catch {}
 
-      toast.success(data.message || 'Готово!');
+      toast.success(data.message || t('common.viewerUpgrade.done'));
       window.location.reload();
     } catch (e: any) {
-      toast.error(e.message || 'Не вдалося змінити тип профілю');
+      toast.error(e.message || t('common.viewerUpgrade.failed'));
       setLoading(false);
     }
   };
@@ -66,10 +68,9 @@ export function ViewerUpgradeNotice({ className = '' }: { className?: string }) 
       <div className="flex items-start gap-3">
         <Eye className="w-5 h-5 mt-0.5 shrink-0 text-blue-600" />
         <div className="flex-1">
-          <p className="font-semibold mb-1">Ви увійшли як Глядач</p>
+          <p className="font-semibold mb-1">{t('common.viewerUpgrade.title')}</p>
           <p className="mb-3">
-            Глядач може переглядати профілі та послуги й зберігати їх в обране. Щоб писати у чаті, подавати заявки та
-            залишати відгуки, перейдіть на звичайний профіль — це безкоштовно.
+            {t('common.viewerUpgrade.description')}
           </p>
           <button
             type="button"
@@ -77,7 +78,7 @@ export function ViewerUpgradeNotice({ className = '' }: { className?: string }) 
             disabled={loading}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50"
           >
-            {loading ? 'Зачекайте...' : 'Перейти на звичайний профіль'}
+            {loading ? t('common.viewerUpgrade.wait') : t('common.viewerUpgrade.cta')}
           </button>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth } from '@/lib/authMiddleware';
+import { getApiT } from '@/i18n/server';
+import { AdminForbiddenError } from '@/lib/api-middleware';
 
 // Перевірка чи користувач адміністратор
 async function checkAdmin(userId: number) {
@@ -9,7 +11,7 @@ async function checkAdmin(userId: number) {
   });
   
   if (!(user as any)?.isAdmin) {
-    throw new Error('Доступ заборонено. Тільки для адміністраторів.');
+    throw new AdminForbiddenError();
   }
   
   return true;
@@ -17,13 +19,14 @@ async function checkAdmin(userId: number) {
 
 // GET /api/admin/stats - Загальна статистика
 async function handler(request: NextRequest) {
+  const t = getApiT(request);
   const userId = (request as any).user?.userId;
   
   try {
     // Перевірити що userId існує
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -99,8 +102,8 @@ async function handler(request: NextRequest) {
   } catch (error: any) {
     console.error('Admin stats error:', error);
     return NextResponse.json(
-      { error: error.message || 'Помилка отримання статистики' },
-      { status: error.message.includes('Доступ заборонено') ? 403 : 500 }
+      { error: error instanceof AdminForbiddenError ? t('api.common.adminOnly') : t('api.admin.statsError') },
+      { status: error instanceof AdminForbiddenError ? 403 : 500 }
     );
   }
 }

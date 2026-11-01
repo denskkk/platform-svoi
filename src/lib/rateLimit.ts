@@ -3,6 +3,8 @@
  * Обмежує кількість запитів з одного IP
  */
 
+import { getApiT } from '@/i18n/server';
+
 interface RateLimitStore {
   [key: string]: {
     count: number;
@@ -112,10 +114,11 @@ export function withRateLimit(
     const { allowed, remaining, resetTime } = checkRateLimit(ip, options);
 
     if (!allowed) {
+      const t = getApiT(request);
       const resetDate = new Date(resetTime);
       return new Response(
         JSON.stringify({
-          error: 'Занадто багато запитів. Спробуйте пізніше.',
+          error: t('api.common.tooManyRequests'),
           retryAfter: Math.ceil((resetTime - Date.now()) / 1000)
         }),
         {

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/authMiddleware';
 import { prisma } from '@/lib/prisma';
+import { getApiT } from '@/i18n/server';
+import { AdminForbiddenError } from '@/lib/api-middleware';
 
 // Перевірка доступу адміністратора
 async function checkAdmin(userId: number) {
@@ -9,18 +11,19 @@ async function checkAdmin(userId: number) {
   });
 
   if (!(user as any)?.isAdmin) {
-    throw new Error('Доступ заборонено. Тільки для адміністраторів.');
+    throw new AdminForbiddenError();
   }
 }
 
 // GET /api/admin/messages - Отримати всі переписки
 async function handler(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -197,15 +200,15 @@ async function handler(request: NextRequest) {
   } catch (error: any) {
     console.error('Помилка отримання переписок:', error);
     
-    if (error.message.includes('Доступ заборонено')) {
+    if (error instanceof AdminForbiddenError) {
       return NextResponse.json(
-        { error: error.message },
+        { error: t('api.common.adminOnly') },
         { status: 403 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Помилка отримання переписок', details: error.message },
+      { error: t('api.admin.messagesError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }

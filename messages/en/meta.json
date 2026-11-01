@@ -1,0 +1,45 @@
+{
+  "siteName": "Sviy dlya Svoikh",
+  "siteTitle": "Sviy dlya Svoikh — Ukrainian services platform",
+  "siteDescription": "Support your own — find the right person nearby. A platform for finding and offering services by Ukrainians for Ukrainians.",
+  "keywords": "Ukrainian services, craftsmen, specialists, support Ukrainian business, Sviy dlya Svoikh",
+  "manifestShortName": "Sviy dlya Svoikh",
+  "pages": {
+    "home": {
+      "title": "Sviy dlya Svoikh — Ukrainian services platform",
+      "description": "Support your own — find the right person nearby. A platform for finding and offering services by Ukrainians for Ukrainians."
+    },
+    "about": {
+      "title": "About the platform — Sviy dlya Svoikh",
+      "description": "What Sviy dlya Svoikh is: its purpose, who can use it, available features, registration, data protection and support."
+    },
+    "privacy": {
+      "title": "Privacy Policy — Sviy dlya Svoikh",
+      "description": "What data the Sviy dlya Svoikh platform collects, how it is used and protected, and how you can manage it."
+    },
+    "terms": {
+      "title": "Terms of Service — Sviy dlya Svoikh",
+      "description": "Rules and terms for using the Sviy dlya Svoikh platform."
+    },
+    "accountDeletion": {
+      "title": "Account deletion — Sviy dlya Svoikh",
+      "description": "How to delete your account and related data on the Sviy dlya Svoikh platform."
+    },
+    "support": {
+      "title": "Support — Sviy dlya Svoikh",
+      "description": "Contact Sviy dlya Svoikh support: contact details, frequently asked questions and account deletion."
+    },
+    "contacts": {
+      "title": "Contacts — Sviy dlya Svoikh",
+      "description": "Contact details of the Sviy dlya Svoikh platform."
+    },
+    "catalog": {
+      "title": "Catalog of services and specialists — Sviy dlya Svoikh",
+      "description": "Find Ukrainian specialists and companies by category and city."
+    },
+    "services": {
+      "title": "Services — Sviy dlya Svoikh",
+      "description": "Service listings by Ukrainians for Ukrainians."
+    }
+  }
+}

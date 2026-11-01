@@ -7,6 +7,8 @@ import { MessageCircle, Send, ArrowLeft } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
+import { useI18n } from '@/i18n/client';
+import { localizedPath } from '@/i18n/routes';
 
 interface Conversation {
   id: number;
@@ -44,6 +46,7 @@ interface Message {
 
 function ChatPageContent() {
   const router = useRouter();
+  const { t, locale, formatDate } = useI18n();
   const searchParams = useSearchParams();
   const withUserId = searchParams.get('with');
 
@@ -109,14 +112,14 @@ function ChatPageContent() {
       if (response.ok) {
         setConversations(data.conversations || []);
       } else {
-        setError(data.error || 'Помилка завантаження діалогів');
+        setError(data.error || t('chat.errors.loadConversations'));
       }
     } catch (err) {
-      setError('Помилка підключення до сервера');
+      setError(t('chat.errors.connection'));
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     if (user) {
@@ -141,12 +144,12 @@ function ChatPageContent() {
         setSelectedConversation(data.conversation.id);
         await loadConversations(); // Обновляем список диалогов
       } else {
-        setError(data.error || 'Помилка створення діалогу');
+        setError(data.error || t('chat.errors.createConversation'));
       }
     } catch (err) {
-      setError('Помилка підключення до сервера');
+      setError(t('chat.errors.connection'));
     }
-  }, [token, loadConversations]);
+  }, [token, loadConversations, t]);
 
   useEffect(() => {
     if (!withUserId || !user || handledWithParam) return;
@@ -186,12 +189,12 @@ function ChatPageContent() {
           }
         }, 100);
       } else {
-        setError(data.error || 'Помилка завантаження повідомлень');
+        setError(data.error || t('chat.errors.loadMessages'));
       }
     } catch (err) {
-      setError('Помилка підключення до сервера');
+      setError(t('chat.errors.connection'));
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     if (selectedConversation && user) {
@@ -265,10 +268,10 @@ function ChatPageContent() {
         // Обновляем список диалогов
         await loadConversations();
       } else {
-        setError(data.error || 'Помилка відправки повідомлення');
+        setError(data.error || t('chat.errors.sendMessage'));
       }
     } catch (err) {
-      setError('Помилка підключення до сервера');
+      setError(t('chat.errors.connection'));
     } finally {
       setSending(false);
     }
@@ -281,20 +284,20 @@ function ChatPageContent() {
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (days === 0) {
-      return date.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+      return formatDate(date, { hour: '2-digit', minute: '2-digit' });
     } else if (days === 1) {
-      return 'Вчора';
+      return t('chat.yesterday');
     } else if (days < 7) {
-      return date.toLocaleDateString('uk-UA', { weekday: 'short' });
+      return formatDate(date, { weekday: 'short' });
     } else {
-      return date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
+      return formatDate(date, { day: 'numeric', month: 'short' });
     }
   };
 
   if (!user) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('chat.loading')}</div>
       </div>
     );
   }
@@ -307,11 +310,11 @@ function ChatPageContent() {
         {/* Header */}
         <div className="bg-white border-b border-neutral-200 px-4 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-neutral-600 hover:text-neutral-900">
+            <Link href={localizedPath('/', locale)} className="text-neutral-600 hover:text-neutral-900">
               <ArrowLeft className="w-6 h-6" />
             </Link>
             <MessageCircle className="w-6 h-6 text-primary-600" />
-            <h1 className="text-xl font-bold text-neutral-900">Повідомлення</h1>
+            <h1 className="text-xl font-bold text-neutral-900">{t('chat.title')}</h1>
           </div>
         </div>
 
@@ -327,13 +330,13 @@ function ChatPageContent() {
           {/* Список диалогов */}
           <div className="w-full md:w-1/3 bg-white border-r border-neutral-200 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-neutral-600">Завантаження...</div>
+              <div className="p-4 text-center text-neutral-600">{t('chat.loading')}</div>
             ) : conversations.length === 0 ? (
               <div className="p-8 text-center">
                 <MessageCircle className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-                <p className="text-neutral-600">Немає діалогів</p>
+                <p className="text-neutral-600">{t('chat.empty.title')}</p>
                 <p className="text-sm text-neutral-400 mt-2">
-                  Перейдіть на профіль користувача та натисніть "Написати"
+                  {t('chat.empty.hint')}
                 </p>
               </div>
             ) : (
@@ -366,7 +369,7 @@ function ChatPageContent() {
                       {conv.lastMessage && (
                         <div className="flex items-center justify-between mt-1">
                           <p className="text-sm text-neutral-600 truncate">
-                            {conv.lastMessage.senderId === user.id && 'Ви: '}
+                            {conv.lastMessage.senderId === user.id && t('chat.you')}
                             {conv.lastMessage.content}
                           </p>
                           {conv.unreadCount > 0 && (
@@ -404,14 +407,14 @@ function ChatPageContent() {
                         href={`/profile/${selectedConv.otherUser.id}`}
                         className="text-sm text-primary-600 hover:underline"
                       >
-                        Переглянути профіль
+                        {t('chat.viewProfile')}
                       </Link>
                     </div>
                     <div className="ml-auto">
                       <ReportButton
                         reportedUserId={selectedConv.otherUser.id}
                         contentType="user"
-                        label="Поскаржитися"
+                        label={t('chat.report')}
                       />
                     </div>
                   </div>
@@ -457,7 +460,7 @@ function ChatPageContent() {
                       type="text"
                       value={messageText}
                       onChange={(e) => setMessageText(e.target.value)}
-                      placeholder="Напишіть повідомлення..."
+                      placeholder={t('chat.placeholder')}
                       className="flex-1 px-4 py-2 border border-neutral-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
                       disabled={sending}
                     />
@@ -475,7 +478,7 @@ function ChatPageContent() {
               <div className="flex-1 flex items-center justify-center text-neutral-400">
                 <div className="text-center">
                   <MessageCircle className="w-16 h-16 mx-auto mb-4" />
-                  <p>Оберіть діалог для початку спілкування</p>
+                  <p>{t('chat.selectConversation')}</p>
                 </div>
               </div>
             )}
@@ -486,13 +489,18 @@ function ChatPageContent() {
   );
 }
 
+function ChatFallback() {
+  const { t } = useI18n();
+  return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="text-neutral-600">{t('chat.loadingChat')}</div>
+    </div>
+  );
+}
+
 export default function ChatPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження чату...</div>
-      </div>
-    }>
+    <Suspense fallback={<ChatFallback />}>
       <ChatPageContent />
     </Suspense>
   );

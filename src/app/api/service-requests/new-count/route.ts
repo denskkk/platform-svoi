@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/authMiddleware';
 import { prisma } from '@/lib/prisma';
+import { getApiT } from '@/i18n/server';
 
 // GET /api/service-requests/new-count - Отримати кількість нових заявок для виконавця
 async function getHandler(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -27,7 +29,7 @@ async function getHandler(request: NextRequest) {
   } catch (error: any) {
     console.error('[service-requests/new-count] Error:', error);
     return NextResponse.json(
-      { error: 'Помилка отримання кількості заявок', details: error.message },
+      { error: t('api.serviceRequests.newCountError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }

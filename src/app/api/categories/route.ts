@@ -6,10 +6,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { categories as defaultCategories } from '@/lib/constants';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const t = getApiT(request);
   try {
     let categories = await prisma.category.findMany({
       orderBy: {
@@ -90,7 +92,7 @@ export async function GET() {
   } catch (error) {
     console.error('Get categories error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

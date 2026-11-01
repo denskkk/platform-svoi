@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware';
+import { getApiT } from '@/i18n/server';
 
 export async function POST(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
+  const t = getApiT(req);
   return withAuth(req, async (authReq: AuthenticatedRequest) => {
     try {
       const { params } = context;
@@ -14,7 +16,7 @@ export async function POST(
 
       if (!responseId) {
         return NextResponse.json(
-          { error: 'Response ID is required' },
+          { error: t('api.serviceRequests.selectExecutor.responseIdRequired') },
           { status: 400 }
         );
       }
@@ -33,7 +35,7 @@ export async function POST(
 
       if (!serviceRequest) {
         return NextResponse.json(
-          { error: 'Service request not found' },
+          { error: t('api.serviceRequests.notFound') },
           { status: 404 }
         );
       }
@@ -42,7 +44,7 @@ export async function POST(
       const userId = authReq.user?.userId;
       if (!userId || serviceRequest.clientId !== userId) {
         return NextResponse.json(
-          { error: 'Only the client can select an executor' },
+          { error: t('api.serviceRequests.selectExecutor.clientOnly') },
           { status: 403 }
         );
       }
@@ -50,7 +52,7 @@ export async function POST(
       // Заявка должна быть открыта (new или viewed)
       if (!['new', 'viewed'].includes(serviceRequest.status)) {
         return NextResponse.json(
-          { error: 'Request is no longer open' },
+          { error: t('api.serviceRequests.selectExecutor.notOpen') },
           { status: 400 }
         );
       }
@@ -58,7 +60,7 @@ export async function POST(
       const selectedResponse = serviceRequest.responses[0];
       if (!selectedResponse) {
         return NextResponse.json(
-          { error: 'Response not found' },
+          { error: t('api.serviceRequests.selectExecutor.responseNotFound') },
           { status: 404 }
         );
       }
@@ -97,8 +99,8 @@ export async function POST(
           data: {
             userId: selectedResponse.executorId,
             type: 'REQUEST_ACCEPTED',
-            title: 'Вас обрали виконавцем!',
-            message: `${serviceRequest.client.firstName} обрав ваше пропозицію на суму ${selectedResponse.proposedPrice} грн`,
+            title: 'Вас обрали виконавцем!', // i18n-ignore (stored notification)
+            message: `${serviceRequest.client.firstName} обрав ваше пропозицію на суму ${selectedResponse.proposedPrice} грн`, // i18n-ignore
             relatedEntityType: 'ServiceRequest',
             relatedEntityId: requestId
           }
@@ -107,13 +109,13 @@ export async function POST(
 
       return NextResponse.json({
         success: true,
-        message: 'Executor selected successfully'
+        message: t('api.serviceRequests.selectExecutor.success')
       });
 
     } catch (error) {
       console.error('Error selecting executor:', error);
       return NextResponse.json(
-        { error: 'Failed to select executor' },
+        { error: t('api.serviceRequests.selectExecutor.failed') },
         { status: 500 }
       );
     }

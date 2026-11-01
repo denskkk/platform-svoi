@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useI18n } from '@/i18n/client';
+import { localizedPath } from '@/i18n/routes';
 
 export function DeleteAccountForm() {
+  const { t, locale } = useI18n();
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
   const [password, setPassword] = useState('');
   const [confirmed, setConfirmed] = useState(false);
@@ -24,11 +27,11 @@ export function DeleteAccountForm() {
     setError('');
 
     if (!confirmed) {
-      setError('Підтвердіть, що розумієте наслідки видалення');
+      setError(t('common.deleteAccount.confirmRequired'));
       return;
     }
     if (!password) {
-      setError('Введіть пароль');
+      setError(t('common.deleteAccount.passwordRequired'));
       return;
     }
 
@@ -46,7 +49,7 @@ export function DeleteAccountForm() {
         body: JSON.stringify({ password }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Не вдалося видалити акаунт');
+      if (!res.ok) throw new Error(data.error || t('common.deleteAccount.failed'));
 
       try {
         localStorage.removeItem('user');
@@ -55,7 +58,7 @@ export function DeleteAccountForm() {
       } catch {}
       setDone(true);
     } catch (err: any) {
-      setError(err.message || 'Не вдалося видалити акаунт');
+      setError(err.message || t('common.deleteAccount.failed'));
     } finally {
       setLoading(false);
     }
@@ -66,8 +69,8 @@ export function DeleteAccountForm() {
   if (done) {
     return (
       <div className="p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
-        Ваш акаунт та пов’язані дані видалено. Дякуємо, що були з нами.{' '}
-        <Link href="/" className="underline font-medium">На головну</Link>
+        {t('common.deleteAccount.done')}{' '}
+        <Link href={localizedPath('/', locale)} className="underline font-medium">{t('common.deleteAccount.goHome')}</Link>
       </div>
     );
   }
@@ -75,8 +78,7 @@ export function DeleteAccountForm() {
   if (!isAuthed) {
     return (
       <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg text-neutral-700">
-        Щоб видалити акаунт одразу, <Link href="/auth/login" className="text-blue-600 hover:underline font-medium">увійдіть</Link> у
-        свій профіль і поверніться на цю сторінку. Або скористайтеся іншими способами нижче.
+        {t('common.deleteAccount.loginHintBefore')}<Link href="/auth/login" className="text-blue-600 hover:underline font-medium">{t('common.deleteAccount.loginHintLink')}</Link>{t('common.deleteAccount.loginHintAfter')}
       </div>
     );
   }
@@ -84,7 +86,7 @@ export function DeleteAccountForm() {
   return (
     <form onSubmit={handleDelete} className="space-y-4 p-5 border-2 border-red-200 bg-red-50/50 rounded-xl">
       <p className="text-sm text-red-800">
-        Увага: видалення незворотнє. Буде видалено ваш профіль, послуги, заявки, відгуки та повідомлення.
+        {t('common.deleteAccount.warning')}
       </p>
 
       {error && (
@@ -93,7 +95,7 @@ export function DeleteAccountForm() {
 
       <div>
         <label htmlFor="delete-password" className="block text-sm font-medium text-gray-800 mb-1">
-          Підтвердьте паролем
+          {t('common.deleteAccount.passwordLabel')}
         </label>
         <input
           id="delete-password"
@@ -112,7 +114,7 @@ export function DeleteAccountForm() {
           onChange={(e) => setConfirmed(e.target.checked)}
           className="mt-1"
         />
-        <span>Я розумію, що акаунт і всі пов’язані з ним дані буде видалено без можливості відновлення.</span>
+        <span>{t('common.deleteAccount.confirmLabel')}</span>
       </label>
 
       <button
@@ -120,7 +122,7 @@ export function DeleteAccountForm() {
         disabled={loading}
         className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold disabled:opacity-50"
       >
-        {loading ? 'Видаляємо...' : 'Видалити акаунт назавжди'}
+        {loading ? t('common.deleteAccount.deleting') : t('common.deleteAccount.submit')}
       </button>
     </form>
   );

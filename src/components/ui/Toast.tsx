@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -65,6 +66,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 }
 
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
+  const { t } = useI18n();
   const [isExiting, setIsExiting] = useState(false);
 
   const handleClose = () => {
@@ -140,7 +142,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
       <button
         onClick={handleClose}
         className="flex-shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors p-1 rounded-lg hover:bg-white/50"
-        aria-label="Закрити"
+        aria-label={t('common.actions.close')}
       >
         <X className="w-4 h-4" />
       </button>

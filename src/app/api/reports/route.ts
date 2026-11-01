@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +14,7 @@ const CATEGORIES = ['spam', 'fraud', 'abuse', 'inappropriate', 'fake', 'other'] 
 const CONTENT_TYPES = ['user', 'service', 'request', 'review', 'message'] as const;
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   const { user, error } = await requireAuth(request);
   if (error) return error;
 
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
     });
     if (!limit.allowed) {
       return NextResponse.json(
-        { error: 'Забагато скарг за короткий час. Спробуйте пізніше.' },
+        { error: t('api.reports.tooMany') },
         { status: 429 }
       );
     }
@@ -38,19 +40,19 @@ export async function POST(request: NextRequest) {
     const details = String(body?.reason || '').trim();
 
     if (!Number.isInteger(reportedUserId) || reportedUserId <= 0) {
-      return NextResponse.json({ error: 'Невірний користувач' }, { status: 400 });
+      return NextResponse.json({ error: t('api.reports.invalidUser') }, { status: 400 });
     }
     if (reportedUserId === reporterId) {
-      return NextResponse.json({ error: 'Не можна поскаржитися на себе' }, { status: 400 });
+      return NextResponse.json({ error: t('api.reports.selfReport') }, { status: 400 });
     }
     if (!(CATEGORIES as readonly string[]).includes(category)) {
-      return NextResponse.json({ error: 'Невірна категорія скарги' }, { status: 400 });
+      return NextResponse.json({ error: t('api.reports.invalidCategory') }, { status: 400 });
     }
     if (!(CONTENT_TYPES as readonly string[]).includes(contentType)) {
-      return NextResponse.json({ error: 'Невірний тип матеріалу' }, { status: 400 });
+      return NextResponse.json({ error: t('api.reports.invalidContentType') }, { status: 400 });
     }
     if (details.length > 2000) {
-      return NextResponse.json({ error: 'Опис скарги занадто довгий (макс. 2000 символів)' }, { status: 400 });
+      return NextResponse.json({ error: t('api.reports.detailsTooLong', { max: 2000 }) }, { status: 400 });
     }
 
     const target = await prisma.user.findUnique({
@@ -58,11 +60,11 @@ export async function POST(request: NextRequest) {
       select: { id: true },
     });
     if (!target) {
-      return NextResponse.json({ error: 'Користувача не знайдено' }, { status: 404 });
+      return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
     }
 
     const reference = contentType === 'user' || contentId === null || !Number.isInteger(contentId)
-      ? 'профіль користувача'
+      ? 'профіль користувача' // i18n-ignore
       : `${contentType} #${contentId}`;
 
     await prisma.report.create({
@@ -70,13 +72,13 @@ export async function POST(request: NextRequest) {
         reporterId,
         reportedUserId,
         category,
-        reason: `[${reference}] ${details || 'Без додаткового опису'}`,
+        reason: `[${reference}] ${details || 'Без додаткового опису'}`, // i18n-ignore
       },
     });
 
-    return NextResponse.json({ success: true, message: 'Дякуємо! Скаргу надіслано адміністрації.' }, { status: 201 });
+    return NextResponse.json({ success: true, message: t('api.reports.sent') }, { status: 201 });
   } catch (e) {
     console.error('[reports] error', e);
-    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
+    return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
   }
 }

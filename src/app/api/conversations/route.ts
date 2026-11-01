@@ -11,11 +11,13 @@ import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
 import { guardChatUser } from '@/lib/api-middleware';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
 // GET - Получить все диалоги текущего пользователя
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Проверка авторизации
     let token = getAuthCookie(request);
@@ -29,7 +31,7 @@ export async function GET(request: NextRequest) {
     
     if (!token) {
       return NextResponse.json(
-        { error: 'Не авторизовано' },
+        { error: t('api.common.notAuthorized') },
         { status: 401 }
       );
     }
@@ -37,14 +39,14 @@ export async function GET(request: NextRequest) {
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json(
-        { error: 'Невалідний токен' },
+        { error: t('api.common.invalidToken') },
         { status: 401 }
       );
     }
 
     const userId = decoded.userId;
 
-    const readGuard = await guardChatUser(userId, { write: false });
+    const readGuard = await guardChatUser(userId, { write: false }, t);
     if (readGuard) return readGuard;
 
     // Получаем все диалоги пользователя
@@ -128,7 +130,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get conversations error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -136,6 +138,7 @@ export async function GET(request: NextRequest) {
 
 // POST - Создать новый диалог или получить существующий
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Проверка авторизации
     let token = getAuthCookie(request);
@@ -149,7 +152,7 @@ export async function POST(request: NextRequest) {
     
     if (!token) {
       return NextResponse.json(
-        { error: 'Не авторизовано' },
+        { error: t('api.common.notAuthorized') },
         { status: 401 }
       );
     }
@@ -157,7 +160,7 @@ export async function POST(request: NextRequest) {
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json(
-        { error: 'Невалідний токен' },
+        { error: t('api.common.invalidToken') },
         { status: 401 }
       );
     }
@@ -166,19 +169,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { otherUserId } = body;
 
-    const writeGuard = await guardChatUser(userId, { write: true });
+    const writeGuard = await guardChatUser(userId, { write: true }, t);
     if (writeGuard) return writeGuard;
 
     if (!otherUserId) {
       return NextResponse.json(
-        { error: 'Не вказано ID співрозмовника' },
+        { error: t('api.chat.noRecipient') },
         { status: 400 }
       );
     }
 
     if (otherUserId === userId) {
       return NextResponse.json(
-        { error: 'Не можна створити діалог з самим собою' },
+        { error: t('api.chat.selfConversation') },
         { status: 400 }
       );
     }
@@ -197,14 +200,14 @@ export async function POST(request: NextRequest) {
 
     if (!otherUser) {
       return NextResponse.json(
-        { error: 'Користувача не знайдено' },
+        { error: t('api.common.userNotFound') },
         { status: 404 }
       );
     }
 
     if (!otherUser.isActive) {
       return NextResponse.json(
-        { error: 'Користувач не активний' },
+        { error: t('api.chat.userInactive') },
         { status: 400 }
       );
     }
@@ -277,7 +280,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Create conversation error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

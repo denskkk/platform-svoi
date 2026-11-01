@@ -1,0 +1,302 @@
+{
+  "cities": {
+    "makiivka": "Makiivka",
+    "horlivka": "Horlivka",
+    "kamianske": "Kamianske",
+    "kropyvnytskyi": "Kropyvnytskyi",
+    "kremenchuk": "Kremenchuk",
+    "bila_tserkva": "Bila Tserkva",
+    "kramatorsk": "Kramatorsk",
+    "melitopol": "Melitopol"
+  },
+  "individual": {
+    "loading": "Loading...",
+    "saveError": "Failed to save",
+    "progress": {
+      "step": "Step {current} of 6"
+    },
+    "common": {
+      "notSpecified": "Not specified",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "nav": {
+      "back": "← Back",
+      "next": "Next →",
+      "finish": "✓ Finish",
+      "saving": "Saving...",
+      "skip": "Skip",
+      "footerNote": "You can change this information later in your profile settings"
+    },
+    "step1": {
+      "title": "🧍‍♂️ Basic information",
+      "subtitle": "Tell us about yourself",
+      "firstName": "First name *",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last name *",
+      "lastNamePlaceholder": "Enter your last name",
+      "middleName": "Middle name",
+      "middleNamePlaceholder": "Enter your middle name",
+      "phone": "Phone",
+      "age": "Age",
+      "agePlaceholder": "Enter your age",
+      "gender": "Gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "maritalStatus": "Marital status",
+      "maritalSingle": "Single",
+      "maritalMarried": "Married",
+      "maritalRelationship": "In a relationship",
+      "maritalDivorced": "Divorced",
+      "childrenCount": "Number of children",
+      "familyComposition": "Family members",
+      "familyCompositionPlaceholder": "For example: wife, two children, parents..."
+    },
+    "step2": {
+      "title": "📍 Place of residence & 🚗 Transport",
+      "subtitle": "Where you live and how you get around",
+      "city": "City *",
+      "cityPlaceholder": "Select a city",
+      "region": "Region",
+      "regionPlaceholder": "Enter your region",
+      "housingType": "Housing type",
+      "housingHouse": "House",
+      "housingApartment": "Apartment",
+      "housingOther": "Other",
+      "livingSituation": "Living arrangement",
+      "livingAlone": "Alone",
+      "livingFamily": "With family",
+      "livingRoommates": "With roommates",
+      "hasCar": "Do you have a car?",
+      "carInfo": "Car make and model",
+      "carInfoHint": "(without license plate)",
+      "carInfoPlaceholder": "For example: Toyota Camry 2020",
+      "carInfoPrivacy": "Do not enter your car's license plate number for privacy reasons.",
+      "otherTransport": "Other transport",
+      "otherTransportPlaceholder": "Describe your other transport"
+    },
+    "step3": {
+      "title": "💼 Professional activity",
+      "subtitle": "What you do",
+      "profession": "Profession / Specialty",
+      "professionPlaceholder": "For example: Driver, Electrician, Developer...",
+      "employmentStatus": "Current status",
+      "statusEmployed": "Employed",
+      "statusUnemployed": "Temporarily not working",
+      "statusLooking": "Looking for a job",
+      "statusStudent": "Student",
+      "statusRetired": "Retired",
+      "statusBusiness": "Private business",
+      "workplace": "Workplace / Type of activity",
+      "workplacePlaceholder": "Where you work or what you do...",
+      "education": "Education",
+      "educationPlaceholder": "Specialty, educational institution...",
+      "businessInfo": "Private business information",
+      "businessInfoPlaceholder": "Description of your field, link to your page or social media...",
+      "jobSeeking": "What field are you looking for a job in?",
+      "jobSeekingPlaceholder": "Describe the job you are looking for..."
+    },
+    "step4": {
+      "title": "🎯 Interests and lifestyle",
+      "subtitle": "About your hobbies",
+      "hasPets": "Do you have pets?",
+      "petsInfo": "Which pets?",
+      "petsInfoPlaceholder": "Describe your other pets",
+      "hobbies": "Hobbies / Interests",
+      "hobbiesPlaceholder": "Enter another hobby",
+      "outdoorActivities": "Outdoor activities",
+      "outdoorActivitiesPlaceholder": "Describe other",
+      "sports": "Sports",
+      "sportsPlaceholder": "Describe other",
+      "lifestyle": "Lifestyle",
+      "lifestylePlaceholder": "Describe other",
+      "bio": "About me",
+      "bioPlaceholder": "Tell us a little about yourself..."
+    },
+    "step5": {
+      "title": "🌐 Social media",
+      "subtitle": "Add links to your profiles",
+      "telegramPlaceholder": "@username or https://t.me/username",
+      "tipLabel": "Tip:",
+      "tipText": "Add links to your social media so other users can get to know you better"
+    },
+    "stepMeta": {
+      "title": "🎯 Purpose of using the site",
+      "subtitle": "Why are you using the platform?",
+      "otherPlaceholder": "Describe other"
+    },
+    "options": {
+      "otherTransport": {
+        "bicycle": "Bicycle",
+        "scooter": "Scooter",
+        "motorcycle": "Motorcycle",
+        "skateboard": "Skateboard",
+        "mountainBike": "Mountain bike",
+        "other": "Other"
+      },
+      "pets": {
+        "cat": "Cat",
+        "dog": "Dog",
+        "birds": "Birds",
+        "fish": "Fish",
+        "rodents": "Rodents",
+        "none": "None",
+        "other": "Other"
+      },
+      "hobbies": {
+        "music": "Music",
+        "movies": "Movies",
+        "reading": "Reading",
+        "travel": "Travel",
+        "photography": "Photography",
+        "drawing": "Drawing",
+        "handicrafts": "Handicrafts",
+        "cooking": "Cooking",
+        "other": "Other"
+      },
+      "outdoorActivities": {
+        "walks": "Walks",
+        "picnics": "Picnics",
+        "hiking": "Hiking",
+        "fishing": "Fishing",
+        "natureTrips": "Trips to nature",
+        "cycling": "Bike rides",
+        "other": "Other"
+      },
+      "sports": {
+        "football": "Football",
+        "basketball": "Basketball",
+        "swimming": "Swimming",
+        "running": "Running",
+        "gym": "Gym",
+        "yoga": "Yoga",
+        "cycling": "Cycling",
+        "other": "Other"
+      },
+      "lifestyle": {
+        "active": "Active",
+        "calm": "Calm",
+        "family": "Family-oriented",
+        "social": "Social",
+        "creative": "Creative",
+        "career": "Career-focused",
+        "other": "Other"
+      },
+      "siteUsageGoal": {
+        "findClients": "Find clients",
+        "findContractors": "Find contractors/services",
+        "jobSearch": "Job search",
+        "networking": "Networking",
+        "other": "Other"
+      }
+    }
+  },
+  "business": {
+    "loading": "Loading...",
+    "saveError": "Failed to save",
+    "progress": {
+      "step": "Step {current} of 6"
+    },
+    "common": {
+      "notSpecified": "Not specified",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "nav": {
+      "back": "← Back",
+      "next": "Next →",
+      "finish": "✓ Finish",
+      "saving": "Saving...",
+      "skip": "Skip",
+      "footerNote": "You can change this information later in your business profile settings"
+    },
+    "step1": {
+      "title": "🏢 Basic information",
+      "subtitle": "Tell us about your business",
+      "companyName": "Business / brand name *",
+      "companyNamePlaceholder": "Enter your business name",
+      "representativeName": "Business representative (full name)",
+      "representativeNamePlaceholder": "Your name",
+      "position": "Position in the company",
+      "positionPlaceholder": "Select a position",
+      "positionOwner": "Owner",
+      "positionDirector": "Director",
+      "positionManager": "Manager",
+      "positionAdministrator": "Administrator",
+      "positionOther": "Other",
+      "city": "City of operation",
+      "cityPlaceholder": "Select a city",
+      "region": "Region",
+      "regionPlaceholder": "Enter your region",
+      "businessType": "Business type / service area",
+      "businessTypePlaceholder": "For example: Construction, Beauty and health, Equipment repair..."
+    },
+    "step2": {
+      "title": "💬 Short description",
+      "subtitle": "Tell us about your advantages",
+      "description": "What do you offer? (1-2 sentences)",
+      "descriptionPlaceholder": "Briefly describe your services or products...",
+      "mission": "Main mission / value",
+      "missionPlaceholder": "Our mission is...",
+      "uniqueValue": "How does your business differ from others?",
+      "uniqueValuePlaceholder": "Our unique advantages..."
+    },
+    "step3": {
+      "title": "📦 Services and products",
+      "subtitle": "Details of your offering",
+      "servicesList": "List of services or categories",
+      "servicesListPlaceholder": "For example: Plumbing, Electrical work, Turnkey renovation...",
+      "priceRange": "Price range",
+      "priceRangePlaceholder": "Select a range",
+      "priceBudget": "Budget (lowest)",
+      "priceMedium": "Medium",
+      "pricePremium": "Premium",
+      "workHours": "Working hours",
+      "workHoursPlaceholder": "Mon-Fri 9:00-18:00",
+      "serviceLocation": "Service location",
+      "serviceLocationPlaceholder": "Address, 'Online' or 'On-site at the client's location'",
+      "address": "Office/store address (if any)",
+      "addressPlaceholder": "1 Khreshchatyk St."
+    },
+    "step4": {
+      "title": "👥 Team",
+      "subtitle": "Who works in your business",
+      "employeeCount": "Number of employees",
+      "employeeCountPlaceholder": "Select a number",
+      "employeeOnlyMe": "Just me",
+      "employee2to5": "2-5 people",
+      "employee6to10": "6-10 people",
+      "employee11to50": "11-50 people",
+      "employee50plus": "More than 50",
+      "keySpecialists": "Key team members / roles",
+      "keySpecialistsPlaceholder": "For example: Head technician - Ivan Petrenko, Manager - Maria...",
+      "teamDescription": "Team description (optional)",
+      "teamDescriptionPlaceholder": "Tell us about your team..."
+    },
+    "step5": {
+      "title": "🌐 Contacts and social media",
+      "subtitle": "How to reach you",
+      "phone": "Phone",
+      "website": "Website",
+      "socialTitle": "Social media"
+    },
+    "step6": {
+      "title": "⭐ Additional information",
+      "subtitle": "Certificates, reviews, partners",
+      "yearFounded": "Year founded",
+      "registrationType": "Registration type",
+      "registrationFop": "Sole proprietor (FOP)",
+      "registrationTov": "LLC (TOV)",
+      "registrationPp": "Private enterprise (PP)",
+      "registrationOther": "Other",
+      "hasCertificates": "Certificates / licenses",
+      "certificatesInfo": "Description of certificates / licenses",
+      "certificatesInfoPlaceholder": "Which certificates or licenses you have...",
+      "partners": "Partners or community memberships",
+      "partnersPlaceholder": "Who you work with...",
+      "externalReviewsTitle": "Links to external reviews",
+      "tipLabel": "Tip:",
+      "tipText": "Fill in as many fields as possible so clients can find you more easily and trust your business"
+    }
+  }
+}

@@ -7,10 +7,14 @@ import { ArrowLeft, Camera, X } from 'lucide-react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { usePermission } from '@/hooks/usePermission';
-import { cities } from '@/lib/constants';
+import { cities, getCityName } from '@/lib/constants';
+import { translateCategory } from '@/lib/translations';
+import { useI18n } from '@/i18n/client';
+import { PRICE_UNIT_VALUES, priceUnitLabel } from '../priceUnits';
 const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
 
 export default function CreateServicePage() {
+  const { t, locale } = useI18n();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
@@ -22,7 +26,7 @@ export default function CreateServicePage() {
     description: '',
     priceFrom: '',
     priceTo: '',
-    priceUnit: 'грн',
+    priceUnit: 'грн', // i18n-ignore
     city: '',
     region: '',
     address: '',
@@ -50,7 +54,7 @@ export default function CreateServicePage() {
 
     // Глядачі не можуть створювати послуги
     if (userData.accountType === 'viewer') {
-      alert('Глядачі не можуть створювати послуги. Перейдіть на звичайний профіль на сторінці свого профілю.');
+      alert(t('services.create.viewerCannotCreate'));
       router.push('/services');
       return;
     }
@@ -115,12 +119,12 @@ export default function CreateServicePage() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 10MB');
+        setError(t('services.create.errors.fileTooLarge'));
         return;
       }
       
       if (!file.type.startsWith('image/')) {
-        setError('Будь ласка, оберіть зображення');
+        setError(t('services.create.errors.notImage'));
         return;
       }
 
@@ -163,7 +167,7 @@ export default function CreateServicePage() {
         return urlWithTimestamp;
       }
       
-      throw new Error(data.error || 'Помилка завантаження фото');
+      throw new Error(data.error || t('services.create.errors.uploadFailed'));
     } catch (err: any) {
       console.error('Upload error:', err);
       throw err;
@@ -175,7 +179,7 @@ export default function CreateServicePage() {
     setError('');
     
     if (!formData.categoryId || !formData.title || !formData.city) {
-      setError('Заповніть всі обов\'язкові поля');
+      setError(t('services.create.errors.requiredFields'));
       return;
     }
 
@@ -213,14 +217,14 @@ export default function CreateServicePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка створення послуги');
+        throw new Error(data.error || t('services.create.errors.createFailed'));
       }
 
   // Примусово оновити профіль з cache-busting, щоб фото послуги з'явилось миттєво
   const redirectTs = Date.now();
   router.push(`/profile/${user.id}?t=${redirectTs}`);
     } catch (err: any) {
-      setError(err.message || 'Помилка створення послуги');
+      setError(err.message || t('services.create.errors.createFailed'));
     } finally {
       setLoading(false);
     }
@@ -229,7 +233,7 @@ export default function CreateServicePage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-gray-600">Завантаження...</div>
+        <div className="text-gray-600">{t('services.create.loading')}</div>
       </div>
     );
   }
@@ -245,17 +249,17 @@ export default function CreateServicePage() {
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Назад до профілю
+            {t('services.create.backToProfile')}
           </Link>
         </div>
 
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Створити послугу
+              {t('services.create.title')}
             </h1>
             <p className="text-gray-600">
-              Розкажіть про свою послугу або товар
+              {t('services.create.subtitle')}
             </p>
           </div>
 
@@ -269,7 +273,7 @@ export default function CreateServicePage() {
             {/* Категорія */}
             <div>
               <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
-                Категорія *
+                {t('services.create.fields.category')}
               </label>
               <select
                 id="categoryId"
@@ -279,10 +283,10 @@ export default function CreateServicePage() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Оберіть категорію</option>
+                <option value="">{t('services.create.fields.categoryPlaceholder')}</option>
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.id}>
-                    {cat.emoji} {cat.name}
+                    {cat.emoji} {translateCategory(cat.name, locale)}
                   </option>
                 ))}
               </select>
@@ -291,7 +295,7 @@ export default function CreateServicePage() {
             {/* Назва */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Назва послуги *
+                {t('services.create.fields.title')}
               </label>
               <input
                 type="text"
@@ -301,14 +305,14 @@ export default function CreateServicePage() {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Наприклад: Ремонт квартир під ключ"
+                placeholder={t('services.create.fields.titlePlaceholder')}
               />
             </div>
 
             {/* Опис */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Опис
+                {t('services.create.fields.description')}
               </label>
               <textarea
                 id="description"
@@ -317,21 +321,21 @@ export default function CreateServicePage() {
                 value={formData.description}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                placeholder="Детальний опис послуги, ваш досвід, умови роботи..."
+                placeholder={t('services.create.fields.descriptionPlaceholder')}
               />
             </div>
 
             {/* Фото послуги */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Фото послуги
+                {t('services.create.fields.photo')}
               </label>
               
               {imagePreview ? (
                 <div className="relative inline-block">
                   <Image
                     src={imagePreview}
-                    alt="Preview"
+                    alt={t('services.create.imagePreviewAlt')}
                     width={640}
                     height={320}
                     unoptimized
@@ -353,9 +357,9 @@ export default function CreateServicePage() {
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <Camera className="w-12 h-12 text-gray-400 mb-3" />
                     <p className="mb-2 text-sm text-gray-600">
-                      <span className="font-semibold">Натисніть для вибору</span> або перетягніть
+                      <span className="font-semibold">{t('services.create.photoClick')}</span> {t('services.create.photoDrag')}
                     </p>
-                    <p className="text-xs text-gray-500">PNG, JPG, HEIC до 10MB</p>
+                    <p className="text-xs text-gray-500">{t('services.create.photoHint')}</p>
                   </div>
                   <input
                     id="image-upload"
@@ -372,7 +376,7 @@ export default function CreateServicePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="priceFrom" className="block text-sm font-medium text-gray-700 mb-2">
-                  Ціна від
+                  {t('services.create.fields.priceFrom')}
                 </label>
                 <input
                   type="number"
@@ -389,7 +393,7 @@ export default function CreateServicePage() {
               </div>
               <div>
                 <label htmlFor="priceTo" className="block text-sm font-medium text-gray-700 mb-2">
-                  Ціна до
+                  {t('services.create.fields.priceTo')}
                 </label>
                 <input
                   type="number"
@@ -405,7 +409,7 @@ export default function CreateServicePage() {
               </div>
               <div>
                 <label htmlFor="priceUnit" className="block text-sm font-medium text-gray-700 mb-2">
-                  Одиниця
+                  {t('services.create.fields.unit')}
                 </label>
                 <select
                   id="priceUnit"
@@ -415,11 +419,9 @@ export default function CreateServicePage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   // Allow selecting unit for all users
                 >
-                  <option value="грн">грн</option>
-                  <option value="грн/год">грн/год</option>
-                  <option value="грн/день">грн/день</option>
-                  <option value="грн/м²">грн/м²</option>
-                  <option value="договірна">договірна</option>
+                  {PRICE_UNIT_VALUES.map(unit => (
+                    <option key={unit} value={unit}>{priceUnitLabel(unit, t)}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -428,7 +430,7 @@ export default function CreateServicePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                  Місто *
+                  {t('services.create.fields.city')}
                 </label>
                 <select
                   id="city"
@@ -438,15 +440,15 @@ export default function CreateServicePage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Оберіть місто</option>
+                  <option value="">{t('services.create.fields.cityPlaceholder')}</option>
                   {cities.map(city => (
-                    <option key={city} value={city}>{city}</option>
+                    <option key={city} value={city}>{getCityName(city, locale)}</option>
                   ))}
                 </select>
               </div>
               <div>
                 <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
-                  Область/Район
+                  {t('services.create.fields.region')}
                 </label>
                 <input
                   type="text"
@@ -455,14 +457,14 @@ export default function CreateServicePage() {
                   value={formData.region}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Наприклад: Шевченківський район"
+                  placeholder={t('services.create.fields.regionPlaceholder')}
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                Адреса (необов&apos;язково)
+                {t('services.create.fields.address')}
               </label>
               <input
                 type="text"
@@ -471,7 +473,7 @@ export default function CreateServicePage() {
                 value={formData.address}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Вулиця, будинок"
+                placeholder={t('services.create.fields.addressPlaceholder')}
               />
             </div>
 
@@ -482,13 +484,13 @@ export default function CreateServicePage() {
                 disabled={loading}
                 className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Створюємо...' : 'Створити послугу'}
+                {loading ? t('services.create.submitting') : t('services.create.submit')}
               </button>
               <Link
                 href={`/profile/${user.id}`}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center"
               >
-                Скасувати
+                {t('services.create.cancel')}
               </Link>
             </div>
           </form>

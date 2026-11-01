@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useI18n } from '@/i18n/client'
+import { getCategoryName, getCategoryDescription } from '@/lib/constants'
 
 interface Category {
   id: number
@@ -15,6 +17,7 @@ interface Category {
 }
 
 export function CategoriesSection() {
+  const { t, locale } = useI18n()
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -40,10 +43,10 @@ export function CategoriesSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-primary-100 to-accent-100 rounded-full">
-              <p className="text-sm font-semibold text-primary-700">🎯 Популярні категорії</p>
+              <p className="text-sm font-semibold text-primary-700">{t('home.categories.badge')}</p>
             </div>
             <h2 className="font-display text-3xl md:text-5xl font-bold text-neutral-900 mb-4">
-              Обери свою категорію
+              {t('home.categories.title')}
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -71,13 +74,13 @@ export function CategoriesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-primary-100 to-accent-100 rounded-full">
-            <p className="text-sm font-semibold text-primary-700">🎯 Популярні категорії</p>
+            <p className="text-sm font-semibold text-primary-700">{t('home.categories.badge')}</p>
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Обери свою категорію
+            {t('home.categories.title')}
           </h2>
           <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-            Знайди потрібного фахівця серед <span className="font-semibold text-primary-600">своїх</span> — українців
+            {t('home.categories.subtitleBefore')}<span className="font-semibold text-primary-600">{t('home.categories.subtitleHighlight')}</span>{t('home.categories.subtitleAfter')}
           </p>
         </div>
 
@@ -98,13 +101,13 @@ export function CategoriesSection() {
                     
                     {/* Назва */}
                     <h3 className="font-bold text-xl text-neutral-900 group-hover:text-primary-700 transition-colors mb-2 leading-tight">
-                      {category.name}
+                      {locale === 'uk' ? category.name : getCategoryName(category, locale)}
                     </h3>
                     
                     {/* Опис */}
                     {category.description && (
                       <p className="text-sm text-neutral-600 group-hover:text-neutral-700 transition-colors leading-relaxed mb-3">
-                        {category.description}
+                        {locale === 'uk' ? category.description : getCategoryDescription(category, locale) || category.description}
                       </p>
                     )}
 
@@ -112,7 +115,7 @@ export function CategoriesSection() {
                     {category._count && category._count.services > 0 && (
                       <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-50 rounded-lg text-xs font-medium text-primary-700">
                         <span className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse"></span>
-                        {category._count.services} {category._count.services === 1 ? 'послуга' : 'послуг'}
+                        {t('home.servicesCount', { count: category._count.services })}
                       </div>
                     )}
                   </div>
@@ -139,13 +142,13 @@ export function CategoriesSection() {
         <div className="mt-20 text-center">
           <div className="max-w-2xl mx-auto bg-gradient-to-r from-primary-500 to-accent-500 rounded-3xl p-8 shadow-2xl">
             <p className="text-white text-xl font-semibold mb-6">
-              Не знайшли потрібну категорію?
+              {t('home.categories.notFound')}
             </p>
             <Link
               href="/services"
               className="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary-700 font-bold rounded-xl hover:bg-yellow-50 transition-all duration-300 hover:shadow-xl transform hover:scale-105 btn-glow"
             >
-              <span>Переглянути всі послуги</span>
+              <span>{t('home.categories.viewAll')}</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

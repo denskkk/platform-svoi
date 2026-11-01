@@ -1,0 +1,206 @@
+{
+  "gender": {
+    "male": "Чоловік",
+    "female": "Жінка",
+    "other": "Інше"
+  },
+  "maritalStatus": {
+    "single": "Неодружений/Незаміжня",
+    "married": "Одружений/Заміжня",
+    "divorced": "Розлучений/Розлучена",
+    "widowed": "Вдівець/Вдова",
+    "in_relationship": "У стосунках",
+    "relationship": "У стосунках",
+    "engaged": "Заручений/Заручена",
+    "civil": "У цивільному шлюбі"
+  },
+  "education": {
+    "secondary": "Середня освіта",
+    "vocational": "Професійно-технічна",
+    "incomplete_higher": "Неповна вища",
+    "bachelor": "Бакалавр",
+    "master": "Магістр",
+    "phd": "Кандидат наук",
+    "doctorate": "Доктор наук",
+    "college": "Коледж"
+  },
+  "employmentStatus": {
+    "employed": "Працевлаштований",
+    "self_employed": "Самозайнятий",
+    "unemployed": "Безробітний",
+    "student": "Студент",
+    "retired": "Пенсіонер",
+    "looking_for_work": "Шукаю роботу",
+    "business_owner": "Власник бізнесу",
+    "freelancer": "Фрілансер",
+    "freelance": "Фріланс",
+    "business": "Власний бізнес"
+  },
+  "accountType": {
+    "viewer": "Глядач",
+    "basic": "Базовий",
+    "business": "Бізнес",
+    "user": "Звичайний"
+  },
+  "serviceRequestStatus": {
+    "new": "Нова",
+    "viewed": "Переглянута",
+    "accepted": "Прийнята",
+    "in_progress": "В роботі",
+    "completed": "Завершена",
+    "cancelled": "Скасована",
+    "paid": "Оплачена"
+  },
+  "category": {
+    "auto_service": "Автосервіс",
+    "beauty": "Краса та здоров'я",
+    "food": "Їжа та харчування",
+    "education": "Освіта",
+    "health": "Здоров'я",
+    "sport": "Спорт та фітнес",
+    "entertainment": "Розваги",
+    "repair": "Ремонт",
+    "construction": "Будівництво",
+    "cleaning": "Прибирання",
+    "transport": "Транспорт",
+    "finance": "Фінанси",
+    "law": "Юридичні послуги",
+    "it": "IT та технології",
+    "marketing": "Маркетинг",
+    "real_estate": "Нерухомість",
+    "retail": "Роздрібна торгівля",
+    "wholesale": "Оптова торгівля",
+    "manufacturing": "Виробництво",
+    "agriculture": "Сільське господарство",
+    "tourism": "Туризм",
+    "hospitality": "Готельний бізнес",
+    "logistics": "Логістика",
+    "consulting": "Консалтинг",
+    "design": "Дизайн",
+    "photo_video": "Фото/Відео",
+    "events": "Організація подій",
+    "products": "Продукти харчування",
+    "advertising": "Реклама та маркетинг",
+    "online_sales": "Інтернет-продажі",
+    "offline_sales": "Офлайн-торгівля",
+    "other": "Інше"
+  },
+  "offerType": {
+    "service": "Послуга",
+    "product": "Товар",
+    "both": "Послуги та товари"
+  },
+  "employmentType": {
+    "full-time": "Повна зайнятість",
+    "full_time": "Повна зайнятість",
+    "part-time": "Часткова зайнятість",
+    "part_time": "Часткова зайнятість",
+    "contract": "Контракт",
+    "freelance": "Фріланс",
+    "internship": "Стажування",
+    "remote": "Віддалена робота"
+  },
+  "companyType": {
+    "fop": "ФОП",
+    "tov": "ТОВ",
+    "pat": "ПАТ",
+    "other": "Інше",
+    "individual": "Фізична особа",
+    "llc": "ТОВ",
+    "jsc": "ПАТ"
+  },
+  "boolean": {
+    "yes": "Так",
+    "no": "Ні"
+  },
+  "housingType": {
+    "house": "Будинок",
+    "apartment": "Квартира",
+    "room": "Кімната",
+    "other": "Інше"
+  },
+  "livingSituation": {
+    "alone": "Самостійно",
+    "family": "З родиною",
+    "roommates": "З співмешканцями",
+    "parents": "З батьками"
+  },
+  "transactionStatus": {
+    "pending": "Очікує",
+    "completed": "Завершено",
+    "failed": "Помилка",
+    "cancelled": "Скасовано"
+  },
+  "role": {
+    "user": "Користувач",
+    "business": "Бізнес",
+    "admin": "Адміністратор",
+    "moderator": "Модератор"
+  },
+  "permission": {
+    "view_services": "Перегляд послуг",
+    "create_service": "Створення послуг",
+    "edit_service": "Редагування послуг",
+    "delete_service": "Видалення послуг",
+    "view_users": "Перегляд користувачів",
+    "manage_users": "Управління користувачами",
+    "send_messages": "Надсилання повідомлень",
+    "leave_reviews": "Залишати відгуки"
+  },
+  "categories": {
+    "vse-dlya-domu": { "name": "Все для дому", "description": "Ремонт, прибирання, майстри" },
+    "vse-dlya-auto": { "name": "Все для Авто", "description": "Авто, мото, велосипеди, самокати" },
+    "krasa": { "name": "Краса", "description": "Салони, перукарі, косметологи" },
+    "osvita": { "name": "Освіта", "description": "Курси, репетитори, навчання" },
+    "rozvagy-ta-hobbi": { "name": "Розваги та хоббі", "description": "Спорт, дозвілля, творчість" },
+    "vse-dlya-ditey": { "name": "Все для дітей", "description": "Садочки, секції, іграшки" },
+    "magazyny-online": { "name": "Магазини онлайн", "description": "Інтернет-магазини" },
+    "magazyny-offline": { "name": "Магазини офлайн", "description": "Фізичні магазини" },
+    "vse-dlya-tvaryn": { "name": "Все для домашніх тварин", "description": "Ветеринари, зоомагазини" },
+    "restorany-goteli": { "name": "Ресторани, готелі", "description": "HoReCa, кейтеринг" },
+    "neruhomist": { "name": "Агенство з продажу Нерухомості", "description": "Продаж, оренда житла" },
+    "ruhome-mayno": { "name": "Агенство з продажу Рухомого майна", "description": "Авто, техніка, обладнання" },
+    "zayavky-na-zadachi": { "name": "Заявки на виконання задач онлайн та офлайн", "description": "Онлайн та офлайн послуги" },
+    "podiyi-ta-ogoloshennya": { "name": "Дошка подій та оголошень", "description": "Події, новини, оголошення" },
+    "vse-dlya-biznesu": { "name": "Все для обслуговування та розвитку вашого бізнесу", "description": "B2B послуги для бізнесу" },
+    "pobut": { "name": "Побут", "description": "Побутові послуги: прибирання, пральня, хімчистка" },
+    "auto": { "name": "Авто", "description": "Автосервіс, діагностика, ремонт авто" },
+    "remont": { "name": "Ремонт", "description": "Ремонт квартир, будинків, меблів" },
+    "biznes": { "name": "Бізнес", "description": "Консалтинг, бухгалтерія, юридичні послуги" },
+    "it": { "name": "IT", "description": "Програмування, дизайн, створення сайтів" },
+    "medytsyna": { "name": "Медицина", "description": "Медичні послуги, консультації" },
+    "tvorchist": { "name": "Творчість", "description": "Фотографи, художники, музиканти" }
+  },
+  "cities": {
+    "kyiv": "Київ",
+    "kharkiv": "Харків",
+    "odesa": "Одеса",
+    "dnipro": "Дніпро",
+    "donetsk": "Донецьк",
+    "zaporizhzhia": "Запоріжжя",
+    "lviv": "Львів",
+    "kryvyi_rih": "Кривий Ріг",
+    "mykolaiv": "Миколаїв",
+    "mariupol": "Маріуполь",
+    "luhansk": "Луганськ",
+    "vinnytsia": "Вінниця",
+    "kherson": "Херсон",
+    "poltava": "Полтава",
+    "chernihiv": "Чернігів",
+    "cherkasy": "Черкаси",
+    "sumy": "Суми",
+    "zhytomyr": "Житомир",
+    "khmelnytskyi": "Хмельницький",
+    "rivne": "Рівне",
+    "chernivtsi": "Чернівці",
+    "ternopil": "Тернопіль",
+    "ivano_frankivsk": "Івано-Франківськ",
+    "lutsk": "Луцьк",
+    "uzhhorod": "Ужгород"
+  },
+  "accountTypes": {
+    "individual": { "title": "Звичайний профіль", "description": "Я хочу пропонувати свої послуги" },
+    "business": { "title": "Бізнес-профіль", "description": "Маю власну справу чи компанію" },
+    "viewer": { "title": "Глядач", "description": "Просто хочу переглядати" }
+  }
+}

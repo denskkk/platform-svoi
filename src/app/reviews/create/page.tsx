@@ -6,9 +6,11 @@ import { ensureToken } from '@/lib/silentFetch';
 import Link from 'next/link';
 import { ArrowLeft, Star, AlertCircle } from 'lucide-react';
 import { formatRating } from '@/lib/format';
+import { useI18n } from '@/i18n/client';
 
 function CreateReviewForm() {
   const router = useRouter();
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const requestId = searchParams.get('requestId');
   const userId = searchParams.get('userId');
@@ -78,7 +80,7 @@ function CreateReviewForm() {
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Помилка завантаження даних');
+      setError(err.message || t('reviews.create.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -93,7 +95,7 @@ function CreateReviewForm() {
     }
 
     if (rating === 0) {
-      setError('Оберіть рейтинг');
+      setError(t('reviews.create.errors.ratingRequired'));
       return;
     }
 
@@ -127,13 +129,13 @@ function CreateReviewForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка створення відгуку');
+        throw new Error(data.error || t('reviews.create.errors.createFailed'));
       }
 
       // Перенаправити на профіль користувача
       router.push(`/profile/${reviewedUser?.id || userId}`);
     } catch (err: any) {
-      setError(err.message || 'Помилка створення відгуку');
+      setError(err.message || t('reviews.create.errors.createFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -142,7 +144,7 @@ function CreateReviewForm() {
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('reviews.create.loading')}</div>
       </div>
     );
   }
@@ -156,25 +158,25 @@ function CreateReviewForm() {
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Назад
+          {t('reviews.create.back')}
         </Link>
 
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
           <h1 className="text-3xl font-bold text-neutral-900 mb-6">
-            Залишити відгук
+            {t('reviews.create.title')}
           </h1>
 
           {serviceRequest && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                Відгук про заявку: <strong>{serviceRequest.title}</strong>
+                {t('reviews.create.aboutRequest')} <strong>{serviceRequest.title}</strong>
               </p>
             </div>
           )}
 
           {reviewedUser && (
             <div className="mb-6 p-4 bg-neutral-50 rounded-lg">
-              <p className="text-sm text-neutral-600 mb-2">Відгук для:</p>
+              <p className="text-sm text-neutral-600 mb-2">{t('reviews.create.reviewFor')}</p>
               <div className="flex items-center gap-3">
                 {reviewedUser.avatarUrl && (
                   <img
@@ -191,7 +193,7 @@ function CreateReviewForm() {
                     <div className="flex items-center gap-1 text-sm text-neutral-600">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                       <span>{formatRating(reviewedUser.avgRating,1)}</span>
-                      <span className="text-neutral-400">({reviewedUser.totalReviews} відгуків)</span>
+                      <span className="text-neutral-400">{t('reviews.create.reviewsCount', { count: reviewedUser.totalReviews ?? 0 })}</span>
                     </div>
                   )}
                 </div>
@@ -210,7 +212,7 @@ function CreateReviewForm() {
             {/* Рейтинг */}
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Рейтинг <span className="text-red-500">*</span>
+                {t('reviews.create.ratingLabel')} <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -234,11 +236,11 @@ function CreateReviewForm() {
               </div>
               {rating > 0 && (
                 <p className="mt-2 text-sm text-neutral-600">
-                  {rating === 1 && 'Погано'}
-                  {rating === 2 && 'Нижче середнього'}
-                  {rating === 3 && 'Середньо'}
-                  {rating === 4 && 'Добре'}
-                  {rating === 5 && 'Відмінно'}
+                  {rating === 1 && t('reviews.create.ratingNames.one')}
+                  {rating === 2 && t('reviews.create.ratingNames.two')}
+                  {rating === 3 && t('reviews.create.ratingNames.three')}
+                  {rating === 4 && t('reviews.create.ratingNames.four')}
+                  {rating === 5 && t('reviews.create.ratingNames.five')}
                 </p>
               )}
             </div>
@@ -246,7 +248,7 @@ function CreateReviewForm() {
             {/* Коментар */}
             <div>
               <label htmlFor="comment" className="block text-sm font-medium text-neutral-700 mb-2">
-                Коментар (необов'язково)
+                {t('reviews.create.commentLabel')}
               </label>
               <textarea
                 id="comment"
@@ -254,10 +256,10 @@ function CreateReviewForm() {
                 onChange={(e) => setComment(e.target.value)}
                 rows={5}
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                placeholder="Розкажіть про свій досвід співпраці..."
+                placeholder={t('reviews.create.commentPlaceholder')}
               />
               <p className="mt-1 text-sm text-neutral-500">
-                {comment.length} / 1000 символів
+                {t('reviews.create.charCount', { count: comment.length })}
               </p>
             </div>
 
@@ -268,13 +270,13 @@ function CreateReviewForm() {
                 disabled={submitting || rating === 0}
                 className="flex-1 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Надсилання...' : 'Надіслати відгук'}
+                {submitting ? t('reviews.create.submitting') : t('reviews.create.submit')}
               </button>
               <Link
                 href={requestId ? `/service-requests/${requestId}` : `/profile/${userId}`}
                 className="px-6 py-3 border-2 border-neutral-300 text-neutral-700 rounded-lg font-medium hover:bg-neutral-50 transition-colors"
               >
-                Скасувати
+                {t('reviews.create.cancel')}
               </Link>
             </div>
           </form>

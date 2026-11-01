@@ -1,32 +1,37 @@
+'use client';
+
+import { useI18n } from '@/i18n/client';
+
 interface AccountTypeBadgeProps {
   accountType: 'guest' | 'basic' | 'extended' | 'business' | 'business_premium';
   size?: 'sm' | 'md' | 'lg';
 }
 
 export function AccountTypeBadge({ accountType, size = 'md' }: AccountTypeBadgeProps) {
+  const { t } = useI18n();
   const configs = {
     guest: {
-      label: 'Гість',
+      label: t('common.accountTypes.guest'),
       icon: '👀',
       colors: 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border-gray-300 shadow-sm'
     },
     basic: {
-      label: 'Базовий',
+      label: t('common.accountTypes.basic'),
       icon: '🆓',
       colors: 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-green-300 shadow-sm'
     },
     extended: {
-      label: 'Розширений',
+      label: t('common.accountTypes.extended'),
       icon: '⭐',
       colors: 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border-blue-300 shadow-md'
     },
     business: {
-      label: 'Бізнес',
+      label: t('common.accountTypes.business'),
       icon: '🏢',
       colors: 'bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 border-purple-300 shadow-md'
     },
     business_premium: {
-      label: 'Бізнес Преміум',
+      label: t('common.accountTypes.businessPremium'),
       icon: '👑',
       colors: 'bg-gradient-to-r from-yellow-200 via-amber-200 to-yellow-200 text-amber-900 border-amber-400 shadow-lg animate-gradient'
     }

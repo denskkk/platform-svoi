@@ -1,0 +1,84 @@
+{
+  "hero": {
+    "badge": "🇺🇦 Ukrainian platform",
+    "titleLine1": "A platform for entrepreneurs",
+    "titleLine2": "and consumers",
+    "subtitleBefore": "Built for our community — a place where entrepreneurs and consumers find each other based on ",
+    "subtitleTrust": "trust",
+    "subtitleMiddle": " and shared ",
+    "subtitleValues": "values",
+    "subtitleAfter": ".",
+    "tagline": "🤝 Sviy dlya Svoikh — supporting business within our community",
+    "serviceLabel": "🔍 What service do you need?",
+    "servicePlaceholder": "For example: plumber",
+    "categoryLabel": "📂 Category",
+    "allCategories": "All categories",
+    "cityLabel": "📍 Where to look?",
+    "cityPlaceholder": "For example: Kyiv",
+    "searchButton": "Search now",
+    "register": "Create a profile",
+    "login": "Log in",
+    "categories": {
+      "pobut": "Home & household",
+      "auto": "Auto",
+      "krasa": "Beauty",
+      "osvita": "Education",
+      "remont": "Repairs",
+      "biznes": "Business",
+      "it": "IT",
+      "medytsyna": "Medicine",
+      "tvorchist": "Creative"
+    }
+  },
+  "categories": {
+    "badge": "🎯 Popular categories",
+    "title": "Choose your category",
+    "subtitleBefore": "Find the right specialist among ",
+    "subtitleHighlight": "your own",
+    "subtitleAfter": " — Ukrainians",
+    "notFound": "Didn't find the category you need?",
+    "viewAll": "Browse all services"
+  },
+  "servicesCount": {
+    "one": "{count} service",
+    "other": "{count} services"
+  },
+  "popular": {
+    "badge": "⭐ Featured",
+    "title": "Popular profiles",
+    "subtitleBefore": "Meet our ",
+    "subtitleHighlight": "best",
+    "subtitleAfter": " specialists",
+    "top": "TOP",
+    "newProfile": "New",
+    "viewProfile": "View profile",
+    "viewAll": "View all profiles"
+  },
+  "values": {
+    "badge": "💎 What unites us",
+    "title": "Our values",
+    "subtitleBefore": "The foundation of our ",
+    "subtitleHighlight": "community",
+    "trust": {
+      "title": "Trust",
+      "description": "Profiles, reviews and ratings help you choose a reliable provider. We care about your safety."
+    },
+    "help": {
+      "title": "Support",
+      "description": "We support each other. Together we are stronger and more successful."
+    },
+    "ukrainian": {
+      "title": "Ukrainian",
+      "description": "A platform for our own people. We help grow the Ukrainian economy."
+    }
+  },
+  "cta": {
+    "title": "Join your own!",
+    "textAuthed": "Find the services you need or offer your own — together we are stronger!",
+    "textGuest": "Join the platform and find the services you need or offer your own",
+    "register": "Create a profile",
+    "learnMore": "Learn more",
+    "addService": "Add a service",
+    "findSpecialist": "Find a specialist"
+  }
+}

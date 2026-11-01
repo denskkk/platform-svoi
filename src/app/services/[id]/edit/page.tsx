@@ -5,9 +5,13 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X } from 'lucide-react';
 import Image from 'next/image';
-import { cities } from '@/lib/constants';
+import { cities, getCityName } from '@/lib/constants';
+import { translateCategory } from '@/lib/translations';
+import { useI18n } from '@/i18n/client';
+import { PRICE_UNIT_VALUES, priceUnitLabel } from '../../priceUnits';
 
 export default function EditServicePage() {
+  const { t, locale } = useI18n();
   const router = useRouter();
   const params = useParams();
   const serviceId = params?.id as string;
@@ -22,7 +26,7 @@ export default function EditServicePage() {
     description: '',
     priceFrom: '',
     priceTo: '',
-    priceUnit: 'грн',
+    priceUnit: 'грн', // i18n-ignore
     city: '',
     region: '',
     address: '',
@@ -48,7 +52,7 @@ export default function EditServicePage() {
     setToken(storedToken);
 
     if (userData.accountType === 'viewer') {
-      alert('Глядачі не можуть редагувати послуги.');
+      alert(t('services.edit.viewerCannotEdit'));
       router.push('/services');
       return;
     }
@@ -76,7 +80,7 @@ export default function EditServicePage() {
       });
 
       if (!response.ok) {
-        throw new Error('Послугу не знайдено');
+        throw new Error(t('services.detail.notFound'));
       }
 
       const data = await response.json();
@@ -85,7 +89,7 @@ export default function EditServicePage() {
       // Перевірка, чи це послуга користувача
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       if (svc.userId !== userData.id) {
-        alert('Ви можете редагувати тільки свої послуги');
+        alert(t('services.edit.ownOnly'));
         router.push('/services');
         return;
       }
@@ -97,7 +101,7 @@ export default function EditServicePage() {
         description: svc.description || '',
         priceFrom: svc.priceFrom?.toString() || '',
         priceTo: svc.priceTo?.toString() || '',
-        priceUnit: svc.priceUnit || 'грн',
+        priceUnit: svc.priceUnit || 'грн', // i18n-ignore
         city: svc.city || '',
         region: svc.region || '',
         address: svc.address || '',
@@ -110,7 +114,7 @@ export default function EditServicePage() {
       setLoadingService(false);
     } catch (err: any) {
       console.error('Error loading service:', err);
-      setError(err.message || 'Помилка завантаження послуги');
+      setError(err.message || t('services.detail.errors.loadFailed'));
       setLoadingService(false);
     }
   };
@@ -126,12 +130,12 @@ export default function EditServicePage() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 10MB');
+        setError(t('services.create.errors.fileTooLarge'));
         return;
       }
       
       if (!file.type.startsWith('image/')) {
-        setError('Будь ласка, оберіть зображення');
+        setError(t('services.create.errors.notImage'));
         return;
       }
 
@@ -174,7 +178,7 @@ export default function EditServicePage() {
         return urlWithTimestamp;
       }
       
-      throw new Error(data.error || 'Помилка завантаження фото');
+      throw new Error(data.error || t('services.create.errors.uploadFailed'));
     } catch (err: any) {
       console.error('Upload error:', err);
       throw err;
@@ -186,7 +190,7 @@ export default function EditServicePage() {
     setError('');
     
     if (!formData.categoryId || !formData.title || !formData.city) {
-      setError('Заповніть всі обов\'язкові поля');
+      setError(t('services.create.errors.requiredFields'));
       return;
     }
 
@@ -226,13 +230,13 @@ export default function EditServicePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка оновлення послуги');
+        throw new Error(data.error || t('services.edit.errors.updateFailed'));
       }
 
       // Перенаправити на сторінку послуги
       router.push(`/services/${serviceId}`);
     } catch (err: any) {
-      setError(err.message || 'Помилка оновлення послуги');
+      setError(err.message || t('services.edit.errors.updateFailed'));
     } finally {
       setLoading(false);
     }
@@ -241,7 +245,7 @@ export default function EditServicePage() {
   if (loadingService) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-gray-600">Завантаження послуги...</div>
+        <div className="text-gray-600">{t('services.edit.loading')}</div>
       </div>
     );
   }
@@ -249,7 +253,7 @@ export default function EditServicePage() {
   if (!user || !service) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-gray-600">Послугу не знайдено</div>
+        <div className="text-gray-600">{t('services.detail.notFound')}</div>
       </div>
     );
   }
@@ -265,17 +269,17 @@ export default function EditServicePage() {
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Назад до послуги
+            {t('services.edit.backToService')}
           </Link>
         </div>
 
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Редагувати послугу
+              {t('services.edit.title')}
             </h1>
             <p className="text-gray-600">
-              Оновіть інформацію про вашу послугу
+              {t('services.edit.subtitle')}
             </p>
           </div>
 
@@ -289,7 +293,7 @@ export default function EditServicePage() {
             {/* Категорія */}
             <div>
               <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
-                Категорія *
+                {t('services.create.fields.category')}
               </label>
               <select
                 id="categoryId"
@@ -299,10 +303,10 @@ export default function EditServicePage() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Оберіть категорію</option>
+                <option value="">{t('services.create.fields.categoryPlaceholder')}</option>
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.id}>
-                    {cat.emoji} {cat.name}
+                    {cat.emoji} {translateCategory(cat.name, locale)}
                   </option>
                 ))}
               </select>
@@ -311,7 +315,7 @@ export default function EditServicePage() {
             {/* Назва */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Назва послуги *
+                {t('services.create.fields.title')}
               </label>
               <input
                 type="text"
@@ -321,14 +325,14 @@ export default function EditServicePage() {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Наприклад: Ремонт квартир під ключ"
+                placeholder={t('services.create.fields.titlePlaceholder')}
               />
             </div>
 
             {/* Опис */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Опис
+                {t('services.create.fields.description')}
               </label>
               <textarea
                 id="description"
@@ -337,21 +341,21 @@ export default function EditServicePage() {
                 value={formData.description}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                placeholder="Детальний опис послуги, ваш досвід, умови роботи..."
+                placeholder={t('services.create.fields.descriptionPlaceholder')}
               />
             </div>
 
             {/* Фото послуги */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Фото послуги
+                {t('services.create.fields.photo')}
               </label>
               
               {displayImage ? (
                 <div className="relative inline-block">
                   <Image
                     src={displayImage}
-                    alt="Preview"
+                    alt={t('services.create.imagePreviewAlt')}
                     width={640}
                     height={320}
                     unoptimized
@@ -373,9 +377,9 @@ export default function EditServicePage() {
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <Camera className="w-12 h-12 text-gray-400 mb-3" />
                     <p className="mb-2 text-sm text-gray-600">
-                      <span className="font-semibold">Натисніть для вибору</span> або перетягніть
+                      <span className="font-semibold">{t('services.create.photoClick')}</span> {t('services.create.photoDrag')}
                     </p>
-                    <p className="text-xs text-gray-500">PNG, JPG, HEIC до 10MB</p>
+                    <p className="text-xs text-gray-500">{t('services.create.photoHint')}</p>
                   </div>
                   <input
                     id="image-upload"
@@ -392,7 +396,7 @@ export default function EditServicePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="priceFrom" className="block text-sm font-medium text-gray-700 mb-2">
-                  Ціна від
+                  {t('services.create.fields.priceFrom')}
                 </label>
                 <input
                   type="number"
@@ -408,7 +412,7 @@ export default function EditServicePage() {
               </div>
               <div>
                 <label htmlFor="priceTo" className="block text-sm font-medium text-gray-700 mb-2">
-                  Ціна до
+                  {t('services.create.fields.priceTo')}
                 </label>
                 <input
                   type="number"
@@ -424,7 +428,7 @@ export default function EditServicePage() {
               </div>
               <div>
                 <label htmlFor="priceUnit" className="block text-sm font-medium text-gray-700 mb-2">
-                  Одиниця
+                  {t('services.create.fields.unit')}
                 </label>
                 <select
                   id="priceUnit"
@@ -433,11 +437,9 @@ export default function EditServicePage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="грн">грн</option>
-                  <option value="грн/год">грн/год</option>
-                  <option value="грн/день">грн/день</option>
-                  <option value="грн/м²">грн/м²</option>
-                  <option value="договірна">договірна</option>
+                  {PRICE_UNIT_VALUES.map(unit => (
+                    <option key={unit} value={unit}>{priceUnitLabel(unit, t)}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -446,7 +448,7 @@ export default function EditServicePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                  Місто *
+                  {t('services.create.fields.city')}
                 </label>
                 <select
                   id="city"
@@ -456,15 +458,15 @@ export default function EditServicePage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Оберіть місто</option>
+                  <option value="">{t('services.create.fields.cityPlaceholder')}</option>
                   {cities.map(city => (
-                    <option key={city} value={city}>{city}</option>
+                    <option key={city} value={city}>{getCityName(city, locale)}</option>
                   ))}
                 </select>
               </div>
               <div>
                 <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
-                  Область/Район
+                  {t('services.create.fields.region')}
                 </label>
                 <input
                   type="text"
@@ -473,14 +475,14 @@ export default function EditServicePage() {
                   value={formData.region}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Наприклад: Шевченківський район"
+                  placeholder={t('services.create.fields.regionPlaceholder')}
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                Адреса (необов&apos;язково)
+                {t('services.create.fields.address')}
               </label>
               <input
                 type="text"
@@ -489,7 +491,7 @@ export default function EditServicePage() {
                 value={formData.address}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Вулиця, будинок"
+                placeholder={t('services.create.fields.addressPlaceholder')}
               />
             </div>
 
@@ -500,13 +502,13 @@ export default function EditServicePage() {
                 disabled={loading}
                 className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Зберігаємо...' : 'Зберегти зміни'}
+                {loading ? t('services.edit.saving') : t('services.edit.save')}
               </button>
               <Link
                 href={`/services/${serviceId}`}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center"
               >
-                Скасувати
+                {t('services.create.cancel')}
               </Link>
             </div>
           </form>

@@ -1,0 +1,62 @@
+{
+  "title": "Support",
+  "subtitle": "Help for users of Sviy dlya Svoikh: contact details, answers to frequently asked questions and account deletion.",
+  "contact": {
+    "title": "Contact support",
+    "intro": "Write to us — the platform administration will help with questions about your account, complaints and personal data requests.",
+    "emailTitle": "Email",
+    "emailDescription": "Questions about your account, complaints and personal data requests",
+    "telegramTitle": "Telegram",
+    "telegramDescription": "The fastest way to reach the platform administration",
+    "telegramButton": "Write on Telegram",
+    "contactsBefore": "All ways to reach us are on the ",
+    "contactsLink": "Contacts",
+    "contactsAfter": " page."
+  },
+  "faq": {
+    "title": "Frequently asked questions (FAQ)",
+    "register": {
+      "question": "How do I register?",
+      "before": "Open the ",
+      "link": "registration page",
+      "after": ", choose a profile type (viewer, regular or business) and fill in the form: first name, last name, email and password (at least 6 characters). After registering, you are signed in right away."
+    },
+    "login": {
+      "question": "How do I log in?",
+      "answer": "Tap \"Log in\" and enter the email and password you registered with. If there have been too many failed attempts, sign-in is temporarily limited — wait a while and try again."
+    },
+    "password": {
+      "question": "What should I do if I forgot my password?",
+      "answer": "There is no self-service password reset on the site. Write to the administration on Telegram or to the support email — we will help you regain access to your account after verifying your identity."
+    },
+    "editProfile": {
+      "question": "How do I edit my profile?",
+      "answer": "Log in, open the user menu and choose \"Edit profile\". There you can change your name, contacts, description, photo and other profile fields."
+    },
+    "report": {
+      "question": "How do I report a user or content?",
+      "answer": "Use the \"Report\" button on a profile, service, request or in a chat, choose a reason and, if you wish, describe the problem. You can also send a link to the profile or content with a short description on Telegram or to the support email.",
+      "before": "The rules of conduct on the platform are described in the ",
+      "link": "Terms of Service",
+      "after": "."
+    },
+    "delete": {
+      "question": "How do I delete my account?",
+      "before": "Log in and use the form on the ",
+      "link": "account and data deletion",
+      "after": " page (password confirmation required). If you cannot log in, send a request to support following the instructions on that page."
+    },
+    "free": {
+      "question": "Is the platform free?",
+      "answer": "Yes. Using the platform and listing services is free of charge."
+    }
+  },
+  "links": {
+    "title": "Useful links",
+    "accountDeletion": "Account and data deletion",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "about": "About the platform"
+  },
+  "deletionNote": "We aim to complete an account deletion request within 30 days of verifying the account owner's identity."
+}

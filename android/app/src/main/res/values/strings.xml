@@ -1,7 +1,8 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Свій для Своїх</string>
-    <string name="title_activity_main">Свій для Своїх</string>
+    <!-- Default (English) resources: used for every system language other than Ukrainian. -->
+    <string name="app_name">Sviy dlya Svoikh</string>
+    <string name="title_activity_main">Sviy dlya Svoikh</string>
     <string name="package_name">com.sviy_dlya_svoih.android</string>
     <string name="custom_url_scheme">com.sviy_dlya_svoih.android</string>
 </resources>

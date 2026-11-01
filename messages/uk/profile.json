@@ -1,0 +1,210 @@
+{
+  "loading": "Завантаження...",
+  "public": {
+    "brand": "Свій для Своїх",
+    "back": "Назад",
+    "login": "Увійти",
+    "verified": "Верифікований",
+    "reviewsCount": {
+      "one": "{count} відгук",
+      "few": "{count} відгуки",
+      "many": "{count} відгуків",
+      "other": "{count} відгуку"
+    },
+    "aboutBusiness": "Про бізнес:",
+    "phone": "Телефон",
+    "socialNetworks": "Соціальні мережі:",
+    "services": "Послуги",
+    "reviews": "Відгуки",
+    "negotiable": "За домовленістю",
+    "cta": {
+      "title": "Хочете залишити відгук?",
+      "text": "Увійдіть або зареєструйтесь, щоб оцінити послуги та залишити відгук",
+      "register": "Зареєструватися"
+    }
+  },
+  "view": {
+    "loading": "Завантаження...",
+    "notFound": "Профіль не знайдено",
+    "loadFailed": "Помилка завантаження профілю",
+    "toHome": "На головну",
+    "toasts": {
+      "logoutFailed": "Не вдалося вийти з акаунта",
+      "favoriteUpdateFailed": "Не вдалося оновити обране",
+      "favoriteAdded": "Додано в обране",
+      "favoriteRemoved": "Видалено з обраного"
+    },
+    "header": {
+      "bannerAlt": "Банер компанії",
+      "logoAlt": "Логотип компанії",
+      "verifiedTitle": "Перевірений користувач",
+      "verified": "Перевірений",
+      "years": {
+        "one": "{count} рік",
+        "few": "{count} роки",
+        "many": "{count} років",
+        "other": "{count} року"
+      },
+      "trialActiveTitle": "Пробний період активний",
+      "trialEndedTitle": "Пробний період завершено",
+      "trialActive": "⏰ Пробний період: {days} дн. залишилось",
+      "trialEnded": "⏱️ Пробний період завершено",
+      "reviewsCount": {
+        "one": "{count} відгук",
+        "few": "{count} відгуки",
+        "many": "{count} відгуків",
+        "other": "{count} відгуку"
+      }
+    },
+    "actions": {
+      "edit": "Редагувати",
+      "logout": "Вийти",
+      "loggingOut": "Виходимо...",
+      "write": "Написати",
+      "report": "Поскаржитися",
+      "call": "Подзвонити",
+      "add": "Додати"
+    },
+    "company": {
+      "title": "Інформація про компанію",
+      "name": "Назва компанії",
+      "code": "Код ЄДРПОУ",
+      "category": "Категорія",
+      "offers": "Що пропонує",
+      "website": "Веб-сайт",
+      "description": "Опис"
+    },
+    "vacancies": {
+      "title": "Вакансії",
+      "salary": "Зарплата: ",
+      "type": "Тип: ",
+      "experience": "Досвід: ",
+      "responsibilities": "Обов'язки: ",
+      "requirements": "Вимоги: "
+    },
+    "business": {
+      "defaultTitle": "Бізнес-профіль",
+      "logoAlt": "Логотип {name}",
+      "representative": "Представник",
+      "about": "Про компанію",
+      "mission": "Наша місія",
+      "whyUs": "Чому обирають нас",
+      "whatWeOffer": "Що ми пропонуємо",
+      "priceRange": "Ціновий діапазон",
+      "workHours": "Години роботи",
+      "team": "Наша команда",
+      "employeeCount": "Кількість працівників: ",
+      "serviceLocation": "Де надаємо послуги",
+      "address": "Адреса",
+      "certificates": "Сертифікати та ліцензії",
+      "partners": "Наші партнери",
+      "externalReviews": "Відгуки на інших платформах",
+      "googleReviews": "📍 Google Відгуки",
+      "facebookReviews": "👥 Facebook Відгуки",
+      "otherReviews": "🔗 Зовнішні відгуки",
+      "video": "Відео про компанію",
+      "contacts": "Контакти",
+      "yearFounded": "Рік заснування",
+      "registrationType": "Тип реєстрації",
+      "hasCertificates": "Є сертифікати",
+      "socialTitle": "Ми в соціальних мережах",
+      "website": "Веб-сайт"
+    },
+    "about": {
+      "title": "Про мене",
+      "socialTitle": "Соціальні мережі",
+      "website": "Веб-сайт"
+    },
+    "services": {
+      "title": "Послуги",
+      "defaultUnit": "грн",
+      "priceFrom": "від {price} {unit}",
+      "priceTo": "до {price} {unit}",
+      "emptyOwn": "У вас ще немає послуг",
+      "createFirst": "Створити першу послугу",
+      "emptyOther": "Цей користувач ще не додав послуг"
+    },
+    "reviews": {
+      "title": "Відгуки"
+    },
+    "contacts": {
+      "title": "Контакти"
+    },
+    "info": {
+      "title": "Інформація",
+      "age": "Вік",
+      "gender": "Стать",
+      "maritalStatus": "Сімейний стан",
+      "familyComposition": "Склад сім'ї",
+      "children": "Діти",
+      "noChildren": "Немає дітей",
+      "childrenCount": {
+        "one": "{count} дитина",
+        "few": "{count} дитини",
+        "many": "{count} дітей",
+        "other": "{count} дитини"
+      },
+      "profession": "Професія",
+      "employmentStatus": "Статус зайнятості",
+      "workplace": "Місце роботи",
+      "education": "Освіта",
+      "housingType": "Тип житла",
+      "livingSituation": "Ситуація з житлом",
+      "car": "Автомобіль",
+      "hasCar": "🚗 Є",
+      "noCar": "❌ Немає",
+      "carInfo": "Інфо про авто",
+      "otherTransport": "Інший транспорт",
+      "pets": "Домашні тварини",
+      "hasPets": "🐾 Є",
+      "noPets": "❌ Немає",
+      "petsInfo": "Інфо про тварин",
+      "hobbies": "Хобі та інтереси",
+      "outdoorActivities": "Активний відпочинок",
+      "sports": "Спорт",
+      "lifestyle": "Спосіб життя",
+      "jobSeeking": "Пошук роботи",
+      "privateBusiness": "Приватний бізнес",
+      "registered": "Зареєстрований"
+    },
+    "personal": {
+      "title": "Особиста інформація",
+      "contacts": "Контакти",
+      "genderAge": "Стать / Вік",
+      "maritalStatus": "Сімейний стан",
+      "children": "Діти",
+      "cityRegion": "Місто / Регіон",
+      "educationProfession": "Освіта / Професія",
+      "employment": "Зайнятість",
+      "interests": "Інтереси та Хобі",
+      "hobby": "Хобі:",
+      "sport": "Спорт:",
+      "lifestyle": "Стиль життя:",
+      "outdoor": "Активний відпочинок:"
+    },
+    "housing": {
+      "title": "Житло та транспорт",
+      "carServices": "Авто-сервіси"
+    },
+    "job": {
+      "title": "Пошук роботи / бізнесу",
+      "seekingField": "Шукаю роботу в сфері",
+      "partTime": "Часткова зайнятість",
+      "fullTime": "Повна зайнятість",
+      "startBusiness": "Хочу почати власну справу"
+    },
+    "preferences": {
+      "title": "Переваги та використання сервісів",
+      "restaurantFrequency": "Відвідування ресторанів",
+      "cuisine": "Улюблена кухня",
+      "homeServices": "Побутові сервіси",
+      "businessServices": "Бізнес-сервіси",
+      "beautyServices": "Beauty / Послуги краси"
+    },
+    "account": {
+      "title": "Акаунт",
+      "favorites": "Обране",
+      "deleteAccount": "Видалити акаунт"
+    }
+  }
+}

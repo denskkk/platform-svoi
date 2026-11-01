@@ -8,6 +8,9 @@ import { RespondToRequestModal } from '@/components/requests/RespondToRequestMod
 import { ExecutorResponseCard } from '@/components/requests/ExecutorResponseCard';
 import { useToast } from '@/components/ui/Toast';
 import { ReportButton } from '@/components/ui/ReportButton';
+import { useI18n } from '@/i18n/client';
+import { translateServiceRequestStatus, translateCategory } from '@/lib/translations';
+import { getCityName } from '@/lib/constants';
 
 const statusColors: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',
@@ -20,20 +23,10 @@ const statusColors: Record<string, string> = {
   rejected: 'bg-red-100 text-red-800'
 };
 
-const statusLabels: Record<string, string> = {
-  new: 'Нова заявка',
-  viewed: 'Переглянута',
-  accepted: 'Прийнята в роботу',
-  in_progress: 'Виконується',
-  completed: 'Виконана',
-  paid: 'Оплачена',
-  cancelled: 'Скасована',
-  rejected: 'Відхилена'
-};
-
 export default function ServiceRequestDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const toast = useToast();
+  const { t, locale, formatNumber } = useI18n();
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -88,7 +81,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       const res = await fetch(`/api/service-requests/${params.id}`, {
         credentials: 'include'
       });
-      if (!res.ok) throw new Error('Помилка завантаження');
+      if (!res.ok) throw new Error(t('serviceRequests.common.loadFailed'));
       const data = await res.json();
       setRequest(data.request);
     } catch (error: any) {
@@ -118,7 +111,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       }
 
       await loadRequest();
-      toast.success('Успішно оновлено!');
+      toast.success(t('serviceRequests.detail.updated'));
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -127,7 +120,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
   };
 
   const handleSelectExecutor = async (responseId: number) => {
-    if (!confirm('Обрати цього виконавця?')) return;
+    if (!confirm(t('serviceRequests.detail.selectConfirm'))) return;
     
     setSelectingExecutor(true);
     try {
@@ -144,7 +137,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       }
 
       await loadRequest();
-      toast.success('Виконавця обрано! Заявка переведена в роботу.');
+      toast.success(t('serviceRequests.detail.executorSelected'));
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -167,7 +160,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
       <div className="max-w-4xl mx-auto">
         {/* Назад */}
         <Link href="/service-requests" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6">
-          ← Назад до списку
+          {t('serviceRequests.detail.back')}
         </Link>
 
         {/* Основна картка */}
@@ -176,18 +169,18 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
               <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${statusColors[request.status]}`}>
-                {statusLabels[request.status]}
+                {translateServiceRequestStatus(request.status, locale)}
               </span>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{request.title}</h1>
               {request.category && (
-                <p className="text-gray-500">Категорія: {request.category}</p>
+                <p className="text-gray-500">{t('serviceRequests.detail.category', { category: translateCategory(request.category, locale) })}</p>
               )}
             </div>
           </div>
 
           {/* Опис */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Опис роботи</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('serviceRequests.detail.descriptionTitle')}</h2>
             <p className="text-gray-700 whitespace-pre-wrap">{request.description}</p>
           </div>
 
@@ -195,39 +188,39 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {request.city && (
               <div>
-                <p className="text-sm text-gray-500 mb-1">Місто</p>
-                <p className="font-medium">📍 {request.city}</p>
+                <p className="text-sm text-gray-500                 mb-1">{t('serviceRequests.detail.city')}</p>
+                                <p className="font-medium">📍 {getCityName(request.city, locale)}</p>
               </div>
             )}
             {request.address && (
               <div>
-                <p className="text-sm text-gray-500 mb-1">Адреса</p>
+                <p className="text-sm text-gray-500 mb-1">{t('serviceRequests.detail.address')}</p>
                 <p className="font-medium">{request.address}</p>
               </div>
             )}
             {(request.budgetFrom || request.budgetTo) && (
               <div>
-                <p className="text-sm text-gray-500 mb-1">Бюджет</p>
+                <p className="text-sm text-gray-500                 mb-1">{t('serviceRequests.detail.budget')}</p>
                 <p className="font-medium">
                   💰 {request.budgetFrom && request.budgetTo
-                    ? `${request.budgetFrom}-${request.budgetTo} грн`
+                                    ? t('serviceRequests.budget.range', { from: formatNumber(Number(request.budgetFrom)), to: formatNumber(Number(request.budgetTo)) })
                     : request.budgetFrom
-                    ? `від ${request.budgetFrom} грн`
-                    : `до ${request.budgetTo} грн`}
+                                    ? t('serviceRequests.budget.from', { amount: formatNumber(Number(request.budgetFrom)) })
+                                    : t('serviceRequests.budget.to', { amount: formatNumber(Number(request.budgetTo)) })}
                 </p>
               </div>
             )}
             {request.agreedPrice && (
               <div>
-                <p className="text-sm text-gray-500 mb-1">Узгоджена ціна</p>
-                <p className="font-medium text-green-600">✓ {request.agreedPrice} грн</p>
+                <p className="text-sm text-gray-500                 mb-1">{t('serviceRequests.detail.agreedPrice')}</p>
+                                <p className="font-medium text-green-600">{t('serviceRequests.detail.agreedPriceValue', { amount: formatNumber(Number(request.agreedPrice)) })}</p>
               </div>
             )}
           </div>
 
           {/* Клієнт */}
           <div className="border-t pt-6 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Клієнт</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">{t('serviceRequests.detail.client')}</h3>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
                 {request.client.firstName[0]}
@@ -242,7 +235,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
           {/* Виконавець */}
           {request.executor && (
             <div className="border-t pt-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Виконавець</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('serviceRequests.detail.executor')}</h3>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
                   {request.executor.firstName[0]}
@@ -266,7 +259,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                   onClick={() => setShowRespondModal(true)}
                   className="px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition"
                 >
-                  💰 Запропонувати свою ціну
+                  {t('serviceRequests.detail.respond')}
                 </button>
               )}
 
@@ -276,13 +269,13 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                   {(request.status === 'new' || request.status === 'viewed') && (
                     <button
                       onClick={() => {
-                        const price = prompt('Введіть ціну в грн:');
+                        const price = prompt(t('serviceRequests.detail.pricePrompt'));
                         if (price) handleAction('accept', Number(price));
                       }}
                       disabled={actionLoading}
                       className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
                     >
-                      ✓ Прийняти заявку
+                      {t('serviceRequests.detail.accept')}
                     </button>
                   )}
 
@@ -292,7 +285,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                       disabled={actionLoading}
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
                     >
-                      🔨 Почати роботу
+                      {t('serviceRequests.detail.start')}
                     </button>
                   )}
 
@@ -302,7 +295,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                       disabled={actionLoading}
                       className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition disabled:opacity-50"
                     >
-                      ✓ Завершити роботу
+                      {t('serviceRequests.detail.complete')}
                     </button>
                   )}
                 </>
@@ -317,7 +310,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                       disabled={actionLoading}
                       className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50"
                     >
-                      ✕ Скасувати заявку
+                      {t('serviceRequests.detail.cancelRequest')}
                     </button>
                   )}
                 </>
@@ -329,7 +322,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                   href={`/chat?with=${currentUserId === request.client?.id ? request.executor.id : request.client?.id}`}
                   className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition"
                 >
-                  💬 Написати {currentUserId === request.client?.id ? 'виконавцю' : 'клієнту'}
+                  {currentUserId === request.client?.id ? t('serviceRequests.detail.messageExecutor') : t('serviceRequests.detail.messageClient')}
                 </Link>
               )}
 
@@ -339,7 +332,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                   href={`/reviews/create?requestId=${request.id}&userId=${currentUserId === request.client?.id ? request.executor?.id : request.client?.id}`}
                   className="px-6 py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition"
                 >
-                  ⭐ Залишити відгук
+                  {t('serviceRequests.detail.leaveReview')}
                 </Link>
               )}
 
@@ -350,7 +343,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
                     reportedUserId={request.client.id}
                     contentType="request"
                     contentId={request.id}
-                    label="Поскаржитися на заявку"
+                    label={t('serviceRequests.common.report')}
                   />
                 </div>
               )}
@@ -362,7 +355,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
         {request.isPublic && currentUserId === request.client?.id && request.responses?.length > 0 && (
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Пропозиції виконавців ({request.responses.length})
+              {t('serviceRequests.detail.responsesTitle', { count: request.responses.length })}
             </h2>
             <div className="space-y-4">
               {request.responses.map((response: any) => (

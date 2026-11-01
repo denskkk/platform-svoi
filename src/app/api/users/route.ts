@@ -6,11 +6,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q')?.trim();
@@ -80,6 +82,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('List/search users error:', error);
-    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
+    return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
   }
 }

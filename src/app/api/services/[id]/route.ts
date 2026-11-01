@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
+import { getApiT } from '@/i18n/server';
 
 interface RouteParams {
   params: {
@@ -24,6 +25,7 @@ export async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     const serviceId = parseInt(params.id);
 
@@ -58,7 +60,7 @@ export async function GET(
 
     if (!service) {
       return NextResponse.json(
-        { error: 'Послугу не знайдено' },
+        { error: t('api.services.notFound') },
         { status: 404 }
       );
     }
@@ -68,7 +70,7 @@ export async function GET(
   } catch (error) {
     console.error('Get service error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -79,6 +81,7 @@ export async function PUT(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     const serviceId = parseInt(params.id);
     const auth = await requireAuthWithPermission(request, 'EDIT_SERVICE');
@@ -91,14 +94,14 @@ export async function PUT(
 
     if (!service) {
       return NextResponse.json(
-        { error: 'Послугу не знайдено' },
+        { error: t('api.services.notFound') },
         { status: 404 }
       );
     }
 
     if (service.userId !== auth.user.userId) {
       return NextResponse.json(
-        { error: 'Немає прав на оновлення цієї послуги' },
+        { error: t('api.services.forbiddenUpdate') },
         { status: 403 }
       );
     }
@@ -124,14 +127,14 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      message: 'Послугу оновлено!',
+      message: t('api.services.updated'),
       service: updatedService,
     });
 
   } catch (error) {
     console.error('Update service error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -142,6 +145,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     const serviceId = parseInt(params.id);
     const auth = await requireAuthWithPermission(request, 'DELETE_SERVICE');
@@ -154,14 +158,14 @@ export async function DELETE(
 
     if (!service) {
       return NextResponse.json(
-        { error: 'Послугу не знайдено' },
+        { error: t('api.services.notFound') },
         { status: 404 }
       );
     }
 
     if (service.userId !== auth.user.userId) {
       return NextResponse.json(
-        { error: 'Немає прав на видалення цієї послуги' },
+        { error: t('api.services.forbiddenDelete') },
         { status: 403 }
       );
     }
@@ -172,13 +176,13 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Послугу видалено!',
+      message: t('api.services.deleted'),
     });
 
   } catch (error) {
     console.error('Delete service error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

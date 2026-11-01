@@ -132,8 +132,8 @@ export async function authenticateRequestToken(request: Request): Promise<TokenA
   return { ok: false, reason };
 }
 
-export const AUTH_FAILURE_MESSAGES: Record<AuthFailure, string> = {
-  missing: 'Необхідна автентифікація',
-  invalid: 'Невалідний або прострочений токен',
-  ended: 'Сесія завершена. Увійдіть знову.',
+export const AUTH_FAILURE_KEYS: Record<AuthFailure, string> = {
+  missing: 'api.session.missing',
+  invalid: 'api.session.invalid',
+  ended: 'api.session.ended',
 };

@@ -1,0 +1,47 @@
+{
+  "backToTypeSelection": "Back to account type selection",
+  "logoAlt": "Sviy dlya Svoikh logo",
+  "brand": "Sviy dlya Svoikh",
+  "title": "👤 Standard Profile",
+  "subtitle": "Create a profile and start offering your services",
+  "avatar": {
+    "label": "Profile photo (optional)",
+    "previewAlt": "Photo preview",
+    "upload": "Upload photo",
+    "maxSize": "Max. 5MB"
+  },
+  "fields": {
+    "firstName": "First name *",
+    "firstNamePlaceholder": "Alexander",
+    "lastName": "Last name *",
+    "lastNamePlaceholder": "Petrenko",
+    "email": "Email",
+    "emailPlaceholder": "example@email.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+380 (XX) XXX-XX-XX",
+    "city": "Where do you live?",
+    "cityPlaceholder": "Select a city",
+    "password": "Password *",
+    "passwordPlaceholder": "At least 6 characters",
+    "confirmPassword": "Confirm password *",
+    "confirmPasswordPlaceholder": "Repeat your password"
+  },
+  "social": {
+    "title": "Social networks (optional)"
+  },
+  "submit": "🚀 Continue to questionnaire",
+  "submitting": "Registering...",
+  "businessPrompt": "Business account?",
+  "businessLink": "Sign up here",
+  "loginPrompt": "Already have an account?",
+  "loginLink": "Log in",
+  "loading": "Loading...",
+  "errors": {
+    "fileTooLarge": "The file is too large. Maximum 5MB",
+    "requiredFields": "Please fill in all required fields",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters long",
+    "consentRequired": "Please confirm your agreement to the Terms of Use and Privacy Policy",
+    "registrationFailed": "Registration error"
+  }
+}

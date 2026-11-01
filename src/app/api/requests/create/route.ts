@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/api-middleware'
+import { getApiT } from '@/i18n/server';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   const { user, error } = await requireAuth(request)
   if (error) return error
   const userId = Number(user.userId)
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
     } = body || {}
 
     if (!type || !title || !description) {
-      return NextResponse.json({ error: 'Заповніть обовʼязкові поля (type, title, description)' }, { status: 400 })
+      return NextResponse.json({ error: t('api.requests.createFieldsRequired') }, { status: 400 })
     }
 
     const created = await prisma.request.create({
@@ -47,6 +49,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, requestId: created.id })
   } catch (e: any) {
     console.error('[requests/create] error', e)
-    return NextResponse.json({ error: 'Помилка створення заявки' }, { status: 500 })
+    return NextResponse.json({ error: t('api.serviceRequests.createError') }, { status: 500 })
   }
 }

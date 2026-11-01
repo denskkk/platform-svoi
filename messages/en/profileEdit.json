@@ -1,0 +1,329 @@
+{
+  "loading": "Loading...",
+  "errors": {
+    "loadProfile": "Failed to load profile data",
+    "fileTooLarge": "File is too large. Maximum 10MB",
+    "notImage": "Please choose an image",
+    "uploadPhoto": "Failed to upload photo",
+    "save": "Failed to save"
+  },
+  "success": {
+    "updated": "Profile updated successfully!"
+  },
+  "language": {
+    "title": "Interface language",
+    "description": "Choose the language used across the website and the app."
+  },
+  "header": {
+    "title": "Edit profile",
+    "subtitle": "Update your information"
+  },
+  "avatar": {
+    "title": "Profile photo",
+    "hint": "PNG, JPG or HEIC. Max 10MB",
+    "newPhoto": "✓ New photo: {name}"
+  },
+  "tabs": {
+    "basic": "Basics",
+    "location": "Location & Transport",
+    "profession": "Profession",
+    "interests": "Interests",
+    "social": "Social media"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save changes"
+  },
+  "common": {
+    "notSpecified": "Not specified",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "basic": {
+    "title": "Basic information",
+    "firstName": "First name *",
+    "lastName": "Last name *",
+    "middleName": "Middle name",
+    "phone": "Phone",
+    "age": "Age",
+    "gender": "Gender",
+    "maritalStatus": "Marital status",
+    "childrenCount": "Number of children",
+    "familyComposition": "Family composition"
+  },
+  "location": {
+    "title": "Residence & Transport",
+    "city": "City *",
+    "selectCity": "Select a city",
+    "region": "Region",
+    "housingType": "Housing type",
+    "livingSituation": "Living arrangement",
+    "hasCar": "Do you have a car?",
+    "carInfo": "Car make and model",
+    "otherTransport": "Other transport",
+    "otherTransportPlaceholder": "Describe other transport"
+  },
+  "profession": {
+    "title": "Professional activity",
+    "profession": "Profession / Specialty",
+    "employmentStatus": "Employment status",
+    "workplace": "Workplace",
+    "education": "Education",
+    "businessInfo": "Private business information",
+    "jobSeeking": "Job search"
+  },
+  "interests": {
+    "title": "Interests & hobbies",
+    "hasPets": "Do you have pets?",
+    "petsInfo": "Which pets?",
+    "petsOtherPlaceholder": "Describe other pets",
+    "hobbies": "Hobbies",
+    "hobbiesOtherPlaceholder": "Describe other hobbies",
+    "outdoorActivities": "Outdoor activities",
+    "outdoorOtherPlaceholder": "Describe other activities",
+    "lifestyle": "Lifestyle",
+    "lifestyleOtherPlaceholder": "Describe another lifestyle",
+    "sports": "Sports",
+    "sportsOtherPlaceholder": "Describe other sports",
+    "bio": "About me",
+    "bioPlaceholder": "Tell us about yourself..."
+  },
+  "social": {
+    "title": "Social media & goals",
+    "usageGoal": "Purpose of using the platform",
+    "usageGoalOtherPlaceholder": "Describe another purpose"
+  },
+  "options": {
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "maritalStatus": {
+      "single": "Single",
+      "married": "Married",
+      "relationship": "In a relationship",
+      "divorced": "Divorced"
+    },
+    "housingType": {
+      "house": "House",
+      "apartment": "Apartment",
+      "other": "Other"
+    },
+    "livingSituation": {
+      "alone": "On my own",
+      "family": "With family",
+      "roommates": "With roommates"
+    },
+    "employmentStatus": {
+      "employed": "Employed",
+      "unemployed": "Unemployed",
+      "freelance": "Freelance",
+      "business": "Own business",
+      "student": "Student",
+      "retired": "Retired"
+    },
+    "otherTransport": {
+      "bicycle": "Bicycle",
+      "scooter": "Scooter",
+      "motorcycle": "Motorcycle",
+      "skateboard": "Skateboard",
+      "mountainBike": "Mountain bike",
+      "other": "Other"
+    },
+    "pets": {
+      "dog": "Dog",
+      "cat": "Cat",
+      "birds": "Birds",
+      "fish": "Fish",
+      "other": "Other"
+    },
+    "hobbies": {
+      "reading": "Reading",
+      "music": "Music",
+      "cinema": "Movies",
+      "travel": "Travel",
+      "cooking": "Cooking",
+      "other": "Other"
+    },
+    "outdoorActivities": {
+      "hiking": "Hiking",
+      "picnic": "Picnic",
+      "beach": "Beach",
+      "parks": "Parks",
+      "other": "Other"
+    },
+    "lifestyle": {
+      "eco": "Eco-friendly",
+      "minimalism": "Minimalism",
+      "healthy": "Healthy lifestyle",
+      "vegetarian": "Vegetarianism",
+      "other": "Other"
+    },
+    "sports": {
+      "football": "Football",
+      "running": "Running",
+      "gym": "Gym",
+      "yoga": "Yoga",
+      "other": "Other"
+    },
+    "siteUsageGoal": {
+      "findServices": "Finding services",
+      "offerServices": "Offering services",
+      "meetPeople": "Meeting new people",
+      "businessPartners": "Business partners",
+      "other": "Other"
+    }
+  },
+  "business": {
+    "header": {
+      "subtitle": "Update information about yourself and your company"
+    },
+    "labels": {
+      "logo": "Logo",
+      "banner": "Banner",
+      "photoAlt": "Photo"
+    },
+    "errors": {
+      "fileTooLarge": "{label}: file is too large. Maximum 10MB",
+      "notImage": "{label}: please choose an image",
+      "upload": "{label}: {error}",
+      "uploadFallback": "failed to upload the image",
+      "representativeRequired": "Enter the representative's first and last name",
+      "companyNameRequired": "Enter the company name",
+      "saveRepresentative": "Failed to save the representative's details",
+      "saveCompany": "Failed to save the company details"
+    },
+    "tabs": {
+      "basic": "Basics",
+      "company": "Company",
+      "contacts": "Contacts",
+      "seeking": "Collaboration"
+    },
+    "basic": {
+      "title": "Company representative details",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Representative's phone"
+    },
+    "company": {
+      "title": "Company information",
+      "name": "Company name",
+      "namePlaceholder": "LLC 'Construction Company'",
+      "code": "Company registration code (EDRPOU)",
+      "city": "City of operation",
+      "type": "Company type",
+      "selectType": "Select a type",
+      "category": "Business category",
+      "selectCategory": "Select a category",
+      "offerType": "What do you offer?",
+      "select": "Select",
+      "description": "Short description",
+      "descriptionPlaceholder": "What your company offers...",
+      "logoLabel": "Company logo",
+      "logoAlt": "Company logo",
+      "replaceLogo": "Replace logo",
+      "uploadLogo": "Upload logo",
+      "bannerLabel": "Company banner",
+      "bannerAlt": "Company banner",
+      "replaceBanner": "Replace banner",
+      "uploadBanner": "Upload banner"
+    },
+    "contacts": {
+      "title": "Company contacts & social media",
+      "companyPhone": "Company phone",
+      "website": "Website",
+      "address": "Address",
+      "addressPlaceholder": "City, street, building",
+      "workHours": "Working hours",
+      "workHoursPlaceholder": "Mon-Fri 9:00–18:00"
+    },
+    "seeking": {
+      "title": "Who or what are you looking for?",
+      "partner": {
+        "title": "Partner",
+        "hint": "Find business partners for collaboration",
+        "type": "Partner type",
+        "sphere": "Area of collaboration",
+        "spherePlaceholder": "For example: wholesale supplies, joint marketing...",
+        "collaboration": "Terms of collaboration",
+        "collaborationPlaceholder": "Describe what you offer to a partner..."
+      },
+      "investor": {
+        "title": "Investor",
+        "hint": "Attract investment for growth",
+        "amount": "Required investment amount",
+        "amountPlaceholder": "For example: from 500,000 to 1,000,000 UAH",
+        "term": "Payback period",
+        "termPlaceholder": "For example: 18-24 months",
+        "goals": "Investment goals",
+        "goalsPlaceholder": "What the investment will be used for: expansion, equipment, marketing...",
+        "offer": "What you offer to the investor",
+        "offerPlaceholder": "Equity share, dividends, other..."
+      },
+      "customer": {
+        "title": "Customer",
+        "hint": "Expand your customer base",
+        "target": "Target audience",
+        "targetPlaceholder": "Who your customers are: individuals, businesses, age group...",
+        "offer": "What you offer",
+        "offerPlaceholder": "Describe your products/services...",
+        "benefits": "Benefits for customers",
+        "benefitsPlaceholder": "Why people choose you: quality, price, speed..."
+      },
+      "employee": {
+        "title": "Employee",
+        "hint": "Find people to join your team",
+        "vacancies": "Vacancies",
+        "addVacancy": "Add vacancy",
+        "empty": "Add the vacancies you want to publish",
+        "vacancyNumber": "Vacancy #{number}",
+        "removeVacancy": "Remove vacancy",
+        "position": "Position",
+        "responsibilities": "Responsibilities",
+        "requirements": "Requirements",
+        "salary": "Salary (UAH)",
+        "employmentType": "Employment type",
+        "experience": "Required experience"
+      }
+    },
+    "options": {
+      "companyType": {
+        "fop": "Sole proprietor (FOP)",
+        "tov": "LLC (TOV)",
+        "other": "Other"
+      },
+      "businessCategory": {
+        "education": "Education",
+        "products": "Food products",
+        "advertising": "Advertising & marketing",
+        "online_sales": "Online sales",
+        "offline_sales": "Offline retail",
+        "auto_service": "Auto repair & service",
+        "construction": "Construction & renovation",
+        "it": "IT & development",
+        "other": "Other"
+      },
+      "offerType": {
+        "service": "Service",
+        "product": "Product",
+        "both": "Services and products"
+      },
+      "partnerType": {
+        "investor": "Investment partner",
+        "supplier": "Supplier",
+        "distributor": "Distributor",
+        "franchise": "Franchisee",
+        "strategic": "Strategic partner",
+        "other": "Other"
+      },
+      "employmentType": {
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "remote": "Remote work",
+        "contract": "Contract",
+        "freelance": "Freelance"
+      }
+    }
+  }
+}

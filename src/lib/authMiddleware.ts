@@ -4,7 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { AUTH_FAILURE_MESSAGES, authenticateRequestToken } from '@/lib/session';
+import { AUTH_FAILURE_KEYS, authenticateRequestToken } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
 
 export interface AuthenticatedRequest extends NextRequest {
   user?: {
@@ -23,11 +24,12 @@ export async function withAuth(
   request: NextRequest,
   handler: (req: AuthenticatedRequest) => Promise<NextResponse>
 ): Promise<NextResponse> {
+  const t = getApiT(request);
   // Спочатку httpOnly cookie, потім Authorization header (зворотна сумісність)
   const auth = await authenticateRequestToken(request);
   if (!auth.ok) {
     return NextResponse.json(
-      { error: AUTH_FAILURE_MESSAGES[auth.reason] },
+      { error: t(AUTH_FAILURE_KEYS[auth.reason]) },
       { status: 401 }
     );
   }
@@ -40,7 +42,7 @@ export async function withAuth(
   });
   if (!dbUser || !dbUser.isActive) {
     return NextResponse.json(
-      { error: 'Акаунт не знайдено або деактивовано' },
+      { error: t('api.common.accountInactive') },
       { status: 401 }
     );
   }

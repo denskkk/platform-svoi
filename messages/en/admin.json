@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "title": "Admin panel — Sviy dlya Svoikh",
+    "description": "Administrator panel for managing the platform"
+  },
+  "common": {
+    "retry": "Try again",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "backToAdmin": "Back to admin panel",
+    "previous": "Back",
+    "next": "Next"
+  },
+  "dashboard": {
+    "accessDeniedToast": "Access denied. Administrators only.",
+    "accessDenied": "Access denied",
+    "adminsOnly": "Administrators only",
+    "statsError": "Failed to load statistics",
+    "loadingStats": "Loading statistics...",
+    "title": "Admin panel",
+    "subtitle": "Detailed business statistics of the Sviy dlya Svoikh platform",
+    "logout": "Log out",
+    "cards": {
+      "users": "Users",
+      "active": "Active: {count}",
+      "services": "Services",
+      "messages": "Messages"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "users": "Users",
+      "conversations": "Conversations",
+      "reports": "Reports"
+    },
+    "recentUsers": "New users (last 7 days)",
+    "usersList": "Detailed user list",
+    "goToUsers": "Go to user management →",
+    "conversationsStats": "Conversation statistics",
+    "goToConversations": "Go to conversations →"
+  },
+  "messages": {
+    "title": "User conversations",
+    "subtitle": "View all messages on the platform",
+    "searchPlaceholder": "Search by name...",
+    "search": "Search",
+    "loadingMessages": "Loading messages...",
+    "conversation": "Conversation",
+    "totalMessages": "Total messages: {count}",
+    "selectConversation": "Select a conversation to view",
+    "loadConversationsError": "Failed to load conversations",
+    "loadMessagesError": "Failed to load messages"
+  },
+  "reports": {
+    "title": "User reports",
+    "empty": "No reports",
+    "loadError": "Failed to load",
+    "updateError": "Failed to update",
+    "statusUpdated": "Status updated",
+    "against": "Against:",
+    "from": "From:",
+    "status": {
+      "new": "New",
+      "in_review": "In review",
+      "resolved": "Resolved",
+      "rejected": "Rejected"
+    },
+    "categories": {
+      "spam": "Spam",
+      "fraud": "Fraud",
+      "abuse": "Abuse / threats",
+      "inappropriate": "Inappropriate content",
+      "fake": "Fake profile / review",
+      "other": "Other"
+    },
+    "actions": {
+      "takeInReview": "Take for review",
+      "resolve": "Resolved",
+      "reject": "Reject"
+    }
+  },
+  "users": {
+    "title": "User management",
+    "subtitle": "Verification and detailed information",
+    "searchPlaceholder": "Search by name, email, city...",
+    "search": "Search",
+    "sort": {
+      "createdAt": "Registration date",
+      "firstName": "First name",
+      "city": "City"
+    },
+    "order": {
+      "desc": "Descending",
+      "asc": "Ascending"
+    },
+    "verified": "Verified",
+    "registered": "Registered: {date}",
+    "lastLogin": "Last login: {date}",
+    "services": "Services",
+    "verify": "Verify",
+    "unverify": "Remove status",
+    "pageOf": "Page {page} of {total}",
+    "confirmVerify": "Grant the \"Verified\" status to {name}?",
+    "confirmUnverify": "Remove the \"Verified\" status from {name}?",
+    "loadError": "Failed to load users",
+    "updateError": "Failed to update status"
+  }
+}

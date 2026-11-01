@@ -1,0 +1,227 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "createRequest": "Create request",
+    "creating": "Creating...",
+    "back": "Back",
+    "createFailed": "Failed to create the request",
+    "loadFailed": "Failed to load",
+    "report": "Report this request"
+  },
+  "budget": {
+    "range": "{from}-{to} UAH",
+    "rangeSpaced": "{from} - {to} UAH",
+    "from": "from {amount} UAH",
+    "to": "up to {amount} UAH",
+    "negotiable": "Negotiable",
+    "price": "{amount} UAH"
+  },
+  "list": {
+    "title": "Service requests",
+    "subtitle": "Find a provider or offer your services",
+    "createButton": "+ Create request",
+    "filters": {
+      "tome": "📩 Requests for me",
+      "assigned": "🔨 In progress",
+      "my": "📝 My requests",
+      "all": "🔍 All"
+    },
+    "emptyTitle": "No requests yet",
+    "emptyDescription": "Create your first request or change the filter",
+    "executor": "Provider: {name}"
+  },
+  "create": {
+    "viewerBlocked": "Viewers cannot create requests. Switch to a regular profile on your profile page.",
+    "subtitle": "Describe what you need and providers will respond",
+    "titleLabel": "Request title *",
+    "titlePlaceholder": "E.g.: Electrician needed to replace wiring",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select a category",
+    "categories": {
+      "electrics": "Electrical",
+      "plumbing": "Plumbing",
+      "construction": "Construction",
+      "repair": "Repair",
+      "cleaning": "Cleaning",
+      "gardening": "Gardening",
+      "other": "Other"
+    },
+    "descriptionLabel": "Job description *",
+    "descriptionPlaceholder": "Describe in detail what needs to be done, when and which materials...",
+    "cityLabel": "City",
+    "cityPlaceholder": "Kyiv",
+    "addressLabel": "Address (optional)",
+    "addressPlaceholder": "1 Khreshchatyk St.",
+    "budgetLabel": "Estimated budget (UAH)",
+    "budgetFromPlaceholder": "From",
+    "budgetToPlaceholder": "To"
+  },
+  "detail": {
+    "back": "← Back to the list",
+    "category": "Category: {category}",
+    "descriptionTitle": "Job description",
+    "city": "City",
+    "address": "Address",
+    "budget": "Budget",
+    "agreedPrice": "Agreed price",
+    "agreedPriceValue": "✓ {amount} UAH",
+    "client": "Client",
+    "executor": "Provider",
+    "respond": "💰 Offer your price",
+    "pricePrompt": "Enter the price in UAH:",
+    "accept": "✓ Accept request",
+    "start": "🔨 Start work",
+    "complete": "✓ Complete work",
+    "cancelRequest": "✕ Cancel request",
+    "messageExecutor": "💬 Message the provider",
+    "messageClient": "💬 Message the client",
+    "leaveReview": "⭐ Leave a review",
+    "responsesTitle": "Provider offers ({count})",
+    "updated": "Updated successfully!",
+    "selectConfirm": "Choose this provider?",
+    "executorSelected": "Provider selected! The request is now in progress."
+  },
+  "publicList": {
+    "badge": "📋 Public orders",
+    "title": "Public requests",
+    "subtitle": "Find orders and offer your services",
+    "searchPlaceholder": "Search requests...",
+    "allCategories": "📂 All categories",
+    "allCities": "📍 All cities",
+    "createButton": "Create a public request",
+    "allRequests": "All requests",
+    "emptyTitle": "No requests found",
+    "emptyDescription": "Try changing your search filters or create the first public request",
+    "viewDetails": "View details"
+  },
+  "publicCreate": {
+    "back": "Back to requests",
+    "title": "Create a public request",
+    "subtitle": "Describe what you need and providers will offer their services. Publishing is free.",
+    "titleLabel": "Request title",
+    "titlePlaceholder": "E.g.: Electrician needed to repair wiring",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select a category",
+    "categories": {
+      "electrics": "⚡ Electrical",
+      "plumbing": "🚰 Plumbing",
+      "construction": "🏗️ Construction",
+      "repair": "🔧 Repair",
+      "design": "🎨 Design",
+      "it": "💻 IT services",
+      "transport": "🚚 Transportation",
+      "cleaning": "🧹 Cleaning",
+      "other": "📌 Other"
+    },
+    "descriptionLabel": "Detailed description",
+    "descriptionPlaceholder": "Describe in detail what you need, when, and any specifics of the job...",
+    "budgetFromLabel": "Budget from (UAH)",
+    "budgetToLabel": "Budget up to (UAH)",
+    "cityLabel": "City",
+    "cityPlaceholder": "Kyiv"
+  },
+  "requestForm": {
+    "title": "Submit a request",
+    "submit": "Submit request",
+    "serviceMissing": "The selected service is unavailable or has been deleted. You can still create a general request that is not linked to this service.",
+    "forService": "You are submitting a request for the service:",
+    "executor": "Provider: {name}",
+    "titleLabel": "Request title",
+    "titlePlaceholder": "E.g.: Electrician needed to repair wiring",
+    "descriptionLabel": "Request description",
+    "descriptionPlaceholder": "Describe in detail what you need...",
+    "budgetFromLabel": "Budget from (UAH)",
+    "budgetToLabel": "Budget up to (UAH)",
+    "cityLabel": "City",
+    "cityPlaceholder": "Kyiv",
+    "prefillTitle": "Request for \"{title}\"",
+    "prefillDescription": "I need the service: {title}"
+  },
+  "requestView": {
+    "notFound": "Request not found",
+    "toServices": "To the services catalog",
+    "types": {
+      "job": "Job",
+      "partner": "Partner search",
+      "service": "Service request",
+      "other": "Request"
+    },
+    "published": "Published: {date}",
+    "budgetFrom": "Budget: from {amount} UAH",
+    "budgetTo": "Up to: {amount} UAH",
+    "deadline": "Deadline: {date}",
+    "messageAuthor": "Message the author",
+    "loadError": "Failed to load the request"
+  },
+  "createModal": {
+    "close": "Close",
+    "types": {
+      "partner": "Partner search (couple)",
+      "job": "Job application",
+      "service": "Service request",
+      "employee": "Employee search",
+      "investor": "Investor search",
+      "other": "Advanced search"
+    },
+    "typeLabel": "Request type",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "photoLabel": "Photo (optional)",
+    "previewAlt": "Preview",
+    "submitting": "Creating...",
+    "errors": {
+      "required": "Please fill in the title and description",
+      "notImage": "Please choose an image",
+      "tooLarge": "The file is too large. Maximum 10MB",
+      "generic": "Error"
+    }
+  },
+  "respondModal": {
+    "title": "Offer your price",
+    "requestLabel": "Request",
+    "priceLabel": "Proposed price (UAH)",
+    "pricePlaceholder": "E.g.: 500",
+    "priceHint": "Enter your price for completing the job in hryvnias",
+    "daysLabel": "Estimated completion time (days)",
+    "daysPlaceholder": "E.g.: 3",
+    "daysHint": "How many days you need to complete the job",
+    "commentLabel": "Comment on your offer",
+    "commentPlaceholder": "Describe how you will do this job, your experience, and why you are the right choice...",
+    "commentHint": "At least 20 characters",
+    "submit": "Send offer",
+    "sending": "Sending...",
+    "requiredFields": "Please fill in all required fields",
+    "success": "Your offer has been sent successfully!",
+    "failed": "Failed to send the offer"
+  },
+  "responseCard": {
+    "reviewsCount": {
+      "one": "({count} review)",
+      "other": "({count} reviews)"
+    },
+    "price": "Price:",
+    "term": "Timeframe:",
+    "days": {
+      "one": "{count} day",
+      "other": "{count} days"
+    },
+    "selected": "Selected",
+    "rejected": "Rejected",
+    "selectExecutor": "Choose provider",
+    "alreadyChosen": "Another provider has already been chosen",
+    "justNow": "Just now",
+    "daysAgo": {
+      "one": "{count} day ago",
+      "other": "{count} days ago"
+    },
+    "hoursAgo": {
+      "one": "{count} hour ago",
+      "other": "{count} hours ago"
+    },
+    "minutesAgo": {
+      "one": "{count} minute ago",
+      "other": "{count} minutes ago"
+    }
+  }
+}

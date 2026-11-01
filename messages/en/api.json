@@ -1,0 +1,191 @@
+{
+  "common": {
+    "serverError": "Server error",
+    "authRequired": "Authorization required",
+    "notAuthorized": "Not authorized",
+    "invalidToken": "Invalid token",
+    "wrongToken": "Invalid token",
+    "adminOnly": "Access denied. Administrators only.",
+    "insufficientRights": "Insufficient permissions",
+    "userNotFound": "User not found",
+    "invalidData": "Invalid data",
+    "badRequest": "Invalid request",
+    "requiredFields": "Please fill in all required fields",
+    "invalidAccountType": "Invalid account type",
+    "invalidEmail": "Invalid email format",
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "tooManyRequestsShort": "Too many requests. Please try again later.",
+    "requestTimeout": "The request took too long. Please try again later.",
+    "csrfInvalid": "Invalid CSRF token",
+    "accountInactive": "Account not found or deactivated",
+    "authError": "Authorization error",
+    "userIdRequired": "userId is required",
+    "specifyUser": "Specify a user"
+  },
+  "session": {
+    "missing": "Authentication required",
+    "invalid": "Invalid or expired token",
+    "ended": "Session has ended. Please sign in again."
+  },
+  "permissions": {
+    "accountTypes": {
+      "viewer": "Viewer",
+      "basic": "Basic",
+      "business": "Business"
+    },
+    "createService": "Creating services is available with a \"{type}\" account. Please register.",
+    "createRequest": "Creating requests is available with a \"{type}\" account. Please register.",
+    "sendMessage": "Sending messages is available with a \"{type}\" account. Please register.",
+    "autoProposals": "Automatic proposals are a paid option. Activate it in your profile.",
+    "default": "This feature is available with a \"{type}\" account. Please register."
+  },
+  "chat": {
+    "viewerCannotWrite": "Viewers cannot write in chat. Switch to a regular profile on your profile page.",
+    "noRecipient": "Participant ID not specified",
+    "selfConversation": "You cannot start a conversation with yourself",
+    "userInactive": "User is not active",
+    "invalidConversationId": "Invalid conversation ID",
+    "conversationNotFound": "Conversation not found or access denied",
+    "emptyMessage": "Message cannot be empty",
+    "messageTooLong": "Message is too long (maximum {max} characters)",
+    "recipientAndTextRequired": "Specify a recipient and message text",
+    "messageSent": "Message sent!"
+  },
+  "admin": {
+    "statsError": "Failed to load statistics",
+    "conversationsStatsError": "Failed to load conversation statistics",
+    "messagesError": "Failed to load conversations",
+    "usersError": "Failed to load the user list",
+    "verifiedMustBeBoolean": "The \"verified\" parameter must be a boolean",
+    "verifiedGranted": "User {firstName} {lastName} has received the \"Verified\" status",
+    "verifiedRevoked": "The \"Verified\" status has been removed from user {firstName} {lastName}",
+    "statusUpdateError": "Failed to update status"
+  },
+  "auth": {
+    "tooManyAttempts": "Too many attempts. Please try again later.",
+    "passwordRequired": "Enter your password to confirm",
+    "adminDeletionViaSupport": "The administrator account can only be deleted through support.",
+    "wrongPassword": "Incorrect password",
+    "accountDeleted": "The account and related data have been deleted.",
+    "deleteFailed": "Could not delete the account. Please contact support.",
+    "loginLocked": "Too many failed login attempts. Try again in {minutes} min.",
+    "emailPasswordRequired": "Email and password are required",
+    "invalidCredentials": "Invalid email or password",
+    "loginSuccess": "Login successful!",
+    "sessionEnded": "Session ended",
+    "originNotAllowed": "Request origin not allowed",
+    "serviceUnavailable": "Service temporarily unavailable",
+    "tooManyRegistrations": "Too many registration attempts. Please try again in an hour.",
+    "passwordMin": "Password must be at least {min} characters long",
+    "emailExists": "A user with this email already exists",
+    "registerSuccess": "Registration successful!",
+    "businessInvalidFormat": "Invalid request format. User and business data are required",
+    "businessPersonalRequired": "Please fill in all required personal details",
+    "companyNameRequired": "Enter the company name",
+    "invalidBusinessType": "Invalid business account type",
+    "businessPasswordMin": "Password must be at least {min} characters long",
+    "businessCreated": "Business account created successfully!",
+    "businessRegisterError": "Server error while registering the business"
+  },
+  "businessInfo": {
+    "exists": "Business profile already exists",
+    "created": "Business profile created!",
+    "updated": "Business profile updated!"
+  },
+  "favorites": {
+    "selfFavorite": "You cannot add yourself to favorites",
+    "added": "Added to favorites!",
+    "removed": "Removed from favorites!"
+  },
+  "profile": {
+    "invalidUserId": "Invalid user ID",
+    "forbiddenUpdate": "You do not have permission to update this profile",
+    "childrenAgesInvalidJson": "childrenAges must be valid JSON",
+    "carServicesInvalidJson": "carServices must be valid JSON",
+    "invalidEducation": "Invalid education level",
+    "updated": "Profile updated!"
+  },
+  "reports": {
+    "tooMany": "Too many reports in a short time. Please try again later.",
+    "invalidUser": "Invalid user",
+    "selfReport": "You cannot report yourself",
+    "invalidCategory": "Invalid report category",
+    "invalidContentType": "Invalid content type",
+    "detailsTooLong": "Report description is too long (max. {max} characters)",
+    "sent": "Thank you! Your report has been sent to the administrators."
+  },
+  "requests": {
+    "createFieldsRequired": "Fill in the required fields (type, title, description)"
+  },
+  "reviews": {
+    "userAndRatingRequired": "Specify a user and a rating",
+    "ratingRange": "Rating must be between 1 and 5",
+    "selfReview": "You cannot leave a review for yourself",
+    "notAllowed": "You cannot leave a review for this request",
+    "onlyAfterCompletion": "A review can only be left after the request is completed",
+    "alreadyReviewed": "You have already left a review for this request",
+    "updated": "Review updated",
+    "created": "Review created!",
+    "userIdRequired": "Specify userId"
+  },
+  "serviceRequests": {
+    "newCountError": "Failed to load the number of requests",
+    "viewerCannotCreate": "Viewers cannot create requests. Switch to a regular profile on your profile page.",
+    "titleDescriptionRequired": "Fill in the required fields: title and description",
+    "titleTooLong": "Title is too long (max. {max} characters)",
+    "serviceUnavailable": "Service not found or unavailable",
+    "createError": "Failed to create the request",
+    "listError": "Failed to load requests",
+    "commentMin": "Comment must be at least {min} characters",
+    "notFound": "Request not found",
+    "privateNoResponses": "This is a private request; responses are not available",
+    "ownRequest": "You cannot respond to your own request",
+    "executorAlreadySelected": "An executor has already been selected for this request",
+    "alreadyResponded": "You have already responded to this request",
+    "getError": "Failed to load the request",
+    "notAddressedToYou": "You cannot accept this request - it is not addressed to you",
+    "priceRequired": "Specify a price to accept the request",
+    "nothingToUpdate": "No data to update or insufficient permissions",
+    "updateError": "Failed to update the request",
+    "cannotDeleteStatus": "This request cannot be deleted in its current status",
+    "deleted": "Request deleted",
+    "deleteError": "Failed to delete the request",
+    "selectExecutor": {
+      "responseIdRequired": "Response ID is required",
+      "clientOnly": "Only the client can select an executor",
+      "notOpen": "The request is no longer open",
+      "responseNotFound": "Response not found",
+      "success": "Executor selected successfully",
+      "failed": "Failed to select executor"
+    }
+  },
+  "services": {
+    "viewerCannotCreate": "Viewers cannot create services. Switch to a regular profile on your profile page.",
+    "created": "Service created!",
+    "notFound": "Service not found",
+    "forbiddenUpdate": "You do not have permission to update this service",
+    "updated": "Service updated!",
+    "forbiddenDelete": "You do not have permission to delete this service",
+    "deleted": "Service deleted!"
+  },
+  "upload": {
+    "tooMany": "Too many uploads. Please try again later.",
+    "noFile": "No file provided for upload",
+    "logoNotImage": "The logo must be an image",
+    "logoTooLarge": "The logo size must not exceed {max}MB",
+    "bannerNotImage": "The banner must be an image",
+    "bannerTooLarge": "The banner size must not exceed {max}MB",
+    "imagesUploaded": "Images uploaded successfully",
+    "imagesError": "Failed to upload images",
+    "fileNotFound": "File not found",
+    "imageTypesOnly": "Only images are allowed: JPG, PNG, WebP, GIF, HEIC/HEIF",
+    "fileTooLarge": "File is too large. Maximum {max}MB",
+    "invalidFileName": "Invalid file name",
+    "error": "File upload error"
+  },
+  "user": {
+    "alreadyHasType": "You already have this account type",
+    "upgraded": "You now have a regular profile!",
+    "upgradeError": "Failed to update the account"
+  }
+}

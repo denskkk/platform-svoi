@@ -6,12 +6,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware';
+import { getApiT } from '@/i18n/server';
 
 async function handler(request: AuthenticatedRequest) {
+  const t = getApiT(request);
   try {
     if (!request.user) {
       return NextResponse.json(
-        { error: 'Необхідна автентифікація' },
+        { error: t('api.session.missing') },
         { status: 401 }
       );
     }
@@ -44,7 +46,7 @@ async function handler(request: AuthenticatedRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Користувача не знайдено' },
+        { error: t('api.common.userNotFound') },
         { status: 404 }
       );
     }
@@ -53,7 +55,7 @@ async function handler(request: AuthenticatedRequest) {
   } catch (error) {
     console.error('Get current user error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

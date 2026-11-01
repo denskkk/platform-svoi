@@ -11,8 +11,11 @@ import { Eye, EyeOff, User, Mail, Lock, MapPin, Phone, ArrowLeft, Upload, X, Fac
 import { saveUser, saveToken } from '@/lib/client-auth';
 import Image from 'next/image';
 import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox';
+import { useI18n } from '@/i18n/client';
+import { localizedPath } from '@/i18n/routes';
 
 function ViewerRegisterForm() {
+  const { t, locale } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -39,7 +42,7 @@ function ViewerRegisterForm() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 5MB');
+        setError(t('registerViewer.errors.fileTooLarge'));
         return;
       }
       setAvatarFile(file);
@@ -62,23 +65,23 @@ function ViewerRegisterForm() {
 
     // Валідація обов'язкових полів
     if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
-      setError('Заповніть всі обов\'язкові поля');
+      setError(t('registerViewer.errors.requiredFields'));
       return;
     }
 
     // Валідація паролів
     if (formData.password !== formData.confirmPassword) {
-      setError('Паролі не співпадають');
+      setError(t('registerViewer.errors.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Пароль має містити мінімум 6 символів');
+      setError(t('registerViewer.errors.passwordTooShort'));
       return;
     }
 
     if (!consent) {
-      setError('Підтвердьте згоду з Умовами використання та Політикою конфіденційності');
+      setError(t('registerViewer.errors.consentRequired'));
       return;
     }
 
@@ -117,7 +120,7 @@ function ViewerRegisterForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка реєстрації');
+        throw new Error(data.error || t('registerViewer.errors.registrationFailed'));
       }
 
       // Зберегти дані користувача та токен
@@ -153,19 +156,19 @@ function ViewerRegisterForm() {
           className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6 transition"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Назад до вибору типу
+          {t('registerViewer.backToTypeSelection')}
         </Link>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-blue-600 mb-4 inline-block">
-            Свій для Своїх
+          <Link href={localizedPath('/', locale)} className="text-3xl font-bold text-blue-600 mb-4 inline-block">
+            {t('registerViewer.brand')}
           </Link>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            👁️ Реєстрація Глядача
+            {t('registerViewer.title')}
           </h2>
           <p className="text-gray-600">
-            Швидка реєстрація для пошуку та перегляду фахівців
+            {t('registerViewer.subtitle')}
           </p>
         </div>
 
@@ -181,14 +184,14 @@ function ViewerRegisterForm() {
             {/* Аватар */}
             <div className="flex flex-col items-center mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Фото профілю (необов&apos;язково)
+                {t('registerViewer.avatar.label')}
               </label>
               <div className="relative">
                 {avatarPreview ? (
                   <div className="relative w-32 h-32">
                     <Image
                       src={avatarPreview}
-                      alt="Avatar preview"
+                      alt={t('registerViewer.avatar.previewAlt')}
                       fill
                       className="rounded-full object-cover border-4 border-blue-500"
                     />
@@ -203,7 +206,7 @@ function ViewerRegisterForm() {
                 ) : (
                   <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-full cursor-pointer hover:border-blue-500 transition-colors bg-gray-50">
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                    <span className="text-xs text-gray-500 text-center px-2">Завантажити фото</span>
+                    <span className="text-xs text-gray-500 text-center px-2">{t('registerViewer.avatar.upload')}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -213,14 +216,14 @@ function ViewerRegisterForm() {
                   </label>
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-2">Макс. 5MB</p>
+              <p className="text-xs text-gray-500 mt-2">{t('registerViewer.avatar.maxSize')}</p>
             </div>
 
             {/* Ім'я та Прізвище */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Ім&apos;я *
+                  {t('registerViewer.fields.firstName')}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -232,14 +235,14 @@ function ViewerRegisterForm() {
                     value={formData.firstName}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Іван"
+                    placeholder={t('registerViewer.fields.firstNamePlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Прізвище *
+                  {t('registerViewer.fields.lastName')}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -251,7 +254,7 @@ function ViewerRegisterForm() {
                     value={formData.lastName}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Іваненко"
+                    placeholder={t('registerViewer.fields.lastNamePlaceholder')}
                   />
                 </div>
               </div>
@@ -260,7 +263,7 @@ function ViewerRegisterForm() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email *
+                {t('registerViewer.fields.email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -272,7 +275,7 @@ function ViewerRegisterForm() {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="ivan@example.com"
+                  placeholder={t('registerViewer.fields.emailPlaceholder')}
                 />
               </div>
             </div>
@@ -280,7 +283,7 @@ function ViewerRegisterForm() {
             {/* Телефон */}
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                Телефон
+                {t('registerViewer.fields.phone')}
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -291,7 +294,7 @@ function ViewerRegisterForm() {
                   value={formData.phone}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="+38 (050) 123-45-67"
+                  placeholder={t('registerViewer.fields.phonePlaceholder')}
                 />
               </div>
             </div>
@@ -299,7 +302,7 @@ function ViewerRegisterForm() {
             {/* Місто */}
             <div>
               <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                Місто
+                {t('registerViewer.fields.city')}
               </label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -310,7 +313,7 @@ function ViewerRegisterForm() {
                   value={formData.city}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Київ"
+                  placeholder={t('registerViewer.fields.cityPlaceholder')}
                 />
               </div>
             </div>
@@ -318,7 +321,7 @@ function ViewerRegisterForm() {
             {/* Пароль */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Пароль *
+                {t('registerViewer.fields.password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -333,7 +336,7 @@ function ViewerRegisterForm() {
                   value={formData.password}
                   onChange={handleChange}
                   className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Мінімум 6 символів"
+                  placeholder={t('registerViewer.fields.passwordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -348,7 +351,7 @@ function ViewerRegisterForm() {
             {/* Підтвердження паролю */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Підтвердіть пароль *
+                {t('registerViewer.fields.confirmPassword')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -363,7 +366,7 @@ function ViewerRegisterForm() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Повторіть пароль"
+                  placeholder={t('registerViewer.fields.confirmPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -378,7 +381,7 @@ function ViewerRegisterForm() {
             {/* Соціальні мережі */}
             <div className="border-t border-gray-200 pt-4 mt-4">
               <h3 className="text-md font-semibold text-gray-900 mb-3">
-                Соціальні мережі (необов&apos;язково)
+                {t('registerViewer.social.title')}
               </h3>
               
               <div className="space-y-3">
@@ -452,16 +455,16 @@ function ViewerRegisterForm() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-lg"
             >
-              {loading ? 'Реєстрація...' : '🚀 Зареєструватися'}
+              {loading ? t('registerViewer.submitting') : t('registerViewer.submit')}
             </button>
           </form>
 
           {/* Divider */}
           <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-center text-sm text-gray-600">
-              Хочете надавати послуги?{' '}
+              {t('registerViewer.providerPrompt')}{' '}
               <Link href="/auth/register/individual" className="text-blue-600 hover:text-blue-700 font-semibold">
-                Реєструйтесь як Виконавець
+                {t('registerViewer.providerLink')}
               </Link>
             </p>
           </div>
@@ -469,9 +472,9 @@ function ViewerRegisterForm() {
           {/* Login Link */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Вже є акаунт?{' '}
+              {t('registerViewer.loginPrompt')}{' '}
               <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-                Увійти
+                {t('registerViewer.loginLink')}
               </Link>
             </p>
           </div>
@@ -479,12 +482,12 @@ function ViewerRegisterForm() {
 
         {/* Info */}
         <div className="mt-6 bg-blue-50 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">Переваги акаунту Глядача:</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">{t('registerViewer.benefits.title')}</h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>✓ Швидкий пошук послуг та спеціалістів</li>
-            <li>✓ Перегляд рейтингів та відгуків</li>
-            <li>✓ Збереження обраних постачальників</li>
-            <li>✓ Можна будь-коли перейти на звичайний профіль, щоб спілкуватися та пропонувати послуги</li>
+            <li>{t('registerViewer.benefits.search')}</li>
+            <li>{t('registerViewer.benefits.reviews')}</li>
+            <li>{t('registerViewer.benefits.saved')}</li>
+            <li>{t('registerViewer.benefits.upgrade')}</li>
           </ul>
         </div>
       </div>
@@ -493,8 +496,9 @@ function ViewerRegisterForm() {
 }
 
 export default function ViewerRegistrationPage() {
+  const { t } = useI18n();
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">Завантаження...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">{t('registerViewer.loading')}</div>}>
       <ViewerRegisterForm />
     </Suspense>
   );

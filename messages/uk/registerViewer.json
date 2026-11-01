@@ -1,0 +1,53 @@
+{
+  "backToTypeSelection": "Назад до вибору типу",
+  "brand": "Свій для Своїх",
+  "title": "👁️ Реєстрація Глядача",
+  "subtitle": "Швидка реєстрація для пошуку та перегляду фахівців",
+  "avatar": {
+    "label": "Фото профілю (необов'язково)",
+    "previewAlt": "Попередній перегляд фото",
+    "upload": "Завантажити фото",
+    "maxSize": "Макс. 5MB"
+  },
+  "fields": {
+    "firstName": "Ім'я *",
+    "firstNamePlaceholder": "Іван",
+    "lastName": "Прізвище *",
+    "lastNamePlaceholder": "Іваненко",
+    "email": "Email *",
+    "emailPlaceholder": "ivan@example.com",
+    "phone": "Телефон",
+    "phonePlaceholder": "+38 (050) 123-45-67",
+    "city": "Місто",
+    "cityPlaceholder": "Київ",
+    "password": "Пароль *",
+    "passwordPlaceholder": "Мінімум 6 символів",
+    "confirmPassword": "Підтвердіть пароль *",
+    "confirmPasswordPlaceholder": "Повторіть пароль"
+  },
+  "social": {
+    "title": "Соціальні мережі (необов'язково)"
+  },
+  "submit": "🚀 Зареєструватися",
+  "submitting": "Реєстрація...",
+  "providerPrompt": "Хочете надавати послуги?",
+  "providerLink": "Реєструйтесь як Виконавець",
+  "loginPrompt": "Вже є акаунт?",
+  "loginLink": "Увійти",
+  "loading": "Завантаження...",
+  "benefits": {
+    "title": "Переваги акаунту Глядача:",
+    "search": "✓ Швидкий пошук послуг та спеціалістів",
+    "reviews": "✓ Перегляд рейтингів та відгуків",
+    "saved": "✓ Збереження обраних постачальників",
+    "upgrade": "✓ Можна будь-коли перейти на звичайний профіль, щоб спілкуватися та пропонувати послуги"
+  },
+  "errors": {
+    "fileTooLarge": "Файл занадто великий. Максимум 5MB",
+    "requiredFields": "Заповніть всі обов'язкові поля",
+    "passwordMismatch": "Паролі не співпадають",
+    "passwordTooShort": "Пароль має містити мінімум 6 символів",
+    "consentRequired": "Підтвердьте згоду з Умовами використання та Політикою конфіденційності",
+    "registrationFailed": "Помилка реєстрації"
+  }
+}

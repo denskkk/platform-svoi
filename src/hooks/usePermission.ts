@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { hasPermission, getPermissionError, PERMISSIONS, AccountType } from '@/lib/permissions';
+import { useI18n } from '@/i18n/client';
 
 /**
  * Hook для отримання поточного користувача
@@ -71,9 +72,10 @@ export function useCurrentUser() {
  */
 export function usePermission(permission: keyof typeof PERMISSIONS) {
   const { user, loading, accountType } = useCurrentUser();
+  const { t } = useI18n();
   
   const hasAccess = hasPermission(accountType, permission);
-  const errorMessage = hasAccess ? null : getPermissionError(permission);
+  const errorMessage = hasAccess ? null : getPermissionError(permission, t);
 
   return {
     hasAccess,

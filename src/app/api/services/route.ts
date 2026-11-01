@@ -11,9 +11,11 @@ import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission, requireAuth } from '@/lib/api-middleware';
 import { apiCache, invalidateCache } from '@/lib/cache';
 import { getAuthCookie } from '@/lib/cookies';
+import { getApiT } from '@/i18n/server';
 
 // GET - Отримати послуги з фільтрами
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const { searchParams } = new URL(request.url);
     
@@ -149,7 +151,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get services error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -157,6 +159,7 @@ export async function GET(request: NextRequest) {
 
 // POST - Створити послугу
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Перевіряємо авторизацію (доступ до створення послуг на клієнті вже знято)
     const authResult = await requireAuth(request);
@@ -169,7 +172,7 @@ export async function POST(request: NextRequest) {
     // Валідація
     if (!body.categoryId || !body.title || !body.city) {
       return NextResponse.json(
-        { error: 'Заповніть всі обов\'язкові поля' },
+        { error: t('api.common.requiredFields') },
         { status: 400 }
       );
     }
@@ -180,7 +183,7 @@ export async function POST(request: NextRequest) {
     // Глядачі не можуть створювати послуги
     if (accountType === 'viewer') {
       return NextResponse.json(
-        { error: 'Глядачі не можуть створювати послуги. Перейдіть на звичайний профіль на сторінці свого профілю.' },
+        { error: t('api.services.viewerCannotCreate') },
         { status: 403 }
       );
     }
@@ -206,7 +209,7 @@ export async function POST(request: NextRequest) {
       description: body.description,
       priceFrom: safePriceFrom,
       priceTo: safePriceTo,
-      priceUnit: body.priceUnit || 'грн',
+      priceUnit: body.priceUnit || 'грн', // i18n-ignore (stored value)
       city: body.city,
       region: body.region || null,
       address: body.address || null,
@@ -242,14 +245,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Послугу створено!',
+      message: t('api.services.created'),
       service,
     }, { status: 201 });
 
   } catch (error) {
     console.error('Create service error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

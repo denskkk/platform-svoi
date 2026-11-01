@@ -2,18 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/authMiddleware';
 import { prisma } from '@/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
+import { getApiT } from '@/i18n/server';
 
 // GET /api/service-requests/[id] - Отримати деталі заявки
 async function getHandler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -103,7 +105,7 @@ async function getHandler(
 
     if (!serviceRequest) {
       return NextResponse.json(
-        { error: 'Заявку не знайдено' },
+        { error: t('api.serviceRequests.notFound') },
         { status: 404 }
       );
     }
@@ -125,7 +127,7 @@ async function getHandler(
   } catch (error: any) {
     console.error('[service-requests/get] Error:', error);
     return NextResponse.json(
-      { error: 'Помилка отримання заявки', details: error.message },
+      { error: t('api.serviceRequests.getError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }
@@ -136,12 +138,13 @@ async function updateHandler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -155,7 +158,7 @@ async function updateHandler(
 
     if (!serviceRequest) {
       return NextResponse.json(
-        { error: 'Заявку не знайдено' },
+        { error: t('api.serviceRequests.notFound') },
         { status: 404 }
       );
     }
@@ -191,14 +194,14 @@ async function updateHandler(
       // Перевірка: заявка повинна бути адресована цьому користувачу
       if (serviceRequest.executorId !== userId) {
         return NextResponse.json(
-          { error: 'Ви не можете прийняти цю заявку - вона не адресована вам' },
+          { error: t('api.serviceRequests.notAddressedToYou') },
           { status: 403 }
         );
       }
       
       if (!body.agreedPrice) {
         return NextResponse.json(
-          { error: 'Вкажіть ціну для прийняття заявки' },
+          { error: t('api.serviceRequests.priceRequired') },
           { status: 400 }
         );
       }
@@ -212,8 +215,8 @@ async function updateHandler(
         data: {
           userId: serviceRequest.clientId,
           type: 'service_request_accepted',
-          title: 'Заявку прийнято',
-          message: `Виконавець прийняв вашу заявку "${serviceRequest.title}" за ціною ${body.agreedPrice} грн`,
+          title: 'Заявку прийнято', // i18n-ignore
+          message: `Виконавець прийняв вашу заявку "${serviceRequest.title}" за ціною ${body.agreedPrice} грн`, // i18n-ignore
           relatedEntityType: 'ServiceRequest',
           relatedEntityId: requestId
         }
@@ -241,8 +244,8 @@ async function updateHandler(
         data: {
           userId: serviceRequest.clientId,
           type: 'service_request_completed',
-          title: 'Заявку виконано',
-          message: `Виконавець завершив роботу за заявкою "${serviceRequest.title}". Будь ласка, оплатіть та залиште відгук.`,
+          title: 'Заявку виконано', // i18n-ignore
+          message: `Виконавець завершив роботу за заявкою "${serviceRequest.title}". Будь ласка, оплатіть та залиште відгук.`, // i18n-ignore
           relatedEntityType: 'ServiceRequest',
           relatedEntityId: requestId
         }
@@ -256,7 +259,7 @@ async function updateHandler(
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
-        { error: 'Немає даних для оновлення або недостатньо прав' },
+        { error: t('api.serviceRequests.nothingToUpdate') },
         { status: 400 }
       );
     }
@@ -292,7 +295,7 @@ async function updateHandler(
   } catch (error: any) {
     console.error('[service-requests/update] Error:', error);
     return NextResponse.json(
-      { error: 'Помилка оновлення заявки', details: error.message },
+      { error: t('api.serviceRequests.updateError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }
@@ -303,12 +306,13 @@ async function deleteHandler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -321,7 +325,7 @@ async function deleteHandler(
 
     if (!serviceRequest) {
       return NextResponse.json(
-        { error: 'Заявку не знайдено' },
+        { error: t('api.serviceRequests.notFound') },
         { status: 404 }
       );
     }
@@ -329,14 +333,14 @@ async function deleteHandler(
     // Тільки автор може видалити заявку і тільки якщо вона не в процесі
     if (serviceRequest.clientId !== userId) {
       return NextResponse.json(
-        { error: 'Недостатньо прав' },
+        { error: t('api.common.insufficientRights') },
         { status: 403 }
       );
     }
 
     if (['in_progress', 'completed', 'paid'].includes(serviceRequest.status)) {
       return NextResponse.json(
-        { error: 'Неможливо видалити заявку в цьому статусі' },
+        { error: t('api.serviceRequests.cannotDeleteStatus') },
         { status: 400 }
       );
     }
@@ -347,13 +351,13 @@ async function deleteHandler(
 
     return NextResponse.json({
       success: true,
-      message: 'Заявку видалено'
+      message: t('api.serviceRequests.deleted')
     });
 
   } catch (error: any) {
     console.error('[service-requests/delete] Error:', error);
     return NextResponse.json(
-      { error: 'Помилка видалення заявки', details: error.message },
+      { error: t('api.serviceRequests.deleteError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }

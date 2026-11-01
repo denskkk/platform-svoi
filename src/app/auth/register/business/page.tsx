@@ -17,10 +17,12 @@ import {
   Trash2,
   Image as ImageIcon,
 } from "lucide-react";
-import { cities } from '@/lib/constants';
+import { cities, getCityName } from '@/lib/constants';
 import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox';
+import { useI18n } from '@/i18n/client';
 
 function BusinessRegistrationForm() {
+  const { t, locale } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isPremium = searchParams?.get("premium") === "true";
@@ -79,21 +81,21 @@ function BusinessRegistrationForm() {
   const [bannerFile, setBannerFile] = useState<File | null>(null);
 
   const businessCategories = [
-    { value: "education", label: "Освіта" },
-    { value: "products", label: "Продукти харчування" },
-    { value: "advertising", label: "Реклама та маркетинг" },
-    { value: "online_sales", label: "Інтернет-продажі" },
-    { value: "offline_sales", label: "Офлайн-торгівля" },
-    { value: "auto_service", label: "СТО та автосервіс" },
-    { value: "construction", label: "Будівництво та ремонт" },
-    { value: "it", label: "IT та розробка" },
-    { value: "other", label: "Інше" },
+    { value: "education", label: t('registerBusiness.company.categories.education') },
+    { value: "products", label: t('registerBusiness.company.categories.products') },
+    { value: "advertising", label: t('registerBusiness.company.categories.advertising') },
+    { value: "online_sales", label: t('registerBusiness.company.categories.online_sales') },
+    { value: "offline_sales", label: t('registerBusiness.company.categories.offline_sales') },
+    { value: "auto_service", label: t('registerBusiness.company.categories.auto_service') },
+    { value: "construction", label: t('registerBusiness.company.categories.construction') },
+    { value: "it", label: t('registerBusiness.company.categories.it') },
+    { value: "other", label: t('registerBusiness.company.categories.other') },
   ];
 
   const tabs = [
-    { id: "basic", name: "Основне", icon: User },
-    { id: "company", name: "Компанія", icon: Building2 },
-    { id: "seeking", name: "Що шукаєте", icon: Target },
+    { id: "basic", name: t('registerBusiness.tabs.basic'), icon: User },
+    { id: "company", name: t('registerBusiness.tabs.company'), icon: Building2 },
+    { id: "seeking", name: t('registerBusiness.tabs.seeking'), icon: Target },
   ];
 
   const handleChange = (
@@ -163,27 +165,27 @@ function BusinessRegistrationForm() {
       !formData.email.trim() ||
       !formData.password
     ) {
-      setError("Заповніть всі обов'язкові особисті дані");
+      setError(t('registerBusiness.errors.requiredPersonal'));
       return;
     }
 
     if (!formData.companyName.trim()) {
-      setError("Вкажіть назву компанії");
+      setError(t('registerBusiness.errors.companyNameRequired'));
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Паролі не співпадають");
+      setError(t('registerBusiness.errors.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Пароль повинен містити мінімум 6 символів");
+      setError(t('registerBusiness.errors.passwordTooShort'));
       return;
     }
 
     if (!consent) {
-      setError("Підтвердьте згоду з Умовами використання та Політикою конфіденційності");
+      setError(t('registerBusiness.errors.consentRequired'));
       return;
     }
 
@@ -281,7 +283,7 @@ function BusinessRegistrationForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Помилка реєстрації");
+        throw new Error(data.error || t('registerBusiness.errors.registrationFailed'));
       }
 
       // Зберегти користувача та токен (додаємо cache-busting для логотипа/банера на клієнті)
@@ -308,7 +310,7 @@ function BusinessRegistrationForm() {
       // Перенаправити на профіль
   router.push(`/profile/${data.user.id}?t=${Date.now()}`);
     } catch (err: any) {
-      setError(err.message || "Помилка реєстрації");
+      setError(err.message || t('registerBusiness.errors.registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -323,7 +325,7 @@ function BusinessRegistrationForm() {
           className="inline-flex items-center text-orange-600 hover:text-orange-700 mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад до вибору типу
+          {t('registerBusiness.back')}
         </Link>
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -335,10 +337,10 @@ function BusinessRegistrationForm() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-                  🏢 Бізнес Акаунт
+                  🏢 {t('registerBusiness.header.title')}
                 </h1>
                 <p className="text-white/90 mt-1">
-                  Для підприємців та компаній
+                  {t('registerBusiness.header.subtitle')}
                 </p>
               </div>
             </div>
@@ -380,13 +382,13 @@ function BusinessRegistrationForm() {
             {activeTab === "basic" && (
               <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Дані представника компанії
+                  {t('registerBusiness.basic.title')}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ім&apos;я *
+                      {t('registerBusiness.basic.firstName')}
                     </label>
                     <input
                       type="text"
@@ -400,7 +402,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Прізвище *
+                      {t('registerBusiness.basic.lastName')}
                     </label>
                     <input
                       type="text"
@@ -414,7 +416,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
+                      {t('registerBusiness.basic.email')}
                     </label>
                     <input
                       type="email"
@@ -428,7 +430,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Телефон
+                      {t('registerBusiness.basic.phone')}
                     </label>
                     <input
                       type="tel"
@@ -441,7 +443,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Пароль *
+                      {t('registerBusiness.basic.password')}
                     </label>
                     <input
                       type="password"
@@ -449,14 +451,14 @@ function BusinessRegistrationForm() {
                       required
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Мінімум 6 символів"
+                      placeholder={t('registerBusiness.basic.passwordPlaceholder')}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Підтвердження паролю *
+                      {t('registerBusiness.basic.confirmPassword')}
                     </label>
                     <input
                       type="password"
@@ -464,7 +466,7 @@ function BusinessRegistrationForm() {
                       required
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      placeholder="Повторіть пароль"
+                      placeholder={t('registerBusiness.basic.confirmPasswordPlaceholder')}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
@@ -478,7 +480,7 @@ function BusinessRegistrationForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Назва компанії *
+                      {t('registerBusiness.company.name')}
                     </label>
                     <input
                       type="text"
@@ -487,13 +489,13 @@ function BusinessRegistrationForm() {
                       value={formData.companyName}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      placeholder="ТОВ 'Будівельна компанія'"
+                      placeholder={t('registerBusiness.company.namePlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Код ЄДРПОУ
+                      {t('registerBusiness.company.code')}
                     </label>
                     <input
                       type="text"
@@ -507,7 +509,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Місто діяльності
+                      {t('registerBusiness.company.city')}
                     </label>
                     <select
                       name="city"
@@ -515,10 +517,10 @@ function BusinessRegistrationForm() {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
-                      <option value="">Оберіть місто</option>
+                      <option value="">{t('registerBusiness.company.cityPlaceholder')}</option>
                       {cities.map((city) => (
                         <option key={city} value={city}>
-                          {city}
+                          {getCityName(city, locale)}
                         </option>
                       ))}
                     </select>
@@ -526,7 +528,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Тип компанії
+                      {t('registerBusiness.company.type')}
                     </label>
                     <select
                       name="companyType"
@@ -534,16 +536,16 @@ function BusinessRegistrationForm() {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
-                      <option value="">Оберіть тип</option>
-                      <option value="fop">ФОП</option>
-                      <option value="tov">ТОВ</option>
-                      <option value="other">Інше</option>
+                      <option value="">{t('registerBusiness.company.typePlaceholder')}</option>
+                      <option value="fop">{t('registerBusiness.company.types.fop')}</option>
+                      <option value="tov">{t('registerBusiness.company.types.tov')}</option>
+                      <option value="other">{t('registerBusiness.company.types.other')}</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Категорія діяльності
+                      {t('registerBusiness.company.category')}
                     </label>
                     <select
                       name="businessCategory"
@@ -551,7 +553,7 @@ function BusinessRegistrationForm() {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
-                      <option value="">Оберіть категорію</option>
+                      <option value="">{t('registerBusiness.company.categoryPlaceholder')}</option>
                       {businessCategories.map((cat) => (
                         <option key={cat.value} value={cat.value}>
                           {cat.label}
@@ -562,7 +564,7 @@ function BusinessRegistrationForm() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Що пропонуєте?
+                      {t('registerBusiness.company.offer')}
                     </label>
                     <select
                       name="offerType"
@@ -570,16 +572,16 @@ function BusinessRegistrationForm() {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
-                      <option value="">Оберіть</option>
-                      <option value="service">Послуга</option>
-                      <option value="product">Товар</option>
-                      <option value="both">Послуги та товари</option>
+                      <option value="">{t('registerBusiness.company.offerPlaceholder')}</option>
+                      <option value="service">{t('registerBusiness.company.offerTypes.service')}</option>
+                      <option value="product">{t('registerBusiness.company.offerTypes.product')}</option>
+                      <option value="both">{t('registerBusiness.company.offerTypes.both')}</option>
                     </select>
                   </div>
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Короткий опис
+                      {t('registerBusiness.company.description')}
                     </label>
                     <textarea
                       name="description"
@@ -587,13 +589,13 @@ function BusinessRegistrationForm() {
                       onChange={handleChange}
                       rows={3}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
-                      placeholder="Що пропонує ваша компанія..."
+                      placeholder={t('registerBusiness.company.descriptionPlaceholder')}
                     />
                   </div>
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Веб-сайт
+                      {t('registerBusiness.company.website')}
                     </label>
                     <input
                       type="url"
@@ -609,7 +611,7 @@ function BusinessRegistrationForm() {
                   <div className="md:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <ImageIcon className="w-4 h-4 inline mr-1" />
-                      Логотип компанії
+                      {t('registerBusiness.company.logo')}
                     </label>
                     <div className="relative">
                       <input
@@ -631,19 +633,19 @@ function BusinessRegistrationForm() {
                         ) : (
                           <>
                             <Upload className="w-5 h-5 text-gray-400" />
-                            <span className="text-sm text-gray-600">Завантажити логотип</span>
+                            <span className="text-sm text-gray-600">{t('registerBusiness.company.logoUpload')}</span>
                           </>
                         )}
                       </label>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Рекомендований розмір: 400x400px</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('registerBusiness.company.logoHint')}</p>
                   </div>
 
                   {/* Банер компанії */}
                   <div className="md:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <ImageIcon className="w-4 h-4 inline mr-1" />
-                      Банер компанії
+                      {t('registerBusiness.company.banner')}
                     </label>
                     <div className="relative">
                       <input
@@ -665,12 +667,12 @@ function BusinessRegistrationForm() {
                         ) : (
                           <>
                             <Upload className="w-5 h-5 text-gray-400" />
-                            <span className="text-sm text-gray-600">Завантажити банер</span>
+                            <span className="text-sm text-gray-600">{t('registerBusiness.company.bannerUpload')}</span>
                           </>
                         )}
                       </label>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Рекомендований розмір: 1200x400px</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('registerBusiness.company.bannerHint')}</p>
                   </div>
                 </div>
               </div>
@@ -680,7 +682,7 @@ function BusinessRegistrationForm() {
             {activeTab === "seeking" && (
               <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Кого/що шукаєте?
+                  {t('registerBusiness.seeking.title')}
                 </h3>
 
                 <div className="space-y-6">
@@ -695,9 +697,9 @@ function BusinessRegistrationForm() {
                         className="w-5 h-5 text-orange-600"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">Партнера</div>
+                        <div className="font-medium">{t('registerBusiness.seeking.partner.title')}</div>
                         <div className="text-sm text-gray-500">
-                          Пошук ділових партнерів для співпраці
+                          {t('registerBusiness.seeking.partner.description')}
                         </div>
                       </div>
                     </label>
@@ -705,7 +707,7 @@ function BusinessRegistrationForm() {
                       <div className="p-4 space-y-4 bg-white border-t">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Тип партнера
+                            {t('registerBusiness.seeking.partner.type')}
                           </label>
                           <select
                             name="partnerType"
@@ -713,38 +715,38 @@ function BusinessRegistrationForm() {
                             onChange={handleChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           >
-                            <option value="">Оберіть тип</option>
-                            <option value="investor">Інвестиційний партнер</option>
-                            <option value="supplier">Постачальник</option>
-                            <option value="distributor">Дистриб'ютор</option>
-                            <option value="franchise">Франчайзі</option>
-                            <option value="strategic">Стратегічний партнер</option>
-                            <option value="other">Інше</option>
+                            <option value="">{t('registerBusiness.seeking.partner.typePlaceholder')}</option>
+                            <option value="investor">{t('registerBusiness.seeking.partner.types.investor')}</option>
+                            <option value="supplier">{t('registerBusiness.seeking.partner.types.supplier')}</option>
+                            <option value="distributor">{t('registerBusiness.seeking.partner.types.distributor')}</option>
+                            <option value="franchise">{t('registerBusiness.seeking.partner.types.franchise')}</option>
+                            <option value="strategic">{t('registerBusiness.seeking.partner.types.strategic')}</option>
+                            <option value="other">{t('registerBusiness.seeking.partner.types.other')}</option>
                           </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Сфера співпраці
+                            {t('registerBusiness.seeking.partner.sphere')}
                           </label>
                           <input
                             type="text"
                             name="partnerSphere"
                             value={formData.partnerSphere}
                             onChange={handleChange}
-                            placeholder="Наприклад: оптові поставки, спільний маркетинг..."
+                            placeholder={t('registerBusiness.seeking.partner.spherePlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Умови співпраці
+                            {t('registerBusiness.seeking.partner.collaboration')}
                           </label>
                           <textarea
                             name="partnerCollaboration"
                             value={formData.partnerCollaboration}
                             onChange={handleChange}
                             rows={3}
-                            placeholder="Опишіть, що ви пропонуєте партнеру..."
+                            placeholder={t('registerBusiness.seeking.partner.collaborationPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
                           />
                         </div>
@@ -763,9 +765,9 @@ function BusinessRegistrationForm() {
                         className="w-5 h-5 text-orange-600"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">Інвестора</div>
+                        <div className="font-medium">{t('registerBusiness.seeking.investor.title')}</div>
                         <div className="text-sm text-gray-500">
-                          Залучення інвестицій для розвитку
+                          {t('registerBusiness.seeking.investor.description')}
                         </div>
                       </div>
                     </label>
@@ -773,53 +775,53 @@ function BusinessRegistrationForm() {
                       <div className="p-4 space-y-4 bg-white border-t">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Необхідна сума інвестицій
+                            {t('registerBusiness.seeking.investor.amount')}
                           </label>
                           <input
                             type="text"
                             name="investmentAmount"
                             value={formData.investmentAmount}
                             onChange={handleChange}
-                            placeholder="Наприклад: від 500 000 до 1 000 000 грн"
+                            placeholder={t('registerBusiness.seeking.investor.amountPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Строк окупності
+                            {t('registerBusiness.seeking.investor.term')}
                           </label>
                           <input
                             type="text"
                             name="investmentTerm"
                             value={formData.investmentTerm}
                             onChange={handleChange}
-                            placeholder="Наприклад: 18-24 місяці"
+                            placeholder={t('registerBusiness.seeking.investor.termPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Цілі інвестицій
+                            {t('registerBusiness.seeking.investor.goals')}
                           </label>
                           <textarea
                             name="investmentGoals"
                             value={formData.investmentGoals}
                             onChange={handleChange}
                             rows={2}
-                            placeholder="На що підуть інвестиції: розширення, обладнання, маркетинг..."
+                            placeholder={t('registerBusiness.seeking.investor.goalsPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Що пропонуєте інвестору
+                            {t('registerBusiness.seeking.investor.offer')}
                           </label>
                           <textarea
                             name="investmentOffer"
                             value={formData.investmentOffer}
                             onChange={handleChange}
                             rows={2}
-                            placeholder="Частка бізнесу, дивіденди, інше..."
+                            placeholder={t('registerBusiness.seeking.investor.offerPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
                           />
                         </div>
@@ -838,9 +840,9 @@ function BusinessRegistrationForm() {
                         className="w-5 h-5 text-orange-600"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">Споживача</div>
+                        <div className="font-medium">{t('registerBusiness.seeking.customer.title')}</div>
                         <div className="text-sm text-gray-500">
-                          Розширення клієнтської бази
+                          {t('registerBusiness.seeking.customer.description')}
                         </div>
                       </div>
                     </label>
@@ -848,40 +850,40 @@ function BusinessRegistrationForm() {
                       <div className="p-4 space-y-4 bg-white border-t">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Цільова аудиторія
+                            {t('registerBusiness.seeking.customer.target')}
                           </label>
                           <input
                             type="text"
                             name="customerTarget"
                             value={formData.customerTarget}
                             onChange={handleChange}
-                            placeholder="Хто ваші клієнти: приватні особи, бізнес, вікова група..."
+                            placeholder={t('registerBusiness.seeking.customer.targetPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Що пропонуєте
+                            {t('registerBusiness.seeking.customer.offer')}
                           </label>
                           <textarea
                             name="customerOffer"
                             value={formData.customerOffer}
                             onChange={handleChange}
                             rows={2}
-                            placeholder="Опишіть ваші продукти/послуги..."
+                            placeholder={t('registerBusiness.seeking.customer.offerPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Переваги для клієнтів
+                            {t('registerBusiness.seeking.customer.benefits')}
                           </label>
                           <textarea
                             name="customerBenefits"
                             value={formData.customerBenefits}
                             onChange={handleChange}
                             rows={2}
-                            placeholder="Чому обирають вас: якість, ціна, швидкість..."
+                            placeholder={t('registerBusiness.seeking.customer.benefitsPlaceholder')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
                           />
                         </div>
@@ -900,29 +902,29 @@ function BusinessRegistrationForm() {
                         className="w-5 h-5 text-orange-600"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">Працівника</div>
+                        <div className="font-medium">{t('registerBusiness.seeking.employee.title')}</div>
                         <div className="text-sm text-gray-500">
-                          Пошук співробітників у команду
+                          {t('registerBusiness.seeking.employee.description')}
                         </div>
                       </div>
                     </label>
                     {formData.seekingEmployee && (
                       <div className="p-4 space-y-4 bg-white border-t">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-900">Вакансії</h4>
+                          <h4 className="font-medium text-gray-900">{t('registerBusiness.seeking.employee.vacancies')}</h4>
                           <button
                             type="button"
                             onClick={addVacancy}
                             className="flex items-center gap-1 px-3 py-1 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                           >
                             <Plus className="w-4 h-4" />
-                            Додати вакансію
+                            {t('registerBusiness.seeking.employee.addVacancy')}
                           </button>
                         </div>
 
                         {formData.vacancies.length === 0 && (
                           <p className="text-sm text-gray-500 text-center py-4">
-                            Додайте вакансії, які ви хочете опублікувати
+                            {t('registerBusiness.seeking.employee.empty')}
                           </p>
                         )}
 
@@ -930,7 +932,7 @@ function BusinessRegistrationForm() {
                           <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm font-medium text-gray-700">
-                                Вакансія #{index + 1}
+                                {t('registerBusiness.seeking.employee.vacancyNumber', { number: index + 1 })}
                               </span>
                               <button
                                 type="button"
@@ -945,7 +947,7 @@ function BusinessRegistrationForm() {
                               <div className="col-span-2">
                                 <input
                                   type="text"
-                                  placeholder="Посада"
+                                  placeholder={t('registerBusiness.seeking.employee.position')}
                                   value={vacancy.position}
                                   onChange={(e) => updateVacancy(index, 'position', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -953,7 +955,7 @@ function BusinessRegistrationForm() {
                               </div>
                               <div className="col-span-2">
                                 <textarea
-                                  placeholder="Обов'язки"
+                                  placeholder={t('registerBusiness.seeking.employee.responsibilities')}
                                   value={vacancy.responsibilities}
                                   onChange={(e) => updateVacancy(index, 'responsibilities', e.target.value)}
                                   rows={2}
@@ -962,7 +964,7 @@ function BusinessRegistrationForm() {
                               </div>
                               <div className="col-span-2">
                                 <textarea
-                                  placeholder="Вимоги"
+                                  placeholder={t('registerBusiness.seeking.employee.requirements')}
                                   value={vacancy.requirements}
                                   onChange={(e) => updateVacancy(index, 'requirements', e.target.value)}
                                   rows={2}
@@ -972,7 +974,7 @@ function BusinessRegistrationForm() {
                               <div>
                                 <input
                                   type="text"
-                                  placeholder="Зарплата (грн)"
+                                  placeholder={t('registerBusiness.seeking.employee.salary')}
                                   value={vacancy.salary}
                                   onChange={(e) => updateVacancy(index, 'salary', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -984,18 +986,18 @@ function BusinessRegistrationForm() {
                                   onChange={(e) => updateVacancy(index, 'employmentType', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                                 >
-                                  <option value="">Тип зайнятості</option>
-                                  <option value="full-time">Повна зайнятість</option>
-                                  <option value="part-time">Часткова зайнятість</option>
-                                  <option value="remote">Віддалена робота</option>
-                                  <option value="contract">За контрактом</option>
-                                  <option value="freelance">Фріланс</option>
+                                  <option value="">{t('registerBusiness.seeking.employee.employmentType')}</option>
+                                  <option value="full-time">{t('registerBusiness.seeking.employee.employmentTypes.full-time')}</option>
+                                  <option value="part-time">{t('registerBusiness.seeking.employee.employmentTypes.part-time')}</option>
+                                  <option value="remote">{t('registerBusiness.seeking.employee.employmentTypes.remote')}</option>
+                                  <option value="contract">{t('registerBusiness.seeking.employee.employmentTypes.contract')}</option>
+                                  <option value="freelance">{t('registerBusiness.seeking.employee.employmentTypes.freelance')}</option>
                                 </select>
                               </div>
                               <div className="col-span-2">
                                 <input
                                   type="text"
-                                  placeholder="Необхідний досвід"
+                                  placeholder={t('registerBusiness.seeking.employee.experience')}
                                   value={vacancy.experience}
                                   onChange={(e) => updateVacancy(index, 'experience', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -1023,25 +1025,25 @@ function BusinessRegistrationForm() {
                 disabled={loading}
                 className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
-                {loading ? "Реєструємо..." : "🚀 Зареєструватися"}
+                {loading ? t('registerBusiness.actions.submitting') : `🚀 ${t('registerBusiness.actions.submit')}`}
               </button>
               <Link
                 href="/auth/register"
                 className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors text-center"
               >
-                Скасувати
+                {t('registerBusiness.actions.cancel')}
               </Link>
             </div>
 
             {/* Login Link */}
             <div className="text-center pt-4">
               <p className="text-gray-600">
-                Вже маєте акаунт?{" "}
+                {t('registerBusiness.login.prompt')}{" "}
                 <Link
                   href="/auth/login"
                   className="text-orange-600 hover:text-orange-700 font-semibold"
                 >
-                  Увійти
+                  {t('registerBusiness.login.link')}
                 </Link>
               </p>
             </div>
@@ -1051,7 +1053,7 @@ function BusinessRegistrationForm() {
         {/* Info */}
         <div className="mt-6 border rounded-xl p-4 bg-orange-50 border-orange-200">
           <p className="text-sm text-orange-800">
-            🏢 <strong>Бізнес акаунт:</strong> Створіть бізнес-профіль, шукайте партнерів, інвесторів та споживачів. Публікуйте вакансії та розвивайте свою мережу!
+            🏢 <strong>{t('registerBusiness.info.label')}</strong> {t('registerBusiness.info.text')}
           </p>
         </div>
       </div>
@@ -1060,12 +1062,13 @@ function BusinessRegistrationForm() {
 }
 
 export default function RegisterBusinessPage() {
+  const { t } = useI18n();
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Завантаження...</p>
+          <p className="mt-4 text-gray-600">{t('registerBusiness.loading')}</p>
         </div>
       </div>
     }>

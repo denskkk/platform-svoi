@@ -1,119 +1,104 @@
 import { DeleteAccountForm } from '@/components/ui/DeleteAccountForm'
+import { getT } from '@/i18n/server'
+import { localizedPath } from '@/i18n/routes'
 
-export const metadata = {
-  title: 'Видалення акаунта та даних — СВІЙ ДЛЯ СВОЇХ',
-  description:
-    'Як видалити акаунт та пов’язані дані у застосунку/на сайті «СВІЙ ДЛЯ СВОЇХ» (Svoi Platform).',
+const TELEGRAM_URL = 'https://t.me/sviydlyasvoih'
+const SUPPORT_EMAIL = 'support@sviydlyasvoih.com.ua'
+const linkClass = 'text-blue-600 hover:underline'
+
+function range(count: number): number[] {
+  return Array.from({ length: count }, (_, i) => i + 1)
 }
 
 export default function AccountDeletionPage() {
-  const appName = 'СВІЙ ДЛЯ СВОЇХ (Svoi Platform)'
-  const telegramUrl = 'https://t.me/sviydlyasvoih'
-  const supportEmail = 'support@sviydlyasvoih.com.ua'
-  const lastUpdated = '14 жовтня 2026'
+  const { t, locale } = getT()
+  const s = (key: string) => t(`legal.accountDeletion.sections.${key}`)
+  const appName = t('legal.accountDeletion.appName')
+
+  const labeledItems = (key: string, count: number) =>
+    range(count).map((n) => (
+      <li key={n}>
+        <span className="font-medium">{s(`${key}.items.${n}.label`)}</span> {s(`${key}.items.${n}.text`)}
+      </li>
+    ))
 
   return (
     <div className="bg-neutral-50">
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            Видалення акаунта та даних
+            {t('legal.accountDeletion.title')}
           </h1>
-          <p className="text-gray-600">Дата останнього оновлення: {lastUpdated}</p>
+          <p className="text-gray-600">
+            {t('legal.accountDeletion.lastUpdatedLabel', { date: t('legal.accountDeletion.lastUpdated') })}
+          </p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 sm:p-8 space-y-8 text-gray-800 leading-relaxed">
           <div className="space-y-3">
-            <p>
-              Ця сторінка описує, як користувачі {appName} можуть видалити
-              акаунт та пов’язані з ним дані.
-            </p>
+            <p>{t('legal.accountDeletion.intro', { appName })}</p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">Видалити акаунт зараз</h2>
-            <p>
-              Якщо ви увійшли у свій профіль, видалити акаунт можна одразу на цій сторінці —
-              в застосунку або на сайті.
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900">{s('now.title')}</h2>
+            <p>{s('now.p1')}</p>
+            <p className="font-medium">{s('now.stepsIntro')}</p>
+            <ol className="list-decimal pl-6 space-y-2">
+              {range(5).map((n) => (
+                <li key={n}>{s(`now.steps.${n}`)}</li>
+              ))}
+            </ol>
+            <p className="text-sm text-gray-600">{s('now.stepsNote')}</p>
             <DeleteAccountForm />
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">1) Якщо не можете увійти — подайте запит</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{s('request.title')}</h2>
             <ol className="list-decimal pl-6 space-y-2">
+              <li>{s('request.steps.1')}</li>
               <li>
-                Підготуйте інформацію для ідентифікації акаунта: e-mail, номер телефону
-                (якщо вказували), а також (за можливості) посилання на профіль або ID
-                користувача.
-              </li>
-              <li>
-                Надішліть запит одним із способів:
+                {s('request.steps.2')}
                 <ul className="list-disc pl-6 mt-2 space-y-1">
                   <li>
-                    Telegram: <a className="text-blue-600 hover:underline" href={telegramUrl} target="_blank" rel="noopener noreferrer">{telegramUrl}</a>
+                    {s('request.telegram')} <a className={linkClass} href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">{TELEGRAM_URL}</a>
                   </li>
                   <li>
-                    E-mail: <a className="text-blue-600 hover:underline" href={`mailto:${supportEmail}?subject=${encodeURIComponent('Запит на видалення акаунта — СВІЙ ДЛЯ СВОЇХ')}`}>{supportEmail}</a>
+                    {s('request.email')} <a className={linkClass} href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t('legal.accountDeletion.emailSubject'))}`}>{SUPPORT_EMAIL}</a>
                   </li>
                 </ul>
               </li>
-              <li>
-                У повідомленні напишіть фразу “Прошу видалити мій акаунт та пов’язані дані”
-                і вкажіть ваші дані для пошуку акаунта (e-mail/телефон).
-              </li>
-              <li>
-                За потреби ми можемо попросити додаткове підтвердження, що акаунт належить вам
-                (щоб запобігти видаленню за чужим запитом).
-              </li>
+              <li>{s('request.steps.3')}</li>
+              <li>{s('request.steps.4')}</li>
             </ol>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">2) Які дані будуть видалені</h2>
-            <p>Після підтвердження запиту ми видаляємо або знеособлюємо дані, пов’язані з вашим акаунтом, зокрема:</p>
+            <h2 className="text-xl font-semibold text-gray-900">{s('deleted.title')}</h2>
+            <p>{s('deleted.intro')}</p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>дані облікового запису (e-mail, хеш пароля, роль/статус акаунта);</li>
-              <li>дані профілю (ім’я/прізвище, фото, опис, контакти, соціальні посилання, інші поля профілю);</li>
-              <li>опублікований вами контент у межах Платформи (послуги/заявки/відгуки) — видалення або знеособлення залежно від типу контенту;</li>
-              <li>завантажені зображення (аватар, фото послуг/заявок), якщо вони не потрібні для цілісності інших записів.</li>
+              {range(4).map((n) => (
+                <li key={n}>{s(`deleted.items.${n}`)}</li>
+              ))}
             </ul>
-            <p>
-              Повідомлення в чатах можуть бути видалені або знеособлені, щоб не порушувати цілісність діалогів інших
-              користувачів.
-            </p>
+            <p>{s('deleted.outro')}</p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">3) Які дані можуть бути збережені та на який строк</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>
-                <span className="font-medium">Технічні журнали (логи)</span> можуть зберігатися обмежений час для безпеки та діагностики
-                (зазвичай до 90 днів).
-              </li>
-              <li>
-                <span className="font-medium">Резервні копії</span> можуть містити частину даних до моменту перезапису
-                (зазвичай до 30 днів).
-              </li>
-              <li>
-                <span className="font-medium">Дані, які ми зобов’язані зберігати за законом</span> (якщо застосовно), можуть бути збережені
-                на строк, передбачений вимогами законодавства.
-              </li>
-            </ul>
+            <h2 className="text-xl font-semibold text-gray-900">{s('retained.title')}</h2>
+            <ul className="list-disc pl-6 space-y-2">{labeledItems('retained', 3)}</ul>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">4) Строк виконання</h2>
-            <p>
-              Ми прагнемо виконати запит на видалення протягом 30 днів з моменту підтвердження особи власника акаунта.
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900">{s('timeline.title')}</h2>
+            <p>{s('timeline.p1')}</p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">5) Додаткова інформація</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{s('more.title')}</h2>
             <p>
-              Детальніше про обробку персональних даних дивіться у{' '}
-              <a className="text-blue-600 hover:underline" href="/privacy">Політиці конфіденційності</a>.
+              {s('more.before')}{' '}
+              <a className={linkClass} href={localizedPath('/privacy', locale)}>{s('more.link')}</a>
+              {s('more.after')}
             </p>
           </div>
         </div>

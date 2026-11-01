@@ -17,6 +17,8 @@ import {
   findActiveSession,
   sessionExpiry,
 } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
+import type { Translator } from '@/i18n/translate';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,13 +61,14 @@ function validOrigin(request: NextRequest): boolean {
   }
 }
 
-function sessionEnded() {
-  return NextResponse.json({ error: 'Сесія завершена' }, { status: 401 });
+function sessionEnded(t: Translator) {
+  return NextResponse.json({ error: t('api.auth.sessionEnded') }, { status: 401 });
 }
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   if (!validOrigin(request)) {
-    return NextResponse.json({ error: 'Недозволене джерело запиту' }, { status: 403 });
+    return NextResponse.json({ error: t('api.auth.originNotAllowed') }, { status: 403 });
   }
 
   const ip = getClientIp(request);
@@ -77,7 +80,7 @@ export async function POST(request: NextRequest) {
   if (!rateLimit.allowed) {
     const retryAfter = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
     return NextResponse.json(
-      { error: 'Забагато запитів. Спробуйте пізніше.' },
+      { error: t('api.common.tooManyRequestsShort') },
       { status: 429, headers: { 'Retry-After': retryAfter.toString() } },
     );
   }
@@ -116,13 +119,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!session) return sessionEnded();
+    if (!session) return sessionEnded(t);
 
     const activeUser = await prisma.user.findUnique({
       where: { id: session.userId },
       select: { id: true, email: true, role: true, accountType: true, isActive: true },
     });
-    if (!activeUser?.isActive) return sessionEnded();
+    if (!activeUser?.isActive) return sessionEnded(t);
 
     const { token, refreshToken: nextRefreshToken } = buildTokens(activeUser, session.id);
 
@@ -136,7 +139,7 @@ export async function POST(request: NextRequest) {
       },
     });
     // Сесію відкликали (logout) між перевіркою та оновленням
-    if (updated.count !== 1) return sessionEnded();
+    if (updated.count !== 1) return sessionEnded(t);
 
     const response = NextResponse.json({ success: true, token });
     response.headers.set('Cache-Control', 'no-store');
@@ -145,6 +148,6 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Refresh error:', error);
-    return NextResponse.json({ error: 'Сервіс тимчасово недоступний' }, { status: 503 });
+    return NextResponse.json({ error: t('api.auth.serviceUnavailable') }, { status: 503 });
   }
 }

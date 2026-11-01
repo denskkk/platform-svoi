@@ -1,189 +1,127 @@
-export const metadata = {
-  title: 'Політика конфіденційності — СВІЙ ДЛЯ СВОЇХ',
-  description: 'Політика конфіденційності платформи «СВІЙ ДЛЯ СВОЇХ».',
+import { getT } from '@/i18n/server'
+import { localizedPath } from '@/i18n/routes'
+
+const linkClass = 'text-blue-600 hover:underline'
+const TELEGRAM_URL = 'https://t.me/sviydlyasvoih'
+const SUPPORT_EMAIL = 'support@sviydlyasvoih.com.ua'
+
+function range(count: number): number[] {
+  return Array.from({ length: count }, (_, i) => i + 1)
 }
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = '14 жовтня 2026'
+  const { t, locale } = getT()
+  const s = (key: string) => t(`legal.privacy.sections.${key}`)
+
+  const plainList = (key: string, count: number) => (
+    <ul className="list-disc pl-6 space-y-2">
+      {range(count).map((n) => (
+        <li key={n}>{s(`${key}.items.${n}`)}</li>
+      ))}
+    </ul>
+  )
+
+  const labeledList = (key: string, count: number) => (
+    <ul className="list-disc pl-6 space-y-2">
+      {range(count).map((n) => (
+        <li key={n}>
+          <span className="font-medium">{s(`${key}.items.${n}.label`)}</span> {s(`${key}.items.${n}.text`)}
+        </li>
+      ))}
+    </ul>
+  )
 
   return (
     <div className="bg-neutral-50">
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Політика конфіденційності</h1>
-          <p className="text-gray-600">Дата останнього оновлення: {lastUpdated}</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">{t('legal.privacy.title')}</h1>
+          <p className="text-gray-600">
+            {t('legal.privacy.lastUpdatedLabel', { date: t('legal.privacy.lastUpdated') })}
+          </p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 sm:p-8 space-y-8 text-gray-800 leading-relaxed">
           <div className="space-y-3">
+            <p>{t('legal.privacy.intro.p1')}</p>
+            <p>{t('legal.privacy.intro.p2')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('controller.title')}</h2>
+            <p>{s('controller.p1')}</p>
             <p>
-              Ця Політика конфіденційності пояснює, які дані збирає та обробляє платформа «СВІЙ ДЛЯ СВОЇХ»
-              (далі — «Платформа», «ми»), з якою метою, як ми їх захищаємо та які права ви маєте.
-            </p>
-            <p>
-              Політика застосовується до веб‑сайту та мобільного застосунку (якщо ви користуєтесь Платформою через
-              застосунок на базі WebView/Capacitor), а також до пов’язаних сервісів і API.
+              {s('controller.contactsBefore')}{' '}
+              <a className={linkClass} href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">{TELEGRAM_URL}</a>{' '}
+              {s('controller.contactsOr')}{' '}
+              <a className={linkClass} href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
             </p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">1. Хто є володільцем даних та як з нами зв’язатися</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{s('dataCollected.title')}</h2>
+            <p>{s('dataCollected.intro')}</p>
+            {labeledList('dataCollected', 6)}
+            <p>{s('dataCollected.outro')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('dataSources.title')}</h2>
+            {plainList('dataSources', 2)}
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('purposes.title')}</h2>
+            {plainList('purposes', 5)}
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('visibility.title')}</h2>
+            <p>{s('visibility.p1')}</p>
+            <p>{s('visibility.p2')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('cookies.title')}</h2>
+            <p>{s('cookies.p1')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('thirdParties.title')}</h2>
+            <p>{s('thirdParties.intro')}</p>
+            {labeledList('thirdParties', 2)}
+            <p>{s('thirdParties.outro')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('security.title')}</h2>
+            <p>{s('security.p1')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('retention.title')}</h2>
+            <p>{s('retention.p1')}</p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">{s('rights.title')}</h2>
+            <p>{s('rights.intro')}</p>
+            {plainList('rights', 4)}
             <p>
-              Володілець (оператор) персональних даних: команда проєкту «СВІЙ ДЛЯ СВОЇХ».
-            </p>
-            <p>
-              Контакти для звернень з питань приватності: <a className="text-blue-600 hover:underline" href="https://t.me/sviydlyasvoih" target="_blank" rel="noopener noreferrer">https://t.me/sviydlyasvoih</a>{' '}
-              або e‑mail <a className="text-blue-600 hover:underline" href="mailto:support@sviydlyasvoih.com.ua">support@sviydlyasvoih.com.ua</a>.
+              {s('rights.p2Before')}{' '}
+              <a className={linkClass} href={localizedPath('/account-deletion', locale)}>/account-deletion</a>
+              {' '}{s('rights.p2After')}
             </p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">2. Які дані ми збираємо</h2>
-            <p>
-              Ми обробляємо дані, які ви надаєте, та технічні дані, що формуються під час користування Платформою:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>
-                <span className="font-medium">Дані облікового запису:</span> ім’я та прізвище, e‑mail, номер телефону
-                (якщо вказаний), хеш пароля (ми не зберігаємо пароль у відкритому вигляді), роль/тип акаунта.
-              </li>
-              <li>
-                <span className="font-medium">Дані профілю (за вашим вибором):</span> місто/регіон, фото/аватар,
-                опис (bio), вік і стать (якщо заповнені), сімейні відомості та інтереси (якщо ви їх заповнюєте),
-                посилання на соцмережі/месенджери (наприклад, Telegram).
-              </li>
-              <li>
-                <span className="font-medium">Дані бізнес‑профілю (якщо застосовно):</span> інформація про бізнес/ФОП,
-                категорія діяльності, контакти, посилання та опис послуг.
-              </li>
-              <li>
-                <span className="font-medium">Контент і взаємодії:</span> повідомлення у чаті, заявки/оголошення,
-                відгуки/відповіді, оцінки, «обране», скарги.
-              </li>
-              <li>
-                <span className="font-medium">Файли та зображення:</span> зображення, які ви завантажуєте
-                (наприклад, аватар, фото послуг/заявок). Ми зберігаємо їх як файли на сервері та віддаємо за URL.
-              </li>
-              <li>
-                <span className="font-medium">Технічні та діагностичні дані:</span> IP‑адреса, user‑agent,
-                дані сесії (токен), час активності, а також параметри пошуку (запит, місто, кількість результатів)
-                — для безпеки, захисту від зловживань і покращення роботи сервісу.
-              </li>
-            </ul>
-            <p>
-              Наразі Платформа працює безкоштовно. Ми не збираємо та не обробляємо платіжні дані користувачів
-              (наприклад, дані банківських карток).
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900">{s('children.title')}</h2>
+            <p>{s('children.p1')}</p>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">3. Звідки ми отримуємо дані</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Безпосередньо від вас — під час реєстрації, заповнення профілю, публікації контенту та листування.</li>
-              <li>Автоматично — під час користування сайтом/застосунком (технічні дані, cookies, журнали безпеки).</li>
-            </ul>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">4. Для чого ми використовуємо дані</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Створення та обслуговування акаунта, автентифікація та безпека входу.</li>
-              <li>Надання функціоналу Платформи: профілі, каталог, послуги, заявки, чат, відгуки.</li>
-              <li>Запобігання шахрайству, зловживанням і спаму, забезпечення безпеки та стабільності.</li>
-              <li>Підтримка користувачів і відповіді на звернення.</li>
-              <li>Дотримання вимог законодавства (якщо застосовно).</li>
-            </ul>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">5. Що бачать інші користувачі</h2>
-            <p>
-              Частину інформації ви публікуєте самостійно — і вона може бути видимою іншим користувачам Платформи.
-              Наприклад: ім’я/прізвище (або назва бізнесу), місто, фото, опис, опубліковані послуги/заявки, відгуки.
-              Ви керуєте заповненням більшості полів профілю.
-            </p>
-            <p>
-              Повідомлення у чаті видимі лише учасникам відповідного діалогу.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">6. Cookies та локальне сховище</h2>
-            <p>
-              Для роботи авторизації ми використовуємо cookies (зокрема httpOnly) та можемо використовувати локальне
-              сховище браузера (localStorage) для збереження технічних даних сесії. Ви можете очистити cookies і
-              localStorage в налаштуваннях браузера/пристрою, але це може призвести до потреби повторного входу.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">7. Передача даних третім особам</h2>
-            <p>Ми не продаємо персональні дані. Ми можемо передавати дані лише у таких випадках:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>
-                <span className="font-medium">Постачальникам інфраструктури</span> (хостинг/сервери/БД) — оскільки без них
-                сервіс не може працювати.
-              </li>
-              <li>
-                <span className="font-medium">На вимогу закону</span> — якщо ми зобов’язані розкрити дані відповідно до
-                застосовного законодавства та законних запитів.
-              </li>
-            </ul>
-            <p>
-              Наразі ми не використовуємо сторонні рекламні SDK і не показуємо рекламу. Якщо у майбутньому буде додано
-              аналітику або рекламу від третіх сторін, ми оновимо цю Політику.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">8. Безпека</h2>
-            <p>
-              Ми застосовуємо розумні технічні та організаційні заходи для захисту даних: хешування паролів,
-              контроль доступу, обмеження частоти запитів (rate‑limit), журнали безпеки.
-              Водночас жоден спосіб передачі та зберігання даних не може бути на 100% безпечним.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">9. Строки зберігання</h2>
-            <p>
-              Ми зберігаємо дані стільки, скільки це необхідно для роботи сервісу та досягнення цілей обробки.
-              Наприклад, дані профілю зберігаються, поки акаунт активний; технічні журнали та сесії можуть
-              зберігатися обмежений час для безпеки та діагностики.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">10. Ваші права</h2>
-            <p>Залежно від застосовного законодавства ви можете мати такі права:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>отримати доступ до ваших даних;</li>
-              <li>виправити неточні дані;</li>
-              <li>видалити акаунт і дані (якщо це не суперечить вимогам закону);</li>
-              <li>обмежити обробку в окремих випадках.</li>
-            </ul>
-            <p>
-              Щоб реалізувати ці права, зв’яжіться з нами через контакти з розділу 1.
-              Видалити акаунт можна самостійно на сторінці{' '}
-              <a className="text-blue-600 hover:underline" href="/account-deletion">/account-deletion</a>
-              {' '}(в застосунку або на сайті).
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">11. Діти</h2>
-            <p>
-              Платформа не призначена для дітей віком до 13 років. Якщо ви вважаєте, що дитина надала нам
-              персональні дані, зв’яжіться з нами — ми вживемо заходів для видалення таких даних.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">12. Зміни політики</h2>
-            <p>
-              Ми можемо оновлювати цю Політику. Актуальна версія завжди доступна на цій сторінці.
-              Дата останнього оновлення вказана вгорі.
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900">{s('changes.title')}</h2>
+            <p>{s('changes.p1')}</p>
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getApiT } from '@/i18n/server';
 
 const REQUEST_TIMEOUT = 30000; // 30 секунд
 
@@ -25,9 +26,10 @@ export function withTimeout(
       ),
     ]).catch((error) => {
       console.error('[Timeout] Request exceeded time limit:', error);
+      const t = getApiT(request);
       return NextResponse.json(
         { 
-          error: 'Запит занадто довго виконувався. Спробуйте пізніше.',
+          error: t('api.common.requestTimeout'),
           timeout: true 
         },
         { status: 504 } // Gateway Timeout

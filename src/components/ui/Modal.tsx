@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { createPortal } from 'react-dom'
+import { useI18n } from '@/i18n/client'
 
 interface ModalProps {
   isOpen: boolean
@@ -34,6 +35,7 @@ export function Modal({
   className = '',
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
+  const { t } = useI18n()
 
   // Закриття по Escape
   useEffect(() => {
@@ -132,7 +134,7 @@ export function Modal({
               <button
                 onClick={onClose}
                 className="ml-auto p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-all duration-200 hover:scale-110"
-                aria-label="Закрити"
+                aria-label={t('common.actions.close')}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -223,10 +225,11 @@ export function ConfirmDialog({
   onConfirm,
   title,
   message,
-  confirmText = 'Підтвердити',
-  cancelText = 'Скасувати',
+  confirmText,
+  cancelText,
   variant = 'primary',
 }: ConfirmDialogProps) {
+  const { t } = useI18n()
   const handleConfirm = () => {
     onConfirm()
     onClose()
@@ -237,10 +240,10 @@ export function ConfirmDialog({
       <p className="text-neutral-600 leading-relaxed mb-6">{message}</p>
       <ModalFooter>
         <ModalButton variant="secondary" onClick={onClose}>
-          {cancelText}
+          {cancelText ?? t('common.actions.cancel')}
         </ModalButton>
         <ModalButton variant={variant} onClick={handleConfirm}>
-          {confirmText}
+          {confirmText ?? t('common.actions.confirm')}
         </ModalButton>
       </ModalFooter>
     </Modal>

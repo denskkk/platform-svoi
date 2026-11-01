@@ -1,8 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Heart, Send } from 'lucide-react'
+import { getT } from '@/i18n/server'
+import { localizedPath } from '@/i18n/routes'
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 
 export function Footer() {
+  const { t, locale } = getT()
   const currentYear = new Date().getFullYear()
 
   return (
@@ -14,47 +18,46 @@ export function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               <Image
                 src="/logo.png"
-                alt="Логотип СВІЙ ДЛЯ СВОЇХ"
+                alt={t('layout.brand.logoAlt')}
                 width={40}
                 height={40}
                 className="w-10 h-10 rounded-full"
               />
               <span className="font-display font-bold text-lg">
-                СВІЙ ДЛЯ СВОЇХ
+                {t('layout.brand.name')}
               </span>
             </div>
             <p className="text-neutral-300 mb-4 max-w-md">
-              Платформа для пошуку та пропозиції послуг від українців для українців. 
-              Підтримуймо одне одного та будуємо сильну спільноту.
+              {t('layout.footer.description')}
             </p>
             <div className="flex items-center space-x-2 text-sm text-neutral-400">
               <Heart className="w-4 h-4 text-primary-500" />
-              <span>Зроблено з любов&apos;ю до України</span>
+              <span>{t('layout.footer.madeWithLove')}</span>
             </div>
           </div>
 
           {/* Навігація */}
           <div>
-            <h3 className="font-semibold mb-4">Навігація</h3>
+            <h3 className="font-semibold mb-4">{t('layout.footer.navigation')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/catalog" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  Каталог людей
+                  {t('layout.footer.catalog')}
                 </Link>
               </li>
               <li>
                 <Link href="/services" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  Послуги
+                  {t('layout.footer.services')}
                 </Link>
               </li>
               <li>
                 <Link href="/public-requests" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  Заявки
+                  {t('layout.footer.requests')}
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  Про нас
+                <Link href={localizedPath('/about', locale)} className="text-neutral-300 hover:text-primary-400 transition-colors">
+                  {t('layout.footer.about')}
                 </Link>
               </li>
             </ul>
@@ -62,7 +65,7 @@ export function Footer() {
 
           {/* Адміністрація */}
           <div>
-            <h3 className="font-semibold mb-4">Адміністрація</h3>
+            <h3 className="font-semibold mb-4">{t('layout.footer.administration')}</h3>
             <a 
               href="https://t.me/sviydlyasvoih" 
               target="_blank"
@@ -70,26 +73,30 @@ export function Footer() {
               className="flex items-center space-x-2 text-neutral-300 hover:text-primary-400 transition-colors"
             >
               <Send className="w-4 h-4" />
-              <span>Свій для Своїх Адміністрація</span>
+              <span>{t('layout.footer.adminLink')}</span>
             </a>
           </div>
         </div>
 
         <div className="border-t border-neutral-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-400">
-          <p>© {currentYear} СВІЙ ДЛЯ СВОЇХ. Всі права захищені.</p>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-primary-400 transition-colors">
-              Політика конфіденційності
+          <p>{t('layout.footer.copyright', { year: currentYear })}</p>
+          <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 mt-4 md:mt-0">
+            <Link href={localizedPath('/privacy', locale)} className="hover:text-primary-400 transition-colors">
+              {t('layout.footer.privacy')}
             </Link>
-            <Link href="/terms-of-use" className="hover:text-primary-400 transition-colors">
-              Умови використання
+            <Link href={localizedPath('/terms-of-use', locale)} className="hover:text-primary-400 transition-colors">
+              {t('layout.footer.terms')}
             </Link>
-            <Link href="/account-deletion" className="hover:text-primary-400 transition-colors">
-              Видалення акаунта
+            <Link href={localizedPath('/account-deletion', locale)} className="hover:text-primary-400 transition-colors">
+              {t('layout.footer.accountDeletion')}
             </Link>
-            <Link href="/contacts" className="hover:text-primary-400 transition-colors">
-              Контакти
+            <Link href={localizedPath('/support', locale)} className="hover:text-primary-400 transition-colors">
+              {t('layout.footer.support')}
             </Link>
+            <Link href={localizedPath('/contacts', locale)} className="hover:text-primary-400 transition-colors">
+              {t('layout.footer.contacts')}
+            </Link>
+            <LanguageSwitcher variant="buttons" />
           </div>
         </div>
       </div>

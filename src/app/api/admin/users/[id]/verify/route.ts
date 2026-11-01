@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { withAuth } from '@/lib/authMiddleware';
+import { getApiT } from '@/i18n/server';
+import { AdminForbiddenError } from '@/lib/api-middleware';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +13,7 @@ async function checkAdmin(userId: number) {
   });
 
   if (!(user as any)?.isAdmin) {
-    throw new Error('Доступ заборонено. Тільки для адміністраторів.');
+    throw new AdminForbiddenError();
   }
 }
 
@@ -20,12 +22,13 @@ async function handler(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const t = getApiT(request);
   try {
     const adminUserId = (request as any).user?.userId;
     
     if (!adminUserId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -38,7 +41,7 @@ async function handler(
 
     if (typeof verified !== 'boolean') {
       return NextResponse.json(
-        { error: 'Параметр verified повинен бути boolean' },
+        { error: t('api.admin.verifiedMustBeBoolean') },
         { status: 400 }
       );
     }
@@ -61,8 +64,8 @@ async function handler(
     return NextResponse.json({
       success: true,
       message: verified 
-        ? `Користувач ${updatedUser.firstName} ${updatedUser.lastName} отримав статус «Перевірений»`
-        : `Статус «Перевірений» знято з користувача ${updatedUser.firstName} ${updatedUser.lastName}`,
+        ? t('api.admin.verifiedGranted', { firstName: updatedUser.firstName, lastName: updatedUser.lastName })
+        : t('api.admin.verifiedRevoked', { firstName: updatedUser.firstName, lastName: updatedUser.lastName }),
       user: {
         ...updatedUser,
         isVerified: verified
@@ -72,22 +75,22 @@ async function handler(
   } catch (error: any) {
     console.error('Помилка оновлення статусу:', error);
     
-    if (error.message.includes('Доступ заборонено')) {
+    if (error instanceof AdminForbiddenError) {
       return NextResponse.json(
-        { error: error.message },
+        { error: t('api.common.adminOnly') },
         { status: 403 }
       );
     }
 
     if (error.code === 'P2025') {
       return NextResponse.json(
-        { error: 'Користувача не знайдено' },
+        { error: t('api.common.userNotFound') },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Помилка оновлення статусу', details: error.message },
+      { error: t('api.admin.statusUpdateError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }

@@ -1,0 +1,22 @@
+{
+  "title": "Favorites",
+  "subtitle": "Profiles you have saved",
+  "loading": "Loading...",
+  "retry": "Try again",
+  "verified": "Verified",
+  "message": "Message",
+  "profile": "Profile",
+  "remove": "Remove from favorites",
+  "empty": {
+    "title": "No favorites yet",
+    "description": "Tap the heart on a specialist's profile to save it here and come back to it quickly later.",
+    "action": "Find specialists"
+  },
+  "errors": {
+    "loadFailed": "Failed to load favorites"
+  },
+  "toast": {
+    "removed": "Removed from favorites",
+    "removeFailed": "Failed to remove from favorites"
+  }
+}

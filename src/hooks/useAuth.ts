@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { checkAuth as checkAuthSession } from '@/lib/silentFetch';
+import { useI18n } from '@/i18n/client';
 
 interface User {
   id: number;
@@ -22,6 +23,7 @@ interface User {
 }
 
 export function useAuth() {
+  const { t } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<'authed' | 'guest' | 'unavailable'>('guest');
@@ -51,7 +53,7 @@ export function useAuth() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Помилка входу');
+      throw new Error(data.error || t('common.auth.loginFailed'));
     }
 
     // Токен НЕ повертається в JSON - він вже в httpOnly cookie
@@ -79,7 +81,7 @@ export function useAuth() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Помилка реєстрації');
+      throw new Error(data.error || t('common.auth.registerFailed'));
     }
 
     // Токен НЕ повертається в JSON - він вже в httpOnly cookie
@@ -94,7 +96,7 @@ export function useAuth() {
         method: 'POST',
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Не вдалося завершити сесію на сервері');
+      if (!response.ok) throw new Error(t('common.auth.logoutFailed'));
       setUser(null);
       setStatus('guest');
     } catch (error) {

@@ -1,0 +1,316 @@
+{
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdatedLabel": "Last updated: {date}",
+    "lastUpdated": "October 14, 2026",
+    "intro": {
+      "p1": "This Privacy Policy explains what data the “Sviy dlya Svoikh” platform (the “Platform”, “we”, “us”) collects and processes, for what purposes, how we protect it, and what rights you have.",
+      "p2": "This Policy applies to the website and the mobile app (if you use the Platform through the WebView/Capacitor-based app), as well as to related services and APIs."
+    },
+    "sections": {
+      "controller": {
+        "title": "1. Who is the data controller and how to contact us",
+        "p1": "The controller (operator) of personal data is the “Sviy dlya Svoikh” project team.",
+        "contactsBefore": "Contact details for privacy-related inquiries:",
+        "contactsOr": "or e-mail"
+      },
+      "dataCollected": {
+        "title": "2. What data we collect",
+        "intro": "We process the data you provide and the technical data generated while you use the Platform:",
+        "items": {
+          "1": {
+            "label": "Account data:",
+            "text": "first and last name, e-mail, phone number (if provided), password hash (we do not store your password in plain text), account role/type."
+          },
+          "2": {
+            "label": "Profile data (at your discretion):",
+            "text": "city/region, photo/avatar, description (bio), age and gender (if filled in), family details and interests (if you fill them in), links to social networks/messengers (for example, Telegram)."
+          },
+          "3": {
+            "label": "Business profile data (where applicable):",
+            "text": "information about your business/sole proprietorship (FOP), business category, contact details, links and descriptions of services."
+          },
+          "4": {
+            "label": "Content and interactions:",
+            "text": "chat messages, requests/listings, reviews/replies, ratings, favorites, complaints."
+          },
+          "5": {
+            "label": "Files and images:",
+            "text": "images you upload (for example, an avatar or photos of services/requests). We store them as files on the server and serve them via URL."
+          },
+          "6": {
+            "label": "Technical and diagnostic data:",
+            "text": "IP address, user agent, session data (token), activity time, as well as search parameters (query, city, number of results) — for security, abuse prevention and improving the service."
+          }
+        },
+        "outro": "The Platform is currently free of charge. We do not collect or process users’ payment data (for example, bank card details)."
+      },
+      "dataSources": {
+        "title": "3. Where we get data from",
+        "items": {
+          "1": "Directly from you — when you register, fill in your profile, publish content and send messages.",
+          "2": "Automatically — when you use the website/app (technical data, cookies, security logs)."
+        }
+      },
+      "purposes": {
+        "title": "4. What we use data for",
+        "items": {
+          "1": "Creating and maintaining your account, authentication and sign-in security.",
+          "2": "Providing Platform functionality: profiles, catalog, services, requests, chat, reviews.",
+          "3": "Preventing fraud, abuse and spam, and ensuring security and stability.",
+          "4": "Supporting users and responding to inquiries.",
+          "5": "Complying with legal requirements (where applicable)."
+        }
+      },
+      "visibility": {
+        "title": "5. What other users can see",
+        "p1": "Some information you publish yourself, and it may be visible to other users of the Platform. For example: first/last name (or business name), city, photo, description, published services/requests, reviews. You control how most profile fields are filled in.",
+        "p2": "Chat messages are visible only to the participants of the relevant conversation."
+      },
+      "cookies": {
+        "title": "6. Cookies and local storage",
+        "p1": "To make authorization work, we use cookies (including httpOnly cookies) and may use the browser’s local storage (localStorage) to store technical session data. You can clear cookies and localStorage in your browser/device settings, but this may require you to sign in again."
+      },
+      "thirdParties": {
+        "title": "7. Sharing data with third parties",
+        "intro": "We do not sell personal data. We may share data only in the following cases:",
+        "items": {
+          "1": {
+            "label": "With infrastructure providers",
+            "text": "(hosting/servers/databases) — because the service cannot operate without them."
+          },
+          "2": {
+            "label": "When required by law",
+            "text": "— if we are obliged to disclose data under applicable law and lawful requests."
+          }
+        },
+        "outro": "We currently do not use third-party advertising SDKs and do not show ads. If third-party analytics or advertising is added in the future, we will update this Policy."
+      },
+      "security": {
+        "title": "8. Security",
+        "p1": "We apply reasonable technical and organizational measures to protect data: password hashing, access control, request rate limiting, security logs. At the same time, no method of data transmission or storage can be 100% secure."
+      },
+      "retention": {
+        "title": "9. Retention periods",
+        "p1": "We keep data for as long as necessary to operate the service and achieve the purposes of processing. For example, profile data is kept while the account is active; technical logs and sessions may be kept for a limited time for security and diagnostics."
+      },
+      "rights": {
+        "title": "10. Your rights",
+        "intro": "Depending on applicable law, you may have the following rights:",
+        "items": {
+          "1": "to access your data;",
+          "2": "to correct inaccurate data;",
+          "3": "to delete your account and data (unless this conflicts with legal requirements);",
+          "4": "to restrict processing in certain cases."
+        },
+        "p2Before": "To exercise these rights, contact us using the contact details in section 1. You can delete your account yourself on the page",
+        "p2After": "(in the app or on the website)."
+      },
+      "children": {
+        "title": "11. Children",
+        "p1": "The Platform is not intended for children under 13. If you believe a child has provided us with personal data, please contact us — we will take steps to delete such data."
+      },
+      "changes": {
+        "title": "12. Changes to this Policy",
+        "p1": "We may update this Policy. The current version is always available on this page. The date of the last update is shown at the top."
+      }
+    }
+  },
+  "accountDeletion": {
+    "title": "Account and data deletion",
+    "lastUpdatedLabel": "Last updated: {date}",
+    "lastUpdated": "October 14, 2026",
+    "appName": "Sviy dlya Svoikh (Svoi Platform)",
+    "intro": "This page describes how users of {appName} can delete their account and the data associated with it.",
+    "emailSubject": "Account deletion request — Sviy dlya Svoikh",
+    "sections": {
+      "now": {
+        "title": "Delete your account now",
+        "p1": "If you are signed in to your profile, you can delete your account right away on this page — in the app or on the website.",
+        "stepsIntro": "How to do it:",
+        "steps": {
+          "1": "Sign in to your account on the website or in the app.",
+          "2": "Open this page — the account deletion form appears below.",
+          "3": "Enter your account password to confirm.",
+          "4": "Tick the box confirming that you understand the account and all related data will be deleted and cannot be restored.",
+          "5": "Click “Delete account permanently”. The account and related data are deleted immediately and you are signed out."
+        },
+        "stepsNote": "If the password is incorrect or too many attempts have been made, the form will show an error — try again later. An administrator account cannot be deleted through the form — please contact support."
+      },
+      "request": {
+        "title": "1) If you cannot sign in — submit a request",
+        "steps": {
+          "1": "Prepare information to identify your account: e-mail, phone number (if you provided one), and (if possible) a link to your profile or your user ID.",
+          "2": "Send your request in one of the following ways:",
+          "3": "In your message, write the phrase “Please delete my account and related data” and include your details so we can find the account (e-mail/phone).",
+          "4": "If necessary, we may ask for additional confirmation that the account belongs to you (to prevent deletion on someone else’s request)."
+        },
+        "telegram": "Telegram:",
+        "email": "E-mail:"
+      },
+      "deleted": {
+        "title": "2) What data will be deleted",
+        "intro": "After your request is confirmed, we delete or anonymize the data associated with your account, including:",
+        "items": {
+          "1": "account data (e-mail, password hash, account role/status);",
+          "2": "profile data (first/last name, photo, description, contact details, social links, other profile fields);",
+          "3": "content you published on the Platform (services/requests/reviews) — deleted or anonymized depending on the type of content;",
+          "4": "uploaded images (avatar, photos of services/requests), unless they are needed to preserve the integrity of other records."
+        },
+        "outro": "Chat messages may be deleted or anonymized so as not to break the integrity of other users’ conversations."
+      },
+      "retained": {
+        "title": "3) What data may be retained and for how long",
+        "items": {
+          "1": {
+            "label": "Technical logs",
+            "text": "may be kept for a limited time for security and diagnostics (usually up to 90 days)."
+          },
+          "2": {
+            "label": "Backups",
+            "text": "may contain some data until they are overwritten (usually up to 30 days)."
+          },
+          "3": {
+            "label": "Data we are required by law to retain",
+            "text": "(where applicable) may be kept for the period required by law."
+          }
+        }
+      },
+      "timeline": {
+        "title": "4) Processing time",
+        "p1": "We aim to complete a deletion request within 30 days of confirming the identity of the account owner."
+      },
+      "more": {
+        "title": "5) Additional information",
+        "before": "For more details on how personal data is processed, see the",
+        "link": "Privacy Policy",
+        "after": "."
+      }
+    }
+  },
+  "terms": {
+    "backHome": "Back to home",
+    "brand": "Sviy dlya Svoikh",
+    "title": "Terms of Service",
+    "edition": "Version of October 14, 2026",
+    "intro": {
+      "p1": "These terms explain the rules for using the website and related services of “Sviy dlya Svoikh”. Please read them before creating an account or publishing any materials. If you do not agree with these terms, do not use the platform.",
+      "p2": "The platform helps people find one another and agree on services. It does not replace separate agreements between a customer and a service provider and is not a party to such agreements."
+    },
+    "tocLabel": "Table of contents of the Terms of Service",
+    "tocTitle": "Contents",
+    "sections": {
+      "general": {
+        "title": "1. General provisions",
+        "p1": "“Sviy dlya Svoikh” (the “Platform”) is an online community service that allows you to create profiles, find people and services, publish offers and requests, communicate, leave reviews and use other available features.",
+        "p2": "These terms govern the use of the website, the mobile app (if available) and related features. By creating an account, publishing materials or otherwise using the Platform, you confirm that you have read these terms and agree to comply with them.",
+        "p3Before": "The processing of personal data is described in the",
+        "p3PrivacyLink": "Privacy Policy",
+        "p3Middle": ". To delete your account, follow the instructions on the",
+        "p3DeletionLink": "account deletion",
+        "p3After": " page."
+      },
+      "platform": {
+        "title": "2. Role of the platform",
+        "p1": "The Platform provides technical tools for search, publishing offers and requests, and communication between users. Unless expressly stated otherwise for a specific feature, the Platform does not provide the services that users describe in their profiles and listings, is not an employer, agent or representative of users, and is not a party to their agreements.",
+        "p2": "Users decide for themselves whom to interact with, verify information, and discuss terms, deadlines, price and method of payment. Ratings, badges, profiles and reviews are supplementary information and do not in themselves mean that the Platform guarantees the identity, qualifications, reliability or quality of work of any user."
+      },
+      "account": {
+        "title": "3. Your account",
+        "items": {
+          "1": "Provide accurate, up-to-date and non-misleading information and update it promptly.",
+          "2": "Create an account only in your own name or as a duly authorized representative of a business.",
+          "3": "Keep your login credentials confidential and be responsible for actions performed through your account, unless the law requires otherwise.",
+          "4": "Notify the administration immediately if you suspect that your account is being used without your permission."
+        },
+        "p1": "By using the Platform, you confirm that you have the right to enter into agreements that are binding on you. If the law requires the consent or participation of a legal representative, you may use the relevant features only with their participation and consent."
+      },
+      "content": {
+        "title": "4. Content and profile",
+        "p1": "You retain the rights to the materials you publish. By publishing content, you grant the Platform a non-exclusive, royalty-free permission to store, reproduce, technically process and display that content to the extent necessary for the features you use to work, and in accordance with your visibility settings.",
+        "p2": "You confirm that you have the rights and lawful grounds to post your texts, photographs, logos and other materials. Do not publish other people’s personal data, images, trade secrets or other content without proper permission. Public information in profiles, listings, requests and reviews may be accessible to other visitors of the Platform.",
+        "p3": "You are responsible for the content, accuracy and relevance of your materials. Do not present advertising, fabrications or your own opinion as verified fact or as the official position of the Platform."
+      },
+      "services": {
+        "title": "5. Services and requests",
+        "p1": "Service providers are solely responsible for their services, goods, qualifications, required permits and licenses, compliance with professional requirements and fulfillment of agreements with customers. Customers independently evaluate offers and provide the service provider with accurate information necessary to perform the work.",
+        "p2": "Describe services and requests honestly and in sufficient detail. State the essential terms, including available information on price, scope of work, service area and deadlines. Any budget and price stated in a profile or request is information provided by the user; the parties must agree on the final terms between themselves before work begins."
+      },
+      "transactions": {
+        "title": "6. Agreements between users",
+        "p1": "A contract for a service, its price, payment, deadlines, warranties, cancellation or refund is concluded directly between users, unless expressly stated otherwise for a specific Platform feature. The Platform does not control the performance of such agreements and cannot confirm their outcome.",
+        "p2": "Before handing over money, property or confidential information, verify the other party yourself and agree on the terms in a way that allows you to keep proof of them. Do not rely solely on messages, ratings or published content as a guarantee of a safe transaction."
+      },
+      "communication": {
+        "title": "7. Communication and reviews",
+        "p1": "Use messages and replies for lawful communication regarding the Platform, services and requests. Reviews must be based on real experience, be made in good faith and must not contain threats, insults, discrimination, other people’s personal data or knowingly false statements.",
+        "p2Before": "Do not publish private correspondence without a lawful basis, and do not use messages for spam, harassment, extortion or intrusive advertising. Messages in the service are accessible to their participants and may be processed in accordance with our",
+        "p2Link": "Privacy Policy",
+        "p2After": "."
+      },
+      "prohibited": {
+        "title": "8. Prohibited conduct",
+        "intro": "When using the Platform, it is prohibited to:",
+        "items": {
+          "1": "violate the law, the rights of others or the terms of contracts;",
+          "2": "mislead others, impersonate another person or business, publish fraudulent offers or fake reviews;",
+          "3": "post illegal, offensive, discriminatory, threatening, obscene or otherwise harmful content;",
+          "4": "publish spam, unsolicited advertising, malicious code or links designed to deceive or cause harm;",
+          "5": "collect other users’ data without a lawful basis, violate their privacy or use their data for unsolicited mailings;",
+          "6": "interfere with the operation of the Platform, circumvent restrictions, access controls or security measures, or attempt to gain unauthorized access to accounts or systems;",
+          "7": "use the Platform to resell access, for automated data collection, or for activities that harm the service or its users."
+        }
+      },
+      "moderation": {
+        "title": "9. Moderation and complaints",
+        "p1Before": "If you believe that content or conduct violates these terms or the law, use the “Report” button on the profile, service or request, or notify the administration via",
+        "p1Link": "Telegram",
+        "p1After": ". If possible, include a link to the profile or material and a short description of the problem.",
+        "p2": "To protect users and the service and to comply with legal requirements, the administration may review complaints, restrict the visibility of or remove materials, suspend certain features or access to an account. Decisions are made taking into account the circumstances and the available information; you may contact the administration to request a review of a decision."
+      },
+      "payments": {
+        "title": "10. Paid features",
+        "p1": "Certain features or account types may be offered on a paid basis if they are available in your version of the Platform. Before you confirm an order, you must be shown the price, currency, what the feature includes and its duration. If a paid feature is not available, it cannot be purchased through the Platform.",
+        "p2": "A payment may be processed by a third-party payment provider; that provider’s terms also apply. Refunds, cancellations and payment-related claims are handled in accordance with the terms shown at checkout, the payment provider’s rules and applicable consumer protection law. If a payment is made directly between users, its terms are agreed by the parties themselves."
+      },
+      "privacy": {
+        "title": "11. Personal data",
+        "p1Before": "The use of personal data, cookies and technical information is described in the",
+        "p1Link": "Privacy Policy",
+        "p1After": ". When registering and using the service, please read it and do not post other people’s data without a proper legal basis."
+      },
+      "intellectualProperty": {
+        "title": "12. Intellectual property rights",
+        "p1": "The rights to the software, design, name, logo and other elements of the Platform belong to their respective rights holders and are protected by law. Using the service does not transfer to you any ownership rights in these elements. Do not copy or use them beyond what is permitted by law or by the rights holder.",
+        "p2": "If you believe that material on the Platform infringes your rights, send the administration a notice describing the material, your rights and your contact details for a reply."
+      },
+      "availability": {
+        "title": "13. Availability of the platform",
+        "p1": "We work on the stability and security of the Platform, but we cannot guarantee its uninterrupted or error-free operation. Features may change, become temporarily unavailable or be discontinued, including for maintenance, updates, troubleshooting or responding to threats."
+      },
+      "liability": {
+        "title": "14. Liability",
+        "p1": "To the extent permitted by law, the Platform is not responsible for the accuracy of user content, users’ conduct, the quality or result of their services, or the performance of agreements concluded directly between them. Users are solely responsible for their publications, decisions and interactions with one another.",
+        "p2": "Nothing in these terms limits consumer liability or rights that cannot be limited or excluded under applicable law."
+      },
+      "termination": {
+        "title": "15. Ending your use",
+        "before": "You may stop using the Platform and delete your account yourself on the",
+        "link": "account and data deletion",
+        "after": " page. Some information may be retained or anonymized if required by law or necessary to protect the rights and safety of users, as described in the Privacy Policy."
+      },
+      "changes": {
+        "title": "16. Changes to the terms",
+        "p1": "We may update these terms if the Platform’s features, the law or security rules change. The current version is published on this page with the date of the update. If changes materially affect users, we will make reasonable efforts to notify them through the Platform or by other available means. Continued use after the changes take effect means acceptance of the updated terms, unless the law provides otherwise."
+      },
+      "contact": {
+        "title": "17. Contact and governing law",
+        "p1Before": "If you have questions about these terms or complaints, contact the Platform administration via",
+        "p1Link": "Telegram “Sviy dlya Svoikh Administration”",
+        "p1After": ".",
+        "p2": "The use of the Platform is governed by the law determined by the rules of private international law and by the mandatory provisions that apply to the user. Nothing in these terms deprives a consumer of the protection granted by the mandatory rules of law of the country of their habitual residence."
+      }
+    },
+    "footnote": "These terms describe how the Platform operates and how it interacts with users. The terms of a specific service or agreement between users are agreed by them separately."
+  }
+}

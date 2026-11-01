@@ -9,6 +9,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { PERMISSIONS } from '@/lib/permissions';
 import { Lock, Crown, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
 
 interface RequirePermissionProps {
   permission: keyof typeof PERMISSIONS;
@@ -24,6 +25,7 @@ export function RequirePermission({
   children, 
   fallback
 }: RequirePermissionProps) {
+  const { t } = useI18n();
   const { hasAccess, errorMessage, loading } = usePermission(permission);
 
   if (loading) {
@@ -48,7 +50,7 @@ export function RequirePermission({
         <Lock className="w-8 h-8 text-blue-600" />
       </div>
       <h3 className="text-lg font-bold text-neutral-900 mb-2">
-        Функція недоступна
+        {t('common.permission.unavailable')}
       </h3>
       <p className="text-neutral-600 mb-4">
         {errorMessage}
@@ -75,12 +77,13 @@ export function PermissionButton({
   className = '',
   disabled = false
 }: PermissionButtonProps) {
+  const { t } = useI18n();
   const { hasAccess, errorMessage } = usePermission(permission);
   const toast = useToast();
 
   const handleClick = () => {
     if (!hasAccess) {
-      toast.warning(errorMessage || 'Доступ заборонено');
+      toast.warning(errorMessage || t('common.permission.denied'));
       return;
     }
     onClick?.();
@@ -103,10 +106,11 @@ export function PermissionButton({
  * Бейдж преміум функції
  */
 export function PremiumBadge({ className = '' }: { className?: string }) {
+  const { t } = useI18n();
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-800 text-xs font-semibold rounded-full border border-amber-300 ${className}`}>
       <Crown className="w-3 h-3" />
-      <span>Преміум</span>
+      <span>{t('common.permission.premium')}</span>
     </span>
   );
 }
@@ -115,10 +119,11 @@ export function PremiumBadge({ className = '' }: { className?: string }) {
  * Бейдж бізнес функції
  */
 export function BusinessBadge({ className = '' }: { className?: string }) {
+  const { t } = useI18n();
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full border border-purple-300 ${className}`}>
       <Sparkles className="w-3 h-3" />
-      <span>Бізнес</span>
+      <span>{t('common.permission.business')}</span>
     </span>
   );
 }

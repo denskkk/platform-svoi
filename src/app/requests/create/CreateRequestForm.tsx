@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
 
 export default function CreateRequestForm() {
   const router = useRouter();
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const serviceId = searchParams.get('serviceId');
   const executorId = searchParams.get('executorId');
@@ -56,8 +58,8 @@ export default function CreateRequestForm() {
         setService(data.service);
         setFormData(prev => ({
           ...prev,
-          title: `Заявка на "${data.service.title}"`,
-          description: `Мені потрібна послуга: ${data.service.title}`,
+          title: t('serviceRequests.requestForm.prefillTitle', { title: data.service.title }),
+          description: t('serviceRequests.requestForm.prefillDescription', { title: data.service.title }),
           budgetMin: data.service.priceFrom?.toString() || '',
           budgetMax: data.service.priceTo?.toString() || '',
           city: data.service.city || prev.city,
@@ -66,7 +68,7 @@ export default function CreateRequestForm() {
         setServiceMissing(true);
       }
     } catch (err) {
-      console.error('Помилка завантаження послуги:', err);
+      console.error('Failed to load service:', err);
       setServiceMissing(true);
     } finally {
       setLoading(false);
@@ -114,7 +116,7 @@ export default function CreateRequestForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка створення заявки');
+        throw new Error(data.error || t('serviceRequests.common.createFailed'));
       }
 
       // Якщо заявка публічна -> перейти на список публічних з форс-оновленням
@@ -130,7 +132,7 @@ export default function CreateRequestForm() {
         router.push(`/service-requests/${data.request.id}`);
       }
     } catch (err: any) {
-      setError(err.message || 'Помилка створення заявки');
+      setError(err.message || t('serviceRequests.common.createFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -139,7 +141,7 @@ export default function CreateRequestForm() {
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('serviceRequests.common.loading')}</div>
       </div>
     );
   }
@@ -153,25 +155,25 @@ export default function CreateRequestForm() {
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Назад
+          {t('serviceRequests.common.back')}
         </Link>
 
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
           <h1 className="text-3xl font-bold text-neutral-900 mb-6">
-            Подати заявку
+            {t('serviceRequests.requestForm.title')}
           </h1>
           {serviceMissing && (
             <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800 font-medium">Обрана послуга недоступна або видалена. Ви можете все одно створити загальну заявку без привʼязки до цієї послуги.</p>
+              <p className="text-sm text-yellow-800 font-medium">{t('serviceRequests.requestForm.serviceMissing')}</p>
             </div>
           )}
           {service && !serviceMissing && (
             <div className="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
               <p className="text-sm text-primary-800">
-                Ви подаєте заявку на послугу: <strong>{service.title}</strong>
+                {t('serviceRequests.requestForm.forService')} <strong>{service.title}</strong>
               </p>
               <p className="text-sm text-primary-700 mt-1">
-                Виконавець: {service.user?.businessInfo?.companyName || `${service.user.firstName} ${service.user.lastName}`}
+                {t('serviceRequests.requestForm.executor', { name: service.user?.businessInfo?.companyName || `${service.user.firstName} ${service.user.lastName}` })}
               </p>
             </div>
           )}
@@ -187,7 +189,7 @@ export default function CreateRequestForm() {
             {/* Заголовок */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-neutral-700 mb-2">
-                Назва заявки <span className="text-red-500">*</span>
+                {t('serviceRequests.requestForm.titleLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -196,14 +198,14 @@ export default function CreateRequestForm() {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Наприклад: Потрібен електрик для ремонту проводки"
+                placeholder={t('serviceRequests.requestForm.titlePlaceholder')}
               />
             </div>
 
             {/* Опис */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-2">
-                Опис заявки <span className="text-red-500">*</span>
+                {t('serviceRequests.requestForm.descriptionLabel')} <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="description"
@@ -212,7 +214,7 @@ export default function CreateRequestForm() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={6}
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Опишіть детально, що вам потрібно..."
+                placeholder={t('serviceRequests.requestForm.descriptionPlaceholder')}
               />
             </div>
 
@@ -220,7 +222,7 @@ export default function CreateRequestForm() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="budgetMin" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Бюджет від (грн)
+                  {t('serviceRequests.requestForm.budgetFromLabel')}
                 </label>
                 <input
                   type="number"
@@ -235,7 +237,7 @@ export default function CreateRequestForm() {
               </div>
               <div>
                 <label htmlFor="budgetMax" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Бюджет до (грн)
+                  {t('serviceRequests.requestForm.budgetToLabel')}
                 </label>
                 <input
                   type="number"
@@ -253,7 +255,7 @@ export default function CreateRequestForm() {
             {/* Місто */}
             <div>
               <label htmlFor="city" className="block text-sm font-medium text-neutral-700 mb-2">
-                Місто <span className="text-red-500">*</span>
+                {t('serviceRequests.requestForm.cityLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -262,7 +264,7 @@ export default function CreateRequestForm() {
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Київ"
+                placeholder={t('serviceRequests.requestForm.cityPlaceholder')}
               />
             </div>
 
@@ -273,14 +275,14 @@ export default function CreateRequestForm() {
                 onClick={() => router.back()}
                 className="flex-1 px-6 py-3 border-2 border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
               >
-                Скасувати
+                {t('serviceRequests.common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={submitting}
                 className="flex-1 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Створення...' : 'Подати заявку'}
+                {submitting ? t('serviceRequests.common.creating') : t('serviceRequests.requestForm.submit')}
               </button>
             </div>
           </form>

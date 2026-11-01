@@ -3,9 +3,106 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, MapPin, Briefcase, Heart, Car, Globe, Target } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
+import { getCityName } from '@/lib/constants';
+
+// Option values are stored in the DB, so they stay in Ukrainian; only labels are translated via `key`.
+const OTHER_OPTION = 'Інше'; // i18n-ignore
+
+const OTHER_TRANSPORT_OPTIONS = [
+  { value: 'Велосипед', key: 'bicycle' }, // i18n-ignore
+  { value: 'Самокат', key: 'scooter' }, // i18n-ignore
+  { value: 'Мотоцикл', key: 'motorcycle' }, // i18n-ignore
+  { value: 'Скейт', key: 'skateboard' }, // i18n-ignore
+  { value: 'Гірський велосипед', key: 'mountainBike' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const PETS_OPTIONS = [
+  { value: 'Кіт', key: 'cat' }, // i18n-ignore
+  { value: 'Собака', key: 'dog' }, // i18n-ignore
+  { value: 'Птахи', key: 'birds' }, // i18n-ignore
+  { value: 'Рибки', key: 'fish' }, // i18n-ignore
+  { value: 'Гризуни', key: 'rodents' }, // i18n-ignore
+  { value: 'Немає', key: 'none' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const HOBBIES_OPTIONS = [
+  { value: 'Музика', key: 'music' }, // i18n-ignore
+  { value: 'Кіно', key: 'movies' }, // i18n-ignore
+  { value: 'Читання', key: 'reading' }, // i18n-ignore
+  { value: 'Подорожі', key: 'travel' }, // i18n-ignore
+  { value: 'Фотографія', key: 'photography' }, // i18n-ignore
+  { value: 'Малювання', key: 'drawing' }, // i18n-ignore
+  { value: 'Рукоділля', key: 'handicrafts' }, // i18n-ignore
+  { value: 'Кулінарія', key: 'cooking' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const OUTDOOR_OPTIONS = [
+  { value: 'Прогулянки', key: 'walks' }, // i18n-ignore
+  { value: 'Пікніки', key: 'picnics' }, // i18n-ignore
+  { value: 'Походи', key: 'hiking' }, // i18n-ignore
+  { value: 'Риболовля', key: 'fishing' }, // i18n-ignore
+  { value: 'Поїздки на природу', key: 'natureTrips' }, // i18n-ignore
+  { value: 'Покатушки на велосипеді', key: 'cycling' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const SPORTS_OPTIONS = [
+  { value: 'Футбол', key: 'football' }, // i18n-ignore
+  { value: 'Баскетбол', key: 'basketball' }, // i18n-ignore
+  { value: 'Плавання', key: 'swimming' }, // i18n-ignore
+  { value: 'Біг', key: 'running' }, // i18n-ignore
+  { value: 'Тренажерний зал', key: 'gym' }, // i18n-ignore
+  { value: 'Йога', key: 'yoga' }, // i18n-ignore
+  { value: 'Велоспорт', key: 'cycling' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const LIFESTYLE_OPTIONS = [
+  { value: 'Активний', key: 'active' }, // i18n-ignore
+  { value: 'Спокійний', key: 'calm' }, // i18n-ignore
+  { value: 'Сімейний', key: 'family' }, // i18n-ignore
+  { value: 'Соціальний', key: 'social' }, // i18n-ignore
+  { value: 'Творчий', key: 'creative' }, // i18n-ignore
+  { value: 'Кар\'єрний', key: 'career' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const SITE_USAGE_GOAL_OPTIONS = [
+  { value: 'Знайти клієнтів', key: 'findClients' }, // i18n-ignore
+  { value: 'Знайти підрядників/послуги', key: 'findContractors' }, // i18n-ignore
+  { value: 'Пошук роботи', key: 'jobSearch' }, // i18n-ignore
+  { value: 'Спілкування/мережування', key: 'networking' }, // i18n-ignore
+  { value: OTHER_OPTION, key: 'other' },
+];
+
+const CITIES = [
+  'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', // i18n-ignore
+  'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', // i18n-ignore
+  'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', // i18n-ignore
+  'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка', // i18n-ignore
+  'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук', // i18n-ignore
+  'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь' // i18n-ignore
+];
+
+// Cities missing from the shared city dictionary get their labels from this namespace.
+const EXTRA_CITY_KEYS: Record<string, string> = {
+  'Макіївка': 'makiivka', // i18n-ignore
+  'Горлівка': 'horlivka', // i18n-ignore
+  'Кам\'янське': 'kamianske', // i18n-ignore
+  'Кропивницький': 'kropyvnytskyi', // i18n-ignore
+  'Кременчук': 'kremenchuk', // i18n-ignore
+  'Біла Церква': 'bila_tserkva', // i18n-ignore
+  'Краматорськ': 'kramatorsk', // i18n-ignore
+  'Мелітополь': 'melitopol', // i18n-ignore
+};
 
 export default function QuestionnairePage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
   const [currentStep, setCurrentStep] = useState(1);
@@ -136,17 +233,17 @@ export default function QuestionnairePage() {
           const otherItems = arr.filter(a => !known.includes(a));
           const filtered = arr.filter(a => known.includes(a));
           if (otherItems.length) {
-            return { values: [...filtered, 'Інше'], other: otherItems.join(', ') };
+            return { values: [...filtered, OTHER_OPTION], other: otherItems.join(', ') };
           }
           return { values: filtered, other: '' };
         };
 
-        const otherTransportKnown = ['Автомобіль', 'Громадський транспорт', 'Велосипед', 'Пішки', 'Таксі', 'Інше'];
-        const petsKnown = ['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше'];
-        const hobbiesKnown = ['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше'];
-        const outdoorKnown = ['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше'];
-        const lifestyleKnown = ['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше'];
-        const sportsKnown = ['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше'];
+        const otherTransportKnown = ['Автомобіль', 'Громадський транспорт', 'Велосипед', 'Пішки', 'Таксі', 'Інше']; // i18n-ignore
+        const petsKnown = ['Собака', 'Кіт', 'Птахи', 'Риби', 'Інше']; // i18n-ignore
+        const hobbiesKnown = ['Читання', 'Музика', 'Кіно', 'Подорожі', 'Кулінарія', 'Інше']; // i18n-ignore
+        const outdoorKnown = ['Похід', 'Пікнік', 'Пляж', 'Парки', 'Інше']; // i18n-ignore
+        const lifestyleKnown = ['Еко', 'Мінімалізм', 'Здоровий спосіб життя', 'Вегетаріанство', 'Інше']; // i18n-ignore
+        const sportsKnown = ['Футбол', 'Біг', 'Тренажерний зал', 'Йога', 'Інше']; // i18n-ignore
 
         const ot = mapOther(csvToArray(u.otherTransport), otherTransportKnown);
         const pets = mapOther(csvToArray(u.petsInfo), petsKnown);
@@ -203,14 +300,8 @@ export default function QuestionnairePage() {
     })();
   }, [router]);
 
-  const cities = [
-    'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
-    'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', 
-    'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', 
-    'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка',
-    'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук',
-    'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь'
-  ];
+  const cities = CITIES;
+  const cityLabel = (city: string) => (EXTRA_CITY_KEYS[city] ? t(`questionnaire.cities.${EXTRA_CITY_KEYS[city]}`) : getCityName(city, locale));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -268,7 +359,7 @@ export default function QuestionnairePage() {
           carInfo: formData.carInfo || null,
           otherTransport: Array.isArray(formData.otherTransport)
             ? (formData.otherTransport
-                .map((v: string) => (v === 'Інше' && formData.otherTransportOther ? formData.otherTransportOther : v))
+                .map((v: string) => (v === OTHER_OPTION && formData.otherTransportOther ? formData.otherTransportOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.otherTransport || null,
@@ -283,35 +374,35 @@ export default function QuestionnairePage() {
           hasPets: formData.hasPets ? formData.hasPets === 'yes' : null,
           petsInfo: Array.isArray(formData.petsInfo)
             ? (formData.petsInfo
-                .map((v: string) => (v === 'Інше' && formData.petsInfoOther ? formData.petsInfoOther : v))
+                .map((v: string) => (v === OTHER_OPTION && formData.petsInfoOther ? formData.petsInfoOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.petsInfo || null,
 
           hobbies: Array.isArray(formData.hobbies)
             ? (formData.hobbies
-                .map((v: string) => (v === 'Інше' && formData.hobbiesOther ? formData.hobbiesOther : v))
+                .map((v: string) => (v === OTHER_OPTION && formData.hobbiesOther ? formData.hobbiesOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.hobbies || null,
 
           outdoorActivities: Array.isArray(formData.outdoorActivities)
             ? (formData.outdoorActivities
-                .map((v: string) => (v === 'Інше' && formData.outdoorActivitiesOther ? formData.outdoorActivitiesOther : v))
+                .map((v: string) => (v === OTHER_OPTION && formData.outdoorActivitiesOther ? formData.outdoorActivitiesOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.outdoorActivities || null,
 
           lifestyle: Array.isArray(formData.lifestyle)
             ? (formData.lifestyle
-                .map((v: string) => (v === 'Інше' && formData.lifestyleOther ? formData.lifestyleOther : v))
+                .map((v: string) => (v === OTHER_OPTION && formData.lifestyleOther ? formData.lifestyleOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.lifestyle || null,
 
           sports: Array.isArray(formData.sports)
             ? (formData.sports
-                .map((v: string) => (v === 'Інше' && formData.sportsOther ? formData.sportsOther : v))
+                .map((v: string) => (v === OTHER_OPTION && formData.sportsOther ? formData.sportsOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.sports || null,
@@ -320,7 +411,7 @@ export default function QuestionnairePage() {
           socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
           siteUsageGoal: Array.isArray(formData.siteUsageGoal)
             ? (formData.siteUsageGoal
-                .map((v: string) => (v === 'Інше' && (formData as any).siteUsageGoalOther ? (formData as any).siteUsageGoalOther : v))
+                .map((v: string) => (v === OTHER_OPTION && (formData as any).siteUsageGoalOther ? (formData as any).siteUsageGoalOther : v))
                 .filter(Boolean)
                 .join(', ') || null)
             : formData.siteUsageGoal || null,
@@ -330,7 +421,7 @@ export default function QuestionnairePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка збереження');
+        throw new Error(data.error || t('questionnaire.individual.saveError'));
       }
 
       // Обновить данные пользователя в localStorage
@@ -339,7 +430,7 @@ export default function QuestionnairePage() {
       // Перейти на главную
       router.push('/');
     } catch (err: any) {
-      setError(err.message || 'Помилка збереження');
+      setError(err.message || t('questionnaire.individual.saveError'));
     } finally {
       setLoading(false);
     }
@@ -360,7 +451,7 @@ export default function QuestionnairePage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('questionnaire.individual.loading')}</div>
       </div>
     );
   }
@@ -372,17 +463,17 @@ export default function QuestionnairePage() {
           <User className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          🧍‍♂️ Основна інформація
+          {t('questionnaire.individual.step1.title')}
         </h2>
         <p className="text-neutral-600">
-          Розкажіть про себе
+          {t('questionnaire.individual.step1.subtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Ім&apos;я *
+            {t('questionnaire.individual.step1.firstName')}
           </label>
           <input
             type="text"
@@ -391,13 +482,13 @@ export default function QuestionnairePage() {
             value={formData.firstName}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Введіть ім'я"
+            placeholder={t('questionnaire.individual.step1.firstNamePlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Прізвище *
+            {t('questionnaire.individual.step1.lastName')}
           </label>
           <input
             type="text"
@@ -406,13 +497,13 @@ export default function QuestionnairePage() {
             value={formData.lastName}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Введіть прізвище"
+            placeholder={t('questionnaire.individual.step1.lastNamePlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            По батькові
+            {t('questionnaire.individual.step1.middleName')}
           </label>
           <input
             type="text"
@@ -420,13 +511,13 @@ export default function QuestionnairePage() {
             value={formData.middleName}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Введіть по батькові"
+            placeholder={t('questionnaire.individual.step1.middleNamePlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Телефон
+            {t('questionnaire.individual.step1.phone')}
           </label>
           <input
             type="tel"
@@ -440,7 +531,7 @@ export default function QuestionnairePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Вік
+            {t('questionnaire.individual.step1.age')}
           </label>
           <input
             type="number"
@@ -450,13 +541,13 @@ export default function QuestionnairePage() {
             value={formData.age}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Введіть вік"
+            placeholder={t('questionnaire.individual.step1.agePlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Стать
+            {t('questionnaire.individual.step1.gender')}
           </label>
           <select
             name="gender"
@@ -464,15 +555,15 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="male">Чоловіча</option>
-            <option value="female">Жіноча</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="male">{t('questionnaire.individual.step1.genderMale')}</option>
+            <option value="female">{t('questionnaire.individual.step1.genderFemale')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Сімейний стан
+            {t('questionnaire.individual.step1.maritalStatus')}
           </label>
           <select
             name="maritalStatus"
@@ -480,17 +571,17 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="single">Неодружений/неодружена</option>
-            <option value="married">Одружений/одружена</option>
-            <option value="relationship">У стосунках</option>
-            <option value="divorced">Розлучений/розлучена</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="single">{t('questionnaire.individual.step1.maritalSingle')}</option>
+            <option value="married">{t('questionnaire.individual.step1.maritalMarried')}</option>
+            <option value="relationship">{t('questionnaire.individual.step1.maritalRelationship')}</option>
+            <option value="divorced">{t('questionnaire.individual.step1.maritalDivorced')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Кількість дітей
+            {t('questionnaire.individual.step1.childrenCount')}
           </label>
           <input
             type="number"
@@ -507,7 +598,7 @@ export default function QuestionnairePage() {
 
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Склад сім&apos;ї
+          {t('questionnaire.individual.step1.familyComposition')}
         </label>
         <textarea
           name="familyComposition"
@@ -515,7 +606,7 @@ export default function QuestionnairePage() {
           value={formData.familyComposition}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Наприклад: дружина, двоє дітей, батьки..."
+          placeholder={t('questionnaire.individual.step1.familyCompositionPlaceholder')}
         />
       </div>
     </div>
@@ -528,17 +619,17 @@ export default function QuestionnairePage() {
           <MapPin className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          📍 Місце проживання & 🚗 Транспорт
+          {t('questionnaire.individual.step2.title')}
         </h2>
         <p className="text-neutral-600">
-          Де ви живете та як пересуваєтесь
+          {t('questionnaire.individual.step2.subtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Місто *
+            {t('questionnaire.individual.step2.city')}
           </label>
           <select
             name="city"
@@ -547,16 +638,16 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Оберіть місто</option>
+            <option value="">{t('questionnaire.individual.step2.cityPlaceholder')}</option>
             {cities.map(city => (
-              <option key={city} value={city}>{city}</option>
+              <option key={city} value={city}>{cityLabel(city)}</option>
             ))}
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Область
+            {t('questionnaire.individual.step2.region')}
           </label>
           <input
             type="text"
@@ -564,13 +655,13 @@ export default function QuestionnairePage() {
             value={formData.region}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Введіть область"
+            placeholder={t('questionnaire.individual.step2.regionPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Тип житла
+            {t('questionnaire.individual.step2.housingType')}
           </label>
           <select
             name="housingType"
@@ -578,16 +669,16 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="house">Будинок</option>
-            <option value="apartment">Квартира</option>
-            <option value="other">Інше</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="house">{t('questionnaire.individual.step2.housingHouse')}</option>
+            <option value="apartment">{t('questionnaire.individual.step2.housingApartment')}</option>
+            <option value="other">{t('questionnaire.individual.step2.housingOther')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Проживання
+            {t('questionnaire.individual.step2.livingSituation')}
           </label>
           <select
             name="livingSituation"
@@ -595,16 +686,16 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="alone">Самостійно</option>
-            <option value="family">З родиною</option>
-            <option value="roommates">З співмешканцями</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="alone">{t('questionnaire.individual.step2.livingAlone')}</option>
+            <option value="family">{t('questionnaire.individual.step2.livingFamily')}</option>
+            <option value="roommates">{t('questionnaire.individual.step2.livingRoommates')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Чи є автомобіль?
+            {t('questionnaire.individual.step2.hasCar')}
           </label>
           <select
             name="hasCar"
@@ -612,16 +703,16 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="yes">Так</option>
-            <option value="no">Ні</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="yes">{t('questionnaire.individual.common.yes')}</option>
+            <option value="no">{t('questionnaire.individual.common.no')}</option>
           </select>
         </div>
 
         {formData.hasCar === 'yes' && (
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Марка та модель авто <span className="text-neutral-400 font-normal">(без держномера)</span>
+              {t('questionnaire.individual.step2.carInfo')} <span className="text-neutral-400 font-normal">{t('questionnaire.individual.step2.carInfoHint')}</span>
             </label>
             <input
               type="text"
@@ -629,37 +720,37 @@ export default function QuestionnairePage() {
               value={formData.carInfo}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Наприклад: Toyota Camry 2020"
+              placeholder={t('questionnaire.individual.step2.carInfoPlaceholder')}
             />
-            <p className="mt-1 text-xs text-neutral-500">Не вказуйте державний номер авто з міркувань конфіденційності.</p>
+            <p className="mt-1 text-xs text-neutral-500">{t('questionnaire.individual.step2.carInfoPrivacy')}</p>
           </div>
         )}
 
         <div className={formData.hasCar === 'yes' ? '' : 'md:col-span-2'}>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Інший транспорт
+            {t('questionnaire.individual.step2.otherTransport')}
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {['Велосипед','Самокат','Мотоцикл','Скейт','Гірський велосипед','Інше'].map(opt => (
-              <label key={opt} className="inline-flex items-center gap-2">
+            {OTHER_TRANSPORT_OPTIONS.map(opt => (
+              <label key={opt.value} className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="otherTransport"
-                  checked={Array.isArray(formData.otherTransport) && formData.otherTransport.includes(opt)}
-                  onChange={() => handleCheckboxChange('otherTransport', opt)}
+                  checked={Array.isArray(formData.otherTransport) && formData.otherTransport.includes(opt.value)}
+                  onChange={() => handleCheckboxChange('otherTransport', opt.value)}
                 />
-                <span className="text-sm">{opt}</span>
+                <span className="text-sm">{t(`questionnaire.individual.options.otherTransport.${opt.key}`)}</span>
               </label>
             ))}
           </div>
-          {Array.isArray(formData.otherTransport) && formData.otherTransport.includes('Інше') && (
+          {Array.isArray(formData.otherTransport) && formData.otherTransport.includes(OTHER_OPTION) && (
             <input
               type="text"
               name="otherTransportOther"
               value={formData.otherTransportOther}
               onChange={handleChange}
               className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Опишіть інший транспорт"
+              placeholder={t('questionnaire.individual.step2.otherTransportPlaceholder')}
             />
           )}
         </div>
@@ -674,17 +765,17 @@ export default function QuestionnairePage() {
           <Briefcase className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          💼 Професійна діяльність
+          {t('questionnaire.individual.step3.title')}
         </h2>
         <p className="text-neutral-600">
-          Чим ви займаєтесь
+          {t('questionnaire.individual.step3.subtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Професія / Спеціальність
+            {t('questionnaire.individual.step3.profession')}
           </label>
           <input
             type="text"
@@ -692,13 +783,13 @@ export default function QuestionnairePage() {
             value={formData.profession}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Наприклад: Водій, Електрик, Програміст..."
+            placeholder={t('questionnaire.individual.step3.professionPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Поточний статус
+            {t('questionnaire.individual.step3.employmentStatus')}
           </label>
           <select
             name="employmentStatus"
@@ -706,19 +797,19 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="employed">Працюю</option>
-            <option value="unemployed">Тимчасово не працюю</option>
-            <option value="looking">У пошуку роботи</option>
-            <option value="student">Студент</option>
-            <option value="retired">Пенсіонер</option>
-            <option value="business">Приватний бізнес</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="employed">{t('questionnaire.individual.step3.statusEmployed')}</option>
+            <option value="unemployed">{t('questionnaire.individual.step3.statusUnemployed')}</option>
+            <option value="looking">{t('questionnaire.individual.step3.statusLooking')}</option>
+            <option value="student">{t('questionnaire.individual.step3.statusStudent')}</option>
+            <option value="retired">{t('questionnaire.individual.step3.statusRetired')}</option>
+            <option value="business">{t('questionnaire.individual.step3.statusBusiness')}</option>
           </select>
         </div>
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Місце роботи / Вид діяльності
+            {t('questionnaire.individual.step3.workplace')}
           </label>
           <input
             type="text"
@@ -726,14 +817,14 @@ export default function QuestionnairePage() {
             value={formData.workplace}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Де працюєте або чим займаєтесь..."
+            placeholder={t('questionnaire.individual.step3.workplacePlaceholder')}
           />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Освіта
+          {t('questionnaire.individual.step3.education')}
         </label>
         <textarea
           name="education"
@@ -741,14 +832,14 @@ export default function QuestionnairePage() {
           value={formData.education}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Спеціальність, навчальний заклад..."
+          placeholder={t('questionnaire.individual.step3.educationPlaceholder')}
         />
       </div>
 
       {formData.employmentStatus === 'business' && (
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Інформація про приватний бізнес
+            {t('questionnaire.individual.step3.businessInfo')}
           </label>
           <textarea
             name="businessInfo"
@@ -756,7 +847,7 @@ export default function QuestionnairePage() {
             value={formData.businessInfo}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Опис напрямку, посилання на сторінку або соцмережі..."
+            placeholder={t('questionnaire.individual.step3.businessInfoPlaceholder')}
           />
         </div>
       )}
@@ -764,7 +855,7 @@ export default function QuestionnairePage() {
       {(formData.employmentStatus === 'looking' || formData.employmentStatus === 'unemployed') && (
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            У якій сфері шукаєте роботу?
+            {t('questionnaire.individual.step3.jobSeeking')}
           </label>
           <textarea
             name="jobSeeking"
@@ -772,7 +863,7 @@ export default function QuestionnairePage() {
             value={formData.jobSeeking}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Опишіть, яку роботу шукаєте..."
+            placeholder={t('questionnaire.individual.step3.jobSeekingPlaceholder')}
           />
         </div>
       )}
@@ -786,17 +877,17 @@ export default function QuestionnairePage() {
           <Heart className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          🎯 Інтереси та стиль життя
+          {t('questionnaire.individual.step4.title')}
         </h2>
         <p className="text-neutral-600">
-          Про ваші захоплення
+          {t('questionnaire.individual.step4.subtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Чи є домашні тварини?
+            {t('questionnaire.individual.step4.hasPets')}
           </label>
           <select
             name="hasPets"
@@ -804,93 +895,93 @@ export default function QuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="yes">Так</option>
-            <option value="no">Ні</option>
+            <option value="">{t('questionnaire.individual.common.notSpecified')}</option>
+            <option value="yes">{t('questionnaire.individual.common.yes')}</option>
+            <option value="no">{t('questionnaire.individual.common.no')}</option>
           </select>
         </div>
 
         {formData.hasPets === 'yes' && (
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">Які тварини?</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">{t('questionnaire.individual.step4.petsInfo')}</label>
             <div className="grid grid-cols-2 gap-2">
-              {['Кіт','Собака','Птахи','Рибки','Гризуни','Немає','Інше'].map(opt => (
-                <label key={opt} className="inline-flex items-center gap-2">
-                  <input type="checkbox" name="petsInfo" checked={Array.isArray(formData.petsInfo) && formData.petsInfo.includes(opt)} onChange={() => handleCheckboxChange('petsInfo', opt)} />
-                  <span className="text-sm">{opt}</span>
+              {PETS_OPTIONS.map(opt => (
+                <label key={opt.value} className="inline-flex items-center gap-2">
+                  <input type="checkbox" name="petsInfo" checked={Array.isArray(formData.petsInfo) && formData.petsInfo.includes(opt.value)} onChange={() => handleCheckboxChange('petsInfo', opt.value)} />
+                  <span className="text-sm">{t(`questionnaire.individual.options.pets.${opt.key}`)}</span>
                 </label>
               ))}
             </div>
-            {Array.isArray(formData.petsInfo) && formData.petsInfo.includes('Інше') && (
-              <input type="text" name="petsInfoOther" value={formData.petsInfoOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інших тварин" />
+            {Array.isArray(formData.petsInfo) && formData.petsInfo.includes(OTHER_OPTION) && (
+              <input type="text" name="petsInfoOther" value={formData.petsInfoOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder={t('questionnaire.individual.step4.petsInfoPlaceholder')} />
             )}
           </div>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">Хобі / Захоплення</label>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">{t('questionnaire.individual.step4.hobbies')}</label>
         <div className="grid grid-cols-2 gap-2">
-          {['Музика','Кіно','Читання','Подорожі','Фотографія','Малювання','Рукоділля','Кулінарія','Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
-              <input type="checkbox" name="hobbies" checked={Array.isArray(formData.hobbies) && formData.hobbies.includes(opt)} onChange={() => handleCheckboxChange('hobbies', opt)} />
-              <span className="text-sm">{opt}</span>
+          {HOBBIES_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="hobbies" checked={Array.isArray(formData.hobbies) && formData.hobbies.includes(opt.value)} onChange={() => handleCheckboxChange('hobbies', opt.value)} />
+              <span className="text-sm">{t(`questionnaire.individual.options.hobbies.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {Array.isArray(formData.hobbies) && formData.hobbies.includes('Інше') && (
-          <input type="text" name="hobbiesOther" value={formData.hobbiesOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Вкажіть інше хобі" />
+        {Array.isArray(formData.hobbies) && formData.hobbies.includes(OTHER_OPTION) && (
+          <input type="text" name="hobbiesOther" value={formData.hobbiesOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder={t('questionnaire.individual.step4.hobbiesPlaceholder')} />
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">Активності на свіжому повітрі</label>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">{t('questionnaire.individual.step4.outdoorActivities')}</label>
         <div className="grid grid-cols-2 gap-2">
-          {['Прогулянки','Пікніки','Походи','Риболовля','Поїздки на природу','Покатушки на велосипеді','Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
-              <input type="checkbox" name="outdoorActivities" checked={Array.isArray(formData.outdoorActivities) && formData.outdoorActivities.includes(opt)} onChange={() => handleCheckboxChange('outdoorActivities', opt)} />
-              <span className="text-sm">{opt}</span>
+          {OUTDOOR_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="outdoorActivities" checked={Array.isArray(formData.outdoorActivities) && formData.outdoorActivities.includes(opt.value)} onChange={() => handleCheckboxChange('outdoorActivities', opt.value)} />
+              <span className="text-sm">{t(`questionnaire.individual.options.outdoorActivities.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {Array.isArray(formData.outdoorActivities) && formData.outdoorActivities.includes('Інше') && (
-          <input type="text" name="outdoorActivitiesOther" value={formData.outdoorActivitiesOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+        {Array.isArray(formData.outdoorActivities) && formData.outdoorActivities.includes(OTHER_OPTION) && (
+          <input type="text" name="outdoorActivitiesOther" value={formData.outdoorActivitiesOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder={t('questionnaire.individual.step4.outdoorActivitiesPlaceholder')} />
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">Спорт</label>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">{t('questionnaire.individual.step4.sports')}</label>
         <div className="grid grid-cols-2 gap-2">
-          {['Футбол','Баскетбол','Плавання','Біг','Тренажерний зал','Йога','Велоспорт','Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
-              <input type="checkbox" name="sports" checked={Array.isArray(formData.sports) && formData.sports.includes(opt)} onChange={() => handleCheckboxChange('sports', opt)} />
-              <span className="text-sm">{opt}</span>
+          {SPORTS_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="sports" checked={Array.isArray(formData.sports) && formData.sports.includes(opt.value)} onChange={() => handleCheckboxChange('sports', opt.value)} />
+              <span className="text-sm">{t(`questionnaire.individual.options.sports.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {Array.isArray(formData.sports) && formData.sports.includes('Інше') && (
-          <input type="text" name="sportsOther" value={formData.sportsOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+        {Array.isArray(formData.sports) && formData.sports.includes(OTHER_OPTION) && (
+          <input type="text" name="sportsOther" value={formData.sportsOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder={t('questionnaire.individual.step4.sportsPlaceholder')} />
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">Стиль життя</label>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">{t('questionnaire.individual.step4.lifestyle')}</label>
         <div className="grid grid-cols-2 gap-2">
-          {['Активний','Спокійний','Сімейний','Соціальний','Творчий','Кар\'єрний','Інше'].map(opt => (
-            <label key={opt} className="inline-flex items-center gap-2">
-              <input type="checkbox" name="lifestyle" checked={Array.isArray(formData.lifestyle) && formData.lifestyle.includes(opt)} onChange={() => handleCheckboxChange('lifestyle', opt)} />
-              <span className="text-sm">{opt}</span>
+          {LIFESTYLE_OPTIONS.map(opt => (
+            <label key={opt.value} className="inline-flex items-center gap-2">
+              <input type="checkbox" name="lifestyle" checked={Array.isArray(formData.lifestyle) && formData.lifestyle.includes(opt.value)} onChange={() => handleCheckboxChange('lifestyle', opt.value)} />
+              <span className="text-sm">{t(`questionnaire.individual.options.lifestyle.${opt.key}`)}</span>
             </label>
           ))}
         </div>
-        {Array.isArray(formData.lifestyle) && formData.lifestyle.includes('Інше') && (
-          <input type="text" name="lifestyleOther" value={formData.lifestyleOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+        {Array.isArray(formData.lifestyle) && formData.lifestyle.includes(OTHER_OPTION) && (
+          <input type="text" name="lifestyleOther" value={formData.lifestyleOther} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder={t('questionnaire.individual.step4.lifestylePlaceholder')} />
         )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Про себе
+          {t('questionnaire.individual.step4.bio')}
         </label>
         <textarea
           name="bio"
@@ -898,7 +989,7 @@ export default function QuestionnairePage() {
           value={formData.bio}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          placeholder="Розкажіть трохи про себе..."
+          placeholder={t('questionnaire.individual.step4.bioPlaceholder')}
         />
       </div>
     </div>
@@ -911,10 +1002,10 @@ export default function QuestionnairePage() {
           <Globe className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          🌐 Соцмережі
+          {t('questionnaire.individual.step5.title')}
         </h2>
         <p className="text-neutral-600">
-          Додайте посилання на ваші профілі
+          {t('questionnaire.individual.step5.subtitle')}
         </p>
       </div>
 
@@ -957,7 +1048,7 @@ export default function QuestionnairePage() {
             value={formData.telegram}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="@username або https://t.me/username"
+            placeholder={t('questionnaire.individual.step5.telegramPlaceholder')}
           />
         </div>
 
@@ -978,7 +1069,7 @@ export default function QuestionnairePage() {
 
       <div className="mt-8 p-4 bg-primary-50 border border-primary-200 rounded-lg">
         <p className="text-sm text-neutral-600 text-center">
-          💡 <strong>Порада:</strong> Додайте посилання на соцмережі, щоб інші користувачі могли краще вас пізнати
+          💡 <strong>{t('questionnaire.individual.step5.tipLabel')}</strong> {t('questionnaire.individual.step5.tipText')}
         </p>
       </div>
     </div>
@@ -991,22 +1082,22 @@ export default function QuestionnairePage() {
           <Target className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          🎯 Мета використання сайту
+          {t('questionnaire.individual.stepMeta.title')}
         </h2>
-        <p className="text-neutral-600">Навіщо ви користуєтесь платформою?</p>
+        <p className="text-neutral-600">{t('questionnaire.individual.stepMeta.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {['Знайти клієнтів','Знайти підрядників/послуги','Пошук роботи','Спілкування/мережування','Інше'].map(opt => (
-          <label key={opt} className="inline-flex items-center gap-2">
-            <input type="checkbox" name="siteUsageGoal" checked={Array.isArray(formData.siteUsageGoal) && formData.siteUsageGoal.includes(opt)} onChange={() => handleCheckboxChange('siteUsageGoal', opt)} />
-            <span className="text-sm">{opt}</span>
+        {SITE_USAGE_GOAL_OPTIONS.map(opt => (
+          <label key={opt.value} className="inline-flex items-center gap-2">
+            <input type="checkbox" name="siteUsageGoal" checked={Array.isArray(formData.siteUsageGoal) && formData.siteUsageGoal.includes(opt.value)} onChange={() => handleCheckboxChange('siteUsageGoal', opt.value)} />
+            <span className="text-sm">{t(`questionnaire.individual.options.siteUsageGoal.${opt.key}`)}</span>
           </label>
         ))}
       </div>
 
-      {Array.isArray(formData.siteUsageGoal) && formData.siteUsageGoal.includes('Інше') && (
-        <input type="text" name="siteUsageGoalOther" value={formData.siteUsageGoalOther || ''} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Опишіть інше" />
+      {Array.isArray(formData.siteUsageGoal) && formData.siteUsageGoal.includes(OTHER_OPTION) && (
+        <input type="text" name="siteUsageGoalOther" value={formData.siteUsageGoalOther || ''} onChange={handleChange} className="mt-2 w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder={t('questionnaire.individual.stepMeta.otherPlaceholder')} />
       )}
     </div>
   );
@@ -1019,7 +1110,7 @@ export default function QuestionnairePage() {
           <div className="bg-neutral-100 px-8 py-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-neutral-700">
-                Крок {currentStep} з 6
+                {t('questionnaire.individual.progress.step', { current: currentStep })}
               </span>
               <span className="text-sm text-neutral-600">
                 {Math.round((currentStep / 5) * 100)}%
@@ -1057,7 +1148,7 @@ export default function QuestionnairePage() {
                     disabled={loading}
                     className="px-6 py-3 border-2 border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
                   >
-                    ← Назад
+                    {t('questionnaire.individual.nav.back')}
                   </button>
                 )}
 
@@ -1068,7 +1159,7 @@ export default function QuestionnairePage() {
                     disabled={loading}
                     className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
                   >
-                    Далі →
+                    {t('questionnaire.individual.nav.next')}
                   </button>
                 ) : (
                   <button
@@ -1076,7 +1167,7 @@ export default function QuestionnairePage() {
                     disabled={loading}
                     className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'Зберігаємо...' : '✓ Завершити'}
+                    {loading ? t('questionnaire.individual.nav.saving') : t('questionnaire.individual.nav.finish')}
                   </button>
                 )}
 
@@ -1086,13 +1177,13 @@ export default function QuestionnairePage() {
                   disabled={loading}
                   className="px-6 py-3 border border-neutral-300 rounded-lg font-medium text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
                 >
-                  Пропустити
+                  {t('questionnaire.individual.nav.skip')}
                 </button>
               </div>
             </form>
 
             <div className="mt-6 text-center text-sm text-neutral-500">
-              <p>Ви зможете змінити ці дані пізніше в налаштуваннях профілю</p>
+              <p>{t('questionnaire.individual.nav.footerNote')}</p>
             </div>
           </div>
         </div>

@@ -1,0 +1,34 @@
+{
+  "create": {
+    "loading": "Завантаження...",
+    "back": "Назад",
+    "title": "Залишити відгук",
+    "aboutRequest": "Відгук про заявку:",
+    "reviewFor": "Відгук для:",
+    "reviewsCount": {
+      "one": "({count} відгук)",
+      "few": "({count} відгуки)",
+      "many": "({count} відгуків)",
+      "other": "({count} відгуку)"
+    },
+    "ratingLabel": "Рейтинг",
+    "ratingNames": {
+      "one": "Погано",
+      "two": "Нижче середнього",
+      "three": "Середньо",
+      "four": "Добре",
+      "five": "Відмінно"
+    },
+    "commentLabel": "Коментар (необов'язково)",
+    "commentPlaceholder": "Розкажіть про свій досвід співпраці...",
+    "charCount": "{count} / 1000 символів",
+    "submit": "Надіслати відгук",
+    "submitting": "Надсилання...",
+    "cancel": "Скасувати",
+    "errors": {
+      "loadFailed": "Помилка завантаження даних",
+      "ratingRequired": "Оберіть рейтинг",
+      "createFailed": "Помилка створення відгуку"
+    }
+  }
+}

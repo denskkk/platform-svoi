@@ -2,16 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/authMiddleware';
 import { prisma } from '@/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
+import { getApiT } from '@/i18n/server';
 
 // POST /api/service-requests - Створити нову заявку
 async function createHandler(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     const accountType = (request as any).user?.accountType;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -19,7 +21,7 @@ async function createHandler(request: NextRequest) {
     // Глядачі не можуть створювати заявки
     if (accountType === 'viewer') {
       return NextResponse.json(
-        { error: 'Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.' },
+        { error: t('api.serviceRequests.viewerCannotCreate') },
         { status: 403 }
       );
     }
@@ -57,14 +59,14 @@ async function createHandler(request: NextRequest) {
     // Валідація
     if (!title || !description) {
       return NextResponse.json(
-        { error: 'Заповніть обов\'язкові поля: назва та опис' },
+        { error: t('api.serviceRequests.titleDescriptionRequired') },
         { status: 400 }
       );
     }
 
     if (title.length > 200) {
       return NextResponse.json(
-        { error: 'Назва занадто довга (макс. 200 символів)' },
+        { error: t('api.serviceRequests.titleTooLong', { max: 200 }) },
         { status: 400 }
       );
     }
@@ -78,7 +80,7 @@ async function createHandler(request: NextRequest) {
       });
       if (!service) {
         return NextResponse.json(
-          { error: 'Послугу не знайдено або вона недоступна' },
+          { error: t('api.serviceRequests.serviceUnavailable') },
           { status: 400 }
         );
       }
@@ -156,8 +158,8 @@ async function createHandler(request: NextRequest) {
           data: {
             userId: finalExecutorId,
             type: 'service_request_new',
-            title: 'Нова заявка',
-            message: `Ви отримали нову заявку на послугу: "${title}"`,
+            title: 'Нова заявка', // i18n-ignore
+            message: `Ви отримали нову заявку на послугу: "${title}"`, // i18n-ignore
             relatedEntityType: 'ServiceRequest',
             relatedEntityId: serviceRequest.id
           }
@@ -175,7 +177,7 @@ async function createHandler(request: NextRequest) {
   } catch (error: any) {
     console.error('[service-requests/create] Error:', error);
     return NextResponse.json(
-      { error: 'Помилка створення заявки', details: error.message },
+      { error: t('api.serviceRequests.createError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }
@@ -183,12 +185,13 @@ async function createHandler(request: NextRequest) {
 
 // GET /api/service-requests - Отримати список заявок
 async function listHandler(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     
     if (!userId) {
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -304,7 +307,7 @@ async function listHandler(request: NextRequest) {
   } catch (error: any) {
     console.error('[service-requests/list] Error:', error);
     return NextResponse.json(
-      { error: 'Помилка отримання заявок', details: error.message },
+      { error: t('api.serviceRequests.listError'), details: process.env.NODE_ENV === 'production' ? undefined : error.message },
       { status: 500 }
     );
   }

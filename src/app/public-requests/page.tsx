@@ -7,6 +7,9 @@ import { Search, MapPin, Calendar, DollarSign, Clock } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SkeletonGrid, RequestCardSkeleton } from '@/components/ui/SkeletonCard';
 import { ensureToken } from '@/lib/silentFetch';
+import { useI18n } from '@/i18n/client';
+import { translateCategory } from '@/lib/translations';
+import { getCityName } from '@/lib/constants';
 
 interface PublicRequest {
   id: number;
@@ -29,6 +32,7 @@ interface PublicRequest {
 
 export default function PublicRequestsPage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [requests, setRequests] = useState<PublicRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<PublicRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,13 +83,13 @@ export default function PublicRequestsPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Помилка завантаження заявок');
+        throw new Error('Failed to load public requests');
       }
 
       const data = await response.json();
       setRequests(data.requests || []);
     } catch (error) {
-      console.error('Помилка:', error);
+      console.error('Public requests load error:', error);
     } finally {
       setLoading(false);
     }
@@ -157,12 +161,12 @@ export default function PublicRequestsPage() {
         {/* Header */}
         <div className="mb-8 animate-slide-up">
           <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full border border-blue-200">
-            <p className="text-sm font-semibold text-blue-700">📋 Публічні замовлення</p>
+            <p className="text-sm font-semibold text-blue-700">{t('serviceRequests.publicList.badge')}</p>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
-            Публічні заявки
+            {t('serviceRequests.publicList.title')}
           </h1>
-          <p className="text-lg text-gray-600">Знайдіть замовлення та запропонуйте свої послуги</p>
+          <p className="text-lg text-gray-600">{t('serviceRequests.publicList.subtitle')}</p>
         </div>
 
         {/* Filters */}
@@ -175,7 +179,7 @@ export default function PublicRequestsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Пошук заявок..."
+                placeholder={t('serviceRequests.publicList.searchPlaceholder')}
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
               />
             </div>
@@ -186,9 +190,9 @@ export default function PublicRequestsPage() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-white font-medium"
             >
-              <option value="all">📂 Всі категорії</option>
+              <option value="all">{t('serviceRequests.publicList.allCategories')}</option>
               {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>{translateCategory(cat, locale)}</option>
               ))}
             </select>
 
@@ -198,9 +202,9 @@ export default function PublicRequestsPage() {
               onChange={(e) => setSelectedCity(e.target.value)}
               className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-white font-medium"
             >
-              <option value="all">📍 Всі міста</option>
+              <option value="all">{t('serviceRequests.publicList.allCities')}</option>
               {cities.map(city => (
-                <option key={city} value={city}>{city}</option>
+                <option key={city} value={city}>{getCityName(city, locale)}</option>
               ))}
             </select>
           </div>
@@ -213,7 +217,7 @@ export default function PublicRequestsPage() {
             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 btn-glow"
           >
             <span className="text-2xl group-hover:rotate-90 transition-transform duration-300">+</span>
-            <span>Створити публічну заявку</span>
+            <span>{t('serviceRequests.publicList.createButton')}</span>
           </Link>
         </div>
 
@@ -224,7 +228,7 @@ export default function PublicRequestsPage() {
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
                 <span className="text-2xl">📋</span>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Всі заявки</h2>
+              <h2 className="text-3xl font-bold text-gray-900">{t('serviceRequests.publicList.allRequests')}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredRequests.map((request, index) => (
@@ -241,9 +245,9 @@ export default function PublicRequestsPage() {
           <div className="text-center py-12">
             <EmptyState
               icon={Search}
-              title="Заявки не знайдено"
-              description="Спробуйте змінити параметри пошуку або створіть першу публічну заявку"
-              actionLabel="Створити заявку"
+              title={t('serviceRequests.publicList.emptyTitle')}
+              description={t('serviceRequests.publicList.emptyDescription')}
+              actionLabel={t('serviceRequests.common.createRequest')}
               actionHref="/public-requests/create"
             />
           </div>
@@ -254,17 +258,19 @@ export default function PublicRequestsPage() {
 }
 
 function RequestCard({ request }: { request: PublicRequest }) {
+  const { t, locale, formatDate, formatNumber } = useI18n();
+  const dateOptions: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
   const formatBudget = () => {
     if (request.budgetFrom && request.budgetTo) {
-      return `${request.budgetFrom} - ${request.budgetTo} грн`;
+      return t('serviceRequests.budget.rangeSpaced', { from: formatNumber(request.budgetFrom), to: formatNumber(request.budgetTo) });
     }
     if (request.budgetFrom) {
-      return `від ${request.budgetFrom} грн`;
+      return t('serviceRequests.budget.from', { amount: formatNumber(request.budgetFrom) });
     }
     if (request.budgetTo) {
-      return `до ${request.budgetTo} грн`;
+      return t('serviceRequests.budget.to', { amount: formatNumber(request.budgetTo) });
     }
-    return 'Договірна';
+    return t('serviceRequests.budget.negotiable');
   };
 
   return (
@@ -279,7 +285,7 @@ function RequestCard({ request }: { request: PublicRequest }) {
           {request.category && (
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg font-medium text-sm border border-blue-200">
               <span>📂</span>
-              <span>{request.category}</span>
+              <span>{translateCategory(request.category, locale)}</span>
             </div>
           )}
 
@@ -287,7 +293,7 @@ function RequestCard({ request }: { request: PublicRequest }) {
             {request.city && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
                 <MapPin className="w-4 h-4 text-blue-500" />
-                <span className="font-medium">{request.city}</span>
+                <span className="font-medium">{getCityName(request.city, locale)}</span>
               </div>
             )}
 
@@ -299,7 +305,7 @@ function RequestCard({ request }: { request: PublicRequest }) {
             {request.desiredDate && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-200">
                 <Calendar className="w-4 h-4 text-purple-600" />
-                <span className="font-medium text-purple-700">{new Date(request.desiredDate).toLocaleDateString('uk-UA')}</span>
+                <span className="font-medium text-purple-700">{formatDate(request.desiredDate, dateOptions)}</span>
               </div>
             )}
           </div>
@@ -324,19 +330,19 @@ function RequestCard({ request }: { request: PublicRequest }) {
             {request.client.city && (
               <p className="text-xs text-gray-500 truncate flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
-                {request.client.city}
+                {getCityName(request.client.city, locale)}
               </p>
             )}
           </div>
           <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
             <Clock className="w-3 h-3" />
-            <span>{new Date(request.createdAt).toLocaleDateString('uk-UA')}</span>
+            <span>{formatDate(request.createdAt, dateOptions)}</span>
           </div>
         </div>
 
         {/* Hover indicator */}
         <div className="mt-4 flex items-center justify-end gap-2 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-          <span className="text-sm font-semibold">Переглянути деталі</span>
+          <span className="text-sm font-semibold">{t('serviceRequests.publicList.viewDetails')}</span>
           <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>

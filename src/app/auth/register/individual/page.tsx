@@ -4,11 +4,14 @@ import Link from 'next/link'
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Lock, User, MapPin, Phone, Eye, EyeOff, ArrowLeft, Upload, X, Facebook, Instagram, Send } from 'lucide-react'
-import { cities } from '@/lib/constants'
+import { cities, getCityName } from '@/lib/constants'
 import Image from 'next/image'
 import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox'
+import { useI18n } from '@/i18n/client'
+import { localizedPath } from '@/i18n/routes'
 
 function RegisterIndividualForm() {
+  const { t, locale } = useI18n()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
@@ -35,7 +38,7 @@ function RegisterIndividualForm() {
     const file = e.target.files?.[0]
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError('Файл занадто великий. Максимум 5MB')
+        setError(t('registerIndividual.errors.fileTooLarge'))
         return
       }
       setAvatarFile(file)
@@ -58,23 +61,23 @@ function RegisterIndividualForm() {
     
     // Валідація обов'язкових полів
     if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
-      setError('Заповніть всі обов\'язкові поля')
+      setError(t('registerIndividual.errors.requiredFields'))
       return
     }
 
     // Валідація паролів
     if (formData.password !== formData.confirmPassword) {
-      setError('Паролі не співпадають')
+      setError(t('registerIndividual.errors.passwordMismatch'))
       return
     }
 
     if (formData.password.length < 6) {
-      setError('Пароль має містити мінімум 6 символів')
+      setError(t('registerIndividual.errors.passwordTooShort'))
       return
     }
 
     if (!consent) {
-      setError('Підтвердьте згоду з Умовами використання та Політикою конфіденційності')
+      setError(t('registerIndividual.errors.consentRequired'))
       return
     }
 
@@ -113,7 +116,7 @@ function RegisterIndividualForm() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка реєстрації')
+        throw new Error(data.error || t('registerIndividual.errors.registrationFailed'))
       }
 
       // Зберегти токен та дані користувача
@@ -123,7 +126,7 @@ function RegisterIndividualForm() {
       // Перейти на анкету для заповнення детального профілю
       router.push('/auth/questionnaire')
     } catch (err: any) {
-      setError(err.message || 'Помилка реєстрації')
+      setError(err.message || t('registerIndividual.errors.registrationFailed'))
     } finally {
       setLoading(false)
     }
@@ -138,20 +141,20 @@ function RegisterIndividualForm() {
           className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6 transition"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Назад до вибору типу
+          {t('registerIndividual.backToTypeSelection')}
         </Link>
 
         {/* Заголовок */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Image src="/logo.png" alt="Логотип СВІЙ ДЛЯ СВОЇХ" width={48} height={48} className="w-12 h-12 rounded-full" />
-            <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
+          <Link href={localizedPath('/', locale)} className="inline-flex items-center space-x-2 mb-6">
+            <Image src="/logo.png" alt={t('registerIndividual.logoAlt')} width={48} height={48} className="w-12 h-12 rounded-full" />
+            <span className="font-display font-bold text-xl">{t('registerIndividual.brand')}</span>
           </Link>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            👤 Звичайний Профіль
+            {t('registerIndividual.title')}
           </h1>
           <p className="text-neutral-600">
-            Створіть профіль і почніть пропонувати свої послуги
+            {t('registerIndividual.subtitle')}
           </p>
         </div>
 
@@ -167,14 +170,14 @@ function RegisterIndividualForm() {
             {/* Аватар */}
             <div className="flex flex-col items-center mb-6">
               <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Фото профілю (необов&apos;язково)
+                {t('registerIndividual.avatar.label')}
               </label>
               <div className="relative">
                 {avatarPreview ? (
                   <div className="relative w-32 h-32">
                     <Image
                       src={avatarPreview}
-                      alt="Avatar preview"
+                      alt={t('registerIndividual.avatar.previewAlt')}
                       fill
                       className="rounded-full object-cover border-4 border-primary-500"
                     />
@@ -189,7 +192,7 @@ function RegisterIndividualForm() {
                 ) : (
                   <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-full cursor-pointer hover:border-primary-500 transition-colors bg-neutral-50">
                     <Upload className="w-8 h-8 text-neutral-400 mb-2" />
-                    <span className="text-xs text-neutral-500 text-center px-2">Завантажити фото</span>
+                    <span className="text-xs text-neutral-500 text-center px-2">{t('registerIndividual.avatar.upload')}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -199,14 +202,14 @@ function RegisterIndividualForm() {
                   </label>
                 )}
               </div>
-              <p className="text-xs text-neutral-500 mt-2">Макс. 5MB</p>
+              <p className="text-xs text-neutral-500 mt-2">{t('registerIndividual.avatar.maxSize')}</p>
             </div>
 
             {/* Ім'я та Прізвище */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Ім&apos;я *
+                  {t('registerIndividual.fields.firstName')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -219,14 +222,14 @@ function RegisterIndividualForm() {
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Олександр"
+                    placeholder={t('registerIndividual.fields.firstNamePlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Прізвище *
+                  {t('registerIndividual.fields.lastName')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -239,7 +242,7 @@ function RegisterIndividualForm() {
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Петренко"
+                    placeholder={t('registerIndividual.fields.lastNamePlaceholder')}
                   />
                 </div>
               </div>
@@ -248,7 +251,7 @@ function RegisterIndividualForm() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                Email
+                {t('registerIndividual.fields.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -261,7 +264,7 @@ function RegisterIndividualForm() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="example@email.com"
+                  placeholder={t('registerIndividual.fields.emailPlaceholder')}
                 />
               </div>
             </div>
@@ -269,7 +272,7 @@ function RegisterIndividualForm() {
             {/* Телефон */}
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-2">
-                Телефон
+                {t('registerIndividual.fields.phone')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -282,7 +285,7 @@ function RegisterIndividualForm() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="+380 (XX) XXX-XX-XX"
+                  placeholder={t('registerIndividual.fields.phonePlaceholder')}
                 />
               </div>
             </div>
@@ -290,7 +293,7 @@ function RegisterIndividualForm() {
             {/* Місто */}
             <div>
               <label htmlFor="city" className="block text-sm font-medium text-neutral-700 mb-2">
-                Де живеш?
+                {t('registerIndividual.fields.city')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -303,9 +306,9 @@ function RegisterIndividualForm() {
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
-                  <option value="">Обери місто</option>
+                  <option value="">{t('registerIndividual.fields.cityPlaceholder')}</option>
                   {cities.map((city) => (
-                    <option key={city} value={city}>{city}</option>
+                    <option key={city} value={city}>{getCityName(city, locale)}</option>
                   ))}
                 </select>
               </div>
@@ -314,7 +317,7 @@ function RegisterIndividualForm() {
             {/* Пароль */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                Пароль *
+                {t('registerIndividual.fields.password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -330,7 +333,7 @@ function RegisterIndividualForm() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="block w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Мінімум 6 символів"
+                  placeholder={t('registerIndividual.fields.passwordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -349,7 +352,7 @@ function RegisterIndividualForm() {
             {/* Підтвердження пароля */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
-                Підтвердіть пароль *
+                {t('registerIndividual.fields.confirmPassword')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -365,7 +368,7 @@ function RegisterIndividualForm() {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   className="block w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Повторіть пароль"
+                  placeholder={t('registerIndividual.fields.confirmPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -384,7 +387,7 @@ function RegisterIndividualForm() {
             {/* Соціальні мережі */}
             <div className="border-t border-gray-200 pt-5 mt-5">
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-                Соціальні мережі (необов&apos;язково)
+                {t('registerIndividual.social.title')}
               </h3>
               
               <div className="space-y-4">
@@ -461,7 +464,7 @@ function RegisterIndividualForm() {
               disabled={loading}
               className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
-              {loading ? 'Реєструємо...' : '🚀 Продовжити до анкети'}
+              {loading ? t('registerIndividual.submitting') : t('registerIndividual.submit')}
             </button>
           </form>
           
@@ -469,9 +472,9 @@ function RegisterIndividualForm() {
           {/* Додаткова інформація */}
           <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-center text-sm text-gray-600">
-              Бізнес-акаунт?{' '}
+              {t('registerIndividual.businessPrompt')}{' '}
               <Link href="/auth/register/business" className="text-primary-600 hover:text-primary-700 font-semibold">
-                Реєструйтесь тут
+                {t('registerIndividual.businessLink')}
               </Link>
             </p>
           </div>
@@ -479,9 +482,9 @@ function RegisterIndividualForm() {
           {/* Вхід */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Вже є акаунт?{' '}
+              {t('registerIndividual.loginPrompt')}{' '}
               <Link href="/auth/login" className="text-primary-600 hover:text-primary-700 font-semibold">
-                Увійти
+                {t('registerIndividual.loginLink')}
               </Link>
             </p>
           </div>
@@ -492,8 +495,9 @@ function RegisterIndividualForm() {
 }
 
 export default function RegisterIndividualPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Завантаження...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('registerIndividual.loading')}</div>}>
       <RegisterIndividualForm />
     </Suspense>
   )

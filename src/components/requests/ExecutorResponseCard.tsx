@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
 import { Star, Clock, CheckCircle } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
+import { Translator } from '@/i18n/translate';
 
 interface ResponseCardProps {
   response: {
@@ -29,7 +31,8 @@ interface ResponseCardProps {
 }
 
 export function ExecutorResponseCard({ response, onSelect, isSelecting, requestHasExecutor }: ResponseCardProps) {
-  const timeAgo = getTimeAgo(new Date(response.createdAt));
+  const { t, formatNumber } = useI18n();
+  const timeAgo = getTimeAgo(new Date(response.createdAt), t);
 
   return (
     <div className={`bg-white border rounded-xl p-6 transition-shadow ${
@@ -61,7 +64,7 @@ export function ExecutorResponseCard({ response, onSelect, isSelecting, requestH
                 </span>
               </div>
               <span className="text-xs text-neutral-500">
-                ({response.executor.totalReviews} відгуків)
+                {t('serviceRequests.responseCard.reviewsCount', { count: response.executor.totalReviews })}
               </span>
             </div>
           )}
@@ -72,17 +75,17 @@ export function ExecutorResponseCard({ response, onSelect, isSelecting, requestH
       <div className="mb-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <span className="text-sm text-neutral-600">Ціна:</span>
+            <span className="text-sm text-neutral-600">{t('serviceRequests.responseCard.price')}</span>
             <p className="text-2xl font-bold text-primary-600">
-              {response.proposedPrice} грн
+              {t('serviceRequests.budget.price', { amount: formatNumber(response.proposedPrice) })}
             </p>
           </div>
           {response.estimatedDays && (
             <div className="text-right">
-              <span className="text-sm text-neutral-600">Термін:</span>
+              <span className="text-sm text-neutral-600">{t('serviceRequests.responseCard.term')}</span>
               <p className="flex items-center gap-1 text-neutral-900 font-medium">
                 <Clock className="w-4 h-4" />
-                {response.estimatedDays} {getDaysWord(response.estimatedDays)}
+                {t('serviceRequests.responseCard.days', { count: response.estimatedDays })}
               </p>
             </div>
           )}
@@ -102,10 +105,10 @@ export function ExecutorResponseCard({ response, onSelect, isSelecting, requestH
         {response.isSelected ? (
           <div className="flex items-center gap-2 text-green-600 font-medium">
             <CheckCircle className="w-5 h-5" />
-            <span>Обрано</span>
+            <span>{t('serviceRequests.responseCard.selected')}</span>
           </div>
         ) : response.status === 'rejected' ? (
-          <div className="text-sm text-gray-500">Відхилено</div>
+          <div className="text-sm text-gray-500">{t('serviceRequests.responseCard.rejected')}</div>
         ) : !requestHasExecutor ? (
           <button
             onClick={() => onSelect(response.id)}
@@ -113,43 +116,25 @@ export function ExecutorResponseCard({ response, onSelect, isSelecting, requestH
             className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             <CheckCircle className="w-4 h-4" />
-            Обрати виконавця
+            {t('serviceRequests.responseCard.selectExecutor')}
           </button>
         ) : (
-          <div className="text-sm text-gray-400">Вже обрано іншого виконавця</div>
+          <div className="text-sm text-gray-400">{t('serviceRequests.responseCard.alreadyChosen')}</div>
         )}
       </div>
     </div>
   );
 }
 
-function getTimeAgo(date: Date): string {
+function getTimeAgo(date: Date, t: Translator): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
 
-  if (days > 0) return `${days} ${getDaysWord(days)} тому`;
-  if (hours > 0) return `${hours} ${getHoursWord(hours)} тому`;
-  if (minutes > 0) return `${minutes} ${getMinutesWord(minutes)} тому`;
-  return 'Щойно';
-}
-
-function getDaysWord(count: number): string {
-  if (count === 1) return 'день';
-  if (count >= 2 && count <= 4) return 'дні';
-  return 'днів';
-}
-
-function getHoursWord(count: number): string {
-  if (count === 1) return 'годину';
-  if (count >= 2 && count <= 4) return 'години';
-  return 'годин';
-}
-
-function getMinutesWord(count: number): string {
-  if (count === 1) return 'хвилину';
-  if (count >= 2 && count <= 4) return 'хвилини';
-  return 'хвилин';
+  if (days > 0) return t('serviceRequests.responseCard.daysAgo', { count: days });
+  if (hours > 0) return t('serviceRequests.responseCard.hoursAgo', { count: hours });
+  if (minutes > 0) return t('serviceRequests.responseCard.minutesAgo', { count: minutes });
+  return t('serviceRequests.responseCard.justNow');
 }

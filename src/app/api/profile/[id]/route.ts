@@ -14,35 +14,36 @@ export const revalidate = 0;
 import { prisma } from '@/lib/prisma';
 import { verifyToken, getTokenFromHeader } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
+import { getApiT } from '@/i18n/server';
 
 // Маппінг українських значень до enum значень бази даних
 const ukrainianToDbValue: Record<string, Record<string, string>> = {
   gender: {
-    'Чоловік': 'male',
-    'Жінка': 'female',
-    'Інше': 'other'
+    'Чоловік': 'male', // i18n-ignore
+    'Жінка': 'female', // i18n-ignore
+    'Інше': 'other' // i18n-ignore
   },
   maritalStatus: {
-    'Одружений/Заміжня': 'married',
-    'Не одружений/Не заміжня': 'single',
-    'У цивільному шлюбі': 'civil',
-    'Розлучений/Розлучена': 'divorced',
-    'Вдівець/Вдова': 'widowed'
+    'Одружений/Заміжня': 'married', // i18n-ignore
+    'Не одружений/Не заміжня': 'single', // i18n-ignore
+    'У цивільному шлюбі': 'civil', // i18n-ignore
+    'Розлучений/Розлучена': 'divorced', // i18n-ignore
+    'Вдівець/Вдова': 'widowed' // i18n-ignore
   },
   employmentStatus: {
-    'Працевлаштований': 'employed',
-    'Безробітний': 'unemployed',
-    'Власник бізнесу': 'business_owner',
-    'Фрілансер': 'freelancer',
-    'Студент': 'student',
-    'Пенсіонер': 'retired'
+    'Працевлаштований': 'employed', // i18n-ignore
+    'Безробітний': 'unemployed', // i18n-ignore
+    'Власник бізнесу': 'business_owner', // i18n-ignore
+    'Фрілансер': 'freelancer', // i18n-ignore
+    'Студент': 'student', // i18n-ignore
+    'Пенсіонер': 'retired' // i18n-ignore
   },
   educationLevel: {
-    'Середня': 'secondary',
-    'Коледж': 'college',
-    'Бакалавр': 'bachelor',
-    'Магістр': 'master',
-    'Аспірантура': 'doctorate'
+    'Середня': 'secondary', // i18n-ignore
+    'Коледж': 'college', // i18n-ignore
+    'Бакалавр': 'bachelor', // i18n-ignore
+    'Магістр': 'master', // i18n-ignore
+    'Аспірантура': 'doctorate' // i18n-ignore
   }
 };
 
@@ -67,12 +68,13 @@ export async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     const userId = parseInt(params.id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { error: 'Невірний ID користувача' },
+        { error: t('api.profile.invalidUserId') },
         { status: 400 }
       );
     }
@@ -193,7 +195,7 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Користувача не знайдено' },
+        { error: t('api.common.userNotFound') },
         { status: 404 }
       );
     }
@@ -243,7 +245,7 @@ export async function GET(
   } catch (error) {
     console.error('Get profile error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -254,6 +256,7 @@ export async function PUT(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     const userId = parseInt(params.id);
     
@@ -270,7 +273,7 @@ export async function PUT(
     if (!token) {
       console.error('[PUT /api/profile] Токен не знайдено ні в cookie, ні в header');
       return NextResponse.json(
-        { error: 'Необхідна авторизація' },
+        { error: t('api.common.authRequired') },
         { status: 401 }
       );
     }
@@ -279,7 +282,7 @@ export async function PUT(
     if (!payload) {
       console.error('[PUT /api/profile] Невірний токен');
       return NextResponse.json(
-        { error: 'Невірний токен' },
+        { error: t('api.common.wrongToken') },
         { status: 401 }
       );
     }
@@ -291,7 +294,7 @@ export async function PUT(
         profileId: userId 
       });
       return NextResponse.json(
-        { error: 'Немає прав на оновлення цього профілю' },
+        { error: t('api.profile.forbiddenUpdate') },
         { status: 403 }
       );
     }
@@ -360,7 +363,7 @@ export async function PUT(
         ? JSON.parse(body.childrenAges)
         : body.childrenAges;
     } catch {
-      errors.push('childrenAges повинні бути валідним JSON');
+      errors.push(t('api.profile.childrenAgesInvalidJson'));
     }
   }
     if (body.bio !== undefined) updateData.bio = body.bio;
@@ -378,7 +381,7 @@ export async function PUT(
           ? JSON.parse(body.carServices)
           : body.carServices;
       } catch {
-        errors.push('carServices повинні бути валідним JSON');
+        errors.push(t('api.profile.carServicesInvalidJson'));
       }
     }
 
@@ -396,7 +399,7 @@ export async function PUT(
         level = convertToDbValue('educationLevel', level);
       }
       if (level && !enumValues.includes(level)) {
-        errors.push('Невірний рівень освіти');
+        errors.push(t('api.profile.invalidEducation'));
       } else {
         updateData.educationLevel = level;
       }
@@ -575,7 +578,7 @@ export async function PUT(
     }
 
     if (errors.length) {
-      return NextResponse.json({ error: 'Невірні дані', details: errors }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.invalidData'), details: errors }, { status: 400 });
     }
 
     console.log('[PUT /api/profile] Updating user with data:', JSON.stringify(updateData, null, 2));
@@ -590,14 +593,14 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      message: 'Профіль оновлено!',
+      message: t('api.profile.updated'),
       user: userWithoutPassword,
     });
 
   } catch (error) {
     console.error('Update profile error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

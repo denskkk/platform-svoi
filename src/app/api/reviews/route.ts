@@ -10,9 +10,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { Decimal } from '@prisma/client/runtime/library';
+import { getApiT } from '@/i18n/server';
 
 // POST - Створити відгук
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'LEAVE_REVIEW');
     if (auth.error) return auth.error;
@@ -23,21 +25,21 @@ export async function POST(request: NextRequest) {
     // Валідація
     if (!reviewedId || !rating) {
       return NextResponse.json(
-        { error: 'Вкажіть користувача та оцінку' },
+        { error: t('api.reviews.userAndRatingRequired') },
         { status: 400 }
       );
     }
 
     if (rating < 1 || rating > 5) {
       return NextResponse.json(
-        { error: 'Оцінка має бути від 1 до 5' },
+        { error: t('api.reviews.ratingRange') },
         { status: 400 }
       );
     }
 
     if (auth.user.userId === reviewedId) {
       return NextResponse.json(
-        { error: 'Неможливо залишити відгук собі' },
+        { error: t('api.reviews.selfReview') },
         { status: 400 }
       );
     }
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
 
       if (!serviceRequest) {
         return NextResponse.json(
-          { error: 'Заявку не знайдено' },
+          { error: t('api.serviceRequests.notFound') },
           { status: 404 }
         );
       }
@@ -60,14 +62,14 @@ export async function POST(request: NextRequest) {
 
       if (!isClient && !isExecutor) {
         return NextResponse.json(
-          { error: 'Ви не можете залишити відгук за цією заявкою' },
+          { error: t('api.reviews.notAllowed') },
           { status: 403 }
         );
       }
 
       if (serviceRequest.status !== 'completed' && serviceRequest.status !== 'paid') {
         return NextResponse.json(
-          { error: 'Відгук можна залишити тільки після виконання заявки' },
+          { error: t('api.reviews.onlyAfterCompletion') },
           { status: 400 }
         );
       }
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
 
       if (existingReview) {
         return NextResponse.json(
-          { error: 'Ви вже залишили відгук за цією заявкою' },
+          { error: t('api.reviews.alreadyReviewed') },
           { status: 400 }
         );
       }
@@ -130,7 +132,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: 'Відгук оновлено',
+        message: t('api.reviews.updated'),
         review: updatedReview
       }, { status: 200 });
     }
@@ -190,8 +192,8 @@ export async function POST(request: NextRequest) {
         data: {
           userId: reviewedId,
           type: 'new_review',
-          title: 'Новий відгук',
-          message: `Ви отримали ${rating}-зірковий відгук`,
+          title: 'Новий відгук', // i18n-ignore
+          message: `Ви отримали ${rating}-зірковий відгук`, // i18n-ignore
           relatedEntityType: 'Review',
           relatedEntityId: newReview.id
         }
@@ -232,7 +234,7 @@ export async function POST(request: NextRequest) {
           });
           return NextResponse.json({
             success: true,
-            message: 'Відгук оновлено',
+            message: t('api.reviews.updated'),
             review
           }, { status: 200 });
         }
@@ -242,14 +244,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Відгук створено!',
+      message: t('api.reviews.created'),
       review,
     }, { status: 201 });
 
   } catch (error) {
     console.error('Create review error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -257,6 +259,7 @@ export async function POST(request: NextRequest) {
 
 // GET - Отримати відгуки
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -265,7 +268,7 @@ export async function GET(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'Вкажіть userId' },
+        { error: t('api.reviews.userIdRequired') },
         { status: 400 }
       );
     }
@@ -346,7 +349,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get reviews error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

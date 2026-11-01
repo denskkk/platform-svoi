@@ -1,0 +1,53 @@
+{
+  "backToTypeSelection": "Back to account type selection",
+  "brand": "Sviy dlya Svoikh",
+  "title": "👁️ Viewer Registration",
+  "subtitle": "Quick sign-up to search for and browse specialists",
+  "avatar": {
+    "label": "Profile photo (optional)",
+    "previewAlt": "Photo preview",
+    "upload": "Upload photo",
+    "maxSize": "Max. 5MB"
+  },
+  "fields": {
+    "firstName": "First name *",
+    "firstNamePlaceholder": "John",
+    "lastName": "Last name *",
+    "lastNamePlaceholder": "Smith",
+    "email": "Email *",
+    "emailPlaceholder": "ivan@example.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+38 (050) 123-45-67",
+    "city": "City",
+    "cityPlaceholder": "Kyiv",
+    "password": "Password *",
+    "passwordPlaceholder": "At least 6 characters",
+    "confirmPassword": "Confirm password *",
+    "confirmPasswordPlaceholder": "Repeat your password"
+  },
+  "social": {
+    "title": "Social networks (optional)"
+  },
+  "submit": "🚀 Sign up",
+  "submitting": "Signing up...",
+  "providerPrompt": "Want to offer services?",
+  "providerLink": "Sign up as a Provider",
+  "loginPrompt": "Already have an account?",
+  "loginLink": "Log in",
+  "loading": "Loading...",
+  "benefits": {
+    "title": "Viewer account benefits:",
+    "search": "✓ Quick search for services and specialists",
+    "reviews": "✓ Browse ratings and reviews",
+    "saved": "✓ Save your favorite providers",
+    "upgrade": "✓ You can switch to a standard profile at any time to chat and offer services"
+  },
+  "errors": {
+    "fileTooLarge": "The file is too large. Maximum 5MB",
+    "requiredFields": "Please fill in all required fields",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters long",
+    "consentRequired": "Please confirm your agreement to the Terms of Use and Privacy Policy",
+    "registrationFailed": "Registration error"
+  }
+}

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getApiT } from '@/i18n/server';
 
 // Форсувати завжди динамічне виконання (уникнути статичного кешу)
 export const dynamic = 'force-dynamic';
 
 // GET /api/public-requests - Отримати всі публічні заявки
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const publicRequests = await prisma.serviceRequest.findMany({
       where: {
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Помилка отримання публічних заявок:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

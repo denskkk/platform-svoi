@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Search, MapPin, Filter, X } from 'lucide-react'
+import { useI18n } from '@/i18n/client'
+import { getCityName } from '@/lib/constants'
 
 interface SearchFiltersProps {
   defaultSearch?: string
@@ -22,8 +24,10 @@ export function SearchFilters({
   cities = [],
   onSearch,
   showCategoryFilter = true,
-  placeholder = 'Пошук...'
+  placeholder
 }: SearchFiltersProps) {
+  const { t, locale } = useI18n()
+  const searchPlaceholder = placeholder ?? t('common.search.placeholder')
   const [search, setSearch] = useState(defaultSearch)
   const [city, setCity] = useState(defaultCity)
   const [category, setCategory] = useState(defaultCategory)
@@ -53,7 +57,7 @@ export function SearchFilters({
         <div className="flex items-center gap-3 mb-4">
           <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <Filter className="w-5 h-5 text-blue-600" />
-            Фільтри
+            {t('common.search.filters')}
           </h3>
           
           {hasActiveFilters && (
@@ -63,7 +67,7 @@ export function SearchFilters({
               className="ml-auto text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1 px-3 py-1 rounded-lg hover:bg-red-50 transition-colors"
             >
               <X className="w-4 h-4" />
-              Очистити
+              {t('common.search.clear')}
             </button>
           )}
           
@@ -72,7 +76,7 @@ export function SearchFilters({
             onClick={() => setShowFilters(!showFilters)}
             className="ml-auto md:hidden px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition-colors"
           >
-            {showFilters ? 'Приховати' : 'Показати'}
+            {showFilters ? t('common.search.hide') : t('common.search.show')}
           </button>
         </div>
 
@@ -84,7 +88,7 @@ export function SearchFilters({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={placeholder}
+              placeholder={searchPlaceholder}
               className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
             />
           </div>
@@ -97,7 +101,7 @@ export function SearchFilters({
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-white font-medium appearance-none cursor-pointer"
               >
-                <option value="">📂 Всі категорії</option>
+                <option value="">{t('common.search.allCategories')}</option>
                 {categories.map((cat) => (
                   <option key={cat.value} value={cat.value}>
                     {cat.emoji ? `${cat.emoji} ` : ''}{cat.label}
@@ -121,9 +125,9 @@ export function SearchFilters({
                 onChange={(e) => setCity(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 bg-white font-medium appearance-none cursor-pointer"
               >
-                <option value="">Всі міста</option>
+                <option value="">{t('common.search.allCities')}</option>
                 {cities.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{getCityName(c, locale)}</option>
                 ))}
               </select>
             ) : (
@@ -131,7 +135,7 @@ export function SearchFilters({
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Місто..."
+                placeholder={t('common.search.cityPlaceholder')}
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
               />
             )}
@@ -152,7 +156,7 @@ export function SearchFilters({
         >
           <span className="flex items-center justify-center gap-2">
             <Search className="w-5 h-5" />
-            Знайти
+            {t('common.search.find')}
           </span>
         </button>
 
@@ -187,7 +191,7 @@ export function SearchFilters({
             {city && (
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
                 <MapPin className="w-3 h-3" />
-                {city}
+                {getCityName(city, locale)}
                 <button
                   type="button"
                   onClick={() => setCity('')}

@@ -1,0 +1,16 @@
+{
+  "title": "People Directory",
+  "subtitle": "Find community members by profession, city or name.",
+  "searchPlaceholder": "Search (name, profession)...",
+  "cityPlaceholder": "City",
+  "searchButton": "Search",
+  "found": "Found: {count}",
+  "pageOf": "Page {page} of {pages}",
+  "empty": {
+    "title": "No users found",
+    "description": "Try changing your search parameters or browse all community members",
+    "viewAll": "View all"
+  },
+  "verifiedUser": "Verified user",
+  "verified": "Verified"
+}

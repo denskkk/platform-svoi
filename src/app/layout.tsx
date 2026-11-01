@@ -8,6 +8,10 @@ import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
 import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister'
+import { I18nProvider } from '@/i18n/client'
+import { getMessages } from '@/i18n/messages'
+import { getLocale } from '@/i18n/server'
+import { buildMetadata } from '@/i18n/metadata'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -19,26 +23,8 @@ const montserrat = Montserrat({
   variable: '--font-montserrat',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sviydlyasvoih.com.ua'
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: 'СВІЙ ДЛЯ СВОЇХ — Українська платформа послуг',
-  description: 'Підтримуй своїх — знайди потрібну людину поруч. Платформа для пошуку та пропозиції послуг від українців для українців.',
-  keywords: 'українські послуги, майстри, фахівці, підтримка українського, свій для своїх',
-  applicationName: 'СВІЙ ДЛЯ СВОЇХ',
-  icons: {
-    icon: '/icon.png',
-    apple: '/apple-icon.png',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'uk_UA',
-    siteName: 'СВІЙ ДЛЯ СВОЇХ',
-    title: 'СВІЙ ДЛЯ СВОЇХ — Українська платформа послуг',
-    description: 'Підтримуй своїх — знайди потрібну людину поруч.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'СВІЙ ДЛЯ СВОЇХ' }],
-  },
+export function generateMetadata(): Metadata {
+  return buildMetadata(getLocale())
 }
 
 export const viewport: Viewport = {
@@ -52,20 +38,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const locale = getLocale()
+  const messages = getMessages(locale)
+
   return (
-    <html lang="uk">
+    <html lang={locale}>
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
-        <ToastProvider>
-          <AuthSessionMonitor />
-          <ServiceWorkerRegister />
-          <AdminRedirect />
-          <Navbar />
-          <main className="min-h-screen pb-20 md:pb-0">
-            {children}
-          </main>
-          <Footer />
-          <MobileNav />
-        </ToastProvider>
+        <I18nProvider locale={locale} messages={messages}>
+          <ToastProvider>
+            <AuthSessionMonitor />
+            <ServiceWorkerRegister />
+            <AdminRedirect />
+            <Navbar />
+            <main className="min-h-screen pb-20 md:pb-0">
+              {children}
+            </main>
+            <Footer />
+            <MobileNav />
+          </ToastProvider>
+        </I18nProvider>
       </body>
     </html>
   )

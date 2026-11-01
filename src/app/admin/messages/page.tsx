@@ -14,6 +14,17 @@ import {
   Mail
 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
+import { getCityName } from '@/lib/constants';
+
+const DATE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+};
 
 interface Message {
   content: string;
@@ -59,6 +70,7 @@ interface ConversationDetail {
 
 export default function AdminMessagesPage() {
   const router = useRouter();
+  const { t, locale, formatDate } = useI18n();
   const toast = useToast();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<ConversationDetail | null>(null);
@@ -99,7 +111,7 @@ export default function AdminMessagesPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Помилка завантаження переписок');
+        throw new Error(t('admin.messages.loadConversationsError'));
       }
 
       const data = await response.json();
@@ -107,7 +119,7 @@ export default function AdminMessagesPage() {
       setTotalPages(data.pagination.totalPages);
     } catch (err: any) {
       console.error(err);
-      toast.error('Помилка завантаження переписок');
+      toast.error(t('admin.messages.loadConversationsError'));
     } finally {
       setLoading(false);
     }
@@ -122,14 +134,14 @@ export default function AdminMessagesPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Помилка завантаження повідомлень');
+        throw new Error(t('admin.messages.loadMessagesError'));
       }
 
       const data = await response.json();
       setSelectedConversation(data);
     } catch (err: any) {
       console.error(err);
-      toast.error('Помилка завантаження повідомлень');
+      toast.error(t('admin.messages.loadMessagesError'));
     } finally {
       setMessagesLoading(false);
     }
@@ -149,16 +161,16 @@ export default function AdminMessagesPage() {
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Назад до адмін-панелі
+          {t('admin.common.backToAdmin')}
         </button>
 
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
             <MessageSquare className="w-8 h-8 text-primary-500" />
-            Переписки користувачів
+            {t('admin.messages.title')}
           </h1>
           <p className="text-neutral-600">
-            Перегляд всіх повідомлень на платформі
+            {t('admin.messages.subtitle')}
           </p>
         </div>
 
@@ -174,7 +186,7 @@ export default function AdminMessagesPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="Пошук по імені..."
+                  placeholder={t('admin.messages.searchPlaceholder')}
                   className="w-full pl-10 pr-4 py-2 border-2 border-neutral-200 rounded-lg focus:border-primary-500 focus:outline-none"
                 />
               </div>
@@ -182,7 +194,7 @@ export default function AdminMessagesPage() {
                 onClick={handleSearch}
                 className="w-full mt-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
               >
-                Шукати
+                {t('admin.messages.search')}
               </button>
             </div>
 
@@ -190,7 +202,7 @@ export default function AdminMessagesPage() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               {loading ? (
                 <div className="p-8 text-center text-neutral-600">
-                  Завантаження...
+                  {t('admin.common.loading')}
                 </div>
               ) : (
                 <>
@@ -212,8 +224,8 @@ export default function AdminMessagesPage() {
                           </span>
                         </div>
                         <div className="text-sm text-neutral-600 mb-1">
-                          {conv.user1.city && `${conv.user1.city} • `}
-                          {conv.user2.city && conv.user2.city}
+                          {conv.user1.city && `${getCityName(conv.user1.city, locale)} • `}
+                          {conv.user2.city && getCityName(conv.user2.city, locale)}
                         </div>
                         {conv.lastMessage && (
                           <div className="text-sm text-neutral-500 truncate">
@@ -221,7 +233,7 @@ export default function AdminMessagesPage() {
                           </div>
                         )}
                         <div className="text-xs text-neutral-400 mt-1">
-                          {new Date(conv.updatedAt).toLocaleString('uk-UA')}
+                          {formatDate(conv.updatedAt, DATE_TIME_OPTIONS)}
                         </div>
                       </button>
                     ))}
@@ -259,7 +271,7 @@ export default function AdminMessagesPage() {
             <div className="bg-white rounded-2xl shadow-lg h-full">
               {messagesLoading ? (
                 <div className="flex items-center justify-center h-96">
-                  <div className="text-neutral-600">Завантаження повідомлень...</div>
+                  <div className="text-neutral-600">{t('admin.messages.loadingMessages')}</div>
                 </div>
               ) : selectedConversation ? (
                 <div className="flex flex-col h-full">
@@ -268,7 +280,7 @@ export default function AdminMessagesPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h2 className="text-xl font-bold text-neutral-900 mb-2">
-                          Переписка
+                          {t('admin.messages.conversation')}
                         </h2>
                         <div className="flex items-center gap-4 text-sm text-neutral-600">
                           <div className="flex items-center gap-2">
@@ -283,7 +295,7 @@ export default function AdminMessagesPage() {
                         </div>
                       </div>
                       <div className="text-sm text-neutral-500">
-                        Всього повідомлень: {selectedConversation.messages.length}
+                        {t('admin.messages.totalMessages', { count: selectedConversation.messages.length })}
                       </div>
                     </div>
                   </div>
@@ -304,7 +316,7 @@ export default function AdminMessagesPage() {
                                 {message.sender.firstName} {message.sender.lastName}
                               </span>
                               <span className="text-xs text-neutral-500">
-                                {new Date(message.createdAt).toLocaleString('uk-UA')}
+                                {formatDate(message.createdAt, DATE_TIME_OPTIONS)}
                               </span>
                             </div>
                             <div className="text-neutral-900 whitespace-pre-wrap break-words">
@@ -319,7 +331,7 @@ export default function AdminMessagesPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center h-96 text-neutral-500">
                   <MessageSquare className="w-16 h-16 mb-4 text-neutral-300" />
-                  <p>Оберіть переписку для перегляду</p>
+                  <p>{t('admin.messages.selectConversation')}</p>
                 </div>
               )}
             </div>

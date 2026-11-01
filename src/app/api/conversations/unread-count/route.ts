@@ -7,10 +7,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Проверка авторизации
     let token = getAuthCookie(request);
@@ -24,7 +26,7 @@ export async function GET(request: NextRequest) {
     
     if (!token) {
       return NextResponse.json(
-        { error: 'Не авторизовано' },
+        { error: t('api.common.notAuthorized') },
         { status: 401 }
       );
     }
@@ -32,7 +34,7 @@ export async function GET(request: NextRequest) {
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json(
-        { error: 'Невалідний токен' },
+        { error: t('api.common.invalidToken') },
         { status: 401 }
       );
     }
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get unread count error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

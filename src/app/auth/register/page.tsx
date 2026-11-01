@@ -11,54 +11,56 @@ import {
   X, 
   ArrowRight
 } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const accountTypes = [
     {
       id: 'viewer',
-      name: 'Глядач',
+      name: t('auth.register.types.viewer.name'),
       icon: Eye,
       color: 'bg-neutral-500',
       hoverColor: 'hover:bg-neutral-600',
-      price: 'Безкоштовно',
-      description: 'Перегляд профілів і послуг',
+      price: t('auth.register.free'),
+      description: t('auth.register.types.viewer.description'),
       features: [
-        'Перегляд профілів та послуг',
-        'Збереження обраного',
-        'Безкоштовний перехід на звичайний профіль',
+        t('auth.register.types.viewer.features.browse'),
+        t('auth.register.types.viewer.features.favorites'),
+        t('auth.register.types.viewer.features.upgrade'),
       ],
       limitations: []
     },
     {
       id: 'individual',
-      name: 'Звичайний',
+      name: t('auth.register.types.individual.name'),
       icon: User,
       color: 'bg-blue-500',
       hoverColor: 'hover:bg-blue-600',
-      price: 'Безкоштовно',
-      description: 'Профіль виконавця послуг',
+      price: t('auth.register.free'),
+      description: t('auth.register.types.individual.description'),
       features: [
-        'Повний профіль (детально)',
-        'Публікація послуг',
-        'Повідомлення та відгуки',
+        t('auth.register.types.individual.features.fullProfile'),
+        t('auth.register.types.individual.features.publish'),
+        t('auth.register.types.individual.features.messages'),
       ],
       limitations: []
     },
     {
       id: 'business',
-      name: 'Бізнес',
+      name: t('auth.register.types.business.name'),
       icon: Building2,
       color: 'bg-gradient-to-r from-orange-500 to-red-500',
       hoverColor: 'hover:from-orange-600 hover:to-red-600',
-      price: 'Безкоштовно',
-      description: 'Для компаній та підприємців',
+      price: t('auth.register.free'),
+      description: t('auth.register.types.business.description'),
       features: [
-        'Бізнес-профіль',
-        'Пошук партнерів/інвесторів',
-        'Вакансії та пропозиції',
+        t('auth.register.types.business.features.profile'),
+        t('auth.register.types.business.features.partners'),
+        t('auth.register.types.business.features.vacancies'),
       ],
       limitations: []
     },
@@ -80,10 +82,10 @@ export default function RegisterPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Оберіть тип акаунту
+            {t('auth.register.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Від простого перегляду до повного бізнес-профілю — знайдіть ідеальний варіант для себе
+            {t('auth.register.subtitle')}
           </p>
         </div>
 
@@ -161,7 +163,7 @@ export default function RegisterPage() {
                       shadow-md hover:shadow-lg
                     `}
                   >
-                    Обрати
+                    {t('auth.register.select')}
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 </div>
@@ -173,17 +175,21 @@ export default function RegisterPage() {
         {/* Info Text */}
         <div className="text-center mt-12 space-y-4">
           <p className="text-gray-600">
-            Вже маєте акаунт?{' '}
+            {t('auth.register.haveAccount')}{' '}
             <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-              Увійти
+              {t('auth.register.signIn')}
             </Link>
           </p>
           
           <div className="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-xl p-6">
-            <h4 className="font-semibold text-blue-900 mb-2">💡 Порада</h4>
+            <h4 className="font-semibold text-blue-900 mb-2">{t('auth.register.tipTitle')}</h4>
             <p className="text-sm text-blue-800">
-              Оберіть <strong>Глядач</strong> для пошуку та перегляду фахівців, 
-              <strong>Звичайний</strong> якщо надаєте послуги, або <strong>Бізнес</strong> для компаній.
+              {t('auth.register.tip.before')}<strong>{t('auth.register.types.viewer.name')}</strong>
+              {t('auth.register.tip.afterViewer')}
+              <strong>{t('auth.register.types.individual.name')}</strong>
+              {t('auth.register.tip.afterIndividual')}
+              <strong>{t('auth.register.types.business.name')}</strong>
+              {t('auth.register.tip.afterBusiness')}
             </p>
           </div>
         </div>

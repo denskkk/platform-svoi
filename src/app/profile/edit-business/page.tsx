@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building2, User, Camera, Image as ImageIcon, Users, Phone, Plus, Trash2, Upload } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
-import { cities } from '@/lib/constants';
+import { cities, getCityName } from '@/lib/constants';
+import { useI18n } from '@/i18n/client';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 type Vacancy = {
   position: string;
@@ -61,22 +63,22 @@ const INITIAL_FORM = {
 type FormState = typeof INITIAL_FORM;
 
 const BUSINESS_CATEGORIES = [
-  { value: 'education', label: 'Освіта' },
-  { value: 'products', label: 'Продукти харчування' },
-  { value: 'advertising', label: 'Реклама та маркетинг' },
-  { value: 'online_sales', label: 'Інтернет-продажі' },
-  { value: 'offline_sales', label: 'Офлайн-торгівля' },
-  { value: 'auto_service', label: 'СТО та автосервіс' },
-  { value: 'construction', label: 'Будівництво та ремонт' },
-  { value: 'it', label: 'IT та розробка' },
-  { value: 'other', label: 'Інше' },
+  'education',
+  'products',
+  'advertising',
+  'online_sales',
+  'offline_sales',
+  'auto_service',
+  'construction',
+  'it',
+  'other',
 ];
 
 const TABS = [
-  { id: 'basic', name: 'Основне', icon: User },
-  { id: 'company', name: 'Компанія', icon: Building2 },
-  { id: 'contacts', name: 'Контакти', icon: Phone },
-  { id: 'seeking', name: 'Співпраця', icon: Users },
+  { id: 'basic', icon: User },
+  { id: 'company', icon: Building2 },
+  { id: 'contacts', icon: Phone },
+  { id: 'seeking', icon: Users },
 ];
 
 const inputClass =
@@ -153,6 +155,7 @@ function SeekingCard({
 
 export default function EditBusinessProfilePage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState('');
   const [activeTab, setActiveTab] = useState('basic');
@@ -271,11 +274,11 @@ export default function EditBusinessProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 10 * 1024 * 1024) {
-      setError(`${label}: файл занадто великий. Максимум 10MB`);
+      setError(t('profileEdit.business.errors.fileTooLarge', { label }));
       return;
     }
     if (file.type && !file.type.startsWith('image/')) {
-      setError(`${label}: оберіть зображення`);
+      setError(t('profileEdit.business.errors.notImage', { label }));
       return;
     }
     setError('');
@@ -305,7 +308,7 @@ export default function EditBusinessProfilePage() {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.url) {
-      throw new Error(`${label}: ${data.error || 'не вдалося завантажити зображення'}`);
+      throw new Error(t('profileEdit.business.errors.upload', { label, error: data.error || t('profileEdit.business.errors.uploadFallback') }));
     }
     return data.url as string;
   };
@@ -339,12 +342,12 @@ export default function EditBusinessProfilePage() {
 
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
       setActiveTab('basic');
-      setError("Вкажіть ім'я та прізвище представника");
+      setError(t('profileEdit.business.errors.representativeRequired'));
       return;
     }
     if (!formData.companyName.trim()) {
       setActiveTab('company');
-      setError('Вкажіть назву компанії');
+      setError(t('profileEdit.business.errors.companyNameRequired'));
       return;
     }
 
@@ -354,9 +357,9 @@ export default function EditBusinessProfilePage() {
       let logoUrl = logoPreview;
       let bannerUrl = bannerPreview;
 
-      if (avatarFile) avatarUrl = await uploadImage(avatarFile, 'avatars', 'Фото профілю');
-      if (logoFile) logoUrl = await uploadImage(logoFile, 'logos', 'Логотип');
-      if (bannerFile) bannerUrl = await uploadImage(bannerFile, 'banners', 'Банер');
+      if (avatarFile) avatarUrl = await uploadImage(avatarFile, 'avatars', t('profileEdit.avatar.title'));
+      if (logoFile) logoUrl = await uploadImage(logoFile, 'logos', t('profileEdit.business.labels.logo'));
+      if (bannerFile) bannerUrl = await uploadImage(bannerFile, 'banners', t('profileEdit.business.labels.banner'));
 
       const profileResponse = await fetch(`/api/profile/${user.id}`, {
         method: 'PUT',
@@ -371,7 +374,7 @@ export default function EditBusinessProfilePage() {
       });
       const profileData = await profileResponse.json().catch(() => ({}));
       if (!profileResponse.ok) {
-        throw new Error(profileData.error || 'Не вдалося зберегти дані представника');
+        throw new Error(profileData.error || t('profileEdit.business.errors.saveRepresentative'));
       }
 
       const socialLinks: Record<string, string> = {};
@@ -427,7 +430,7 @@ export default function EditBusinessProfilePage() {
       });
       const businessData = await businessResponse.json().catch(() => ({}));
       if (!businessResponse.ok) {
-        throw new Error(businessData.error || 'Не вдалося зберегти дані компанії');
+        throw new Error(businessData.error || t('profileEdit.business.errors.saveCompany'));
       }
 
       try {
@@ -448,10 +451,10 @@ export default function EditBusinessProfilePage() {
       setAvatarFile(null);
       setLogoFile(null);
       setBannerFile(null);
-      setSuccess('Профіль успішно оновлено!');
+      setSuccess(t('profileEdit.success.updated'));
       setTimeout(() => router.push(`/profile/${user.id}`), 1200);
     } catch (err: any) {
-      setError(err.message || 'Помилка збереження');
+      setError(err.message || t('profileEdit.errors.save'));
     } finally {
       setLoading(false);
     }
@@ -460,7 +463,7 @@ export default function EditBusinessProfilePage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('profileEdit.loading')}</div>
       </div>
     );
   }
@@ -474,8 +477,15 @@ export default function EditBusinessProfilePage() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary-500 to-accent-500 px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">Редагувати профіль</h1>
-            <p className="text-primary-100 mt-2">Оновіть інформацію про себе та вашу компанію</p>
+            <h1 className="text-3xl font-bold text-white">{t('profileEdit.header.title')}</h1>
+            <p className="text-primary-100 mt-2">{t('profileEdit.business.header.subtitle')}</p>
+          </div>
+
+          {/* Interface language */}
+          <div className="px-8 py-6 border-b border-neutral-200">
+            <h3 className="font-semibold text-neutral-900">{t('profileEdit.language.title')}</h3>
+            <p className="text-sm text-neutral-600 mt-1 mb-3">{t('profileEdit.language.description')}</p>
+            <LanguageSwitcher variant="buttons" />
           </div>
 
           {/* Avatar */}
@@ -484,7 +494,7 @@ export default function EditBusinessProfilePage() {
               <div className="relative">
                 <UserAvatar
                   src={avatarPreview}
-                  alt={formData.firstName || 'Фото'}
+                  alt={formData.firstName || t('profileEdit.business.labels.photoAlt')}
                   fallbackName={`${formData.firstName} ${formData.lastName}`.trim() || undefined}
                   className="w-24 h-24 rounded-full object-cover border-4 border-primary-200 text-2xl"
                 />
@@ -498,14 +508,14 @@ export default function EditBusinessProfilePage() {
                   id="avatar-upload"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => pickImage(e, setAvatarFile, setAvatarPreview, 'Фото профілю')}
+                  onChange={(e) => pickImage(e, setAvatarFile, setAvatarPreview, t('profileEdit.avatar.title'))}
                   className="hidden"
                 />
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-900">Фото профілю</h3>
-                <p className="text-sm text-neutral-600 mt-1">PNG, JPG або HEIC. Макс 10MB</p>
-                {avatarFile && <p className="text-sm text-primary-600 mt-1">✓ Нове фото: {avatarFile.name}</p>}
+                <h3 className="font-semibold text-neutral-900">{t('profileEdit.avatar.title')}</h3>
+                <p className="text-sm text-neutral-600 mt-1">{t('profileEdit.avatar.hint')}</p>
+                {avatarFile && <p className="text-sm text-primary-600 mt-1">{t('profileEdit.avatar.newPhoto', { name: avatarFile.name })}</p>}
               </div>
             </div>
           </div>
@@ -527,7 +537,7 @@ export default function EditBusinessProfilePage() {
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    {tab.name}
+                    {t(`profileEdit.business.tabs.${tab.id}`)}
                   </button>
                 );
               })}
@@ -547,16 +557,16 @@ export default function EditBusinessProfilePage() {
               <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
                   <User className="w-5 h-5 text-primary-500" />
-                  Дані представника компанії
+                  {t('profileEdit.business.basic.title')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Ім'я" required>
+                  <Field label={t('profileEdit.business.basic.firstName')} required>
                     <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className={inputClass} />
                   </Field>
-                  <Field label="Прізвище" required>
+                  <Field label={t('profileEdit.business.basic.lastName')} required>
                     <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className={inputClass} />
                   </Field>
-                  <Field label="Телефон представника" className="md:col-span-2">
+                  <Field label={t('profileEdit.business.basic.phone')} className="md:col-span-2">
                     <input
                       type="tel"
                       name="phone"
@@ -574,75 +584,75 @@ export default function EditBusinessProfilePage() {
               <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-primary-500" />
-                  Інформація про компанію
+                  {t('profileEdit.business.company.title')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Назва компанії" required className="md:col-span-2">
+                  <Field label={t('profileEdit.business.company.name')} required className="md:col-span-2">
                     <input
                       type="text"
                       name="companyName"
                       value={formData.companyName}
                       onChange={handleChange}
-                      placeholder="ТОВ 'Будівельна компанія'"
+                      placeholder={t('profileEdit.business.company.namePlaceholder')}
                       className={inputClass}
                     />
                   </Field>
-                  <Field label="Код ЄДРПОУ">
+                  <Field label={t('profileEdit.business.company.code')}>
                     <input type="text" name="companyCode" value={formData.companyCode} onChange={handleChange} placeholder="12345678" className={inputClass} />
                   </Field>
-                  <Field label="Місто діяльності">
+                  <Field label={t('profileEdit.business.company.city')}>
                     <select name="city" value={formData.city} onChange={handleChange} className={inputClass}>
-                      <option value="">Оберіть місто</option>
+                      <option value="">{t('profileEdit.location.selectCity')}</option>
                       {cityOptions.map((city) => (
                         <option key={city} value={city}>
-                          {city}
+                          {getCityName(city, locale)}
                         </option>
                       ))}
                     </select>
                   </Field>
-                  <Field label="Тип компанії">
+                  <Field label={t('profileEdit.business.company.type')}>
                     <select name="companyType" value={formData.companyType} onChange={handleChange} className={inputClass}>
-                      <option value="">Оберіть тип</option>
-                      <option value="fop">ФОП</option>
-                      <option value="tov">ТОВ</option>
-                      <option value="other">Інше</option>
+                      <option value="">{t('profileEdit.business.company.selectType')}</option>
+                      <option value="fop">{t('profileEdit.business.options.companyType.fop')}</option>
+                      <option value="tov">{t('profileEdit.business.options.companyType.tov')}</option>
+                      <option value="other">{t('profileEdit.business.options.companyType.other')}</option>
                     </select>
                   </Field>
-                  <Field label="Категорія діяльності">
+                  <Field label={t('profileEdit.business.company.category')}>
                     <select name="businessCategory" value={formData.businessCategory} onChange={handleChange} className={inputClass}>
-                      <option value="">Оберіть категорію</option>
+                      <option value="">{t('profileEdit.business.company.selectCategory')}</option>
                       {BUSINESS_CATEGORIES.map((cat) => (
-                        <option key={cat.value} value={cat.value}>
-                          {cat.label}
+                        <option key={cat} value={cat}>
+                          {t(`profileEdit.business.options.businessCategory.${cat}`)}
                         </option>
                       ))}
                     </select>
                   </Field>
-                  <Field label="Що пропонуєте?">
+                  <Field label={t('profileEdit.business.company.offerType')}>
                     <select name="offerType" value={formData.offerType} onChange={handleChange} className={inputClass}>
-                      <option value="">Оберіть</option>
-                      <option value="service">Послуга</option>
-                      <option value="product">Товар</option>
-                      <option value="both">Послуги та товари</option>
+                      <option value="">{t('profileEdit.business.company.select')}</option>
+                      <option value="service">{t('profileEdit.business.options.offerType.service')}</option>
+                      <option value="product">{t('profileEdit.business.options.offerType.product')}</option>
+                      <option value="both">{t('profileEdit.business.options.offerType.both')}</option>
                     </select>
                   </Field>
-                  <Field label="Короткий опис" className="md:col-span-2">
+                  <Field label={t('profileEdit.business.company.description')} className="md:col-span-2">
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleChange}
                       rows={4}
-                      placeholder="Що пропонує ваша компанія..."
+                      placeholder={t('profileEdit.business.company.descriptionPlaceholder')}
                       className={`${inputClass} resize-none`}
                     />
                   </Field>
 
-                  <Field label="Логотип компанії">
+                  <Field label={t('profileEdit.business.company.logoLabel')}>
                     <input
                       id="logo-upload"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => pickImage(e, setLogoFile, setLogoPreview, 'Логотип')}
+                      onChange={(e) => pickImage(e, setLogoFile, setLogoPreview, t('profileEdit.business.labels.logo'))}
                       className="hidden"
                     />
                     <label
@@ -651,23 +661,23 @@ export default function EditBusinessProfilePage() {
                     >
                       {logoPreview ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoPreview} alt="Логотип компанії" className="w-24 h-24 object-contain" />
+                        <img src={logoPreview} alt={t('profileEdit.business.company.logoAlt')} className="w-24 h-24 object-contain" />
                       ) : (
                         <ImageIcon className="w-6 h-6 text-neutral-400" />
                       )}
                       <span className="flex items-center gap-2 text-sm text-neutral-600">
                         <Upload className="w-4 h-4" />
-                        {logoFile ? logoFile.name : logoPreview ? 'Замінити логотип' : 'Завантажити логотип'}
+                        {logoFile ? logoFile.name : logoPreview ? t('profileEdit.business.company.replaceLogo') : t('profileEdit.business.company.uploadLogo')}
                       </span>
                     </label>
                   </Field>
 
-                  <Field label="Банер компанії">
+                  <Field label={t('profileEdit.business.company.bannerLabel')}>
                     <input
                       id="banner-upload"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => pickImage(e, setBannerFile, setBannerPreview, 'Банер')}
+                      onChange={(e) => pickImage(e, setBannerFile, setBannerPreview, t('profileEdit.business.labels.banner'))}
                       className="hidden"
                     />
                     <label
@@ -676,13 +686,13 @@ export default function EditBusinessProfilePage() {
                     >
                       {bannerPreview ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={bannerPreview} alt="Банер компанії" className="w-full h-24 object-cover rounded" />
+                        <img src={bannerPreview} alt={t('profileEdit.business.company.bannerAlt')} className="w-full h-24 object-cover rounded" />
                       ) : (
                         <ImageIcon className="w-6 h-6 text-neutral-400" />
                       )}
                       <span className="flex items-center gap-2 text-sm text-neutral-600">
                         <Upload className="w-4 h-4" />
-                        {bannerFile ? bannerFile.name : bannerPreview ? 'Замінити банер' : 'Завантажити банер'}
+                        {bannerFile ? bannerFile.name : bannerPreview ? t('profileEdit.business.company.replaceBanner') : t('profileEdit.business.company.uploadBanner')}
                       </span>
                     </label>
                   </Field>
@@ -694,16 +704,16 @@ export default function EditBusinessProfilePage() {
               <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
                   <Phone className="w-5 h-5 text-primary-500" />
-                  Контакти та соцмережі компанії
+                  {t('profileEdit.business.contacts.title')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Телефон компанії">
+                  <Field label={t('profileEdit.business.contacts.companyPhone')}>
                     <input type="tel" name="companyPhone" value={formData.companyPhone} onChange={handleChange} placeholder="+380..." className={inputClass} />
                   </Field>
                   <Field label="Viber">
                     <input type="text" name="viber" value={formData.viber} onChange={handleChange} placeholder="+380..." className={inputClass} />
                   </Field>
-                  <Field label="Веб-сайт">
+                  <Field label={t('profileEdit.business.contacts.website')}>
                     <input type="url" name="website" value={formData.website} onChange={handleChange} placeholder="https://yourcompany.com" className={inputClass} />
                   </Field>
                   <Field label="Telegram">
@@ -715,11 +725,11 @@ export default function EditBusinessProfilePage() {
                   <Field label="Facebook">
                     <input type="url" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/..." className={inputClass} />
                   </Field>
-                  <Field label="Адреса" className="md:col-span-2">
-                    <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Місто, вулиця, будинок" className={inputClass} />
+                  <Field label={t('profileEdit.business.contacts.address')} className="md:col-span-2">
+                    <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder={t('profileEdit.business.contacts.addressPlaceholder')} className={inputClass} />
                   </Field>
-                  <Field label="Графік роботи" className="md:col-span-2">
-                    <input type="text" name="workHours" value={formData.workHours} onChange={handleChange} placeholder="Пн-Пт 9:00–18:00" className={inputClass} />
+                  <Field label={t('profileEdit.business.contacts.workHours')} className="md:col-span-2">
+                    <input type="text" name="workHours" value={formData.workHours} onChange={handleChange} placeholder={t('profileEdit.business.contacts.workHoursPlaceholder')} className={inputClass} />
                   </Field>
                 </div>
               </div>
@@ -729,44 +739,44 @@ export default function EditBusinessProfilePage() {
               <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
                   <Users className="w-5 h-5 text-primary-500" />
-                  Кого/що шукаєте?
+                  {t('profileEdit.business.seeking.title')}
                 </h3>
 
                 <SeekingCard
                   name="seekingPartner"
                   checked={formData.seekingPartner}
                   onChange={handleChange}
-                  title="Партнера"
-                  hint="Пошук ділових партнерів для співпраці"
+                  title={t('profileEdit.business.seeking.partner.title')}
+                  hint={t('profileEdit.business.seeking.partner.hint')}
                 >
-                  <Field label="Тип партнера">
+                  <Field label={t('profileEdit.business.seeking.partner.type')}>
                     <select name="partnerType" value={formData.partnerType} onChange={handleChange} className={inputClass}>
-                      <option value="">Оберіть тип</option>
-                      <option value="investor">Інвестиційний партнер</option>
-                      <option value="supplier">Постачальник</option>
-                      <option value="distributor">Дистриб'ютор</option>
-                      <option value="franchise">Франчайзі</option>
-                      <option value="strategic">Стратегічний партнер</option>
-                      <option value="other">Інше</option>
+                      <option value="">{t('profileEdit.business.company.selectType')}</option>
+                      <option value="investor">{t('profileEdit.business.options.partnerType.investor')}</option>
+                      <option value="supplier">{t('profileEdit.business.options.partnerType.supplier')}</option>
+                      <option value="distributor">{t('profileEdit.business.options.partnerType.distributor')}</option>
+                      <option value="franchise">{t('profileEdit.business.options.partnerType.franchise')}</option>
+                      <option value="strategic">{t('profileEdit.business.options.partnerType.strategic')}</option>
+                      <option value="other">{t('profileEdit.business.options.partnerType.other')}</option>
                     </select>
                   </Field>
-                  <Field label="Сфера співпраці">
+                  <Field label={t('profileEdit.business.seeking.partner.sphere')}>
                     <input
                       type="text"
                       name="partnerSphere"
                       value={formData.partnerSphere}
                       onChange={handleChange}
-                      placeholder="Наприклад: оптові поставки, спільний маркетинг..."
+                      placeholder={t('profileEdit.business.seeking.partner.spherePlaceholder')}
                       className={inputClass}
                     />
                   </Field>
-                  <Field label="Умови співпраці">
+                  <Field label={t('profileEdit.business.seeking.partner.collaboration')}>
                     <textarea
                       name="partnerCollaboration"
                       value={formData.partnerCollaboration}
                       onChange={handleChange}
                       rows={3}
-                      placeholder="Опишіть, що ви пропонуєте партнеру..."
+                      placeholder={t('profileEdit.business.seeking.partner.collaborationPlaceholder')}
                       className={`${inputClass} resize-none`}
                     />
                   </Field>
@@ -776,39 +786,39 @@ export default function EditBusinessProfilePage() {
                   name="seekingInvestor"
                   checked={formData.seekingInvestor}
                   onChange={handleChange}
-                  title="Інвестора"
-                  hint="Залучення інвестицій для розвитку"
+                  title={t('profileEdit.business.seeking.investor.title')}
+                  hint={t('profileEdit.business.seeking.investor.hint')}
                 >
-                  <Field label="Необхідна сума інвестицій">
+                  <Field label={t('profileEdit.business.seeking.investor.amount')}>
                     <input
                       type="text"
                       name="investmentAmount"
                       value={formData.investmentAmount}
                       onChange={handleChange}
-                      placeholder="Наприклад: від 500 000 до 1 000 000 грн"
+                      placeholder={t('profileEdit.business.seeking.investor.amountPlaceholder')}
                       className={inputClass}
                     />
                   </Field>
-                  <Field label="Строк окупності">
-                    <input type="text" name="investmentTerm" value={formData.investmentTerm} onChange={handleChange} placeholder="Наприклад: 18-24 місяці" className={inputClass} />
+                  <Field label={t('profileEdit.business.seeking.investor.term')}>
+                    <input type="text" name="investmentTerm" value={formData.investmentTerm} onChange={handleChange} placeholder={t('profileEdit.business.seeking.investor.termPlaceholder')} className={inputClass} />
                   </Field>
-                  <Field label="Цілі інвестицій">
+                  <Field label={t('profileEdit.business.seeking.investor.goals')}>
                     <textarea
                       name="investmentGoals"
                       value={formData.investmentGoals}
                       onChange={handleChange}
                       rows={2}
-                      placeholder="На що підуть інвестиції: розширення, обладнання, маркетинг..."
+                      placeholder={t('profileEdit.business.seeking.investor.goalsPlaceholder')}
                       className={`${inputClass} resize-none`}
                     />
                   </Field>
-                  <Field label="Що пропонуєте інвестору">
+                  <Field label={t('profileEdit.business.seeking.investor.offer')}>
                     <textarea
                       name="investmentOffer"
                       value={formData.investmentOffer}
                       onChange={handleChange}
                       rows={2}
-                      placeholder="Частка бізнесу, дивіденди, інше..."
+                      placeholder={t('profileEdit.business.seeking.investor.offerPlaceholder')}
                       className={`${inputClass} resize-none`}
                     />
                   </Field>
@@ -818,36 +828,36 @@ export default function EditBusinessProfilePage() {
                   name="seekingCustomer"
                   checked={formData.seekingCustomer}
                   onChange={handleChange}
-                  title="Споживача"
-                  hint="Розширення клієнтської бази"
+                  title={t('profileEdit.business.seeking.customer.title')}
+                  hint={t('profileEdit.business.seeking.customer.hint')}
                 >
-                  <Field label="Цільова аудиторія">
+                  <Field label={t('profileEdit.business.seeking.customer.target')}>
                     <input
                       type="text"
                       name="customerTarget"
                       value={formData.customerTarget}
                       onChange={handleChange}
-                      placeholder="Хто ваші клієнти: приватні особи, бізнес, вікова група..."
+                      placeholder={t('profileEdit.business.seeking.customer.targetPlaceholder')}
                       className={inputClass}
                     />
                   </Field>
-                  <Field label="Що пропонуєте">
+                  <Field label={t('profileEdit.business.seeking.customer.offer')}>
                     <textarea
                       name="customerOffer"
                       value={formData.customerOffer}
                       onChange={handleChange}
                       rows={2}
-                      placeholder="Опишіть ваші продукти/послуги..."
+                      placeholder={t('profileEdit.business.seeking.customer.offerPlaceholder')}
                       className={`${inputClass} resize-none`}
                     />
                   </Field>
-                  <Field label="Переваги для клієнтів">
+                  <Field label={t('profileEdit.business.seeking.customer.benefits')}>
                     <textarea
                       name="customerBenefits"
                       value={formData.customerBenefits}
                       onChange={handleChange}
                       rows={2}
-                      placeholder="Чому обирають вас: якість, ціна, швидкість..."
+                      placeholder={t('profileEdit.business.seeking.customer.benefitsPlaceholder')}
                       className={`${inputClass} resize-none`}
                     />
                   </Field>
@@ -857,49 +867,49 @@ export default function EditBusinessProfilePage() {
                   name="seekingEmployee"
                   checked={formData.seekingEmployee}
                   onChange={handleChange}
-                  title="Працівника"
-                  hint="Пошук співробітників у команду"
+                  title={t('profileEdit.business.seeking.employee.title')}
+                  hint={t('profileEdit.business.seeking.employee.hint')}
                 >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-neutral-900">Вакансії</h4>
+                    <h4 className="font-medium text-neutral-900">{t('profileEdit.business.seeking.employee.vacancies')}</h4>
                     <button
                       type="button"
                       onClick={addVacancy}
                       className="flex items-center gap-1 px-3 py-1 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
                     >
                       <Plus className="w-4 h-4" />
-                      Додати вакансію
+                      {t('profileEdit.business.seeking.employee.addVacancy')}
                     </button>
                   </div>
 
                   {formData.vacancies.length === 0 && (
-                    <p className="text-sm text-neutral-500 text-center py-4">Додайте вакансії, які ви хочете опублікувати</p>
+                    <p className="text-sm text-neutral-500 text-center py-4">{t('profileEdit.business.seeking.employee.empty')}</p>
                   )}
 
                   {formData.vacancies.map((vacancy, index) => (
                     <div key={index} className="border border-neutral-200 rounded-lg p-4 space-y-3 bg-neutral-50">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-neutral-700">Вакансія #{index + 1}</span>
-                        <button type="button" onClick={() => removeVacancy(index)} className="text-red-500 hover:text-red-700" aria-label="Видалити вакансію">
+                        <span className="text-sm font-medium text-neutral-700">{t('profileEdit.business.seeking.employee.vacancyNumber', { number: index + 1 })}</span>
+                        <button type="button" onClick={() => removeVacancy(index)} className="text-red-500 hover:text-red-700" aria-label={t('profileEdit.business.seeking.employee.removeVacancy')}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                       <input
                         type="text"
-                        placeholder="Посада"
+                        placeholder={t('profileEdit.business.seeking.employee.position')}
                         value={vacancy.position}
                         onChange={(e) => updateVacancy(index, 'position', e.target.value)}
                         className={inputClass}
                       />
                       <textarea
-                        placeholder="Обов'язки"
+                        placeholder={t('profileEdit.business.seeking.employee.responsibilities')}
                         value={vacancy.responsibilities}
                         onChange={(e) => updateVacancy(index, 'responsibilities', e.target.value)}
                         rows={2}
                         className={`${inputClass} resize-none`}
                       />
                       <textarea
-                        placeholder="Вимоги"
+                        placeholder={t('profileEdit.business.seeking.employee.requirements')}
                         value={vacancy.requirements}
                         onChange={(e) => updateVacancy(index, 'requirements', e.target.value)}
                         rows={2}
@@ -908,7 +918,7 @@ export default function EditBusinessProfilePage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input
                           type="text"
-                          placeholder="Зарплата (грн)"
+                          placeholder={t('profileEdit.business.seeking.employee.salary')}
                           value={vacancy.salary}
                           onChange={(e) => updateVacancy(index, 'salary', e.target.value)}
                           className={inputClass}
@@ -918,17 +928,17 @@ export default function EditBusinessProfilePage() {
                           onChange={(e) => updateVacancy(index, 'employmentType', e.target.value)}
                           className={inputClass}
                         >
-                          <option value="">Тип зайнятості</option>
-                          <option value="full-time">Повна зайнятість</option>
-                          <option value="part-time">Часткова зайнятість</option>
-                          <option value="remote">Віддалена робота</option>
-                          <option value="contract">За контрактом</option>
-                          <option value="freelance">Фріланс</option>
+                          <option value="">{t('profileEdit.business.seeking.employee.employmentType')}</option>
+                          <option value="full-time">{t('profileEdit.business.options.employmentType.fullTime')}</option>
+                          <option value="part-time">{t('profileEdit.business.options.employmentType.partTime')}</option>
+                          <option value="remote">{t('profileEdit.business.options.employmentType.remote')}</option>
+                          <option value="contract">{t('profileEdit.business.options.employmentType.contract')}</option>
+                          <option value="freelance">{t('profileEdit.business.options.employmentType.freelance')}</option>
                         </select>
                       </div>
                       <input
                         type="text"
-                        placeholder="Необхідний досвід"
+                        placeholder={t('profileEdit.business.seeking.employee.experience')}
                         value={vacancy.experience}
                         onChange={(e) => updateVacancy(index, 'experience', e.target.value)}
                         className={inputClass}
@@ -946,14 +956,14 @@ export default function EditBusinessProfilePage() {
                 onClick={() => router.back()}
                 className="flex-1 px-6 py-3 border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-neutral-50 transition-colors"
               >
-                Скасувати
+                {t('profileEdit.actions.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="flex-1 px-6 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Збереження...' : 'Зберегти зміни'}
+                {loading ? t('profileEdit.actions.saving') : t('profileEdit.actions.save')}
               </button>
             </div>
           </form>

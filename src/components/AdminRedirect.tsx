@@ -24,7 +24,7 @@ export default function AdminRedirect() {
         router.replace('/admin');
       }
     } catch (error) {
-      console.error('Помилка перевірки користувача:', error);
+      console.error('Помилка перевірки користувача:', error); // i18n-ignore
     }
   }, [pathname, router]);
 

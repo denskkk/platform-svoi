@@ -27,12 +27,16 @@ import {
   translateAccountType, 
   translateBoolean, 
   translateHousingType,
+  translateLivingSituation,
   formatList
 } from '@/lib/translations';
+import { useI18n } from '@/i18n/client';
+import { localizedPath } from '@/i18n/routes';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const toast = useToast();
+  const { t, locale, formatDate } = useI18n();
   const [profile, setProfile] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -55,9 +59,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     try {
       await logout();
       window.dispatchEvent(new Event('auth:changed'));
-      router.push('/');
+      router.push(localizedPath('/', locale));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не вдалося вийти з акаунта');
+      toast.error(error instanceof Error ? error.message : t('profile.view.toasts.logoutFailed'));
       setLoggingOut(false);
     }
   };
@@ -94,11 +98,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             headers: authHeaders(),
           });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Не вдалося оновити обране');
-      toast.success(next ? 'Додано в обране' : 'Видалено з обраного');
+      if (!res.ok) throw new Error(data.error || t('profile.view.toasts.favoriteUpdateFailed'));
+      toast.success(next ? t('profile.view.toasts.favoriteAdded') : t('profile.view.toasts.favoriteRemoved'));
     } catch (e: any) {
       setIsFavorite(!next);
-      toast.error(e.message || 'Не вдалося оновити обране');
+      toast.error(e.message || t('profile.view.toasts.favoriteUpdateFailed'));
     }
   };
 
@@ -171,12 +175,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка завантаження профілю');
+        throw new Error(data.error || t('profile.view.loadFailed'));
       }
 
       setProfile(data.user);
     } catch (err: any) {
-      setError(err.message || 'Помилка завантаження профілю');
+      setError(err.message || t('profile.view.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -197,7 +201,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('profile.view.loading')}</div>
       </div>
     );
   }
@@ -206,9 +210,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'Профіль не знайдено'}</p>
-          <Link href="/" className="text-primary-600 hover:text-primary-700">
-            На головну
+          <p className="text-red-600 mb-4">{error || t('profile.view.notFound')}</p>
+          <Link href={localizedPath('/', locale)} className="text-primary-600 hover:text-primary-700">
+            {t('profile.view.toHome')}
           </Link>
         </div>
       </div>
@@ -226,7 +230,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
             <ServiceImage
               src={`${profile.businessInfo.bannerUrl}${profile.businessInfo.bannerUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-              alt="Банер компанії"
+              alt={t('profile.view.header.bannerAlt')}
               className="w-full h-48 md:h-64 object-cover"
             />
           </div>
@@ -242,7 +246,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   {profile?.businessInfo?.logoUrl ? (
                     <ServiceImage
                       src={`${profile.businessInfo.logoUrl}${profile.businessInfo.logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                      alt="Логотип компанії"
+                      alt={t('profile.view.header.logoAlt')}
                       className="w-32 h-32 rounded-2xl object-cover flex-shrink-0 bg-white shadow-md ring-4 ring-white"
                     />
                   ) : profile.avatarUrl ? (
@@ -264,7 +268,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     />
                   )}
                   {profile.isVerified && (
-                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white" title="Перевірений користувач">
+                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white" title={t('profile.view.header.verifiedTitle')}>
                       <span className="text-white text-xl">✓</span>
                     </div>
                   )}
@@ -284,7 +288,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            Перевірений
+                            {t('profile.view.header.verified')}
                           </span>
                         )}
                       </div>
@@ -302,12 +306,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         )}
                         {profile.age && (
                           <div className="px-3 py-1.5 bg-neutral-50 rounded-lg">
-                            {profile.age} років
+                            {t('profile.view.header.years', { count: profile.age })}
                           </div>
                         )}
                         {profile.gender && (
                           <div className="px-3 py-1.5 bg-neutral-50 rounded-lg">
-                            {translateGender(profile.gender)}
+                            {translateGender(profile.gender, locale)}
                           </div>
                         )}
                       </div>
@@ -320,11 +324,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                                 ? 'bg-amber-50 text-amber-700 border-amber-200'
                                 : 'bg-neutral-100 text-neutral-600 border-neutral-200'
                             }`}
-                            title={profile.trialStatus === 'active' ? 'Пробний період активний' : 'Пробний період завершено'}
+                            title={profile.trialStatus === 'active' ? t('profile.view.header.trialActiveTitle') : t('profile.view.header.trialEndedTitle')}
                           >
                             {profile.trialStatus === 'active'
-                              ? `⏰ Пробний період: ${profile.trialDaysLeft} дн. залишилось`
-                              : '⏱️ Пробний період завершено'}
+                              ? t('profile.view.header.trialActive', { days: profile.trialDaysLeft })
+                              : t('profile.view.header.trialEnded')}
                           </span>
                         </div>
                       )}
@@ -339,7 +343,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
                           >
                             <Edit className="w-4 h-4 mr-2" />
-                            Редагувати
+                            {t('profile.view.actions.edit')}
                           </Link>
                           <button
                             type="button"
@@ -348,7 +352,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             className="flex items-center px-5 py-2.5 border-2 border-red-300 text-red-600 hover:bg-red-50 font-medium rounded-lg transition-all duration-200 disabled:opacity-50"
                           >
                             <LogOut className="w-4 h-4 mr-2" />
-                            {loggingOut ? 'Виходимо...' : 'Вийти'}
+                            {loggingOut ? t('profile.view.actions.loggingOut') : t('profile.view.actions.logout')}
                           </button>
                         </>
                       ) : (
@@ -359,7 +363,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             className="flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
                           >
                             <MessageCircle className="w-4 h-4 mr-2" />
-                            Написати
+                            {t('profile.view.actions.write')}
                           </Link>
                           )}
                           <PermissionButton
@@ -376,7 +380,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           <ReportButton
                             reportedUserId={profile.id}
                             contentType="user"
-                            label="Поскаржитися"
+                            label={t('profile.view.actions.report')}
                             className="inline-flex items-center gap-1.5 px-3 py-2.5 text-sm text-neutral-500 hover:text-red-600 border border-neutral-200 hover:border-red-200 rounded-lg bg-white transition-colors"
                           />
                         </>
@@ -401,7 +405,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       </div>
                       <span className="font-bold text-neutral-900 text-lg">{formatRating(profile.avgRating,1)}</span>
                       <span className="text-neutral-600">•</span>
-                      <span className="text-neutral-600">{profile.totalReviews} {profile.totalReviews === 1 ? 'відгук' : profile.totalReviews < 5 ? 'відгуки' : 'відгуків'}</span>
+                      <span className="text-neutral-600">{t('profile.view.header.reviewsCount', { count: profile.totalReviews })}</span>
                     </div>
                   )}
                 </div>
@@ -411,41 +415,41 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             {/* Блок компанії (для бізнес акаунтів) */}
             {String(profile.accountType || '').startsWith('business') && profile.businessInfo && (
               <div className="bg-white rounded-2xl shadow-md p-6">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">Інформація про компанію</h3>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">                {t('profile.view.company.title')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {profile.businessInfo.companyName && (
                     <div>
-                      <div className="text-sm text-neutral-500">Назва компанії</div>
+                                      <div className="text-sm text-neutral-500">{t('profile.view.company.name')}</div>
                       <div className="font-medium">{profile.businessInfo.companyName}</div>
                     </div>
                   )}
                   {profile.businessInfo.companyCode && (
                     <div>
-                      <div className="text-sm text-neutral-500">Код ЄДРПОУ</div>
+                      <div className="text-sm text-neutral-500">{t('profile.view.company.code')}</div>
                       <div className="font-medium">{profile.businessInfo.companyCode}</div>
                     </div>
                   )}
                   {profile.businessInfo.businessCategory && (
                     <div>
-                      <div className="text-sm text-neutral-500">Категорія</div>
-                      <div className="font-medium">{translateCategory(profile.businessInfo.businessCategory)}</div>
+                      <div className="text-sm text-neutral-500">                      {t('profile.view.company.category')}</div>
+                                            <div className="font-medium">{translateCategory(profile.businessInfo.businessCategory, locale)}</div>
                     </div>
                   )}
                   {profile.businessInfo.offerType && (
                     <div>
-                      <div className="text-sm text-neutral-500">Що пропонує</div>
-                      <div className="font-medium">{translateOfferType(profile.businessInfo.offerType)}</div>
+                      <div className="text-sm text-neutral-500">                      {t('profile.view.company.offers')}</div>
+                                            <div className="font-medium">{translateOfferType(profile.businessInfo.offerType, locale)}</div>
                     </div>
                   )}
                   {profile.businessInfo.website && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-neutral-500">Веб-сайт</div>
+                      <div className="text-sm text-neutral-500">{t('profile.view.company.website')}</div>
                       <a href={profile.businessInfo.website} target="_blank" className="font-medium text-primary-600 hover:underline">{profile.businessInfo.website}</a>
                     </div>
                   )}
                   {profile.businessInfo.description && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-neutral-500">Опис</div>
+                      <div className="text-sm text-neutral-500">{t('profile.view.company.description')}</div>
                       <div className="font-medium whitespace-pre-wrap">{profile.businessInfo.description}</div>
                     </div>
                   )}
@@ -456,26 +460,26 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             {/* Вакансії */}
             {profile?.businessInfo?.seekingEmployee && Array.isArray(profile.businessInfo.employeeVacancies) && profile.businessInfo.employeeVacancies.length > 0 && (
               <div className="bg-white rounded-2xl shadow-md p-6">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">Вакансії</h3>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">{t('profile.view.vacancies.title')}</h3>
                 <div className="space-y-4">
                   {profile.businessInfo.employeeVacancies.map((v: any, idx: number) => (
                     <div key={idx} className="border border-neutral-200 rounded-xl p-4">
                       {v.position && <div className="text-base font-semibold mb-2">{v.position}</div>}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-neutral-700">
                         {v.salary && (
-                          <div><span className="text-neutral-500">Зарплата: </span><span className="font-medium">{v.salary}</span></div>
+                          <div><span className="text-neutral-500">                          {t('profile.view.vacancies.salary')}</span><span className="font-medium">{v.salary}</span></div>
                         )}
                         {v.employmentType && (
-                          <div><span className="text-neutral-500">Тип: </span><span className="font-medium">{translateEmploymentType(v.employmentType)}</span></div>
+                                                    <div><span className="text-neutral-500">{t('profile.view.vacancies.type')}</span><span className="font-medium">{translateEmploymentType(v.employmentType, locale)}</span></div>
                         )}
                         {v.experience && (
-                          <div className="md:col-span-2"><span className="text-neutral-500">Досвід: </span><span className="font-medium">{v.experience}</span></div>
+                                                    <div className="md:col-span-2"><span className="text-neutral-500">{t('profile.view.vacancies.experience')}</span><span className="font-medium">{v.experience}</span></div>
                         )}
                         {v.responsibilities && (
-                          <div className="md:col-span-2"><span className="text-neutral-500">Обов'язки: </span><span className="font-medium whitespace-pre-wrap">{v.responsibilities}</span></div>
+                          <div className="md:col-span-2"><span className="text-neutral-500">{t('profile.view.vacancies.responsibilities')}</span><span className="font-medium whitespace-pre-wrap">{v.responsibilities}</span></div>
                         )}
                         {v.requirements && (
-                          <div className="md:col-span-2"><span className="text-neutral-500">Вимоги: </span><span className="font-medium whitespace-pre-wrap">{v.requirements}</span></div>
+                          <div className="md:col-span-2"><span className="text-neutral-500">{t('profile.view.vacancies.requirements')}</span><span className="font-medium whitespace-pre-wrap">{v.requirements}</span></div>
                         )}
                       </div>
                     </div>
@@ -494,7 +498,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-neutral-900">
-                        {profile.businessInfo.companyName || 'Бізнес-профіль'}
+                        {profile.businessInfo.companyName || t('profile.view.business.defaultTitle')}
                       </h2>
                       {profile.businessInfo.businessType && (
                         <p className="text-sm text-neutral-600">{profile.businessInfo.businessType}</p>
@@ -506,7 +510,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   {profile.businessInfo.logoUrl && (
                     <ServiceImage
                       src={`${profile.businessInfo.logoUrl}${profile.businessInfo.logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                      alt={`${profile.businessInfo.companyName} logo`}
+                      alt={t('profile.view.business.logoAlt', { name: profile.businessInfo.companyName })}
                       className="w-20 h-20 object-contain rounded-lg bg-white p-2 shadow-sm"
                     />
                   )}
@@ -515,7 +519,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Представник */}
                 {(profile.businessInfo.representativeName || profile.businessInfo.position) && (
                   <div className="mb-4 p-3 bg-white/50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Представник</p>
+                    <p className="text-sm text-neutral-600">{t('profile.view.business.representative')}</p>
                     <p className="font-semibold text-neutral-900">
                       {profile.businessInfo.representativeName}
                       {profile.businessInfo.position && ` • ${profile.businessInfo.position}`}
@@ -526,7 +530,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Короткий опис */}
                 {profile.businessInfo.description && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Про компанію</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.about')}</h3>
                     <p className="text-neutral-700 leading-relaxed">{profile.businessInfo.description}</p>
                   </div>
                 )}
@@ -534,7 +538,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Місія */}
                 {profile.businessInfo.mission && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Наша місія</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.mission')}</h3>
                     <p className="text-neutral-700 leading-relaxed">{profile.businessInfo.mission}</p>
                   </div>
                 )}
@@ -542,7 +546,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Унікальна цінність */}
                 {profile.businessInfo.uniqueValue && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Чому обирають нас</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.whyUs')}</h3>
                     <p className="text-neutral-700 leading-relaxed">{profile.businessInfo.uniqueValue}</p>
                   </div>
                 )}
@@ -550,7 +554,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Послуги та товари */}
                 {profile.businessInfo.servicesList && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Що ми пропонуємо</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.whatWeOffer')}</h3>
                     <p className="text-neutral-700 leading-relaxed whitespace-pre-line">{profile.businessInfo.servicesList}</p>
                   </div>
                 )}
@@ -559,13 +563,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   {profile.businessInfo.priceRange && (
                     <div className="p-3 bg-white/50 rounded-lg">
-                      <p className="text-sm text-neutral-600 mb-1">Ціновий діапазон</p>
+                      <p className="text-sm text-neutral-600 mb-1">{t('profile.view.business.priceRange')}</p>
                       <p className="font-semibold text-accent-700">{profile.businessInfo.priceRange}</p>
                     </div>
                   )}
                   {profile.businessInfo.workHours && (
                     <div className="p-3 bg-white/50 rounded-lg">
-                      <p className="text-sm text-neutral-600 mb-1">Години роботи</p>
+                      <p className="text-sm text-neutral-600 mb-1">{t('profile.view.business.workHours')}</p>
                       <p className="font-semibold text-neutral-900">{profile.businessInfo.workHours}</p>
                     </div>
                   )}
@@ -574,10 +578,10 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Команда */}
                 {(profile.businessInfo.employeeCount || profile.businessInfo.keySpecialists || profile.businessInfo.teamDescription) && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Наша команда</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.team')}</h3>
                     {profile.businessInfo.employeeCount && (
                       <p className="text-sm text-neutral-600 mb-2">
-                        Кількість працівників: <span className="font-medium">{profile.businessInfo.employeeCount}</span>
+                        {t('profile.view.business.employeeCount')}<span className="font-medium">{profile.businessInfo.employeeCount}</span>
                       </p>
                     )}
                     {profile.businessInfo.keySpecialists && (
@@ -594,13 +598,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="mb-4 p-3 bg-white/50 rounded-lg">
                     {profile.businessInfo.serviceLocation && (
                       <div className="mb-2">
-                        <p className="text-sm text-neutral-600">Де надаємо послуги</p>
+                        <p className="text-sm text-neutral-600">{t('profile.view.business.serviceLocation')}</p>
                         <p className="font-semibold text-neutral-900">{profile.businessInfo.serviceLocation}</p>
                       </div>
                     )}
                     {profile.businessInfo.address && (
                       <div>
-                        <p className="text-sm text-neutral-600">Адреса</p>
+                        <p className="text-sm text-neutral-600">{t('profile.view.business.address')}</p>
                         <p className="font-semibold text-neutral-900">{profile.businessInfo.address}</p>
                       </div>
                     )}
@@ -610,7 +614,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Сертифікати */}
                 {profile.businessInfo.certificatesInfo && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Сертифікати та ліцензії</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.certificates')}</h3>
                     <p className="text-neutral-700 leading-relaxed whitespace-pre-line">{profile.businessInfo.certificatesInfo}</p>
                   </div>
                 )}
@@ -618,7 +622,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Партнери */}
                 {profile.businessInfo.partners && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Наші партнери</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.partners')}</h3>
                     <p className="text-neutral-700 leading-relaxed whitespace-pre-line">{profile.businessInfo.partners}</p>
                   </div>
                 )}
@@ -630,7 +634,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   (typeof profile.businessInfo.externalReviews === 'string' && profile.businessInfo.externalReviews)
                 ) && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Відгуки на інших платформах</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.externalReviews')}</h3>
                     <div className="space-y-2">
                       {profile.businessInfo.externalReviews?.google && (
                         <a 
@@ -639,7 +643,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           rel="noopener noreferrer"
                           className="block text-blue-600 hover:text-blue-700 text-sm"
                         >
-                          📍 Google Відгуки
+                          {t('profile.view.business.googleReviews')}
                         </a>
                       )}
                       {profile.businessInfo.externalReviews?.facebook && (
@@ -649,7 +653,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           rel="noopener noreferrer"
                           className="block text-blue-600 hover:text-blue-700 text-sm"
                         >
-                          👥 Facebook Відгуки
+                          {t('profile.view.business.facebookReviews')}
                         </a>
                       )}
                       {typeof profile.businessInfo.externalReviews === 'string' && profile.businessInfo.externalReviews && (
@@ -659,7 +663,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           rel="noopener noreferrer"
                           className="block text-blue-600 hover:text-blue-700 text-sm"
                         >
-                          🔗 Зовнішні відгуки
+                          {t('profile.view.business.otherReviews')}
                         </a>
                       )}
                     </div>
@@ -669,13 +673,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Відео */}
                 {profile.businessInfo.videoUrl && (
                   <div className="mb-4">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Відео про компанію</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.video')}</h3>
                     <div className="aspect-video rounded-lg overflow-hidden bg-neutral-100">
                       <iframe
                         src={profile.businessInfo.videoUrl}
                         className="w-full h-full"
                         allowFullScreen
-                        title="Company video"
+                        title={t('profile.view.business.video')}
                       />
                     </div>
                   </div>
@@ -684,7 +688,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Контакти бізнесу */}
                 {(profile.businessInfo.phone || profile.businessInfo.viber || profile.businessInfo.telegram || profile.businessInfo.email) && (
                   <div className="mb-4 p-3 bg-white/50 rounded-lg">
-                    <h3 className="font-semibold text-neutral-900 mb-2">Контакти</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-2">{t('profile.view.business.contacts')}</h3>
                     <div className="space-y-2">
                       {profile.businessInfo.phone && (
                         <div className="flex items-center space-x-2 text-sm">
@@ -714,19 +718,19 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   {profile.businessInfo.yearFounded && (
                     <div className="text-center">
                       <p className="text-2xl font-bold text-accent-600">{profile.businessInfo.yearFounded}</p>
-                      <p className="text-xs text-neutral-600">Рік заснування</p>
+                      <p className="text-xs text-neutral-600">{t('profile.view.business.yearFounded')}</p>
                     </div>
                   )}
                   {profile.businessInfo.registrationType && (
                     <div className="text-center">
                       <p className="text-sm font-semibold text-neutral-900">{profile.businessInfo.registrationType}</p>
-                      <p className="text-xs text-neutral-600">Тип реєстрації</p>
+                      <p className="text-xs text-neutral-600">{t('profile.view.business.registrationType')}</p>
                     </div>
                   )}
                   {profile.businessInfo.hasCertificates && (
                     <div className="text-center">
                       <p className="text-2xl">✓</p>
-                      <p className="text-xs text-neutral-600">Є сертифікати</p>
+                      <p className="text-xs text-neutral-600">{t('profile.view.business.hasCertificates')}</p>
                     </div>
                   )}
                 </div>
@@ -734,7 +738,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Соціальні мережі бізнесу */}
                 {profile.businessInfo.socialLinks && Object.keys(profile.businessInfo.socialLinks).length > 0 && (
                   <div className="mt-6 pt-6 border-t border-accent-200">
-                    <h3 className="font-semibold text-neutral-900 mb-3">Ми в соціальних мережах</h3>
+                    <h3 className="font-semibold text-neutral-900 mb-3">{t('profile.view.business.socialTitle')}</h3>
                     <div className="flex flex-wrap gap-3">
                       {profile.businessInfo.socialLinks.facebook && (
                         <a
@@ -777,7 +781,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           className="flex items-center px-3 py-2 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 rounded-lg transition-colors text-sm"
                         >
                           <Globe className="w-4 h-4 mr-2" />
-                          Веб-сайт
+                          {t('profile.view.business.website')}
                         </a>
                       )}
                     </div>
@@ -793,7 +797,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
                     <span className="text-white text-2xl">👤</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-neutral-900">Про мене</h2>
+                  <h2 className="text-2xl font-bold text-neutral-900">{t('profile.view.about.title')}</h2>
                 </div>
                 <div className="p-4 bg-white rounded-lg border border-neutral-100">
                   <p className="text-neutral-700 leading-relaxed whitespace-pre-line">{profile.bio}</p>
@@ -808,7 +812,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center">
                     <span className="text-white text-2xl">🌐</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-neutral-900">Соціальні мережі</h2>
+                  <h2 className="text-2xl font-bold text-neutral-900">{t('profile.view.about.socialTitle')}</h2>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {profile.socialLinks.facebook && (
@@ -863,7 +867,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       className="flex items-center px-5 py-3 bg-gradient-to-br from-neutral-50 to-neutral-100/50 hover:from-neutral-100 hover:to-neutral-200/50 text-neutral-700 font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md border border-neutral-200"
                     >
                       <Globe className="w-5 h-5 mr-2" />
-                      Веб-сайт
+                      {t('profile.view.about.website')}
                     </a>
                   )}
                 </div>
@@ -874,7 +878,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             <div className="bg-white rounded-2xl shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-neutral-900">
-                  Послуги {profile._count?.services > 0 && `(${profile._count.services})`}
+                  {t('profile.view.services.title')} {profile._count?.services > 0 && `(${profile._count.services})`}
                 </h2>
                 {isOwnProfile && (
                   <Link
@@ -882,7 +886,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     className="flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Додати
+                    {t('profile.view.actions.add')}
                   </Link>
                 )}
               </div>
@@ -911,7 +915,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="font-semibold text-lg text-neutral-900 hover:text-primary-600 transition-colors">{service.title}</h3>
                             {service.category && (
-                              <span className="text-sm font-medium text-neutral-500 flex-shrink-0 ml-2 bg-neutral-100 px-2 py-1 rounded">{service.category.name}</span>
+                              <span className="text-sm font-medium text-neutral-500 flex-shrink-0 ml-2 bg-neutral-100 px-2 py-1 rounded">{translateCategory(service.category.name, locale)}</span>
                             )}
                           </div>
                           {service.description && (
@@ -921,11 +925,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             {(service.priceFrom || service.priceTo) && (
                               <div className="text-primary-600 font-medium">
                                 {service.priceFrom && service.priceTo ? (
-                                  `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || 'грн'}`
+                                  `${service.priceFrom} - ${service.priceTo} ${service.priceUnit || t('profile.view.services.defaultUnit')}`
                                 ) : service.priceFrom ? (
-                                  `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
+                                  t('profile.view.services.priceFrom', { price: service.priceFrom, unit: service.priceUnit || t('profile.view.services.defaultUnit') })
                                 ) : (
-                                  `до ${service.priceTo} ${service.priceUnit || 'грн'}`
+                                  t('profile.view.services.priceTo', { price: service.priceTo, unit: service.priceUnit || t('profile.view.services.defaultUnit') })
                                 )}
                               </div>
                             )}
@@ -943,17 +947,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="text-center py-12 text-neutral-500">
                   {isOwnProfile ? (
                     <div>
-                      <p className="mb-4">У вас ще немає послуг</p>
+                      <p className="mb-4">{t('profile.view.services.emptyOwn')}</p>
                       <Link
                         href="/services/create"
                         className="inline-flex items-center px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
                       >
                         <Plus className="w-5 h-5 mr-2" />
-                        Створити першу послугу
+                        {t('profile.view.services.createFirst')}
                       </Link>
                     </div>
                   ) : (
-                    <p>Цей користувач ще не додав послуг</p>
+                    <p>{t('profile.view.services.emptyOther')}</p>
                   )}
                 </div>
               )}
@@ -963,7 +967,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             {profile.reviewsReceived && profile.reviewsReceived.length > 0 && (
               <div className="bg-white rounded-2xl shadow-md p-6">
                 <h2 className="text-2xl font-bold text-neutral-900 mb-6">
-                  Відгуки ({profile.reviewsReceived.length})
+                  {t('profile.view.reviews.title')} ({profile.reviewsReceived.length})
                 </h2>
                 <div className="space-y-4">
                   {profile.reviewsReceived.map((review: any) => (
@@ -985,7 +989,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                           </div>
                         </div>
                         <span className="text-sm text-neutral-500">
-                          {new Date(review.createdAt).toLocaleDateString('uk-UA')}
+                          {formatDate(review.createdAt)}
                         </span>
                       </div>
                       {review.comment && (
@@ -1006,7 +1010,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                   <Phone className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-neutral-900">Контакти</h3>
+                <h3 className="text-xl font-bold text-neutral-900">{t('profile.view.contacts.title')}</h3>
               </div>
               
               <div className="space-y-3 mb-6">
@@ -1036,7 +1040,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg mb-3"
                   >
                     <MessageCircle className="w-5 h-5" />
-                    <span>Написати</span>
+                    <span>{t('profile.view.actions.write')}</span>
                   </Link>
                   )}
 
@@ -1046,7 +1050,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       className="flex items-center justify-center gap-2 w-full border-2 border-primary-500 text-primary-600 hover:bg-primary-50 font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                     >
                       <Phone className="w-5 h-5" />
-                      <span>Подзвонити</span>
+                      <span>{t('profile.view.actions.call')}</span>
                     </a>
                   )}
                 </>
@@ -1059,21 +1063,21 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="w-10 h-10 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg flex items-center justify-center">
                   <span className="text-white text-xl">ℹ️</span>
                 </div>
-                <h3 className="text-xl font-bold text-neutral-900">Інформація</h3>
+                <h3 className="text-xl font-bold text-neutral-900">{t('profile.view.info.title')}</h3>
               </div>
               <div className="space-y-3">
                 {/* Вік та стать */}
                 {profile.age && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Вік</p>
-                    <p className="font-medium text-neutral-900">{profile.age} років</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.age')}</p>
+                                        <p className="font-medium text-neutral-900">{t('profile.view.header.years', { count: profile.age })}</p>
                   </div>
                 )}
                 {profile.gender && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Стать</p>
+                                        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.gender')}</p>
                     <p className="font-medium text-neutral-900">
-                      {translateGender(profile.gender)}
+                                          {translateGender(profile.gender, locale)}
                     </p>
                   </div>
                 )}
@@ -1081,9 +1085,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Сімейний стан */}
                 {profile.maritalStatus && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Сімейний стан</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.maritalStatus')}</p>
                     <p className="font-medium text-neutral-900">
-                      {translateMaritalStatus(profile.maritalStatus)}
+                                          {translateMaritalStatus(profile.maritalStatus, locale)}
                     </p>
                   </div>
                 )}
@@ -1091,7 +1095,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Склад сім'ї */}
                 {profile.familyComposition && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Склад сім&apos;ї</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.familyComposition')}</p>
                     <p className="font-medium text-neutral-900">{profile.familyComposition}</p>
                   </div>
                 )}
@@ -1099,9 +1103,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Діти */}
                 {profile.childrenCount !== null && profile.childrenCount !== undefined && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Діти</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.children')}</p>
                     <p className="font-medium text-neutral-900">
-                      {profile.childrenCount === 0 ? 'Немає дітей' : `${profile.childrenCount} ${profile.childrenCount === 1 ? 'дитина' : 'дітей'}`}
+                                          {profile.childrenCount === 0 ? t('profile.view.info.noChildren') : t('profile.view.info.childrenCount', { count: profile.childrenCount })}
                     </p>
                   </div>
                 )}
@@ -1109,7 +1113,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Професія */}
                 {profile.profession && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Професія</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.profession')}</p>
                     <p className="font-medium text-neutral-900">{profile.profession}</p>
                   </div>
                 )}
@@ -1117,9 +1121,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Статус зайнятості */}
                 {profile.employmentStatus && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Статус зайнятості</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.employmentStatus')}</p>
                     <p className="font-medium text-neutral-900">
-                      {translateEmploymentStatus(profile.employmentStatus)}
+                                          {translateEmploymentStatus(profile.employmentStatus, locale)}
                     </p>
                   </div>
                 )}
@@ -1127,7 +1131,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Місце роботи */}
                 {profile.workplace && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Місце роботи</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.workplace')}</p>
                     <p className="font-medium text-neutral-900">{profile.workplace}</p>
                   </div>
                 )}
@@ -1135,17 +1139,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Освіта */}
                 {profile.education && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Освіта</p>
-                    <p className="font-medium text-neutral-900">{translateEducation(profile.education)}</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.education')}</p>
+                                        <p className="font-medium text-neutral-900">{translateEducation(profile.education, locale)}</p>
                   </div>
                 )}
 
                 {/* Тип житла */}
                 {profile.housingType && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Тип житла</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.housingType')}</p>
                     <p className="font-medium text-neutral-900">
-                      {translateHousingType(profile.housingType)}
+                                          {translateHousingType(profile.housingType, locale)}
                     </p>
                   </div>
                 )}
@@ -1153,31 +1157,31 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Ситуація з житлом */}
                 {profile.livingSituation && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Ситуація з житлом</p>
-                    <p className="font-medium text-neutral-900">{profile.livingSituation}</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.livingSituation')}</p>
+                                        <p className="font-medium text-neutral-900">{translateLivingSituation(profile.livingSituation, locale)}</p>
                   </div>
                 )}
 
                 {/* Транспорт */}
                 {profile.hasCar !== null && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Автомобіль</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.car')}</p>
                     <p className="font-medium text-neutral-900">
-                      {profile.hasCar ? '🚗 Є' : '❌ Немає'}
+                                          {profile.hasCar ? t('profile.view.info.hasCar') : t('profile.view.info.noCar')}
                     </p>
                   </div>
                 )}
 
                 {profile.carInfo && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Інфо про авто</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.carInfo')}</p>
                     <p className="font-medium text-neutral-900">{profile.carInfo}</p>
                   </div>
                 )}
 
                 {profile.otherTransport && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Інший транспорт</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.otherTransport')}</p>
                     <p className="font-medium text-neutral-900">{profile.otherTransport}</p>
                   </div>
                 )}
@@ -1185,16 +1189,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Домашні тварини */}
                 {profile.hasPets !== null && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Домашні тварини</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                     mb-1">{t('profile.view.info.pets')}</p>
                     <p className="font-medium text-neutral-900">
-                      {profile.hasPets ? '🐾 Є' : '❌ Немає'}
+                                          {profile.hasPets ? t('profile.view.info.hasPets') : t('profile.view.info.noPets')}
                     </p>
                   </div>
                 )}
 
                 {profile.petsInfo && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Інфо про тварин</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.petsInfo')}</p>
                     <p className="font-medium text-neutral-900">{profile.petsInfo}</p>
                   </div>
                 )}
@@ -1202,28 +1206,28 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Хобі та інтереси */}
                 {profile.hobbies && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Хобі та інтереси</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.hobbies')}</p>
                     <p className="font-medium text-neutral-900 whitespace-pre-line">{profile.hobbies}</p>
                   </div>
                 )}
 
                 {profile.outdoorActivities && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Активний відпочинок</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.outdoorActivities')}</p>
                     <p className="font-medium text-neutral-900 whitespace-pre-line">{profile.outdoorActivities}</p>
                   </div>
                 )}
 
                 {profile.sports && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Спорт</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.sports')}</p>
                     <p className="font-medium text-neutral-900">{profile.sports}</p>
                   </div>
                 )}
 
                 {profile.lifestyle && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Спосіб життя</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.lifestyle')}</p>
                     <p className="font-medium text-neutral-900">{profile.lifestyle}</p>
                   </div>
                 )}
@@ -1231,7 +1235,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Пошук роботи */}
                 {profile.jobSeeking && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Пошук роботи</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.jobSeeking')}</p>
                     <p className="font-medium text-neutral-900">{profile.jobSeeking}</p>
                   </div>
                 )}
@@ -1239,16 +1243,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 {/* Приватний бізнес */}
                 {profile.privateBusinessInfo && (
                   <div className="p-3 bg-white rounded-lg border border-neutral-100">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Приватний бізнес</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.info.privateBusiness')}</p>
                     <p className="font-medium text-neutral-900 whitespace-pre-line">{profile.privateBusinessInfo}</p>
                   </div>
                 )}
 
                 {/* Дата реєстрації */}
                 <div className="p-3 bg-gradient-to-br from-primary-50 to-accent-50 rounded-lg border border-primary-100">
-                  <p className="text-xs font-semibold text-primary-600 uppercase tracking-wide mb-1">Зареєстрований</p>
+                  <p className="text-xs font-semibold text-primary-600 uppercase tracking-wide                   mb-1">{t('profile.view.info.registered')}</p>
                   <p className="font-medium text-neutral-900">
-                    {new Date(profile.createdAt).toLocaleDateString('uk-UA', { 
+                                      {formatDate(profile.createdAt, { 
                       year: 'numeric', 
                       month: 'long', 
                       day: 'numeric' 
@@ -1265,7 +1269,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-md">
                 <span className="text-white text-2xl">📋</span>
               </div>
-              <h2 className="text-2xl font-bold text-neutral-900">Особиста інформація</h2>
+              <h2 className="text-2xl font-bold text-neutral-900">{t('profile.view.personal.title')}</h2>
             </div>
             {/* Про себе */}
             {profile.bio && (
@@ -1276,7 +1280,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(profile.phone || profile.email) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Контакти</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">{t('profile.view.personal.contacts')}</p>
                   <div className="space-y-1">
                     {profile.phone && (
                       <p className="font-medium text-neutral-900 flex items-center gap-2">
@@ -1295,14 +1299,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               )}
               {(profile.gender || profile.age) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Стать / Вік</p>
-                  <p className="font-medium text-neutral-900">{profile.gender ? translateGender(profile.gender) : '—'}{profile.age ? ` • ${profile.age} років` : ''}</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-2">{t('profile.view.personal.genderAge')}</p>
+                                    <p className="font-medium text-neutral-900">{profile.gender ? translateGender(profile.gender, locale) : '—'}{profile.age ? ` • ${t('profile.view.header.years', { count: profile.age })}` : ''}</p>
                 </div>
               )}
               {(profile.maritalStatus || profile.familyComposition) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Сімейний стан</p>
-                  <p className="font-medium text-neutral-900">{profile.maritalStatus ? translateMaritalStatus(profile.maritalStatus) : '—'}</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-2">{t('profile.view.personal.maritalStatus')}</p>
+                                    <p className="font-medium text-neutral-900">{profile.maritalStatus ? translateMaritalStatus(profile.maritalStatus, locale) : '—'}</p>
                   {profile.familyComposition && (
                     <p className="text-neutral-600 mt-2 text-sm">{profile.familyComposition}</p>
                   )}
@@ -1310,13 +1314,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               )}
               {(profile.childrenCount !== null && profile.childrenCount !== undefined) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Діти</p>
-                  <p className="font-medium text-neutral-900">{profile.childrenCount === 0 ? 'Немає дітей' : `${profile.childrenCount} ${profile.childrenCount === 1 ? 'дитина' : profile.childrenCount < 5 ? 'дітей' : 'дітей'}`}</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-2">{t('profile.view.personal.children')}</p>
+                                    <p className="font-medium text-neutral-900">{profile.childrenCount === 0 ? t('profile.view.info.noChildren') : t('profile.view.info.childrenCount', { count: profile.childrenCount })}</p>
                 </div>
               )}
               {(profile.city || profile.region) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Місто / Регіон</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">{t('profile.view.personal.cityRegion')}</p>
                   <p className="font-medium text-neutral-900 flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-primary-500" />
                     {profile.city || '—'}{profile.region ? `, ${profile.region}` : ''}
@@ -1325,42 +1329,42 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               )}
               {(profile.education || profile.profession) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Освіта / Професія</p>
-                  <p className="font-medium text-neutral-900">{profile.education ? translateEducation(profile.education) : '—'}{profile.profession ? ` • ${profile.profession}` : ''}</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-2">{t('profile.view.personal.educationProfession')}</p>
+                                    <p className="font-medium text-neutral-900">{profile.education ? translateEducation(profile.education, locale) : '—'}{profile.profession ? ` • ${profile.profession}` : ''}</p>
                 </div>
               )}
               {(profile.employmentStatus || profile.workplace) && (
                 <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Зайнятість</p>
-                  <p className="font-medium text-neutral-900">{profile.employmentStatus ? translateEmploymentStatus(profile.employmentStatus) : '—'}{profile.workplace ? ` • ${profile.workplace}` : ''}</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-2">{t('profile.view.personal.employment')}</p>
+                                    <p className="font-medium text-neutral-900">{profile.employmentStatus ? translateEmploymentStatus(profile.employmentStatus, locale) : '—'}{profile.workplace ? ` • ${profile.workplace}` : ''}</p>
                 </div>
               )}
               {(profile.hobbies || profile.sports || profile.lifestyle || profile.outdoorActivities) && (
                 <div className="p-4 bg-gradient-to-br from-white to-primary-50/30 rounded-xl border border-primary-100 shadow-sm hover:shadow-md transition-shadow md:col-span-2">
-                  <p className="text-xs font-semibold text-primary-600 uppercase tracking-wide mb-3">Інтереси та Хобі</p>
+                  <p className="text-xs font-semibold text-primary-600 uppercase tracking-wide mb-3">{t('profile.view.personal.interests')}</p>
                   <div className="space-y-2">
                     {profile.hobbies && (
                       <div className="flex items-start gap-2">
                         <span className="text-primary-500 mt-0.5">🎨</span>
-                        <p className="text-neutral-900"><span className="font-semibold">Хобі:</span> {profile.hobbies}</p>
+                        <p className="text-neutral-900"><span className="font-semibold">{t('profile.view.personal.hobby')}</span> {profile.hobbies}</p>
                       </div>
                     )}
                     {profile.sports && (
                       <div className="flex items-start gap-2">
                         <span className="text-primary-500 mt-0.5">⚽</span>
-                        <p className="text-neutral-900"><span className="font-semibold">Спорт:</span> {profile.sports}</p>
+                        <p className="text-neutral-900"><span className="font-semibold">{t('profile.view.personal.sport')}</span> {profile.sports}</p>
                       </div>
                     )}
                     {profile.lifestyle && (
                       <div className="flex items-start gap-2">
                         <span className="text-primary-500 mt-0.5">🌟</span>
-                        <p className="text-neutral-900"><span className="font-semibold">Стиль життя:</span> {profile.lifestyle}</p>
+                        <p className="text-neutral-900"><span className="font-semibold">{t('profile.view.personal.lifestyle')}</span> {profile.lifestyle}</p>
                       </div>
                     )}
                     {profile.outdoorActivities && (
                       <div className="flex items-start gap-2">
                         <span className="text-primary-500 mt-0.5">🏔️</span>
-                        <p className="text-neutral-900"><span className="font-semibold">Активний відпочинок:</span> {profile.outdoorActivities}</p>
+                        <p className="text-neutral-900"><span className="font-semibold">{t('profile.view.personal.outdoor')}</span> {profile.outdoorActivities}</p>
                       </div>
                     )}
                   </div>
@@ -1376,14 +1380,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="w-10 h-10 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg flex items-center justify-center">
                   <span className="text-white text-xl">🚗</span>
                 </div>
-                <h2 className="text-xl font-bold text-neutral-900">Житло та транспорт</h2>
+                <h2 className="text-xl font-bold text-neutral-900">{t('profile.view.housing.title')}</h2>
               </div>
               {asList(profile.carServices).length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Авто-сервіси</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-3">{t('profile.view.housing.carServices')}</p>
                   <div className="flex flex-wrap gap-2">
-                    {asList(profile.carServices).map((t, i) => (
-                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
+                                      {asList(profile.carServices).map((item, i) => (
+                                        <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{item}</span>
                     ))}
                   </div>
                 </div>
@@ -1394,30 +1398,30 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           {/* Пошук роботи / бізнесу */}
           {(profile.accountType !== 'basic' ? (profile.jobSeeking || profile.seekingPartTime || profile.seekingFullTime || profile.wantsStartBusiness) : false) && (
             <div className="bg-white rounded-2xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Пошук роботи / бізнесу</h2>
+              <h2 className="text-xl font-bold text-neutral-900               mb-4">{t('profile.view.job.title')}</h2>
               {profile.jobSeeking && (
                 <div className="mb-3">
-                  <p className="text-sm text-neutral-600">Шукаю роботу в сфері</p>
+                                <p className="text-sm text-neutral-600">{t('profile.view.job.seekingField')}</p>
                   <p className="font-medium text-neutral-900">{profile.jobSeeking}</p>
                 </div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {profile.seekingPartTime !== null && profile.seekingPartTime !== undefined && (
                   <div className="p-3 bg-neutral-50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Часткова зайнятість</p>
-                    <p className="font-medium text-neutral-900">{profile.seekingPartTime ? 'Так' : 'Ні'}</p>
+                    <p className="text-sm text-neutral-600">                    {t('profile.view.job.partTime')}</p>
+                                        <p className="font-medium text-neutral-900">{translateBoolean(profile.seekingPartTime, locale)}</p>
                   </div>
                 )}
                 {profile.seekingFullTime !== null && profile.seekingFullTime !== undefined && (
                   <div className="p-3 bg-neutral-50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Повна зайнятість</p>
-                    <p className="font-medium text-neutral-900">{profile.seekingFullTime ? 'Так' : 'Ні'}</p>
+                    <p className="text-sm text-neutral-600">                    {t('profile.view.job.fullTime')}</p>
+                                        <p className="font-medium text-neutral-900">{translateBoolean(profile.seekingFullTime, locale)}</p>
                   </div>
                 )}
                 {profile.wantsStartBusiness !== null && profile.wantsStartBusiness !== undefined && (
                   <div className="p-3 bg-neutral-50 rounded-lg">
-                    <p className="text-sm text-neutral-600">Хочу почати власну справу</p>
-                    <p className="font-medium text-neutral-900">{profile.wantsStartBusiness ? 'Так' : 'Ні'}</p>
+                    <p className="text-sm text-neutral-600">                    {t('profile.view.job.startBusiness')}</p>
+                                        <p className="font-medium text-neutral-900">{translateBoolean(profile.wantsStartBusiness, locale)}</p>
                   </div>
                 )}
               </div>
@@ -1431,48 +1435,48 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                   <span className="text-white text-xl">⭐</span>
                 </div>
-                <h2 className="text-xl font-bold text-neutral-900">Переваги та використання сервісів</h2>
+                <h2 className="text-xl font-bold text-neutral-900">{t('profile.view.preferences.title')}</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 {profile.restaurantFrequency && (
                   <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Відвідування ресторанів</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.preferences.restaurantFrequency')}</p>
                     <p className="font-medium text-neutral-900">{profile.restaurantFrequency}</p>
                   </div>
                 )}
                 {profile.cuisinePreference && (
                   <div className="p-4 bg-white rounded-xl border border-neutral-100 shadow-sm">
-                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">Улюблена кухня</p>
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{t('profile.view.preferences.cuisine')}</p>
                     <p className="font-medium text-neutral-900">{profile.cuisinePreference}</p>
                   </div>
                 )}
               </div>
               {asList(profile.usesServices).length > 0 && (
                 <div className="mb-4">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Побутові сервіси</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-3">{t('profile.view.preferences.homeServices')}</p>
                   <div className="flex flex-wrap gap-2">
-                    {asList(profile.usesServices).map((t, i) => (
-                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
+                                      {asList(profile.usesServices).map((item, i) => (
+                                        <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{item}</span>
                     ))}
                   </div>
                 </div>
               )}
               {asList(profile.usesBusinessServices).length > 0 && (
                 <div className="mb-4">
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Бізнес-сервіси</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-3">{t('profile.view.preferences.businessServices')}</p>
                   <div className="flex flex-wrap gap-2">
-                    {asList(profile.usesBusinessServices).map((t, i) => (
-                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
+                                      {asList(profile.usesBusinessServices).map((item, i) => (
+                                        <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{item}</span>
                     ))}
                   </div>
                 </div>
               )}
               {asList(profile.beautyServices).length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">Beauty / Послуги краси</p>
+                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide                   mb-3">{t('profile.view.preferences.beautyServices')}</p>
                   <div className="flex flex-wrap gap-2">
-                    {asList(profile.beautyServices).map((t, i) => (
-                      <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{t}</span>
+                                      {asList(profile.beautyServices).map((item, i) => (
+                                        <span key={i} className="px-4 py-2 rounded-full bg-white border border-neutral-200 text-neutral-800 text-sm font-medium shadow-sm hover:shadow-md transition-shadow">{item}</span>
                     ))}
                   </div>
                 </div>
@@ -1490,7 +1494,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           {/* Керування акаунтом */}
           {isOwnProfile && (
             <div className="bg-white rounded-2xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Акаунт</h2>
+              <h2 className="text-xl font-bold text-neutral-900 mb-4">{t('profile.view.account.title')}</h2>
               <div className="flex flex-col gap-3">
                 <button
                   type="button"
@@ -1499,20 +1503,20 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   className="w-full inline-flex items-center justify-center px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
                   <LogOut className="w-5 h-5 mr-2 shrink-0" />
-                  {loggingOut ? 'Виходимо...' : 'Вийти'}
+                  {loggingOut ? t('profile.view.actions.loggingOut') : t('profile.view.actions.logout')}
                 </button>
                 <Link
                   href="/favorites"
                   className="w-full inline-flex items-center justify-center px-5 py-3 border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 font-semibold rounded-lg transition-colors"
                 >
                   <Heart className="w-5 h-5 mr-2 shrink-0" />
-                  Обране
+                  {t('profile.view.account.favorites')}
                 </Link>
                 <Link
-                  href="/account-deletion"
+                  href={localizedPath('/account-deletion', locale)}
                   className="text-center text-sm text-neutral-500 hover:text-red-600 transition-colors py-1"
                 >
-                  Видалити акаунт
+                  {t('profile.view.account.deleteAccount')}
                 </Link>
               </div>
             </div>

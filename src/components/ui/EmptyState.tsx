@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { LucideIcon } from 'lucide-react'
+import { useI18n } from '@/i18n/client'
 
 interface EmptyStateProps {
   icon: LucideIcon
@@ -18,6 +21,7 @@ export function EmptyState({
   actionHref,
   actionOnClick,
 }: EmptyStateProps) {
+  const { t } = useI18n()
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
       <div className="mb-6 relative">
@@ -65,7 +69,7 @@ export function EmptyState({
       {/* Decorative elements */}
       <div className="mt-12 flex items-center gap-2 text-sm text-gray-400">
         <div className="w-16 h-px bg-gradient-to-r from-transparent to-gray-300" />
-        <span>або</span>
+        <span>{t('common.emptyState.or')}</span>
         <div className="w-16 h-px bg-gradient-to-l from-transparent to-gray-300" />
       </div>
     </div>

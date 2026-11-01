@@ -9,6 +9,8 @@ import { passwordMatches, passwordVariants } from '@/lib/auth';
 import { getClientIp, peekRateLimit, checkRateLimit, resetRateLimit } from '@/lib/rateLimit';
 import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
 import { createSession } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
+import type { Translator } from '@/i18n/translate';
 
 // Лічимо тільки НЕВДАЛІ спроби: успішні входи (і пристрої за спільним IP мобільного оператора)
 // не повинні блокувати інших тестувальників.
@@ -16,11 +18,11 @@ const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const MAX_FAILURES_PER_ACCOUNT = 10;
 const MAX_FAILURES_PER_IP = 100;
 
-function tooManyAttempts(resetTime: number) {
+function tooManyAttempts(resetTime: number, t: Translator) {
   const retryAfter = Math.max(1, Math.ceil((resetTime - Date.now()) / 1000));
   return NextResponse.json(
     {
-      error: `Занадто багато невдалих спроб входу. Спробуйте через ${Math.ceil(retryAfter / 60)} хв.`,
+      error: t('api.auth.loginLocked', { minutes: Math.ceil(retryAfter / 60) }),
       retryAfter,
     },
     { status: 429, headers: { 'Retry-After': retryAfter.toString() } }
@@ -28,6 +30,7 @@ function tooManyAttempts(resetTime: number) {
 }
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const ip = getClientIp(request);
 
@@ -35,14 +38,14 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json({ error: 'Некоректний запит' }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.badRequest') }, { status: 400 });
     }
     const { email, password } = body ?? {};
 
     // Валідація
     if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
       return NextResponse.json(
-        { error: 'Email та пароль обов\'язкові' },
+        { error: t('api.auth.emailPasswordRequired') },
         { status: 400 }
       );
     }
@@ -52,9 +55,9 @@ export async function POST(request: NextRequest) {
     const ipKey = `login-ip:${ip}`;
 
     const accountLimit = peekRateLimit(accountKey, MAX_FAILURES_PER_ACCOUNT);
-    if (accountLimit.limited) return tooManyAttempts(accountLimit.resetTime);
+    if (accountLimit.limited) return tooManyAttempts(accountLimit.resetTime, t);
     const ipLimit = peekRateLimit(ipKey, MAX_FAILURES_PER_IP);
-    if (ipLimit.limited) return tooManyAttempts(ipLimit.resetTime);
+    if (ipLimit.limited) return tooManyAttempts(ipLimit.resetTime, t);
 
     const registerFailure = () => {
       checkRateLimit(accountKey, { interval: LOGIN_WINDOW_MS, maxRequests: MAX_FAILURES_PER_ACCOUNT });
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
     if (!user || !user.isActive) {
       registerFailure();
       return NextResponse.json(
-        { error: 'Невірний email або пароль' },
+        { error: t('api.auth.invalidCredentials') },
         { status: 401 }
       );
     }
@@ -118,7 +121,7 @@ export async function POST(request: NextRequest) {
     // Створити відповідь і ТАКОЖ повернути token в JSON для localStorage (для HTTP без SSL)
     const response = NextResponse.json({
       success: true,
-      message: 'Вхід успішний!',
+      message: t('api.auth.loginSuccess'),
       user: userWithoutPassword,
       token,
     });
@@ -132,7 +135,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

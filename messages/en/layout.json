@@ -1,0 +1,71 @@
+{
+  "brand": {
+    "name": "Sviy dlya Svoikh",
+    "logoAlt": "Sviy dlya Svoikh logo",
+    "homeAria": "Sviy dlya Svoikh — go to home page"
+  },
+  "navbar": {
+    "people": "People",
+    "services": "Services",
+    "requests": "Requests",
+    "about": "About us",
+    "contacts": "Contacts",
+    "searchAria": "Search",
+    "searchTitle": "Search services",
+    "messagesAria": "Messages",
+    "unreadTitle": "{count} unread",
+    "addService": "+ Service",
+    "addRequest": "+ Request",
+    "profileMenuAria": "Profile menu",
+    "accountType": "Account type",
+    "myProfile": "My profile",
+    "editProfile": "Edit profile",
+    "createService": "➕ Create a service",
+    "createRequest": "➕ Create a request",
+    "requestsToMe": "📩 Requests to me",
+    "myRequests": "📝 My requests",
+    "messages": "Messages",
+    "favorites": "Favorites",
+    "logout": "Log out",
+    "login": "Log in",
+    "register": "Create a profile",
+    "menuAria": "Menu"
+  },
+  "mobileMenu": {
+    "navigation": "Navigation",
+    "myAccount": "My account",
+    "create": "Create",
+    "createService": "Add a service",
+    "createRequest": "Create a request",
+    "requests": "Requests",
+    "requestsToMe": "Requests to me",
+    "myRequests": "My requests",
+    "information": "Information"
+  },
+  "mobileNav": {
+    "home": "Home",
+    "search": "Search",
+    "messages": "Messages",
+    "profile": "Profile",
+    "favorites": "Favorites",
+    "register": "Create a profile",
+    "viewer": "Join as a viewer"
+  },
+  "footer": {
+    "description": "A platform for finding and offering services from Ukrainians to Ukrainians. Let's support each other and build a strong community.",
+    "madeWithLove": "Made with love for Ukraine",
+    "navigation": "Navigation",
+    "catalog": "People directory",
+    "services": "Services",
+    "requests": "Requests",
+    "about": "About us",
+    "administration": "Administration",
+    "adminLink": "Sviy dlya Svoikh Administration",
+    "copyright": "© {year} Sviy dlya Svoikh. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "accountDeletion": "Account deletion",
+    "support": "Support",
+    "contacts": "Contacts"
+  }
+}

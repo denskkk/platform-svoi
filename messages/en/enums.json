@@ -1,0 +1,206 @@
+{
+  "gender": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other"
+  },
+  "maritalStatus": {
+    "single": "Single",
+    "married": "Married",
+    "divorced": "Divorced",
+    "widowed": "Widowed",
+    "in_relationship": "In a relationship",
+    "relationship": "In a relationship",
+    "engaged": "Engaged",
+    "civil": "In a civil partnership"
+  },
+  "education": {
+    "secondary": "Secondary education",
+    "vocational": "Vocational education",
+    "incomplete_higher": "Incomplete higher education",
+    "bachelor": "Bachelor's degree",
+    "master": "Master's degree",
+    "phd": "PhD",
+    "doctorate": "Doctorate",
+    "college": "College"
+  },
+  "employmentStatus": {
+    "employed": "Employed",
+    "self_employed": "Self-employed",
+    "unemployed": "Unemployed",
+    "student": "Student",
+    "retired": "Retired",
+    "looking_for_work": "Looking for work",
+    "business_owner": "Business owner",
+    "freelancer": "Freelancer",
+    "freelance": "Freelance",
+    "business": "Own business"
+  },
+  "accountType": {
+    "viewer": "Viewer",
+    "basic": "Basic",
+    "business": "Business",
+    "user": "Regular"
+  },
+  "serviceRequestStatus": {
+    "new": "New",
+    "viewed": "Viewed",
+    "accepted": "Accepted",
+    "in_progress": "In progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "paid": "Paid"
+  },
+  "category": {
+    "auto_service": "Auto service",
+    "beauty": "Beauty and health",
+    "food": "Food and catering",
+    "education": "Education",
+    "health": "Health",
+    "sport": "Sports and fitness",
+    "entertainment": "Entertainment",
+    "repair": "Repairs",
+    "construction": "Construction",
+    "cleaning": "Cleaning",
+    "transport": "Transport",
+    "finance": "Finance",
+    "law": "Legal services",
+    "it": "IT and technology",
+    "marketing": "Marketing",
+    "real_estate": "Real estate",
+    "retail": "Retail",
+    "wholesale": "Wholesale",
+    "manufacturing": "Manufacturing",
+    "agriculture": "Agriculture",
+    "tourism": "Tourism",
+    "hospitality": "Hospitality",
+    "logistics": "Logistics",
+    "consulting": "Consulting",
+    "design": "Design",
+    "photo_video": "Photo/Video",
+    "events": "Event planning",
+    "products": "Food products",
+    "advertising": "Advertising and marketing",
+    "online_sales": "Online sales",
+    "offline_sales": "Offline retail",
+    "other": "Other"
+  },
+  "offerType": {
+    "service": "Service",
+    "product": "Product",
+    "both": "Services and products"
+  },
+  "employmentType": {
+    "full-time": "Full-time",
+    "full_time": "Full-time",
+    "part-time": "Part-time",
+    "part_time": "Part-time",
+    "contract": "Contract",
+    "freelance": "Freelance",
+    "internship": "Internship",
+    "remote": "Remote work"
+  },
+  "companyType": {
+    "fop": "Sole proprietor (FOP)",
+    "tov": "LLC (TOV)",
+    "pat": "Public JSC (PAT)",
+    "other": "Other",
+    "individual": "Individual",
+    "llc": "LLC",
+    "jsc": "JSC"
+  },
+  "boolean": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "housingType": {
+    "house": "House",
+    "apartment": "Apartment",
+    "room": "Room",
+    "other": "Other"
+  },
+  "livingSituation": {
+    "alone": "Alone",
+    "family": "With family",
+    "roommates": "With roommates",
+    "parents": "With parents"
+  },
+  "transactionStatus": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "role": {
+    "user": "User",
+    "business": "Business",
+    "admin": "Administrator",
+    "moderator": "Moderator"
+  },
+  "permission": {
+    "view_services": "View services",
+    "create_service": "Create services",
+    "edit_service": "Edit services",
+    "delete_service": "Delete services",
+    "view_users": "View users",
+    "manage_users": "Manage users",
+    "send_messages": "Send messages",
+    "leave_reviews": "Leave reviews"
+  },
+  "categories": {
+    "vse-dlya-domu": { "name": "Everything for the Home", "description": "Repairs, cleaning, handymen" },
+    "vse-dlya-auto": { "name": "Everything for Your Car", "description": "Cars, motorcycles, bicycles, scooters" },
+    "krasa": { "name": "Beauty", "description": "Salons, hairdressers, cosmetologists" },
+    "osvita": { "name": "Education", "description": "Courses, tutors, training" },
+    "rozvagy-ta-hobbi": { "name": "Entertainment and Hobbies", "description": "Sports, leisure, creativity" },
+    "vse-dlya-ditey": { "name": "Everything for Kids", "description": "Kindergartens, clubs, toys" },
+    "magazyny-online": { "name": "Online Stores", "description": "Online shops" },
+    "magazyny-offline": { "name": "Offline Stores", "description": "Physical stores" },
+    "vse-dlya-tvaryn": { "name": "Everything for Pets", "description": "Vets, pet shops" },
+    "restorany-goteli": { "name": "Restaurants and Hotels", "description": "HoReCa, catering" },
+    "neruhomist": { "name": "Real Estate Agencies", "description": "Property sales and rentals" },
+    "ruhome-mayno": { "name": "Movable Property Agencies", "description": "Vehicles, appliances, equipment" },
+    "zayavky-na-zadachi": { "name": "Task Requests, Online and Offline", "description": "Online and offline services" },
+    "podiyi-ta-ogoloshennya": { "name": "Events and Announcements Board", "description": "Events, news, announcements" },
+    "vse-dlya-biznesu": { "name": "Everything for Running and Growing Your Business", "description": "B2B services for business" },
+    "pobut": { "name": "Household Services", "description": "Household services: cleaning, laundry, dry cleaning" },
+    "auto": { "name": "Auto", "description": "Car service, diagnostics, car repair" },
+    "remont": { "name": "Repairs", "description": "Repair of apartments, houses and furniture" },
+    "biznes": { "name": "Business", "description": "Consulting, accounting, legal services" },
+    "it": { "name": "IT", "description": "Programming, design, website development" },
+    "medytsyna": { "name": "Medicine", "description": "Medical services, consultations" },
+    "tvorchist": { "name": "Creative", "description": "Photographers, artists, musicians" }
+  },
+  "cities": {
+    "kyiv": "Kyiv",
+    "kharkiv": "Kharkiv",
+    "odesa": "Odesa",
+    "dnipro": "Dnipro",
+    "donetsk": "Donetsk",
+    "zaporizhzhia": "Zaporizhzhia",
+    "lviv": "Lviv",
+    "kryvyi_rih": "Kryvyi Rih",
+    "mykolaiv": "Mykolaiv",
+    "mariupol": "Mariupol",
+    "luhansk": "Luhansk",
+    "vinnytsia": "Vinnytsia",
+    "kherson": "Kherson",
+    "poltava": "Poltava",
+    "chernihiv": "Chernihiv",
+    "cherkasy": "Cherkasy",
+    "sumy": "Sumy",
+    "zhytomyr": "Zhytomyr",
+    "khmelnytskyi": "Khmelnytskyi",
+    "rivne": "Rivne",
+    "chernivtsi": "Chernivtsi",
+    "ternopil": "Ternopil",
+    "ivano_frankivsk": "Ivano-Frankivsk",
+    "lutsk": "Lutsk",
+    "uzhhorod": "Uzhhorod"
+  },
+  "accountTypes": {
+    "individual": { "title": "Regular profile", "description": "I want to offer my services" },
+    "business": { "title": "Business profile", "description": "I have my own business or company" },
+    "viewer": { "title": "Viewer", "description": "I just want to browse" }
+  }
+}

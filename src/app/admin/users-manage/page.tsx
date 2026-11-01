@@ -16,6 +16,10 @@ import {
   Shield
 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
+import { getCityName } from '@/lib/constants';
+
+const DATE_OPTIONS: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
 
 interface User {
   id: number;
@@ -33,6 +37,7 @@ interface User {
 
 export default function AdminUsersManagePage() {
   const router = useRouter();
+  const { t, locale, formatDate } = useI18n();
   const toast = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +80,7 @@ export default function AdminUsersManagePage() {
       });
 
       if (!response.ok) {
-        throw new Error('Помилка завантаження користувачів');
+        throw new Error(t('admin.users.loadError'));
       }
 
       const data = await response.json();
@@ -83,7 +88,7 @@ export default function AdminUsersManagePage() {
       setTotalPages(data.pagination.totalPages);
     } catch (err: any) {
       console.error(err);
-      toast.error('Помилка завантаження користувачів');
+      toast.error(t('admin.users.loadError'));
     } finally {
       setLoading(false);
     }
@@ -97,7 +102,8 @@ export default function AdminUsersManagePage() {
   const handleToggleVerification = async (user: User) => {
     const newStatus = !user.isVerified;
 
-    if (!confirm(`${newStatus ? 'Встановити' : 'Зняти'} статус «Перевірений» для ${user.firstName} ${user.lastName}?`)) {
+    const name = `${user.firstName} ${user.lastName}`;
+    if (!confirm(t(newStatus ? 'admin.users.confirmVerify' : 'admin.users.confirmUnverify', { name }))) {
       return;
     }
 
@@ -111,7 +117,7 @@ export default function AdminUsersManagePage() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Помилка оновлення статусу');
+        throw new Error(data.error || t('admin.users.updateError'));
       }
 
       const data = await response.json();
@@ -131,16 +137,16 @@ export default function AdminUsersManagePage() {
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Назад до адмін-панелі
+          {t('admin.common.backToAdmin')}
         </button>
 
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
             <Shield className="w-8 h-8 text-primary-500" />
-            Управління користувачами
+            {t('admin.users.title')}
           </h1>
           <p className="text-neutral-600">
-            Верифікація та детальна інформація
+            {t('admin.users.subtitle')}
           </p>
         </div>
 
@@ -153,7 +159,7 @@ export default function AdminUsersManagePage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Пошук по імені, email, місту..."
+                placeholder={t('admin.users.searchPlaceholder')}
                 className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 rounded-lg focus:border-primary-500 focus:outline-none"
               />
             </div>
@@ -161,7 +167,7 @@ export default function AdminUsersManagePage() {
               onClick={handleSearch}
               className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
             >
-              Шукати
+              {t('admin.users.search')}
             </button>
           </div>
 
@@ -174,9 +180,9 @@ export default function AdminUsersManagePage() {
               }}
               className="px-4 py-2 border-2 border-neutral-200 rounded-lg focus:border-primary-500 focus:outline-none"
             >
-              <option value="createdAt">Дата реєстрації</option>
-              <option value="firstName">Ім'я</option>
-              <option value="city">Місто</option>
+              <option value="createdAt">{t('admin.users.sort.createdAt')}</option>
+              <option value="firstName">{t('admin.users.sort.firstName')}</option>
+              <option value="city">{t('admin.users.sort.city')}</option>
             </select>
 
             <select
@@ -187,15 +193,15 @@ export default function AdminUsersManagePage() {
               }}
               className="px-4 py-2 border-2 border-neutral-200 rounded-lg focus:border-primary-500 focus:outline-none"
             >
-              <option value="desc">За спаданням</option>
-              <option value="asc">За зростанням</option>
+              <option value="desc">{t('admin.users.order.desc')}</option>
+              <option value="asc">{t('admin.users.order.asc')}</option>
             </select>
           </div>
         </div>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-neutral-600">Завантаження...</div>
+            <div className="text-neutral-600">{t('admin.common.loading')}</div>
           </div>
         ) : (
           <>
@@ -211,7 +217,7 @@ export default function AdminUsersManagePage() {
                             {user.isVerified && (
                               <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                                 <CheckCircle className="w-3 h-3" />
-                                Перевірений
+                                {t('admin.users.verified')}
                               </span>
                             )}
                           </h3>
@@ -229,7 +235,7 @@ export default function AdminUsersManagePage() {
                             {user.city && (
                               <span className="flex items-center gap-1">
                                 <MapPin className="w-4 h-4" />
-                                {user.city}
+                                {getCityName(user.city, locale)}
                               </span>
                             )}
                           </div>
@@ -237,11 +243,11 @@ export default function AdminUsersManagePage() {
 
                         <div className="text-right text-xs text-neutral-500">
                           <div>
-                            Зареєстрований: {new Date(user.createdAt).toLocaleDateString('uk-UA')}
+                            {t('admin.users.registered', { date: formatDate(user.createdAt, DATE_OPTIONS) })}
                           </div>
                           {user.lastLogin && (
                             <div className="mt-1">
-                              Останній вхід: {new Date(user.lastLogin).toLocaleDateString('uk-UA')}
+                              {t('admin.users.lastLogin', { date: formatDate(user.lastLogin, DATE_OPTIONS) })}
                             </div>
                           )}
                         </div>
@@ -249,7 +255,7 @@ export default function AdminUsersManagePage() {
 
                       <div className="grid grid-cols-1 gap-4 p-4 bg-neutral-50 rounded-lg">
                         <div className="text-center">
-                          <div className="text-neutral-600 text-sm mb-1">Послуги</div>
+                          <div className="text-neutral-600 text-sm mb-1">{t('admin.users.services')}</div>
                           <div className="text-lg font-bold flex items-center justify-center gap-1">
                             <Briefcase className="w-4 h-4 text-blue-500" />
                             {user.servicesCount}
@@ -270,12 +276,12 @@ export default function AdminUsersManagePage() {
                         {user.isVerified ? (
                           <>
                             <XCircle className="w-4 h-4" />
-                            Зняти статус
+                            {t('admin.users.unverify')}
                           </>
                         ) : (
                           <>
                             <CheckCircle className="w-4 h-4" />
-                            Верифікувати
+                            {t('admin.users.verify')}
                           </>
                         )}
                       </button>
@@ -292,11 +298,11 @@ export default function AdminUsersManagePage() {
                 className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-4 h-4" />
-                Назад
+                {t('admin.common.previous')}
               </button>
 
               <div className="text-neutral-600">
-                Сторінка {page} з {totalPages}
+                {t('admin.users.pageOf', { page, total: totalPages })}
               </div>
 
               <button
@@ -304,7 +310,7 @@ export default function AdminUsersManagePage() {
                 disabled={page === totalPages}
                 className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Вперед
+                {t('admin.common.next')}
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>

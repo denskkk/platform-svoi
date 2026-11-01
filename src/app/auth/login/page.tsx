@@ -7,9 +7,12 @@ import { useRouter } from 'next/navigation'
 import { saveUser, saveToken } from '@/lib/client-auth'
 import { getSafeRedirect } from '@/components/ui/AuthGate'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { useI18n } from '@/i18n/client'
+import { localizedPath } from '@/i18n/routes'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t, locale } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -30,17 +33,17 @@ export default function LoginPage() {
           body: JSON.stringify({ email: email.trim(), password })
         })
       } catch {
-        throw new Error('Немає з\'єднання із сервером. Перевірте інтернет і спробуйте ще раз.')
+        throw new Error(t('auth.login.errors.network'))
       }
       const data = await res.json().catch(() => null)
       if (!res.ok) {
         if (data?.error) throw new Error(data.error)
         throw new Error(res.status >= 500
-          ? 'Сервер тимчасово недоступний. Спробуйте за хвилину.'
-          : 'Помилка входу')
+          ? t('auth.login.errors.serverUnavailable')
+          : t('auth.login.errors.loginFailed'))
       }
       if (!data?.user) {
-        throw new Error('Сервер повернув некоректну відповідь. Спробуйте ще раз.')
+        throw new Error(t('auth.login.errors.invalidResponse'))
       }
       // Зберегти користувача та токен для клієнта
       if (data.user) saveUser(data.user)
@@ -63,7 +66,7 @@ export default function LoginPage() {
         router.push(target)
       }
     } catch (err: any) {
-      setError(err.message || 'Не вдалося увійти')
+      setError(err.message || t('auth.login.errors.generic'))
     } finally {
       setLoading(false)
     }
@@ -74,15 +77,15 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Логотип */}
         <div className="text-center">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Image src="/logo.png" alt="Логотип СВІЙ ДЛЯ СВОЇХ" width={48} height={48} className="w-12 h-12 rounded-full" />
-            <span className="font-display font-bold text-xl">СВІЙ ДЛЯ СВОЇХ</span>
+          <Link href={localizedPath('/', locale)} className="inline-flex items-center space-x-2 mb-6">
+            <Image src="/logo.png" alt={t('auth.login.logoAlt')} width={48} height={48} className="w-12 h-12 rounded-full" />
+            <span className="font-display font-bold text-xl">{t('auth.login.brand')}</span>
           </Link>
           <h2 className="text-3xl font-bold text-neutral-900 mb-2">
-            Вітаємо знову!
+            {t('auth.login.welcomeBack')}
           </h2>
           <p className="text-neutral-600">
-            Увійдіть, щоб продовжити роботу
+            {t('auth.login.subtitle')}
           </p>
         </div>
 
@@ -95,7 +98,7 @@ export default function LoginPage() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-              Email
+              {t('auth.login.emailLabel')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -121,7 +124,7 @@ export default function LoginPage() {
             {/* Пароль */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                Пароль
+                {t('auth.login.passwordLabel')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -163,14 +166,14 @@ export default function LoginPage() {
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
                 />
                 <label htmlFor="remember" className="ml-2 block text-sm text-neutral-700">
-                  Запам&apos;ятати мене
+                  {t('auth.login.rememberMe')}
                 </label>
               </div>
               <Link
-                href="/contacts"
+                href={localizedPath('/contacts', locale)}
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                Потрібна допомога?
+                {t('auth.login.needHelp')}
               </Link>
             </div>
 
@@ -180,16 +183,16 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors"
             >
-              {loading ? 'Входимо...' : 'Увійти'}
+              {loading ? t('auth.login.submitting') : t('auth.login.submit')}
             </button>
           </form>
 
           {/* Реєстрація */}
           <div className="mt-6 text-center">
             <p className="text-sm text-neutral-600">
-              Ще не маєте профілю?{' '}
+              {t('auth.login.noAccount')}{' '}
               <Link href="/auth/register" className="text-primary-600 hover:text-primary-700 font-medium">
-                Створити профіль
+                {t('auth.login.createProfile')}
               </Link>
             </p>
           </div>

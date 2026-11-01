@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth } from '@/lib/authMiddleware';
+import { getApiT } from '@/i18n/server';
+import { AdminForbiddenError } from '@/lib/api-middleware';
+import type { Translator } from '@/i18n/translate';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,17 +12,21 @@ const STATUSES = ['new', 'in_review', 'resolved', 'rejected'] as const;
 async function assertAdmin(userId: number) {
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true } });
   if (!user?.isAdmin) {
-    throw new Error('Доступ заборонено. Тільки для адміністраторів.');
+    throw new AdminForbiddenError();
   }
 }
 
-function errorResponse(error: any) {
-  const message = error?.message || 'Помилка сервера';
-  return NextResponse.json({ error: message }, { status: message.includes('Доступ заборонено') ? 403 : 500 });
+function errorResponse(error: any, t: Translator) {
+  const forbidden = error instanceof AdminForbiddenError;
+  return NextResponse.json(
+    { error: forbidden ? t('api.common.adminOnly') : t('api.common.serverError') },
+    { status: forbidden ? 403 : 500 }
+  );
 }
 
 // GET /api/admin/reports?status=new — список скарг
 async function listHandler(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const userId = (request as any).user?.userId;
     await assertAdmin(userId);
@@ -40,12 +47,13 @@ async function listHandler(request: NextRequest) {
     return NextResponse.json({ success: true, reports });
   } catch (error) {
     console.error('Admin reports list error:', error);
-    return errorResponse(error);
+    return errorResponse(error, t);
   }
 }
 
 // PATCH /api/admin/reports — змінити статус скарги { id, status, adminComment? }
 async function updateHandler(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const adminId = (request as any).user?.userId;
     await assertAdmin(adminId);
@@ -56,7 +64,7 @@ async function updateHandler(request: NextRequest) {
     const adminComment = body?.adminComment ? String(body.adminComment).slice(0, 2000) : undefined;
 
     if (!Number.isInteger(id) || !(STATUSES as readonly string[]).includes(status)) {
-      return NextResponse.json({ error: 'Невірні дані' }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
     }
 
     const report = await prisma.report.update({
@@ -72,7 +80,7 @@ async function updateHandler(request: NextRequest) {
     return NextResponse.json({ success: true, report });
   } catch (error) {
     console.error('Admin reports update error:', error);
-    return errorResponse(error);
+    return errorResponse(error, t);
   }
 }
 

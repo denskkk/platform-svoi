@@ -5,10 +5,12 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const t = getApiT(request);
   try {
     const cities = await prisma.city.findMany({
       orderBy: {
@@ -21,7 +23,7 @@ export async function GET() {
   } catch (error) {
     console.error('Get cities error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

@@ -2,9 +2,11 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/i18n/client'
 
 export default function ProfileIndexRedirect() {
   const router = useRouter()
+  const { t } = useI18n()
 
   useEffect(() => {
     try {
@@ -22,7 +24,7 @@ export default function ProfileIndexRedirect() {
 
   return (
     <div className="min-h-screen flex items-center justify-center text-neutral-600">
-      Завантаження...
+      {t('profile.loading')}
     </div>
   )
 }

@@ -11,19 +11,15 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ServiceImage } from '@/components/ui/ServiceImage';
 import { expandSearchQuery, detectCategoryFromQuery, calculateRelevance } from '@/lib/searchKeywords';
 import { requireSsrAuth } from '@/lib/ssrAuth';
+import { getT } from '@/i18n/server';
+import { translateCategory } from '@/lib/translations';
+import { priceUnitLabel } from './priceUnits';
 
 // Позначаємо сторінку як динамічну
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const REQUEST_TYPE_LABELS: Record<string, string> = {
-  partner: 'пару',
-  job: 'роботу',
-  service: 'послугу',
-  employee: 'співробітника',
-  investor: 'інвестора',
-  other: 'те, що ви шукаєте',
-};
+const REQUEST_TYPE_KEYS = ['partner', 'job', 'service', 'employee', 'investor', 'other'];
 
 async function getServices(q?: string, city?: string, category?: string) {
   try {
@@ -149,7 +145,7 @@ async function getServices(q?: string, city?: string, category?: string) {
         // Показуємо бюджет, який вказав автор
         priceFrom: r.budgetFrom ?? null,
         priceTo: null,
-        priceUnit: r.budgetFrom ? 'грн' : undefined,
+        priceUnit: undefined,
         city: r.city,
         createdAt: r.createdAt,
         user: r.user,
@@ -194,6 +190,8 @@ export default async function ServicesPage({
 }) {
   // Перевірка авторизації - тільки зареєстровані користувачі можуть переглядати послуги
   const decoded = requireSsrAuth('/services');
+  const { t, locale } = getT();
+  const unitLabel = (unit?: string | null) => priceUnitLabel(unit, t);
 
   const q = searchParams?.q;
   const city = searchParams?.city;
@@ -207,9 +205,9 @@ export default async function ServicesPage({
       {/* Hero (глобальний Navbar вже є у layout) */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 mt-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-4">Каталог послуг</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('services.list.title')}</h1>
           <p className="text-xl text-blue-100 mb-6">
-            Знайдіть послуги від членів нашої громади
+            {t('services.list.subtitle')}
           </p>
 
           {/* Search */}
@@ -220,7 +218,7 @@ export default async function ServicesPage({
                 type="text"
                 name="q"
                 defaultValue={q}
-                placeholder="Що ви шукаєте? (сантехнік, прораб, ремонт...)"
+                placeholder={t('services.list.searchPlaceholder')}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
@@ -228,16 +226,16 @@ export default async function ServicesPage({
               type="text"
               name="city"
               defaultValue={city}
-              placeholder="Місто"
+              placeholder={t('services.list.cityPlaceholder')}
               className="md:w-48 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
             <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold">
-              Знайти
+              {t('services.list.searchButton')}
             </button>
           </form>
           {q && (
             <div className="mt-3 text-sm text-blue-100">
-              💡 Розумний пошук: знаходимо схожі послуги та споріднені категорії
+              {t('services.list.smartSearchHint')}
             </div>
           )}
         </div>
@@ -248,36 +246,36 @@ export default async function ServicesPage({
         {category && (
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-700">
-              Фільтр по категорії: <strong>{category}</strong> 
-              {services.length === 0 && ' (послуг не знайдено)'}
+              {t('services.list.categoryFilter')} <strong>{category}</strong> 
+              {services.length === 0 && ` ${t('services.list.noServicesFound')}`}
             </p>
           </div>
         )}
         
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
-            {q ? `Результати пошуку "${q}"` : 'Доступні послуги та заявки'} ({totalCount})
+            {q ? t('services.list.searchResults', { query: q }) : t('services.list.available')} ({totalCount})
           </h2>
         </div>
 
         {services.length === 0 && (!requests || requests.length === 0) ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md">
             <p className="text-gray-600 text-lg mb-4">
-              {q || city || category ? 'За вашим запитом нічого не знайдено' : 'Поки що немає доступних послуг'}
+              {q || city || category ? t('services.list.nothingFound') : t('services.list.noneAvailable')}
             </p>
             {canCreate ? (
               <Link
                 href="/services/create"
                 className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
               >
-                Створити першу послугу
+                {t('services.list.createFirst')}
               </Link>
             ) : (
               <Link
                 href="/catalog"
                 className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
               >
-                Переглянути каталог людей
+                {t('services.list.viewCatalog')}
               </Link>
             )}
           </div>
@@ -286,7 +284,7 @@ export default async function ServicesPage({
             {/* Requests section (distinct from services) */}
             {requests && requests.length > 0 && (
               <div className="mb-8 w-full">
-                <h3 className="text-xl font-bold mb-4">Запити від користувачів</h3>
+                <h3 className="text-xl font-bold mb-4">{t('services.list.userRequests')}</h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {requests.map((r: any) => (
                     <div key={`request-${r.id}`} className="col-span-1">
@@ -296,7 +294,7 @@ export default async function ServicesPage({
                         </Link>
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <div className="text-sm text-yellow-800 font-semibold">{REQUEST_TYPE_LABELS[r.requestType] ? `Шукає ${REQUEST_TYPE_LABELS[r.requestType]}` : 'Запит'}</div>
+                            <div className="text-sm text-yellow-800 font-semibold">{REQUEST_TYPE_KEYS.includes(r.requestType) ? t(`services.list.lookingFor.${r.requestType}`) : t('services.list.request')}</div>
                           </div>
                           <Link href={`/requests/${r.id}`} className="block">
                             <h4 className="font-bold text-neutral-900 mb-2 hover:text-primary-600">{r.title}</h4>
@@ -327,13 +325,13 @@ export default async function ServicesPage({
                 <div className="p-6">
                   {/* Category */}
                     <div className="text-sm text-blue-600 mb-2 font-semibold">
-                          {service.kind === 'request' ? (service.requestType ? service.requestType : 'Запит') : (service.category?.name || 'Інше')}
+                          {service.kind === 'request' ? (service.requestType ? service.requestType : t('services.list.request')) : (service.category?.name ? translateCategory(service.category.name, locale) : t('services.list.otherCategory'))}
                         </div>
 
                         {/* Badge for requests to make them visually distinct */}
                         {service.kind === 'request' && (
                           <div className="absolute top-3 left-3 px-2 py-1 bg-yellow-50 text-yellow-800 text-xs font-semibold rounded-md">
-                            Запит
+                                                      {t('services.list.request')}
                           </div>
                         )}
 
@@ -354,15 +352,15 @@ export default async function ServicesPage({
                   {/* Price */}
                   <div className="text-lg font-semibold text-gray-900 mb-4">
                     {service.kind === 'request' ? (
-                      service.priceFrom ? `${service.priceFrom} ${service.priceUnit || 'грн'}` : 'За домовленістю'
+                      service.priceFrom ? `${service.priceFrom} ${unitLabel(service.priceUnit)}` : t('services.list.negotiable')
                     ) : (
                       service.priceFrom && service.priceTo
-                        ? `${service.priceFrom}-${service.priceTo} ${service.priceUnit || 'грн'}`
+                        ? `${service.priceFrom}-${service.priceTo} ${unitLabel(service.priceUnit)}`
                         : service.priceFrom
-                        ? `від ${service.priceFrom} ${service.priceUnit || 'грн'}`
+                        ? t('services.list.priceFrom', { price: `${service.priceFrom} ${unitLabel(service.priceUnit)}` })
                         : service.priceTo
-                        ? `до ${service.priceTo} ${service.priceUnit || 'грн'}`
-                        : 'За домовленістю'
+                        ? t('services.list.priceTo', { price: `${service.priceTo} ${unitLabel(service.priceUnit)}` })
+                        : t('services.list.negotiable')
                     )}
                   </div>
 
@@ -381,7 +379,7 @@ export default async function ServicesPage({
                             <p className="font-semibold text-gray-900 text-sm hover:text-blue-600 transition">
                               {service.user.firstName} {service.user.lastName}
                               {service.user.isVerified && (
-                                <span className="ml-1 text-blue-600" title="Верифікований">✓</span>
+                                <span className="ml-1 text-blue-600" title={t('services.list.verified')}>✓</span>
                               )}
                             </p>
                             {service.user.city && (
@@ -410,7 +408,7 @@ export default async function ServicesPage({
                   <div className="mt-4">
                     <Link href={service.kind === 'request' ? `/requests/${service.id}` : `/services/${service.id}`} className="block">
                       <div className="flex items-center justify-center text-blue-600 hover:text-blue-700 text-sm font-semibold py-2 px-4 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
-                        Детальніше
+                        {t('services.list.details')}
                         <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </Link>
@@ -434,15 +432,15 @@ export default async function ServicesPage({
                   <Search className="w-10 h-10 text-white" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Послуги не знайдені</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('services.list.emptyTitle')}</h3>
               <p className="text-gray-600 max-w-md mb-8 leading-relaxed">
-                Спробуйте змінити параметри пошуку або перегляньте всі категорії послуг
+                {t('services.list.emptyDescription')}
               </p>
               <Link
                 href="/services"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 btn-glow"
               >
-                Переглянути всі послуги
+                {t('services.list.viewAll')}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -452,15 +450,15 @@ export default async function ServicesPage({
         {/* CTA (сторінка доступна тільки авторизованим користувачам) */}
         {canCreate && (
           <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
-            <h2 className="text-3xl font-bold mb-4">Є що запропонувати?</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('services.list.ctaTitle')}</h2>
             <p className="text-lg mb-6 text-blue-100">
-              Створіть власну послугу — вас зможуть знайти люди поруч
+              {t('services.list.ctaDescription')}
             </p>
             <Link
               href="/services/create"
               className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
             >
-              Створити послугу
+              {t('services.list.ctaButton')}
             </Link>
           </div>
         )}

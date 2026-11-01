@@ -1,29 +1,28 @@
 'use client'
 
 import { Heart, Users, Shield } from 'lucide-react'
+import { useI18n } from '@/i18n/client'
 
 const values = [
   {
     icon: Shield,
-    title: 'Довіра',
-    description: 'Профілі, відгуки та рейтинги допомагають обрати надійного виконавця. Ми дбаємо про вашу безпеку.',
+    key: 'trust',
     color: 'from-blue-500 to-blue-600',
   },
   {
     icon: Heart,
-    title: 'Допомога',
-    description: 'Підтримуємо одне одного. Разом ми сильніші і успішніші.',
+    key: 'help',
     color: 'from-red-500 to-pink-600',
   },
   {
     icon: Users,
-    title: 'Українське',
-    description: 'Платформа для своїх. Розвиваємо українську економіку.',
+    key: 'ukrainian',
     color: 'from-primary-500 to-accent-500',
   },
 ]
 
 export function ValuesSection() {
+  const { t } = useI18n()
   return (
     <section className="py-20 bg-gradient-to-br from-white via-neutral-50 to-white relative overflow-hidden">
       {/* Фонові елементи */}
@@ -35,13 +34,13 @@ export function ValuesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <div className="inline-block mb-4 px-4 py-2 bg-gradient-to-r from-primary-100 to-accent-100 rounded-full">
-            <p className="text-sm font-semibold text-primary-700">💎 Що нас об'єднує</p>
+            <p className="text-sm font-semibold text-primary-700">{t('home.values.badge')}</p>
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Наші цінності
+            {t('home.values.title')}
           </h2>
           <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
-            На чому базується наша <span className="font-semibold text-primary-600">спільнота</span>
+            {t('home.values.subtitleBefore')}<span className="font-semibold text-primary-600">{t('home.values.subtitleHighlight')}</span>
           </p>
         </div>
 
@@ -65,12 +64,12 @@ export function ValuesSection() {
 
                 {/* Заголовок */}
                 <h3 className="font-display text-2xl md:text-3xl font-bold text-neutral-900 mb-4 group-hover:text-primary-700 transition-colors">
-                  {value.title}
+                  {t(`home.values.${value.key}.title`)}
                 </h3>
 
                 {/* Опис */}
                 <p className="text-neutral-600 leading-relaxed text-base md:text-lg">
-                  {value.description}
+                  {t(`home.values.${value.key}.description`)}
                 </p>
                 
                 {/* Декоративна лінія */}

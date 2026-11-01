@@ -1,0 +1,237 @@
+{
+  "common": {
+    "loading": "Завантаження...",
+    "cancel": "Скасувати",
+    "createRequest": "Створити заявку",
+    "creating": "Створення...",
+    "back": "Назад",
+    "createFailed": "Помилка створення заявки",
+    "loadFailed": "Помилка завантаження",
+    "report": "Поскаржитися на заявку"
+  },
+  "budget": {
+    "range": "{from}-{to} грн",
+    "rangeSpaced": "{from} - {to} грн",
+    "from": "від {amount} грн",
+    "to": "до {amount} грн",
+    "negotiable": "Договірна",
+    "price": "{amount} грн"
+  },
+  "list": {
+    "title": "Заявки на послуги",
+    "subtitle": "Знайдіть виконавця або запропонуйте свої послуги",
+    "createButton": "+ Створити заявку",
+    "filters": {
+      "tome": "📩 Заявки мені",
+      "assigned": "🔨 В роботі",
+      "my": "📝 Мої заявки",
+      "all": "🔍 Всі"
+    },
+    "emptyTitle": "Заявок поки немає",
+    "emptyDescription": "Створіть першу заявку або змініть фільтр",
+    "executor": "Виконавець: {name}"
+  },
+  "create": {
+    "viewerBlocked": "Глядачі не можуть створювати заявки. Перейдіть на звичайний профіль на сторінці свого профілю.",
+    "subtitle": "Опишіть що вам потрібно, і виконавці відгукнуться",
+    "titleLabel": "Назва заявки *",
+    "titlePlaceholder": "Напр: Потрібен електрик для заміни проводки",
+    "categoryLabel": "Категорія",
+    "categoryPlaceholder": "Оберіть категорію",
+    "categories": {
+      "electrics": "Електрика",
+      "plumbing": "Сантехніка",
+      "construction": "Будівництво",
+      "repair": "Ремонт",
+      "cleaning": "Клінінг",
+      "gardening": "Садівництво",
+      "other": "Інше"
+    },
+    "descriptionLabel": "Опис роботи *",
+    "descriptionPlaceholder": "Детально опишіть що потрібно зробити, коли, які матеріали...",
+    "cityLabel": "Місто",
+    "cityPlaceholder": "Київ",
+    "addressLabel": "Адреса (необов'язково)",
+    "addressPlaceholder": "вул. Хрещатик 1",
+    "budgetLabel": "Орієнтовний бюджет (грн)",
+    "budgetFromPlaceholder": "Від",
+    "budgetToPlaceholder": "До"
+  },
+  "detail": {
+    "back": "← Назад до списку",
+    "category": "Категорія: {category}",
+    "descriptionTitle": "Опис роботи",
+    "city": "Місто",
+    "address": "Адреса",
+    "budget": "Бюджет",
+    "agreedPrice": "Узгоджена ціна",
+    "agreedPriceValue": "✓ {amount} грн",
+    "client": "Клієнт",
+    "executor": "Виконавець",
+    "respond": "💰 Запропонувати свою ціну",
+    "pricePrompt": "Введіть ціну в грн:",
+    "accept": "✓ Прийняти заявку",
+    "start": "🔨 Почати роботу",
+    "complete": "✓ Завершити роботу",
+    "cancelRequest": "✕ Скасувати заявку",
+    "messageExecutor": "💬 Написати виконавцю",
+    "messageClient": "💬 Написати клієнту",
+    "leaveReview": "⭐ Залишити відгук",
+    "responsesTitle": "Пропозиції виконавців ({count})",
+    "updated": "Успішно оновлено!",
+    "selectConfirm": "Обрати цього виконавця?",
+    "executorSelected": "Виконавця обрано! Заявка переведена в роботу."
+  },
+  "publicList": {
+    "badge": "📋 Публічні замовлення",
+    "title": "Публічні заявки",
+    "subtitle": "Знайдіть замовлення та запропонуйте свої послуги",
+    "searchPlaceholder": "Пошук заявок...",
+    "allCategories": "📂 Всі категорії",
+    "allCities": "📍 Всі міста",
+    "createButton": "Створити публічну заявку",
+    "allRequests": "Всі заявки",
+    "emptyTitle": "Заявки не знайдено",
+    "emptyDescription": "Спробуйте змінити параметри пошуку або створіть першу публічну заявку",
+    "viewDetails": "Переглянути деталі"
+  },
+  "publicCreate": {
+    "back": "Назад до заявок",
+    "title": "Створити публічну заявку",
+    "subtitle": "Опишіть, що вам потрібно, і виконавці самі запропонують свої послуги. Публікація безкоштовна.",
+    "titleLabel": "Назва заявки",
+    "titlePlaceholder": "Наприклад: Потрібен електрик для ремонту проводки",
+    "categoryLabel": "Категорія",
+    "categoryPlaceholder": "Виберіть категорію",
+    "categories": {
+      "electrics": "⚡ Електрика",
+      "plumbing": "🚰 Сантехніка",
+      "construction": "🏗️ Будівництво",
+      "repair": "🔧 Ремонт",
+      "design": "🎨 Дизайн",
+      "it": "💻 IT послуги",
+      "transport": "🚚 Перевезення",
+      "cleaning": "🧹 Прибирання",
+      "other": "📌 Інше"
+    },
+    "descriptionLabel": "Детальний опис",
+    "descriptionPlaceholder": "Опишіть детально, що вам потрібно, коли і які особливості роботи...",
+    "budgetFromLabel": "Бюджет від (грн)",
+    "budgetToLabel": "Бюджет до (грн)",
+    "cityLabel": "Місто",
+    "cityPlaceholder": "Київ"
+  },
+  "requestForm": {
+    "title": "Подати заявку",
+    "submit": "Подати заявку",
+    "serviceMissing": "Обрана послуга недоступна або видалена. Ви можете все одно створити загальну заявку без привʼязки до цієї послуги.",
+    "forService": "Ви подаєте заявку на послугу:",
+    "executor": "Виконавець: {name}",
+    "titleLabel": "Назва заявки",
+    "titlePlaceholder": "Наприклад: Потрібен електрик для ремонту проводки",
+    "descriptionLabel": "Опис заявки",
+    "descriptionPlaceholder": "Опишіть детально, що вам потрібно...",
+    "budgetFromLabel": "Бюджет від (грн)",
+    "budgetToLabel": "Бюджет до (грн)",
+    "cityLabel": "Місто",
+    "cityPlaceholder": "Київ",
+    "prefillTitle": "Заявка на \"{title}\"",
+    "prefillDescription": "Мені потрібна послуга: {title}"
+  },
+  "requestView": {
+    "notFound": "Запит не знайдено",
+    "toServices": "До каталогу послуг",
+    "types": {
+      "job": "Робота",
+      "partner": "Пошук партнера",
+      "service": "Запит на послугу",
+      "other": "Запит"
+    },
+    "published": "Опубліковано: {date}",
+    "budgetFrom": "Бюджет: від {amount} грн",
+    "budgetTo": "До: {amount} грн",
+    "deadline": "Термін: {date}",
+    "messageAuthor": "Написати автору",
+    "loadError": "Помилка завантаження запиту"
+  },
+  "createModal": {
+    "close": "Закрити",
+    "types": {
+      "partner": "Пошук партнера (пари)",
+      "job": "Заявка на роботу",
+      "service": "Запит на послугу",
+      "employee": "Пошук співробітника",
+      "investor": "Пошук інвестора",
+      "other": "Розширений пошук"
+    },
+    "typeLabel": "Тип заявки",
+    "titleLabel": "Заголовок",
+    "descriptionLabel": "Опис",
+    "photoLabel": "Фото (необов'язково)",
+    "previewAlt": "Попередній перегляд",
+    "submitting": "Створюємо...",
+    "errors": {
+      "required": "Будь ласка, заповніть заголовок та опис",
+      "notImage": "Оберіть зображення",
+      "tooLarge": "Файл занадто великий. Максимум 10MB",
+      "generic": "Помилка"
+    }
+  },
+  "respondModal": {
+    "title": "Запропонувати свою ціну",
+    "requestLabel": "Заявка",
+    "priceLabel": "Запропонована ціна (грн)",
+    "pricePlaceholder": "Наприклад: 500",
+    "priceHint": "Вкажіть вашу ціну за виконання роботи в гривнях",
+    "daysLabel": "Орієнтовний термін виконання (днів)",
+    "daysPlaceholder": "Наприклад: 3",
+    "daysHint": "Скільки днів потрібно для виконання роботи",
+    "commentLabel": "Коментар до пропозиції",
+    "commentPlaceholder": "Опишіть, як ви виконаєте цю роботу, який маєте досвід, чому варто обрати саме вас...",
+    "commentHint": "Мінімум 20 символів",
+    "submit": "Відправити пропозицію",
+    "sending": "Відправка...",
+    "requiredFields": "Заповніть всі обов'язкові поля",
+    "success": "Вашу пропозицію успішно відправлено!",
+    "failed": "Помилка відправки пропозиції"
+  },
+  "responseCard": {
+    "reviewsCount": {
+      "one": "({count} відгук)",
+      "few": "({count} відгуки)",
+      "many": "({count} відгуків)",
+      "other": "({count} відгуку)"
+    },
+    "price": "Ціна:",
+    "term": "Термін:",
+    "days": {
+      "one": "{count} день",
+      "few": "{count} дні",
+      "many": "{count} днів",
+      "other": "{count} дня"
+    },
+    "selected": "Обрано",
+    "rejected": "Відхилено",
+    "selectExecutor": "Обрати виконавця",
+    "alreadyChosen": "Вже обрано іншого виконавця",
+    "justNow": "Щойно",
+    "daysAgo": {
+      "one": "{count} день тому",
+      "few": "{count} дні тому",
+      "many": "{count} днів тому",
+      "other": "{count} дня тому"
+    },
+    "hoursAgo": {
+      "one": "{count} годину тому",
+      "few": "{count} години тому",
+      "many": "{count} годин тому",
+      "other": "{count} години тому"
+    },
+    "minutesAgo": {
+      "one": "{count} хвилину тому",
+      "few": "{count} хвилини тому",
+      "many": "{count} хвилин тому",
+      "other": "{count} хвилини тому"
+    }
+  }
+}

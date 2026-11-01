@@ -1,5 +1,8 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { LucideIcon } from 'lucide-react'
+import { useI18n } from '@/i18n/client'
 
 export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'premium'
 export type BadgeSize = 'sm' | 'md' | 'lg'
@@ -55,11 +58,12 @@ export function Badge({
 
 // Бейдж зі статусом
 export function StatusBadge({ status }: { status: 'active' | 'pending' | 'completed' | 'cancelled' }) {
+  const { t } = useI18n()
   const statusConfig = {
-    active: { variant: 'success' as BadgeVariant, label: 'Активно', pulse: true },
-    pending: { variant: 'warning' as BadgeVariant, label: 'В очікуванні', pulse: false },
-    completed: { variant: 'info' as BadgeVariant, label: 'Завершено', pulse: false },
-    cancelled: { variant: 'error' as BadgeVariant, label: 'Скасовано', pulse: false },
+    active: { variant: 'success' as BadgeVariant, label: t('common.badge.status.active'), pulse: true },
+    pending: { variant: 'warning' as BadgeVariant, label: t('common.badge.status.pending'), pulse: false },
+    completed: { variant: 'info' as BadgeVariant, label: t('common.badge.status.completed'), pulse: false },
+    cancelled: { variant: 'error' as BadgeVariant, label: t('common.badge.status.cancelled'), pulse: false },
   }
 
   const config = statusConfig[status]
@@ -74,10 +78,11 @@ export function StatusBadge({ status }: { status: 'active' | 'pending' | 'comple
 
 // Бейдж для типу користувача
 export function UserTypeBadge({ type }: { type: 'CONSUMER' | 'BUSINESS' | 'PREMIUM' }) {
+  const { t } = useI18n()
   const typeConfig = {
-    CONSUMER: { variant: 'default' as BadgeVariant, label: '👤 Споживач' },
-    BUSINESS: { variant: 'primary' as BadgeVariant, label: '💼 Бізнес' },
-    PREMIUM: { variant: 'premium' as BadgeVariant, label: '⭐ Преміум' },
+    CONSUMER: { variant: 'default' as BadgeVariant, label: t('common.badge.userType.consumer') },
+    BUSINESS: { variant: 'primary' as BadgeVariant, label: t('common.badge.userType.business') },
+    PREMIUM: { variant: 'premium' as BadgeVariant, label: t('common.badge.userType.premium') },
   }
 
   const config = typeConfig[type]

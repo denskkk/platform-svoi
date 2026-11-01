@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { checkAuth } from '@/lib/silentFetch';
+import { useI18n } from '@/i18n/client';
 
 type AuthStatus = 'loading' | 'authed' | 'guest' | 'unavailable';
 
@@ -49,15 +50,16 @@ export function GuestOnly({ children }: { children: React.ReactNode }) {
 }
 
 function AuthUnavailable() {
+  const { t } = useI18n();
   return (
     <div role="status" className="mx-auto max-w-xl p-4 text-center text-neutral-700">
-      <p>Не вдалося перевірити сесію. Перевірте з’єднання та повторіть спробу.</p>
+      <p>{t('common.auth.unavailable')}</p>
       <button
         type="button"
         className="mt-2 text-primary-700 underline"
         onClick={() => window.dispatchEvent(new Event('auth:changed'))}
       >
-        Повторити
+        {t('common.actions.retry')}
       </button>
     </div>
   );

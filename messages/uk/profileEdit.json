@@ -1,0 +1,329 @@
+{
+  "loading": "Завантаження...",
+  "errors": {
+    "loadProfile": "Помилка завантаження даних профілю",
+    "fileTooLarge": "Файл занадто великий. Максимум 10MB",
+    "notImage": "Будь ласка, оберіть зображення",
+    "uploadPhoto": "Помилка завантаження фото",
+    "save": "Помилка збереження"
+  },
+  "success": {
+    "updated": "Профіль успішно оновлено!"
+  },
+  "language": {
+    "title": "Мова інтерфейсу",
+    "description": "Оберіть мову, якою відображається сайт і застосунок."
+  },
+  "header": {
+    "title": "Редагувати профіль",
+    "subtitle": "Оновіть вашу інформацію"
+  },
+  "avatar": {
+    "title": "Фото профілю",
+    "hint": "PNG, JPG або HEIC. Макс 10MB",
+    "newPhoto": "✓ Нове фото: {name}"
+  },
+  "tabs": {
+    "basic": "Основне",
+    "location": "Місце & Транспорт",
+    "profession": "Професія",
+    "interests": "Інтереси",
+    "social": "Соцмережі"
+  },
+  "actions": {
+    "cancel": "Скасувати",
+    "saving": "Збереження...",
+    "save": "Зберегти зміни"
+  },
+  "common": {
+    "notSpecified": "Не вказано",
+    "yes": "Так",
+    "no": "Ні"
+  },
+  "basic": {
+    "title": "Основна інформація",
+    "firstName": "Ім'я *",
+    "lastName": "Прізвище *",
+    "middleName": "По батькові",
+    "phone": "Телефон",
+    "age": "Вік",
+    "gender": "Стать",
+    "maritalStatus": "Сімейний стан",
+    "childrenCount": "Кількість дітей",
+    "familyComposition": "Склад сім'ї"
+  },
+  "location": {
+    "title": "Місце проживання & Транспорт",
+    "city": "Місто *",
+    "selectCity": "Оберіть місто",
+    "region": "Область",
+    "housingType": "Тип житла",
+    "livingSituation": "Проживання",
+    "hasCar": "Чи є автомобіль?",
+    "carInfo": "Марка та модель авто",
+    "otherTransport": "Інший транспорт",
+    "otherTransportPlaceholder": "Опишіть інший транспорт"
+  },
+  "profession": {
+    "title": "Професійна діяльність",
+    "profession": "Професія / Спеціальність",
+    "employmentStatus": "Статус зайнятості",
+    "workplace": "Місце роботи",
+    "education": "Освіта",
+    "businessInfo": "Приватна бізнес-інформація",
+    "jobSeeking": "Пошук роботи"
+  },
+  "interests": {
+    "title": "Інтереси та хобі",
+    "hasPets": "Чи є домашні тварини?",
+    "petsInfo": "Які тварини?",
+    "petsOtherPlaceholder": "Опишіть інших тварин",
+    "hobbies": "Хобі",
+    "hobbiesOtherPlaceholder": "Опишіть інші хобі",
+    "outdoorActivities": "Активний відпочинок",
+    "outdoorOtherPlaceholder": "Опишіть інші активності",
+    "lifestyle": "Спосіб життя",
+    "lifestyleOtherPlaceholder": "Опишіть інший спосіб життя",
+    "sports": "Спорт",
+    "sportsOtherPlaceholder": "Опишіть інші види спорту",
+    "bio": "Про себе",
+    "bioPlaceholder": "Розкажіть про себе..."
+  },
+  "social": {
+    "title": "Соцмережі та мета",
+    "usageGoal": "Мета використання платформи",
+    "usageGoalOtherPlaceholder": "Опишіть іншу мету"
+  },
+  "options": {
+    "gender": {
+      "male": "Чоловіча",
+      "female": "Жіноча"
+    },
+    "maritalStatus": {
+      "single": "Неодружений/неодружена",
+      "married": "Одружений/одружена",
+      "relationship": "У стосунках",
+      "divorced": "Розлучений/розлучена"
+    },
+    "housingType": {
+      "house": "Будинок",
+      "apartment": "Квартира",
+      "other": "Інше"
+    },
+    "livingSituation": {
+      "alone": "Самостійно",
+      "family": "З родиною",
+      "roommates": "З співмешканцями"
+    },
+    "employmentStatus": {
+      "employed": "Працевлаштований",
+      "unemployed": "Не працевлаштований",
+      "freelance": "Фріланс",
+      "business": "Власний бізнес",
+      "student": "Студент",
+      "retired": "Пенсіонер"
+    },
+    "otherTransport": {
+      "bicycle": "Велосипед",
+      "scooter": "Самокат",
+      "motorcycle": "Мотоцикл",
+      "skateboard": "Скейт",
+      "mountainBike": "Гірський велосипед",
+      "other": "Інше"
+    },
+    "pets": {
+      "dog": "Собака",
+      "cat": "Кіт",
+      "birds": "Птахи",
+      "fish": "Риби",
+      "other": "Інше"
+    },
+    "hobbies": {
+      "reading": "Читання",
+      "music": "Музика",
+      "cinema": "Кіно",
+      "travel": "Подорожі",
+      "cooking": "Кулінарія",
+      "other": "Інше"
+    },
+    "outdoorActivities": {
+      "hiking": "Похід",
+      "picnic": "Пікнік",
+      "beach": "Пляж",
+      "parks": "Парки",
+      "other": "Інше"
+    },
+    "lifestyle": {
+      "eco": "Еко",
+      "minimalism": "Мінімалізм",
+      "healthy": "Здоровий спосіб життя",
+      "vegetarian": "Вегетаріанство",
+      "other": "Інше"
+    },
+    "sports": {
+      "football": "Футбол",
+      "running": "Біг",
+      "gym": "Тренажерний зал",
+      "yoga": "Йога",
+      "other": "Інше"
+    },
+    "siteUsageGoal": {
+      "findServices": "Пошук послуг",
+      "offerServices": "Пропонування послуг",
+      "meetPeople": "Нові знайомства",
+      "businessPartners": "Бізнес-партнери",
+      "other": "Інше"
+    }
+  },
+  "business": {
+    "header": {
+      "subtitle": "Оновіть інформацію про себе та вашу компанію"
+    },
+    "labels": {
+      "logo": "Логотип",
+      "banner": "Банер",
+      "photoAlt": "Фото"
+    },
+    "errors": {
+      "fileTooLarge": "{label}: файл занадто великий. Максимум 10MB",
+      "notImage": "{label}: оберіть зображення",
+      "upload": "{label}: {error}",
+      "uploadFallback": "не вдалося завантажити зображення",
+      "representativeRequired": "Вкажіть ім'я та прізвище представника",
+      "companyNameRequired": "Вкажіть назву компанії",
+      "saveRepresentative": "Не вдалося зберегти дані представника",
+      "saveCompany": "Не вдалося зберегти дані компанії"
+    },
+    "tabs": {
+      "basic": "Основне",
+      "company": "Компанія",
+      "contacts": "Контакти",
+      "seeking": "Співпраця"
+    },
+    "basic": {
+      "title": "Дані представника компанії",
+      "firstName": "Ім'я",
+      "lastName": "Прізвище",
+      "phone": "Телефон представника"
+    },
+    "company": {
+      "title": "Інформація про компанію",
+      "name": "Назва компанії",
+      "namePlaceholder": "ТОВ 'Будівельна компанія'",
+      "code": "Код ЄДРПОУ",
+      "city": "Місто діяльності",
+      "type": "Тип компанії",
+      "selectType": "Оберіть тип",
+      "category": "Категорія діяльності",
+      "selectCategory": "Оберіть категорію",
+      "offerType": "Що пропонуєте?",
+      "select": "Оберіть",
+      "description": "Короткий опис",
+      "descriptionPlaceholder": "Що пропонує ваша компанія...",
+      "logoLabel": "Логотип компанії",
+      "logoAlt": "Логотип компанії",
+      "replaceLogo": "Замінити логотип",
+      "uploadLogo": "Завантажити логотип",
+      "bannerLabel": "Банер компанії",
+      "bannerAlt": "Банер компанії",
+      "replaceBanner": "Замінити банер",
+      "uploadBanner": "Завантажити банер"
+    },
+    "contacts": {
+      "title": "Контакти та соцмережі компанії",
+      "companyPhone": "Телефон компанії",
+      "website": "Веб-сайт",
+      "address": "Адреса",
+      "addressPlaceholder": "Місто, вулиця, будинок",
+      "workHours": "Графік роботи",
+      "workHoursPlaceholder": "Пн-Пт 9:00–18:00"
+    },
+    "seeking": {
+      "title": "Кого/що шукаєте?",
+      "partner": {
+        "title": "Партнера",
+        "hint": "Пошук ділових партнерів для співпраці",
+        "type": "Тип партнера",
+        "sphere": "Сфера співпраці",
+        "spherePlaceholder": "Наприклад: оптові поставки, спільний маркетинг...",
+        "collaboration": "Умови співпраці",
+        "collaborationPlaceholder": "Опишіть, що ви пропонуєте партнеру..."
+      },
+      "investor": {
+        "title": "Інвестора",
+        "hint": "Залучення інвестицій для розвитку",
+        "amount": "Необхідна сума інвестицій",
+        "amountPlaceholder": "Наприклад: від 500 000 до 1 000 000 грн",
+        "term": "Строк окупності",
+        "termPlaceholder": "Наприклад: 18-24 місяці",
+        "goals": "Цілі інвестицій",
+        "goalsPlaceholder": "На що підуть інвестиції: розширення, обладнання, маркетинг...",
+        "offer": "Що пропонуєте інвестору",
+        "offerPlaceholder": "Частка бізнесу, дивіденди, інше..."
+      },
+      "customer": {
+        "title": "Споживача",
+        "hint": "Розширення клієнтської бази",
+        "target": "Цільова аудиторія",
+        "targetPlaceholder": "Хто ваші клієнти: приватні особи, бізнес, вікова група...",
+        "offer": "Що пропонуєте",
+        "offerPlaceholder": "Опишіть ваші продукти/послуги...",
+        "benefits": "Переваги для клієнтів",
+        "benefitsPlaceholder": "Чому обирають вас: якість, ціна, швидкість..."
+      },
+      "employee": {
+        "title": "Працівника",
+        "hint": "Пошук співробітників у команду",
+        "vacancies": "Вакансії",
+        "addVacancy": "Додати вакансію",
+        "empty": "Додайте вакансії, які ви хочете опублікувати",
+        "vacancyNumber": "Вакансія #{number}",
+        "removeVacancy": "Видалити вакансію",
+        "position": "Посада",
+        "responsibilities": "Обов'язки",
+        "requirements": "Вимоги",
+        "salary": "Зарплата (грн)",
+        "employmentType": "Тип зайнятості",
+        "experience": "Необхідний досвід"
+      }
+    },
+    "options": {
+      "companyType": {
+        "fop": "ФОП",
+        "tov": "ТОВ",
+        "other": "Інше"
+      },
+      "businessCategory": {
+        "education": "Освіта",
+        "products": "Продукти харчування",
+        "advertising": "Реклама та маркетинг",
+        "online_sales": "Інтернет-продажі",
+        "offline_sales": "Офлайн-торгівля",
+        "auto_service": "СТО та автосервіс",
+        "construction": "Будівництво та ремонт",
+        "it": "IT та розробка",
+        "other": "Інше"
+      },
+      "offerType": {
+        "service": "Послуга",
+        "product": "Товар",
+        "both": "Послуги та товари"
+      },
+      "partnerType": {
+        "investor": "Інвестиційний партнер",
+        "supplier": "Постачальник",
+        "distributor": "Дистриб'ютор",
+        "franchise": "Франчайзі",
+        "strategic": "Стратегічний партнер",
+        "other": "Інше"
+      },
+      "employmentType": {
+        "fullTime": "Повна зайнятість",
+        "partTime": "Часткова зайнятість",
+        "remote": "Віддалена робота",
+        "contract": "За контрактом",
+        "freelance": "Фріланс"
+      }
+    }
+  }
+}

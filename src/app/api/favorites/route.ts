@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,7 @@ function parseTargetId(value: unknown): number | null {
 }
 
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'VIEW_FAVORITES');
     if (auth.error) return auth.error;
@@ -28,7 +30,7 @@ export async function GET(request: NextRequest) {
     if (targetParam !== null) {
       const targetUserId = parseTargetId(targetParam);
       if (!targetUserId) {
-        return NextResponse.json({ error: 'Вкажіть користувача' }, { status: 400 });
+        return NextResponse.json({ error: t('api.common.specifyUser') }, { status: 400 });
       }
       const existing = await prisma.favorite.findUnique({
         where: { userId_targetUserId: { userId, targetUserId } },
@@ -62,11 +64,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ favorites });
   } catch (error) {
     console.error('Get favorites error:', error);
-    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
+    return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
     if (auth.error) return auth.error;
@@ -75,15 +78,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const targetUserId = parseTargetId(body?.targetUserId);
     if (!targetUserId) {
-      return NextResponse.json({ error: 'Вкажіть користувача' }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.specifyUser') }, { status: 400 });
     }
     if (targetUserId === userId) {
-      return NextResponse.json({ error: 'Не можна додати себе в обране' }, { status: 400 });
+      return NextResponse.json({ error: t('api.favorites.selfFavorite') }, { status: 400 });
     }
 
     const target = await prisma.user.findUnique({ where: { id: targetUserId }, select: { id: true } });
     if (!target) {
-      return NextResponse.json({ error: 'Користувача не знайдено' }, { status: 404 });
+      return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
     }
 
     await prisma.favorite.upsert({
@@ -92,14 +95,15 @@ export async function POST(request: NextRequest) {
       update: {},
     });
 
-    return NextResponse.json({ success: true, isFavorite: true, message: 'Додано в обране!' }, { status: 201 });
+    return NextResponse.json({ success: true, isFavorite: true, message: t('api.favorites.added') }, { status: 201 });
   } catch (error) {
     console.error('Add favorite error:', error);
-    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
+    return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
   }
 }
 
 export async function DELETE(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'ADD_TO_FAVORITES');
     if (auth.error) return auth.error;
@@ -107,14 +111,14 @@ export async function DELETE(request: NextRequest) {
 
     const targetUserId = parseTargetId(new URL(request.url).searchParams.get('targetUserId'));
     if (!targetUserId) {
-      return NextResponse.json({ error: 'Вкажіть користувача' }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.specifyUser') }, { status: 400 });
     }
 
     await prisma.favorite.deleteMany({ where: { userId, targetUserId } });
 
-    return NextResponse.json({ success: true, isFavorite: false, message: 'Видалено з обраного!' });
+    return NextResponse.json({ success: true, isFavorite: false, message: t('api.favorites.removed') });
   } catch (error) {
     console.error('Delete favorite error:', error);
-    return NextResponse.json({ error: 'Помилка сервера' }, { status: 500 });
+    return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
   }
 }

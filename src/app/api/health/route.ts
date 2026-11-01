@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      uptime: `${Math.floor(uptime / 60)} хвилин`,
+      uptime: `${Math.floor(uptime / 60)} хвилин`, // i18n-ignore
       database: {
         status: 'connected',
         responseTime: `${dbResponseTime}ms`,

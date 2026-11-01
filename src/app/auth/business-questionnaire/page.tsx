@@ -3,9 +3,34 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building2, FileText, Users, Phone, Image, Award } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
+import { getCityName } from '@/lib/constants';
+
+// City values are stored in the DB, so they stay in Ukrainian; only labels are translated.
+const CITIES = [
+  'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', // i18n-ignore
+  'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', // i18n-ignore
+  'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', // i18n-ignore
+  'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка', // i18n-ignore
+  'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук', // i18n-ignore
+  'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь' // i18n-ignore
+];
+
+// Cities missing from the shared city dictionary get their labels from this namespace.
+const EXTRA_CITY_KEYS: Record<string, string> = {
+  'Макіївка': 'makiivka', // i18n-ignore
+  'Горлівка': 'horlivka', // i18n-ignore
+  'Кам\'янське': 'kamianske', // i18n-ignore
+  'Кропивницький': 'kropyvnytskyi', // i18n-ignore
+  'Кременчук': 'kremenchuk', // i18n-ignore
+  'Біла Церква': 'bila_tserkva', // i18n-ignore
+  'Краматорськ': 'kramatorsk', // i18n-ignore
+  'Мелітополь': 'melitopol', // i18n-ignore
+};
 
 export default function BusinessQuestionnairePage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
   const [currentStep, setCurrentStep] = useState(1);
@@ -88,14 +113,8 @@ export default function BusinessQuestionnairePage() {
     setToken(storedToken);
   }, [router]);
 
-  const cities = [
-    'Київ', 'Харків', 'Одеса', 'Дніпро', 'Донецьк', 'Запоріжжя', 
-    'Львів', 'Кривий Ріг', 'Миколаїв', 'Маріуполь', 'Вінниця', 
-    'Макіївка', 'Херсон', 'Чернігів', 'Полтава', 'Черкаси', 
-    'Хмельницький', 'Житомир', 'Суми', 'Рівне', 'Горлівка',
-    'Кам\'янське', 'Кропивницький', 'Івано-Франківськ', 'Кременчук',
-    'Тернопіль', 'Луцьк', 'Біла Церква', 'Краматорськ', 'Мелітополь'
-  ];
+  const cities = CITIES;
+  const cityLabel = (city: string) => (EXTRA_CITY_KEYS[city] ? t(`questionnaire.cities.${EXTRA_CITY_KEYS[city]}`) : getCityName(city, locale));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -175,13 +194,13 @@ export default function BusinessQuestionnairePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка збереження');
+        throw new Error(data.error || t('questionnaire.business.saveError'));
       }
 
       // Перейти на главную
       router.push('/');
     } catch (err: any) {
-      setError(err.message || 'Помилка збереження');
+      setError(err.message || t('questionnaire.business.saveError'));
     } finally {
       setLoading(false);
     }
@@ -202,7 +221,7 @@ export default function BusinessQuestionnairePage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('questionnaire.business.loading')}</div>
       </div>
     );
   }
@@ -214,17 +233,17 @@ export default function BusinessQuestionnairePage() {
           <Building2 className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          🏢 Основна інформація
+          {t('questionnaire.business.step1.title')}
         </h2>
         <p className="text-neutral-600">
-          Розкажіть про ваш бізнес
+          {t('questionnaire.business.step1.subtitle')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Назва бізнесу / бренду *
+            {t('questionnaire.business.step1.companyName')}
           </label>
           <input
             type="text"
@@ -233,14 +252,14 @@ export default function BusinessQuestionnairePage() {
             value={formData.companyName}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Введіть назву вашого бізнесу"
+            placeholder={t('questionnaire.business.step1.companyNamePlaceholder')}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Представник бізнесу (ПІБ)
+              {t('questionnaire.business.step1.representativeName')}
             </label>
             <input
               type="text"
@@ -248,13 +267,13 @@ export default function BusinessQuestionnairePage() {
               value={formData.representativeName}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Ваше ім'я"
+              placeholder={t('questionnaire.business.step1.representativeNamePlaceholder')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Посада в компанії
+              {t('questionnaire.business.step1.position')}
             </label>
             <select
               name="position"
@@ -262,12 +281,12 @@ export default function BusinessQuestionnairePage() {
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="">Оберіть посаду</option>
-              <option value="owner">Власник</option>
-              <option value="director">Директор</option>
-              <option value="manager">Менеджер</option>
-              <option value="administrator">Адміністратор</option>
-              <option value="other">Інше</option>
+              <option value="">{t('questionnaire.business.step1.positionPlaceholder')}</option>
+              <option value="owner">{t('questionnaire.business.step1.positionOwner')}</option>
+              <option value="director">{t('questionnaire.business.step1.positionDirector')}</option>
+              <option value="manager">{t('questionnaire.business.step1.positionManager')}</option>
+              <option value="administrator">{t('questionnaire.business.step1.positionAdministrator')}</option>
+              <option value="other">{t('questionnaire.business.step1.positionOther')}</option>
             </select>
           </div>
         </div>
@@ -275,7 +294,7 @@ export default function BusinessQuestionnairePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Місто діяльності
+              {t('questionnaire.business.step1.city')}
             </label>
             <select
               name="city"
@@ -283,16 +302,16 @@ export default function BusinessQuestionnairePage() {
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="">Оберіть місто</option>
+              <option value="">{t('questionnaire.business.step1.cityPlaceholder')}</option>
               {cities.map(city => (
-                <option key={city} value={city}>{city}</option>
+                <option key={city} value={city}>{cityLabel(city)}</option>
               ))}
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Область
+              {t('questionnaire.business.step1.region')}
             </label>
             <input
               type="text"
@@ -300,14 +319,14 @@ export default function BusinessQuestionnairePage() {
               value={formData.region}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Введіть область"
+              placeholder={t('questionnaire.business.step1.regionPlaceholder')}
             />
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Тип бізнесу / сфера послуг
+            {t('questionnaire.business.step1.businessType')}
           </label>
           <input
             type="text"
@@ -315,7 +334,7 @@ export default function BusinessQuestionnairePage() {
             value={formData.businessType}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Наприклад: Будівництво, Краса та здоров'я, Ремонт техніки..."
+            placeholder={t('questionnaire.business.step1.businessTypePlaceholder')}
           />
         </div>
       </div>
@@ -329,17 +348,17 @@ export default function BusinessQuestionnairePage() {
           <FileText className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          💬 Короткий опис
+          {t('questionnaire.business.step2.title')}
         </h2>
         <p className="text-neutral-600">
-          Розкажіть про ваші переваги
+          {t('questionnaire.business.step2.subtitle')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Що ви пропонуєте? (1-2 речення)
+            {t('questionnaire.business.step2.description')}
           </label>
           <textarea
             name="description"
@@ -347,13 +366,13 @@ export default function BusinessQuestionnairePage() {
             value={formData.description}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Коротко опишіть ваші послуги або товари..."
+            placeholder={t('questionnaire.business.step2.descriptionPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Основна місія / цінність
+            {t('questionnaire.business.step2.mission')}
           </label>
           <textarea
             name="mission"
@@ -361,13 +380,13 @@ export default function BusinessQuestionnairePage() {
             value={formData.mission}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Наша місія - ..."
+            placeholder={t('questionnaire.business.step2.missionPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Чим ваш бізнес відрізняється від інших?
+            {t('questionnaire.business.step2.uniqueValue')}
           </label>
           <textarea
             name="uniqueValue"
@@ -375,7 +394,7 @@ export default function BusinessQuestionnairePage() {
             value={formData.uniqueValue}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Наші унікальні переваги..."
+            placeholder={t('questionnaire.business.step2.uniqueValuePlaceholder')}
           />
         </div>
       </div>
@@ -389,17 +408,17 @@ export default function BusinessQuestionnairePage() {
           <FileText className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          📦 Послуги та товари
+          {t('questionnaire.business.step3.title')}
         </h2>
         <p className="text-neutral-600">
-          Деталі вашої пропозиції
+          {t('questionnaire.business.step3.subtitle')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Список послуг або категорій
+            {t('questionnaire.business.step3.servicesList')}
           </label>
           <textarea
             name="servicesList"
@@ -407,14 +426,14 @@ export default function BusinessQuestionnairePage() {
             value={formData.servicesList}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Наприклад: Сантехнічні роботи, Електрика, Ремонт під ключ..."
+            placeholder={t('questionnaire.business.step3.servicesListPlaceholder')}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Ціновий діапазон
+              {t('questionnaire.business.step3.priceRange')}
             </label>
             <select
               name="priceRange"
@@ -422,16 +441,16 @@ export default function BusinessQuestionnairePage() {
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="">Оберіть діапазон</option>
-              <option value="budget">Економ (мінімальна)</option>
-              <option value="medium">Середня</option>
-              <option value="premium">Преміум</option>
+              <option value="">{t('questionnaire.business.step3.priceRangePlaceholder')}</option>
+              <option value="budget">{t('questionnaire.business.step3.priceBudget')}</option>
+              <option value="medium">{t('questionnaire.business.step3.priceMedium')}</option>
+              <option value="premium">{t('questionnaire.business.step3.pricePremium')}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Графік роботи
+              {t('questionnaire.business.step3.workHours')}
             </label>
             <input
               type="text"
@@ -439,14 +458,14 @@ export default function BusinessQuestionnairePage() {
               value={formData.workHours}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Пн-Пт 9:00-18:00"
+              placeholder={t('questionnaire.business.step3.workHoursPlaceholder')}
             />
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Місце надання послуг
+            {t('questionnaire.business.step3.serviceLocation')}
           </label>
           <input
             type="text"
@@ -454,13 +473,13 @@ export default function BusinessQuestionnairePage() {
             value={formData.serviceLocation}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="Адреса або 'Онлайн' або 'Виїзд до клієнта'"
+            placeholder={t('questionnaire.business.step3.serviceLocationPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Адреса офісу/магазину (якщо є)
+            {t('questionnaire.business.step3.address')}
           </label>
           <input
             type="text"
@@ -468,7 +487,7 @@ export default function BusinessQuestionnairePage() {
             value={formData.address}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            placeholder="вул. Хрещатик, 1"
+            placeholder={t('questionnaire.business.step3.addressPlaceholder')}
           />
         </div>
       </div>
@@ -482,17 +501,17 @@ export default function BusinessQuestionnairePage() {
           <Users className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          👥 Команда
+          {t('questionnaire.business.step4.title')}
         </h2>
         <p className="text-neutral-600">
-          Хто працює у вашому бізнесі
+          {t('questionnaire.business.step4.subtitle')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Кількість працівників
+            {t('questionnaire.business.step4.employeeCount')}
           </label>
           <select
             name="employeeCount"
@@ -500,18 +519,18 @@ export default function BusinessQuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Оберіть кількість</option>
-            <option value="1">Тільки я</option>
-            <option value="2-5">2-5 осіб</option>
-            <option value="6-10">6-10 осіб</option>
-            <option value="11-50">11-50 осіб</option>
-            <option value="50+">Більше 50</option>
+            <option value="">{t('questionnaire.business.step4.employeeCountPlaceholder')}</option>
+            <option value="1">{t('questionnaire.business.step4.employeeOnlyMe')}</option>
+            <option value="2-5">{t('questionnaire.business.step4.employee2to5')}</option>
+            <option value="6-10">{t('questionnaire.business.step4.employee6to10')}</option>
+            <option value="11-50">{t('questionnaire.business.step4.employee11to50')}</option>
+            <option value="50+">{t('questionnaire.business.step4.employee50plus')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Ключові учасники / ролі
+            {t('questionnaire.business.step4.keySpecialists')}
           </label>
           <textarea
             name="keySpecialists"
@@ -519,13 +538,13 @@ export default function BusinessQuestionnairePage() {
             value={formData.keySpecialists}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Наприклад: Головний майстер - Іван Петренко, Менеджер - Марія..."
+            placeholder={t('questionnaire.business.step4.keySpecialistsPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Опис команди (опціонально)
+            {t('questionnaire.business.step4.teamDescription')}
           </label>
           <textarea
             name="teamDescription"
@@ -533,7 +552,7 @@ export default function BusinessQuestionnairePage() {
             value={formData.teamDescription}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="Розкажіть про вашу команду..."
+            placeholder={t('questionnaire.business.step4.teamDescriptionPlaceholder')}
           />
         </div>
       </div>
@@ -547,10 +566,10 @@ export default function BusinessQuestionnairePage() {
           <Phone className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          🌐 Контакти та соцмережі
+          {t('questionnaire.business.step5.title')}
         </h2>
         <p className="text-neutral-600">
-          Як з вами зв&apos;язатись
+          {t('questionnaire.business.step5.subtitle')}
         </p>
       </div>
 
@@ -558,7 +577,7 @@ export default function BusinessQuestionnairePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Телефон
+              {t('questionnaire.business.step5.phone')}
             </label>
             <input
               type="tel"
@@ -615,7 +634,7 @@ export default function BusinessQuestionnairePage() {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Сайт
+            {t('questionnaire.business.step5.website')}
           </label>
           <input
             type="url"
@@ -628,7 +647,7 @@ export default function BusinessQuestionnairePage() {
         </div>
 
         <div className="border-t pt-4">
-          <h3 className="font-medium text-neutral-900 mb-3">Соцмережі</h3>
+          <h3 className="font-medium text-neutral-900 mb-3">{t('questionnaire.business.step5.socialTitle')}</h3>
           <div className="space-y-3">
             <input
               type="url"
@@ -683,10 +702,10 @@ export default function BusinessQuestionnairePage() {
           <Award className="w-8 h-8 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 mb-2">
-          ⭐ Додаткова інформація
+          {t('questionnaire.business.step6.title')}
         </h2>
         <p className="text-neutral-600">
-          Сертифікати, відгуки, партнери
+          {t('questionnaire.business.step6.subtitle')}
         </p>
       </div>
 
@@ -694,7 +713,7 @@ export default function BusinessQuestionnairePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Рік заснування
+              {t('questionnaire.business.step6.yearFounded')}
             </label>
             <input
               type="number"
@@ -710,7 +729,7 @@ export default function BusinessQuestionnairePage() {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Форма реєстрації
+              {t('questionnaire.business.step6.registrationType')}
             </label>
             <select
               name="registrationType"
@@ -718,18 +737,18 @@ export default function BusinessQuestionnairePage() {
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="">Не вказано</option>
-              <option value="fop">ФОП</option>
-              <option value="tov">ТОВ</option>
-              <option value="pp">ПП</option>
-              <option value="other">Інше</option>
+              <option value="">{t('questionnaire.business.common.notSpecified')}</option>
+              <option value="fop">{t('questionnaire.business.step6.registrationFop')}</option>
+              <option value="tov">{t('questionnaire.business.step6.registrationTov')}</option>
+              <option value="pp">{t('questionnaire.business.step6.registrationPp')}</option>
+              <option value="other">{t('questionnaire.business.step6.registrationOther')}</option>
             </select>
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Наявність сертифікатів / ліцензій
+            {t('questionnaire.business.step6.hasCertificates')}
           </label>
           <select
             name="hasCertificates"
@@ -737,16 +756,16 @@ export default function BusinessQuestionnairePage() {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="">Не вказано</option>
-            <option value="yes">Так</option>
-            <option value="no">Ні</option>
+            <option value="">{t('questionnaire.business.common.notSpecified')}</option>
+            <option value="yes">{t('questionnaire.business.common.yes')}</option>
+            <option value="no">{t('questionnaire.business.common.no')}</option>
           </select>
         </div>
 
         {formData.hasCertificates === 'yes' && (
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Опис сертифікатів / ліцензій
+              {t('questionnaire.business.step6.certificatesInfo')}
             </label>
             <textarea
               name="certificatesInfo"
@@ -754,14 +773,14 @@ export default function BusinessQuestionnairePage() {
               value={formData.certificatesInfo}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-              placeholder="Які сертифікати або ліцензії у вас є..."
+              placeholder={t('questionnaire.business.step6.certificatesInfoPlaceholder')}
             />
           </div>
         )}
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Партнери або членство у спільнотах
+            {t('questionnaire.business.step6.partners')}
           </label>
           <textarea
             name="partners"
@@ -769,12 +788,12 @@ export default function BusinessQuestionnairePage() {
             value={formData.partners}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            placeholder="З ким ви співпрацюєте..."
+            placeholder={t('questionnaire.business.step6.partnersPlaceholder')}
           />
         </div>
 
         <div className="border-t pt-4">
-          <h3 className="font-medium text-neutral-900 mb-3">Посилання на зовнішні відгуки</h3>
+          <h3 className="font-medium text-neutral-900 mb-3">{t('questionnaire.business.step6.externalReviewsTitle')}</h3>
           <div className="space-y-3">
             <input
               type="url"
@@ -797,7 +816,7 @@ export default function BusinessQuestionnairePage() {
 
         <div className="mt-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
           <p className="text-sm text-neutral-600 text-center">
-            💡 <strong>Порада:</strong> Заповніть якомога більше полів, щоб клієнти могли краще вас знайти та довіряти вашому бізнесу
+            💡 <strong>{t('questionnaire.business.step6.tipLabel')}</strong> {t('questionnaire.business.step6.tipText')}
           </p>
         </div>
       </div>
@@ -812,7 +831,7 @@ export default function BusinessQuestionnairePage() {
           <div className="bg-neutral-100 px-8 py-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-neutral-700">
-                Крок {currentStep} з 6
+                {t('questionnaire.business.progress.step', { current: currentStep })}
               </span>
               <span className="text-sm text-neutral-600">
                 {Math.round((currentStep / 6) * 100)}%
@@ -850,7 +869,7 @@ export default function BusinessQuestionnairePage() {
                     disabled={loading}
                     className="px-6 py-3 border-2 border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
                   >
-                    ← Назад
+                    {t('questionnaire.business.nav.back')}
                   </button>
                 )}
 
@@ -861,7 +880,7 @@ export default function BusinessQuestionnairePage() {
                     disabled={loading}
                     className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
                   >
-                    Далі →
+                    {t('questionnaire.business.nav.next')}
                   </button>
                 ) : (
                   <button
@@ -869,7 +888,7 @@ export default function BusinessQuestionnairePage() {
                     disabled={loading}
                     className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'Зберігаємо...' : '✓ Завершити'}
+                    {loading ? t('questionnaire.business.nav.saving') : t('questionnaire.business.nav.finish')}
                   </button>
                 )}
 
@@ -879,13 +898,13 @@ export default function BusinessQuestionnairePage() {
                   disabled={loading}
                   className="px-6 py-3 border border-neutral-300 rounded-lg font-medium text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
                 >
-                  Пропустити
+                  {t('questionnaire.business.nav.skip')}
                 </button>
               </div>
             </form>
 
             <div className="mt-6 text-center text-sm text-neutral-500">
-              <p>Ви зможете змінити ці дані пізніше в налаштуваннях бізнес-профілю</p>
+              <p>{t('questionnaire.business.nav.footerNote')}</p>
             </div>
           </div>
         </div>

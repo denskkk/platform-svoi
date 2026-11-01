@@ -9,21 +9,23 @@ import { requireAuth } from '@/lib/api-middleware';
 import { hashToken } from '@/lib/auth';
 import { setAuthCookie } from '@/lib/cookies';
 import { authenticateRequestToken, buildTokens } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const { user: authUser, error } = await requireAuth(request);
     if (error || !authUser) {
-      return error || NextResponse.json({ error: 'Необхідна авторизація' }, { status: 401 });
+      return error || NextResponse.json({ error: t('api.common.authRequired') }, { status: 401 });
     }
 
     const userId = Number(authUser.userId);
     const body = await request.json().catch(() => ({}));
 
     if (body?.accountType !== 'basic') {
-      return NextResponse.json({ error: 'Невірний тип акаунту' }, { status: 400 });
+      return NextResponse.json({ error: t('api.common.invalidAccountType') }, { status: 400 });
     }
 
     const currentUser = await prisma.user.findUnique({
@@ -31,15 +33,15 @@ export async function POST(request: NextRequest) {
       select: { accountType: true },
     });
     if (!currentUser) {
-      return NextResponse.json({ error: 'Користувача не знайдено' }, { status: 404 });
+      return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
     }
     if (currentUser.accountType !== 'viewer') {
-      return NextResponse.json({ error: 'Ви вже маєте цей тип акаунту' }, { status: 400 });
+      return NextResponse.json({ error: t('api.user.alreadyHasType') }, { status: 400 });
     }
 
     const auth = await authenticateRequestToken(request);
     if (!auth.ok) {
-      return NextResponse.json({ error: 'Необхідна авторизація' }, { status: 401 });
+      return NextResponse.json({ error: t('api.common.authRequired') }, { status: 401 });
     }
     const session = { id: auth.sessionId };
 
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
-      message: 'Тепер у вас звичайний профіль!',
+      message: t('api.user.upgraded'),
       user: updatedUser,
       token,
     });
@@ -83,6 +85,6 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('[user/upgrade] Error:', error);
-    return NextResponse.json({ error: 'Помилка оновлення акаунту' }, { status: 500 });
+    return NextResponse.json({ error: t('api.user.upgradeError') }, { status: 500 });
   }
 }

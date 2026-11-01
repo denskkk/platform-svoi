@@ -1,0 +1,202 @@
+{
+  "loading": "Loading...",
+  "public": {
+    "brand": "Sviy dlya Svoikh",
+    "back": "Back",
+    "login": "Log in",
+    "verified": "Verified",
+    "reviewsCount": {
+      "one": "{count} review",
+      "other": "{count} reviews"
+    },
+    "aboutBusiness": "About the business:",
+    "phone": "Phone",
+    "socialNetworks": "Social media:",
+    "services": "Services",
+    "reviews": "Reviews",
+    "negotiable": "Negotiable",
+    "cta": {
+      "title": "Want to leave a review?",
+      "text": "Log in or sign up to rate services and leave a review",
+      "register": "Sign up"
+    }
+  },
+  "view": {
+    "loading": "Loading...",
+    "notFound": "Profile not found",
+    "loadFailed": "Failed to load the profile",
+    "toHome": "Back to home",
+    "toasts": {
+      "logoutFailed": "Failed to log out of your account",
+      "favoriteUpdateFailed": "Failed to update favorites",
+      "favoriteAdded": "Added to favorites",
+      "favoriteRemoved": "Removed from favorites"
+    },
+    "header": {
+      "bannerAlt": "Company banner",
+      "logoAlt": "Company logo",
+      "verifiedTitle": "Verified user",
+      "verified": "Verified",
+      "years": {
+        "one": "{count} year old",
+        "other": "{count} years old"
+      },
+      "trialActiveTitle": "Trial period is active",
+      "trialEndedTitle": "Trial period has ended",
+      "trialActive": "⏰ Trial period: {days} days left",
+      "trialEnded": "⏱️ Trial period has ended",
+      "reviewsCount": {
+        "one": "{count} review",
+        "other": "{count} reviews"
+      }
+    },
+    "actions": {
+      "edit": "Edit",
+      "logout": "Log out",
+      "loggingOut": "Logging out...",
+      "write": "Message",
+      "report": "Report",
+      "call": "Call",
+      "add": "Add"
+    },
+    "company": {
+      "title": "Company information",
+      "name": "Company name",
+      "code": "Company registration code",
+      "category": "Category",
+      "offers": "What they offer",
+      "website": "Website",
+      "description": "Description"
+    },
+    "vacancies": {
+      "title": "Vacancies",
+      "salary": "Salary: ",
+      "type": "Type: ",
+      "experience": "Experience: ",
+      "responsibilities": "Responsibilities: ",
+      "requirements": "Requirements: "
+    },
+    "business": {
+      "defaultTitle": "Business profile",
+      "logoAlt": "{name} logo",
+      "representative": "Representative",
+      "about": "About the company",
+      "mission": "Our mission",
+      "whyUs": "Why choose us",
+      "whatWeOffer": "What we offer",
+      "priceRange": "Price range",
+      "workHours": "Working hours",
+      "team": "Our team",
+      "employeeCount": "Number of employees: ",
+      "serviceLocation": "Where we provide services",
+      "address": "Address",
+      "certificates": "Certificates and licenses",
+      "partners": "Our partners",
+      "externalReviews": "Reviews on other platforms",
+      "googleReviews": "📍 Google Reviews",
+      "facebookReviews": "👥 Facebook Reviews",
+      "otherReviews": "🔗 External reviews",
+      "video": "Company video",
+      "contacts": "Contacts",
+      "yearFounded": "Year founded",
+      "registrationType": "Registration type",
+      "hasCertificates": "Has certificates",
+      "socialTitle": "Follow us on social media",
+      "website": "Website"
+    },
+    "about": {
+      "title": "About me",
+      "socialTitle": "Social media",
+      "website": "Website"
+    },
+    "services": {
+      "title": "Services",
+      "defaultUnit": "UAH",
+      "priceFrom": "from {price} {unit}",
+      "priceTo": "up to {price} {unit}",
+      "emptyOwn": "You don't have any services yet",
+      "createFirst": "Create your first service",
+      "emptyOther": "This user hasn't added any services yet"
+    },
+    "reviews": {
+      "title": "Reviews"
+    },
+    "contacts": {
+      "title": "Contacts"
+    },
+    "info": {
+      "title": "Information",
+      "age": "Age",
+      "gender": "Gender",
+      "maritalStatus": "Marital status",
+      "familyComposition": "Family composition",
+      "children": "Children",
+      "noChildren": "No children",
+      "childrenCount": {
+        "one": "{count} child",
+        "other": "{count} children"
+      },
+      "profession": "Profession",
+      "employmentStatus": "Employment status",
+      "workplace": "Workplace",
+      "education": "Education",
+      "housingType": "Housing type",
+      "livingSituation": "Living situation",
+      "car": "Car",
+      "hasCar": "🚗 Yes",
+      "noCar": "❌ No",
+      "carInfo": "Car details",
+      "otherTransport": "Other transport",
+      "pets": "Pets",
+      "hasPets": "🐾 Yes",
+      "noPets": "❌ No",
+      "petsInfo": "Pet details",
+      "hobbies": "Hobbies and interests",
+      "outdoorActivities": "Outdoor activities",
+      "sports": "Sports",
+      "lifestyle": "Lifestyle",
+      "jobSeeking": "Job search",
+      "privateBusiness": "Private business",
+      "registered": "Registered"
+    },
+    "personal": {
+      "title": "Personal information",
+      "contacts": "Contacts",
+      "genderAge": "Gender / Age",
+      "maritalStatus": "Marital status",
+      "children": "Children",
+      "cityRegion": "City / Region",
+      "educationProfession": "Education / Profession",
+      "employment": "Employment",
+      "interests": "Interests and hobbies",
+      "hobby": "Hobbies:",
+      "sport": "Sports:",
+      "lifestyle": "Lifestyle:",
+      "outdoor": "Outdoor activities:"
+    },
+    "housing": {
+      "title": "Housing and transport",
+      "carServices": "Car services"
+    },
+    "job": {
+      "title": "Job / business search",
+      "seekingField": "Looking for work in the field of",
+      "partTime": "Part-time",
+      "fullTime": "Full-time",
+      "startBusiness": "I want to start my own business"
+    },
+    "preferences": {
+      "title": "Preferences and use of services",
+      "restaurantFrequency": "Restaurant visits",
+      "cuisine": "Favorite cuisine",
+      "homeServices": "Household services",
+      "businessServices": "Business services",
+      "beautyServices": "Beauty services"
+    },
+    "account": {
+      "title": "Account",
+      "favorites": "Favorites",
+      "deleteAccount": "Delete account"
+    }
+  }
+}

@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 import { refreshSession } from '@/lib/silentFetch'
 import { getSafeRedirect } from '@/components/ui/AuthGate'
+import { useI18n } from '@/i18n/client'
 
 const GUARD_KEY = 'sviy_restore_ts'
 // Якщо відновлення вже було щойно, а сторінка знову просить його — не зациклюємось
 const LOOP_GUARD_MS = 15_000
 
 export default function RestoreSessionPage() {
+  const { t } = useI18n()
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
@@ -52,18 +54,18 @@ export default function RestoreSessionPage() {
       <div className="max-w-md w-full text-center bg-white rounded-2xl shadow-lg p-8">
         {failed ? (
           <>
-            <h1 className="text-xl font-bold text-neutral-900 mb-2">Не вдалося з&apos;єднатися</h1>
-            <p className="text-neutral-600 mb-6">Перевірте інтернет — ваш вхід збережено.</p>
+            <h1 className="text-xl font-bold text-neutral-900 mb-2">{t('auth.restore.failedTitle')}</h1>
+            <p className="text-neutral-600 mb-6">{t('auth.restore.failedText')}</p>
             <button
               type="button"
               onClick={() => window.location.reload()}
               className="px-5 py-3 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700"
             >
-              Спробувати ще раз
+              {t('auth.restore.retry')}
             </button>
           </>
         ) : (
-          <p className="text-neutral-600">Відновлюємо вхід…</p>
+          <p className="text-neutral-600">{t('auth.restore.restoring')}</p>
         )}
       </div>
     </div>

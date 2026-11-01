@@ -14,6 +14,8 @@ import {
   Filter
 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
+import { getCityName } from '@/lib/constants';
 
 interface AdminStats {
   users: {
@@ -31,6 +33,7 @@ interface AdminStats {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { t, locale, formatDate, formatNumber } = useI18n();
   const toast = useToast();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -49,7 +52,7 @@ export default function AdminDashboard() {
     
     // Перевірити чи користувач адміністратор
     if (!user.isAdmin) {
-      toast.error('Доступ заборонено. Тільки для адміністраторів.');
+      toast.error(t('admin.dashboard.accessDeniedToast'));
       router.push('/');
       return;
     }
@@ -68,17 +71,17 @@ export default function AdminDashboard() {
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Помилка завантаження статистики');
+        const data = await response.json().catch(() => ({}));
+        if (response.status === 401 || response.status === 403) {
+          setTimeout(() => router.push('/auth/login'), 2000);
+        }
+        throw new Error(data.error || t('admin.dashboard.statsError'));
       }
 
       const data = await response.json();
       setStats(data.stats);
     } catch (err: any) {
       setError(err.message);
-      if (err.message.includes('Доступ заборонено')) {
-        setTimeout(() => router.push('/auth/login'), 2000);
-      }
     } finally {
       setLoading(false);
     }
@@ -106,8 +109,8 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
           <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-neutral-900 mb-2">Доступ заборонено</h1>
-          <p className="text-neutral-600">Тільки для адміністраторів</p>
+          <h1 className="text-2xl font-bold text-neutral-900 mb-2">{t('admin.dashboard.accessDenied')}</h1>
+          <p className="text-neutral-600">{t('admin.dashboard.adminsOnly')}</p>
         </div>
       </div>
     );
@@ -118,7 +121,7 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className="text-neutral-600">Завантаження статистики...</p>
+          <p className="text-neutral-600">{t('admin.dashboard.loadingStats')}</p>
         </div>
       </div>
     );
@@ -133,7 +136,7 @@ export default function AdminDashboard() {
             onClick={loadStats}
             className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
           >
-            Спробувати знову
+            {t('admin.common.retry')}
           </button>
         </div>
       </div>
@@ -149,10 +152,10 @@ export default function AdminDashboard() {
             <div>
               <h1 className="text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
                 <Shield className="w-10 h-10 text-primary-500" />
-                Адмін-панель
+                {t('admin.dashboard.title')}
               </h1>
               <p className="text-neutral-600">
-                Детальна бізнес-статистика платформи СВІЙ ДЛЯ СВОЇХ
+                {t('admin.dashboard.subtitle')}
               </p>
             </div>
             
@@ -162,7 +165,7 @@ export default function AdminDashboard() {
                 className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-neutral-200 rounded-lg hover:border-primary-500 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                Оновити
+                {t('admin.common.refresh')}
               </button>
               
               <button
@@ -170,7 +173,7 @@ export default function AdminDashboard() {
                 className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                Вихід
+                {t('admin.dashboard.logout')}
               </button>
             </div>
           </div>
@@ -184,14 +187,14 @@ export default function AdminDashboard() {
               <div className="p-3 bg-blue-100 rounded-xl">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
-              <span className="text-sm text-neutral-500">Користувачі</span>
+              <span className="text-sm text-neutral-500">{t('admin.dashboard.cards.users')}</span>
             </div>
             <div className="mb-2">
               <div className="text-3xl font-bold text-neutral-900">
-                {stats?.users.total.toLocaleString()}
+                {stats ? formatNumber(stats.users.total) : undefined}
               </div>
               <div className="text-sm text-neutral-600 mt-1">
-                Активних: {stats?.users.active.toLocaleString()}
+                {t('admin.dashboard.cards.active', { count: stats ? formatNumber(stats.users.active) : '' })}
               </div>
             </div>
           </div>
@@ -202,10 +205,10 @@ export default function AdminDashboard() {
               <div className="p-3 bg-green-100 rounded-xl">
                 <Activity className="w-6 h-6 text-green-600" />
               </div>
-              <span className="text-sm text-neutral-500">Послуги</span>
+              <span className="text-sm text-neutral-500">{t('admin.dashboard.cards.services')}</span>
             </div>
             <div className="text-3xl font-bold text-neutral-900">
-              {stats?.services.total.toLocaleString()}
+              {stats ? formatNumber(stats.services.total) : undefined}
             </div>
           </div>
 
@@ -215,10 +218,10 @@ export default function AdminDashboard() {
               <div className="p-3 bg-purple-100 rounded-xl">
                 <MessageSquare className="w-6 h-6 text-purple-600" />
               </div>
-              <span className="text-sm text-neutral-500">Повідомлення</span>
+              <span className="text-sm text-neutral-500">{t('admin.dashboard.cards.messages')}</span>
             </div>
             <div className="text-3xl font-bold text-neutral-900">
-              {stats?.messages.total.toLocaleString()}
+              {stats ? formatNumber(stats.messages.total) : undefined}
             </div>
           </div>
         </div>
@@ -234,7 +237,7 @@ export default function AdminDashboard() {
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
-              Огляд
+              {t('admin.dashboard.tabs.overview')}
             </button>
             <button
               onClick={() => setActiveTab('users')}
@@ -244,7 +247,7 @@ export default function AdminDashboard() {
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
-              Користувачі
+              {t('admin.dashboard.tabs.users')}
             </button>
             <button
               onClick={() => setActiveTab('messages')}
@@ -254,13 +257,13 @@ export default function AdminDashboard() {
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
-              Переписки
+              {t('admin.dashboard.tabs.conversations')}
             </button>
             <button
               onClick={() => router.push('/admin/reports')}
               className="flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
             >
-              Скарги
+              {t('admin.dashboard.tabs.reports')}
             </button>
           </div>
         </div>
@@ -272,7 +275,7 @@ export default function AdminDashboard() {
               {/* Нові користувачі */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-bold text-neutral-900 mb-4">
-                  Нові користувачі (останні 7 днів)
+                  {t('admin.dashboard.recentUsers')}
                 </h2>
                 <div className="space-y-3">
                   {stats?.users.recent.map((user: any) => (
@@ -284,9 +287,9 @@ export default function AdminDashboard() {
                         <div className="text-sm text-neutral-600">{user.email}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-neutral-600">{user.city}</div>
+                        <div className="text-sm text-neutral-600">{user.city ? getCityName(user.city, locale) : user.city}</div>
                         <div className="text-xs text-neutral-500">
-                          {new Date(user.createdAt).toLocaleDateString('uk-UA')}
+                          {formatDate(user.createdAt)}
                         </div>
                       </div>
                     </div>
@@ -300,14 +303,14 @@ export default function AdminDashboard() {
           {activeTab === 'users' && (
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-neutral-900 mb-4">
-                Детальний список користувачів
+                {t('admin.dashboard.usersList')}
               </h2>
               <div className="text-center py-8 text-neutral-600">
                 <button 
                   onClick={() => router.push('/admin/users-manage')} 
                   className="text-primary-500 hover:text-primary-600 font-medium"
                 >
-                  Перейти до управління користувачами →
+                  {t('admin.dashboard.goToUsers')}
                 </button>
               </div>
             </div>
@@ -316,14 +319,14 @@ export default function AdminDashboard() {
           {activeTab === 'messages' && (
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-neutral-900 mb-4">
-                Статистика переписок
+                {t('admin.dashboard.conversationsStats')}
               </h2>
               <div className="text-center py-8 text-neutral-600">
                 <button 
                   onClick={() => router.push('/admin/messages')} 
                   className="text-primary-500 hover:text-primary-600 font-medium"
                 >
-                  Перейти до переписок →
+                  {t('admin.dashboard.goToConversations')}
                 </button>
               </div>
             </div>

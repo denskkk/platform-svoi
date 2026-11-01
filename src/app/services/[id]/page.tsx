@@ -10,6 +10,9 @@ import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
+import { translateCategory } from '@/lib/translations';
+import { useI18n } from '@/i18n/client';
+import { priceUnitLabel } from '../priceUnits';
 
 interface Service {
   id: number;
@@ -48,6 +51,7 @@ interface Service {
 }
 
 export default function ServiceDetailPage({ params }: { params: { id: string } }) {
+  const { t, locale, formatDate } = useI18n();
   const router = useRouter();
   const toast = useToast();
   const [service, setService] = useState<Service | null>(null);
@@ -86,7 +90,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Помилка завантаження послуги');
+          throw new Error(data.error || t('services.detail.errors.loadFailed'));
         }
 
         setService(data.service);
@@ -96,7 +100,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
           checkActiveRequest(token);
         }
       } catch (err: any) {
-        setError(err.message || 'Помилка завантаження послуги');
+        setError(err.message || t('services.detail.errors.loadFailed'));
       } finally {
         setLoading(false);
       }
@@ -123,7 +127,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         setHasActiveRequest(hasActive);
       }
     } catch (err) {
-      console.error('Помилка перевірки заявок:', err);
+      console.error('Помилка перевірки заявок:', err); // i18n-ignore
     }
   };
 
@@ -133,7 +137,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Помилка завантаження послуги');
+        throw new Error(data.error || t('services.detail.errors.loadFailed'));
       }
 
       setService(data.service);
@@ -142,7 +146,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         loadReviews(data.service.user.id);
       }
     } catch (err: any) {
-      setError(err.message || 'Помилка завантаження послуги');
+      setError(err.message || t('services.detail.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -156,7 +160,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       const data = await res.json();
       setReviews(data.reviews || []);
     } catch (e) {
-      console.error('Помилка завантаження відгуків', e);
+      console.error('Помилка завантаження відгуків', e); // i18n-ignore
     } finally {
       setLoadingReviews(false);
     }
@@ -166,11 +170,11 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
     e.preventDefault();
     if (!service?.user?.id || !currentUser) return;
     if (currentUser.id === service.user.id) {
-      setReviewError('Не можна залишити відгук про себе');
+      setReviewError(t('services.detail.errors.ownReview'));
       return;
     }
     if (reviewRating === 0) {
-      setReviewError('Оберіть рейтинг');
+      setReviewError(t('services.detail.errors.chooseRating'));
       return;
     }
     setSubmittingReview(true);
@@ -192,15 +196,15 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Помилка надсилання відгуку');
-      setReviewSuccess('Відгук додано!');
+      if (!res.ok) throw new Error(data.error || t('services.detail.errors.reviewSubmitFailed'));
+      setReviewSuccess(t('services.detail.reviewAdded'));
       setReviewComment('');
       setReviewRating(0);
       // Оновити відгуки та дані послуги (для рейтингу)
       loadReviews(service.user.id);
       loadService();
     } catch (err: any) {
-      setReviewError(err.message || 'Помилка створення відгуку');
+      setReviewError(err.message || t('services.detail.errors.reviewCreateFailed'));
     } finally {
       setSubmittingReview(false);
     }
@@ -223,13 +227,13 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Помилка видалення');
+        throw new Error(data.error || t('services.detail.errors.deleteFailed'));
       }
 
       // Перенаправить на профиль
       router.push(`/profile/${currentUser.id}`);
     } catch (err: any) {
-      toast.error(err.message || 'Помилка видалення послуги');
+      toast.error(err.message || t('services.detail.errors.deleteServiceFailed'));
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);
@@ -239,7 +243,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-neutral-600">Завантаження...</div>
+        <div className="text-neutral-600">{t('services.detail.loading')}</div>
       </div>
     );
   }
@@ -248,9 +252,9 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'Послугу не знайдено'}</p>
+          <p className="text-red-600 mb-4">{error || t('services.detail.notFound')}</p>
           <Link href="/services" className="text-primary-600 hover:text-primary-700">
-            До каталогу послуг
+            {t('services.detail.backToCatalog')}
           </Link>
         </div>
       </div>
@@ -269,7 +273,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          До каталогу послуг
+          {t('services.detail.backToCatalog')}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -291,7 +295,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
               <div className="mb-6">
                 {service.category && (
                   <span className="inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium mb-3">
-                    {service.category.name}
+                    {translateCategory(service.category.name, locale)}
                   </span>
                 )}
                 <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
@@ -301,11 +305,11 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                 {(service.priceFrom || service.priceTo) && (
                   <div className="text-2xl font-bold text-primary-600">
                     {service.priceFrom && service.priceTo ? (
-                      `${service.priceFrom} - ${service.priceTo} ${service.priceUnit}`
+                      `${service.priceFrom} - ${service.priceTo} ${priceUnitLabel(service.priceUnit, t)}`
                     ) : service.priceFrom ? (
-                      `від ${service.priceFrom} ${service.priceUnit}`
+                      t('services.list.priceFrom', { price: `${service.priceFrom} ${priceUnitLabel(service.priceUnit, t)}` })
                     ) : (
-                      `до ${service.priceTo} ${service.priceUnit}`
+                      t('services.list.priceTo', { price: `${service.priceTo} ${priceUnitLabel(service.priceUnit, t)}` })
                     )}
                   </div>
                 )}
@@ -314,7 +318,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
               {/* Опис */}
               {service.description && (
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold text-neutral-900 mb-3">Опис послуги</h2>
+                  <h2 className="text-xl font-bold text-neutral-900 mb-3">{t('services.detail.descriptionTitle')}</h2>
                   <p className="text-neutral-700 leading-relaxed whitespace-pre-line">
                     {service.description}
                   </p>
@@ -323,7 +327,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
               {/* Локація */}
               <div className="border-t border-neutral-200 pt-6">
-                <h2 className="text-xl font-bold text-neutral-900 mb-3">Локація</h2>
+                <h2 className="text-xl font-bold text-neutral-900 mb-3">{t('services.detail.location')}</h2>
                 <div className="space-y-2">
                   <div className="flex items-center text-neutral-700">
                     <MapPin className="w-5 h-5 mr-2 text-primary-500" />
@@ -337,11 +341,11 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
               {/* Дата публікації */}
               <div className="mt-6 text-sm text-neutral-500">
-                Опубліковано: {new Date(service.createdAt).toLocaleDateString('uk-UA', {
+                {t('services.detail.published', { date: formatDate(service.createdAt, {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
-                })}
+                }) })}
               </div>
 
               {/* Кнопки дій для власника */}
@@ -352,14 +356,14 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     className="flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Редагувати
+                    {t('services.detail.edit')}
                   </Link>
                   <button
                     onClick={() => setShowDeleteModal(true)}
                     className="flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Видалити
+                    {t('services.detail.delete')}
                   </button>
                 </div>
               )}
@@ -368,13 +372,13 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
             {/* Відгуки про виконавця */}
             <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
               <h2 className="text-2xl font-bold text-neutral-900 mb-4 flex items-center">
-                <Star className="w-6 h-6 text-amber-400 fill-current mr-2" /> Відгуки про виконавця
+                <Star className="w-6 h-6 text-amber-400 fill-current mr-2" /> {t('services.detail.reviewsTitle')}
               </h2>
               {/* Форма додавання відгуку */}
               {currentUser && currentUser.accountType !== 'viewer' && service.user.id !== currentUser.id && (
                 <form onSubmit={submitReview} className="mb-8 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">Ваш рейтинг</label>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">{t('services.detail.yourRating')}</label>
                     <div className="flex gap-2">
                       {[1,2,3,4,5].map(star => (
                         <button
@@ -391,14 +395,14 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="reviewComment" className="block text-sm font-medium text-neutral-700 mb-2">Коментар (необов'язково)</label>
+                    <label htmlFor="reviewComment" className="block text-sm font-medium text-neutral-700 mb-2">{t('services.detail.commentLabel')}</label>
                     <textarea
                       id="reviewComment"
                       value={reviewComment}
                       onChange={e => setReviewComment(e.target.value)}
                       rows={4}
                       className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                      placeholder="Опишіть ваш досвід співпраці..."
+                      placeholder={t('services.detail.commentPlaceholder')}
                     />
                   </div>
                   {reviewError && <p className="text-sm text-red-600">{reviewError}</p>}
@@ -409,7 +413,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       disabled={submittingReview || reviewRating===0}
                       className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
-                      {submittingReview ? 'Надсилання...' : 'Залишити відгук'}
+                      {submittingReview ? t('services.detail.submitting') : t('services.detail.submitReview')}
                     </button>
                   </div>
                 </form>
@@ -417,9 +421,9 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
               {/* Список відгуків */}
               {loadingReviews ? (
-                <div className="text-neutral-600">Завантаження відгуків...</div>
+                <div className="text-neutral-600">                {t('services.detail.loadingReviews')}</div>
               ) : reviews.length === 0 ? (
-                <p className="text-neutral-500">Відгуків ще немає.</p>
+                                <p className="text-neutral-500">{t('services.detail.noReviews')}</p>
               ) : (
                 <div className="space-y-4">
                   {reviews.map(r => (
@@ -429,7 +433,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                           <Star className="w-4 h-4 text-amber-400 fill-current" />
                           <span className="font-medium">{r.rating}</span>
                         </div>
-                        <span className="text-xs text-neutral-500">{new Date(r.createdAt).toLocaleDateString('uk-UA')}</span>
+                        <span className="text-xs text-neutral-500">{formatDate(r.createdAt, { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
                       </div>
                       {r.comment && (
                         <p className="text-sm text-neutral-700 mb-2 whitespace-pre-line">{r.comment}</p>
@@ -457,7 +461,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
           <div className="space-y-6 static">
             {/* Картка виконавця */}
             <div className="bg-white rounded-2xl shadow-lg p-6 static">
-              <h3 className="text-xl font-bold text-neutral-900 mb-4">Виконавець</h3>
+              <h3 className="text-xl font-bold text-neutral-900 mb-4">{t('services.detail.performer')}</h3>
               
               {/* Аватар і ім'я */}
               <Link href={`/profile/${service.user.id}`} className="block mb-4">
@@ -469,7 +473,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                         {service.user?.businessInfo?.companyName || `${service.user.firstName} ${service.user.lastName}`}
                       </p>
                       {service.user.isVerified && (
-                        <span className="ml-2 text-primary-500" title="Верифікований">✓</span>
+                        <span className="ml-2 text-primary-500" title={t('services.detail.verified')}>✓</span>
                       )}
                     </div>
                     {service.user.city && (
@@ -491,7 +495,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       <span className="font-bold text-neutral-900">{formatRating(service.user.avgRating)}</span>
                     </div>
                     <span className="text-sm text-neutral-600">
-                      {service.user.totalReviews} відгук{service.user.totalReviews === 1 ? '' : service.user.totalReviews < 5 ? 'и' : 'ів'}
+                      {t('services.detail.reviewsCount', { count: service.user.totalReviews })}
                     </span>
                   </div>
                 </div>
@@ -513,7 +517,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
                     >
                       <Phone className="w-5 h-5" />
-                      <span>Подзвонити</span>
+                      <span>{t('services.detail.call')}</span>
                     </a>
                   )}
                   
@@ -526,7 +530,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     className="flex items-center justify-center gap-2 w-full border-2 border-primary-500 text-primary-600 hover:bg-primary-50 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
                   >
                     <MessageCircle className="w-5 h-5" />
-                    <span>Написати</span>
+                    <span>{t('services.detail.message')}</span>
                   </Link>
 
                   {hasActiveRequest ? (
@@ -535,7 +539,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md"
                     >
                       <Gift className="w-5 h-5" />
-                      <span>Заявка подана</span>
+                      <span>{t('services.detail.requestSent')}</span>
                     </Link>
                   ) : (
                     <Link
@@ -543,7 +547,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
                     >
                       <Gift className="w-5 h-5" />
-                      <span>Подати заявку</span>
+                      <span>{t('services.detail.sendRequest')}</span>
                     </Link>
                   )}
                     </>
@@ -554,7 +558,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                     className="flex items-center justify-center gap-2 w-full border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
                   >
                     <User className="w-5 h-5" />
-                    <span>Профіль</span>
+                    <span>{t('services.detail.profile')}</span>
                   </Link>
 
                   <div className="flex justify-center pt-1">
@@ -562,7 +566,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                       reportedUserId={service.user.id}
                       contentType="service"
                       contentId={service.id}
-                      label="Поскаржитися на послугу"
+                      label={t('services.detail.reportService')}
                     />
                   </div>
                 </div>
@@ -577,10 +581,10 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
             <h3 className="text-xl font-bold text-neutral-900 mb-4">
-              Видалити послугу?
+              {t('services.detail.deleteModal.title')}
             </h3>
             <p className="text-neutral-600 mb-6">
-              Ви впевнені, що хочете видалити цю послугу? Цю дію не можна скасувати.
+              {t('services.detail.deleteModal.text')}
             </p>
             <div className="flex gap-3">
               <button
@@ -588,14 +592,14 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                 disabled={deleting}
                 className="flex-1 px-4 py-2 border-2 border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50"
               >
-                Скасувати
+                {t('services.detail.cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
                 className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50"
               >
-                {deleting ? 'Видалення...' : 'Видалити'}
+                {deleting ? t('services.detail.deleting') : t('services.detail.delete')}
               </button>
             </div>
           </div>

@@ -3,8 +3,11 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useI18n } from '@/i18n/client'
+import { localizedPath } from '@/i18n/routes'
 
 export function CTASection() {
+  const { t, locale } = useI18n()
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null)
 
   useEffect(() => {
@@ -49,13 +52,13 @@ export function CTASection() {
           <span className="inline-block text-6xl mb-4 animate-bounce">🤝</span>
         </div>
         <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-2xl">
-          Долучайся до своїх!
+          {t('home.cta.title')}
         </h2>
         
         <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-2xl mx-auto drop-shadow-lg">
           {isAuthed 
-            ? 'Знаходьте потрібні послуги або пропонуйте свої — разом ми сильніші!' 
-            : 'Приєднуйтесь до платформи та знайдіть потрібні послуги або запропонуйте свої'
+            ? t('home.cta.textAuthed')
+            : t('home.cta.textGuest')
           }
         </p>
 
@@ -66,15 +69,15 @@ export function CTASection() {
                 href="/auth/register"
                 className="group px-10 py-5 bg-white hover:bg-yellow-50 text-primary-700 font-bold rounded-xl transition-all duration-300 shadow-2xl hover:shadow-3xl flex items-center space-x-2 transform hover:scale-110 btn-glow"
               >
-                <span>Створити профіль</span>
+                <span>{t('home.cta.register')}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
-                href="/about"
+                href={localizedPath('/about', locale)}
                 className="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold rounded-lg transition-all duration-300"
               >
-                Дізнатись більше
+                {t('home.cta.learnMore')}
               </Link>
             </>
           )}
@@ -85,7 +88,7 @@ export function CTASection() {
                 href="/services/create"
                 className="group px-8 py-4 bg-white hover:bg-yellow-50 text-primary-700 font-bold rounded-lg transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center space-x-2"
               >
-                <span>Додати послугу</span>
+                <span>{t('home.cta.addService')}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
@@ -93,7 +96,7 @@ export function CTASection() {
                 href="/catalog"
                 className="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold rounded-lg transition-all duration-300"
               >
-                Знайти фахівця
+                {t('home.cta.findSpecialist')}
               </Link>
             </>
           )}

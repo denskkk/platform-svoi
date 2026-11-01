@@ -3,9 +3,19 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { AUTH_FAILURE_MESSAGES, authenticateRequestToken } from '@/lib/session';
+import { AUTH_FAILURE_KEYS, authenticateRequestToken } from '@/lib/session';
+import { getApiT } from '@/i18n/server';
+import type { Translator } from '@/i18n/translate';
 import { hasPermission, getPermissionError, PERMISSIONS } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
+
+/** Thrown by admin guards; handlers turn it into a localized 403 response. */
+export class AdminForbiddenError extends Error {
+  constructor() {
+    super('Admin access required');
+    this.name = 'AdminForbiddenError';
+  }
+}
 
 export interface AuthenticatedRequest extends NextRequest {
   user?: {
@@ -31,14 +41,14 @@ export async function loadActiveUser(userId: number) {
  * Перевірка користувача для чату: існує й активний; для запису (створення діалогу / відправка) — не «Глядач».
  * Повертає NextResponse з помилкою або null, якщо все гаразд.
  */
-export async function guardChatUser(userId: number, options: { write: boolean }): Promise<NextResponse | null> {
+export async function guardChatUser(userId: number, options: { write: boolean }, t: Translator): Promise<NextResponse | null> {
   const dbUser = await loadActiveUser(userId);
   if (!dbUser) {
-    return NextResponse.json({ error: 'Акаунт не знайдено або деактивовано' }, { status: 401 });
+    return NextResponse.json({ error: t('api.common.accountInactive') }, { status: 401 });
   }
   if (options.write && dbUser.accountType === 'viewer') {
     return NextResponse.json(
-      { error: 'Глядачі не можуть писати у чаті. Перейдіть на звичайний профіль на сторінці свого профілю.' },
+      { error: t('api.chat.viewerCannotWrite') },
       { status: 403 }
     );
   }
@@ -49,12 +59,13 @@ export async function guardChatUser(userId: number, options: { write: boolean })
  * Перевірити що користувач авторизований
  */
 export async function requireAuth(request: NextRequest): Promise<{ user: any; error?: NextResponse }> {
+  const t = getApiT(request);
   try {
     const auth = await authenticateRequestToken(request);
     if (!auth.ok) {
-      const message = auth.reason === 'missing' ? 'Необхідна авторизація'
-        : auth.reason === 'invalid' ? 'Невалідний токен'
-        : AUTH_FAILURE_MESSAGES.ended;
+      const message = auth.reason === 'missing' ? t('api.common.authRequired')
+        : auth.reason === 'invalid' ? t('api.common.invalidToken')
+        : t(AUTH_FAILURE_KEYS.ended);
       return { user: null, error: NextResponse.json({ error: message }, { status: 401 }) };
     }
     const decoded = auth.payload;
@@ -65,7 +76,7 @@ export async function requireAuth(request: NextRequest): Promise<{ user: any; er
       return {
         user: null,
         error: NextResponse.json(
-          { error: 'Акаунт не знайдено або деактивовано' },
+          { error: t('api.common.accountInactive') },
           { status: 401 }
         )
       };
@@ -77,7 +88,7 @@ export async function requireAuth(request: NextRequest): Promise<{ user: any; er
     return {
       user: null,
       error: NextResponse.json(
-        { error: 'Помилка авторизації' },
+        { error: t('api.common.authError') },
         { status: 500 }
       )
     };
@@ -89,12 +100,13 @@ export async function requireAuth(request: NextRequest): Promise<{ user: any; er
  */
 export function requirePermission(
   accountType: string | null | undefined,
-  permission: keyof typeof PERMISSIONS
+  permission: keyof typeof PERMISSIONS,
+  t: Translator
 ): NextResponse | null {
   if (!hasPermission(accountType as any, permission)) {
     return NextResponse.json(
       { 
-        error: getPermissionError(permission),
+        error: getPermissionError(permission, t),
         requiredPermission: permission,
         currentAccountType: accountType || 'none'
       },
@@ -117,7 +129,7 @@ export async function requireAuthWithPermission(
     return { user: null, error };
   }
 
-  const permissionError = requirePermission(user.accountType, permission);
+  const permissionError = requirePermission(user.accountType, permission, getApiT(request));
   if (permissionError) {
     return { user, error: permissionError };
   }

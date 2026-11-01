@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { useI18n } from '@/i18n/client'
 
 interface PaginationProps {
   currentPage: number
@@ -9,6 +12,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages, baseUrl, searchParams = {} }: PaginationProps) {
+  const { t } = useI18n()
   if (totalPages <= 1) return null
 
   const createUrl = (page: number) => {
@@ -64,7 +68,7 @@ export function Pagination({ currentPage, totalPages, baseUrl, searchParams = {}
         <Link
           href={createUrl(1)}
           className="p-2 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all disabled:opacity-50 disabled:hover:border-gray-200"
-          aria-label="Перша сторінка"
+          aria-label={t('common.pagination.first')}
         >
           <ChevronsLeft className="w-5 h-5 text-gray-600" />
         </Link>
@@ -75,7 +79,7 @@ export function Pagination({ currentPage, totalPages, baseUrl, searchParams = {}
         <Link
           href={createUrl(currentPage - 1)}
           className="p-2 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
-          aria-label="Попередня сторінка"
+          aria-label={t('common.pagination.previous')}
         >
           <ChevronLeft className="w-5 h-5 text-gray-600" />
         </Link>
@@ -115,7 +119,7 @@ export function Pagination({ currentPage, totalPages, baseUrl, searchParams = {}
         <Link
           href={createUrl(currentPage + 1)}
           className="p-2 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
-          aria-label="Наступна сторінка"
+          aria-label={t('common.pagination.next')}
         >
           <ChevronRight className="w-5 h-5 text-gray-600" />
         </Link>
@@ -126,7 +130,7 @@ export function Pagination({ currentPage, totalPages, baseUrl, searchParams = {}
         <Link
           href={createUrl(totalPages)}
           className="p-2 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
-          aria-label="Остання сторінка"
+          aria-label={t('common.pagination.last')}
         >
           <ChevronsRight className="w-5 h-5 text-gray-600" />
         </Link>
@@ -134,7 +138,7 @@ export function Pagination({ currentPage, totalPages, baseUrl, searchParams = {}
 
       {/* Page info */}
       <div className="ml-4 px-4 py-2 bg-gray-100 rounded-lg text-sm text-gray-600 font-medium">
-        Сторінка <span className="font-bold text-blue-600">{currentPage}</span> з <span className="font-bold">{totalPages}</span>
+        {t('common.pagination.page')} <span className="font-bold text-blue-600">{currentPage}</span> {t('common.pagination.of')} <span className="font-bold">{totalPages}</span>
       </div>
     </div>
   )

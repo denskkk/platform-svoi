@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
 import { guardChatUser } from '@/lib/api-middleware';
+import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ export async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     // Проверка авторизации
     let token = getAuthCookie(request);
@@ -38,7 +40,7 @@ export async function GET(
     
     if (!token) {
       return NextResponse.json(
-        { error: 'Не авторизовано' },
+        { error: t('api.common.notAuthorized') },
         { status: 401 }
       );
     }
@@ -46,7 +48,7 @@ export async function GET(
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json(
-        { error: 'Невалідний токен' },
+        { error: t('api.common.invalidToken') },
         { status: 401 }
       );
     }
@@ -56,12 +58,12 @@ export async function GET(
 
     if (isNaN(conversationId)) {
       return NextResponse.json(
-        { error: 'Невірний ID діалогу' },
+        { error: t('api.chat.invalidConversationId') },
         { status: 400 }
       );
     }
 
-    const readGuard = await guardChatUser(userId, { write: false });
+    const readGuard = await guardChatUser(userId, { write: false }, t);
     if (readGuard) return readGuard;
 
     // Проверяем доступ к диалогу
@@ -77,7 +79,7 @@ export async function GET(
 
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Діалог не знайдено або немає доступу' },
+        { error: t('api.chat.conversationNotFound') },
         { status: 404 }
       );
     }
@@ -129,7 +131,7 @@ export async function GET(
   } catch (error) {
     console.error('Get messages error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -140,6 +142,7 @@ export async function POST(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const t = getApiT(request);
   try {
     // Проверка авторизации
     let token = getAuthCookie(request);
@@ -153,7 +156,7 @@ export async function POST(
     
     if (!token) {
       return NextResponse.json(
-        { error: 'Не авторизовано' },
+        { error: t('api.common.notAuthorized') },
         { status: 401 }
       );
     }
@@ -161,7 +164,7 @@ export async function POST(
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json(
-        { error: 'Невалідний токен' },
+        { error: t('api.common.invalidToken') },
         { status: 401 }
       );
     }
@@ -171,12 +174,12 @@ export async function POST(
 
     if (isNaN(conversationId)) {
       return NextResponse.json(
-        { error: 'Невірний ID діалогу' },
+        { error: t('api.chat.invalidConversationId') },
         { status: 400 }
       );
     }
 
-    const writeGuard = await guardChatUser(userId, { write: true });
+    const writeGuard = await guardChatUser(userId, { write: true }, t);
     if (writeGuard) return writeGuard;
 
     const body = await request.json();
@@ -184,14 +187,14 @@ export async function POST(
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
-        { error: 'Повідомлення не може бути порожнім' },
+        { error: t('api.chat.emptyMessage') },
         { status: 400 }
       );
     }
 
     if (content.length > 5000) {
       return NextResponse.json(
-        { error: 'Повідомлення занадто довге (максимум 5000 символів)' },
+        { error: t('api.chat.messageTooLong', { max: 5000 }) },
         { status: 400 }
       );
     }
@@ -209,7 +212,7 @@ export async function POST(
 
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Діалог не знайдено або немає доступу' },
+        { error: t('api.chat.conversationNotFound') },
         { status: 404 }
       );
     }
@@ -250,7 +253,7 @@ export async function POST(
   } catch (error) {
     console.error('Send message error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

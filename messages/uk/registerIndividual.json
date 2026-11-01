@@ -1,0 +1,47 @@
+{
+  "backToTypeSelection": "Назад до вибору типу",
+  "logoAlt": "Логотип СВІЙ ДЛЯ СВОЇХ",
+  "brand": "СВІЙ ДЛЯ СВОЇХ",
+  "title": "👤 Звичайний Профіль",
+  "subtitle": "Створіть профіль і почніть пропонувати свої послуги",
+  "avatar": {
+    "label": "Фото профілю (необов'язково)",
+    "previewAlt": "Попередній перегляд фото",
+    "upload": "Завантажити фото",
+    "maxSize": "Макс. 5MB"
+  },
+  "fields": {
+    "firstName": "Ім'я *",
+    "firstNamePlaceholder": "Олександр",
+    "lastName": "Прізвище *",
+    "lastNamePlaceholder": "Петренко",
+    "email": "Email",
+    "emailPlaceholder": "example@email.com",
+    "phone": "Телефон",
+    "phonePlaceholder": "+380 (XX) XXX-XX-XX",
+    "city": "Де живеш?",
+    "cityPlaceholder": "Обери місто",
+    "password": "Пароль *",
+    "passwordPlaceholder": "Мінімум 6 символів",
+    "confirmPassword": "Підтвердіть пароль *",
+    "confirmPasswordPlaceholder": "Повторіть пароль"
+  },
+  "social": {
+    "title": "Соціальні мережі (необов'язково)"
+  },
+  "submit": "🚀 Продовжити до анкети",
+  "submitting": "Реєструємо...",
+  "businessPrompt": "Бізнес-акаунт?",
+  "businessLink": "Реєструйтесь тут",
+  "loginPrompt": "Вже є акаунт?",
+  "loginLink": "Увійти",
+  "loading": "Завантаження...",
+  "errors": {
+    "fileTooLarge": "Файл занадто великий. Максимум 5MB",
+    "requiredFields": "Заповніть всі обов'язкові поля",
+    "passwordMismatch": "Паролі не співпадають",
+    "passwordTooShort": "Пароль має містити мінімум 6 символів",
+    "consentRequired": "Підтвердьте згоду з Умовами використання та Політикою конфіденційності",
+    "registrationFailed": "Помилка реєстрації"
+  }
+}

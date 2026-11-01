@@ -1,0 +1,71 @@
+{
+  "brand": {
+    "name": "СВІЙ ДЛЯ СВОЇХ",
+    "logoAlt": "Логотип СВІЙ ДЛЯ СВОЇХ",
+    "homeAria": "СВІЙ ДЛЯ СВОЇХ — на головну"
+  },
+  "navbar": {
+    "people": "Люди",
+    "services": "Послуги",
+    "requests": "Заявки",
+    "about": "Про нас",
+    "contacts": "Контакти",
+    "searchAria": "Пошук",
+    "searchTitle": "Пошук послуг",
+    "messagesAria": "Повідомлення",
+    "unreadTitle": "{count} непрочитаних",
+    "addService": "+ Послуга",
+    "addRequest": "+ Заявка",
+    "profileMenuAria": "Меню профілю",
+    "accountType": "Тип акаунту",
+    "myProfile": "Мій профіль",
+    "editProfile": "Редагувати профіль",
+    "createService": "➕ Створити послугу",
+    "createRequest": "➕ Створити заявку",
+    "requestsToMe": "📩 Заявки мені",
+    "myRequests": "📝 Мої заявки",
+    "messages": "Повідомлення",
+    "favorites": "Обране",
+    "logout": "Вийти",
+    "login": "Увійти",
+    "register": "Створити профіль",
+    "menuAria": "Меню"
+  },
+  "mobileMenu": {
+    "navigation": "Навігація",
+    "myAccount": "Мій акаунт",
+    "create": "Створити",
+    "createService": "Додати послугу",
+    "createRequest": "Створити заявку",
+    "requests": "Заявки",
+    "requestsToMe": "Заявки мені",
+    "myRequests": "Мої заявки",
+    "information": "Інформація"
+  },
+  "mobileNav": {
+    "home": "Головна",
+    "search": "Пошук",
+    "messages": "Повідомлення",
+    "profile": "Профіль",
+    "favorites": "Обране",
+    "register": "Створити профіль",
+    "viewer": "Зайти як глядач"
+  },
+  "footer": {
+    "description": "Платформа для пошуку та пропозиції послуг від українців для українців. Підтримуймо одне одного та будуємо сильну спільноту.",
+    "madeWithLove": "Зроблено з любов'ю до України",
+    "navigation": "Навігація",
+    "catalog": "Каталог людей",
+    "services": "Послуги",
+    "requests": "Заявки",
+    "about": "Про нас",
+    "administration": "Адміністрація",
+    "adminLink": "Свій для Своїх Адміністрація",
+    "copyright": "© {year} СВІЙ ДЛЯ СВОЇХ. Всі права захищені.",
+    "privacy": "Політика конфіденційності",
+    "terms": "Умови використання",
+    "accountDeletion": "Видалення акаунта",
+    "support": "Підтримка",
+    "contacts": "Контакти"
+  }
+}

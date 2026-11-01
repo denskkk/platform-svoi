@@ -1,0 +1,302 @@
+{
+  "cities": {
+    "makiivka": "Макіївка",
+    "horlivka": "Горлівка",
+    "kamianske": "Кам'янське",
+    "kropyvnytskyi": "Кропивницький",
+    "kremenchuk": "Кременчук",
+    "bila_tserkva": "Біла Церква",
+    "kramatorsk": "Краматорськ",
+    "melitopol": "Мелітополь"
+  },
+  "individual": {
+    "loading": "Завантаження...",
+    "saveError": "Помилка збереження",
+    "progress": {
+      "step": "Крок {current} з 6"
+    },
+    "common": {
+      "notSpecified": "Не вказано",
+      "yes": "Так",
+      "no": "Ні"
+    },
+    "nav": {
+      "back": "← Назад",
+      "next": "Далі →",
+      "finish": "✓ Завершити",
+      "saving": "Зберігаємо...",
+      "skip": "Пропустити",
+      "footerNote": "Ви зможете змінити ці дані пізніше в налаштуваннях профілю"
+    },
+    "step1": {
+      "title": "🧍‍♂️ Основна інформація",
+      "subtitle": "Розкажіть про себе",
+      "firstName": "Ім'я *",
+      "firstNamePlaceholder": "Введіть ім'я",
+      "lastName": "Прізвище *",
+      "lastNamePlaceholder": "Введіть прізвище",
+      "middleName": "По батькові",
+      "middleNamePlaceholder": "Введіть по батькові",
+      "phone": "Телефон",
+      "age": "Вік",
+      "agePlaceholder": "Введіть вік",
+      "gender": "Стать",
+      "genderMale": "Чоловіча",
+      "genderFemale": "Жіноча",
+      "maritalStatus": "Сімейний стан",
+      "maritalSingle": "Неодружений/неодружена",
+      "maritalMarried": "Одружений/одружена",
+      "maritalRelationship": "У стосунках",
+      "maritalDivorced": "Розлучений/розлучена",
+      "childrenCount": "Кількість дітей",
+      "familyComposition": "Склад сім'ї",
+      "familyCompositionPlaceholder": "Наприклад: дружина, двоє дітей, батьки..."
+    },
+    "step2": {
+      "title": "📍 Місце проживання & 🚗 Транспорт",
+      "subtitle": "Де ви живете та як пересуваєтесь",
+      "city": "Місто *",
+      "cityPlaceholder": "Оберіть місто",
+      "region": "Область",
+      "regionPlaceholder": "Введіть область",
+      "housingType": "Тип житла",
+      "housingHouse": "Будинок",
+      "housingApartment": "Квартира",
+      "housingOther": "Інше",
+      "livingSituation": "Проживання",
+      "livingAlone": "Самостійно",
+      "livingFamily": "З родиною",
+      "livingRoommates": "З співмешканцями",
+      "hasCar": "Чи є автомобіль?",
+      "carInfo": "Марка та модель авто",
+      "carInfoHint": "(без держномера)",
+      "carInfoPlaceholder": "Наприклад: Toyota Camry 2020",
+      "carInfoPrivacy": "Не вказуйте державний номер авто з міркувань конфіденційності.",
+      "otherTransport": "Інший транспорт",
+      "otherTransportPlaceholder": "Опишіть інший транспорт"
+    },
+    "step3": {
+      "title": "💼 Професійна діяльність",
+      "subtitle": "Чим ви займаєтесь",
+      "profession": "Професія / Спеціальність",
+      "professionPlaceholder": "Наприклад: Водій, Електрик, Програміст...",
+      "employmentStatus": "Поточний статус",
+      "statusEmployed": "Працюю",
+      "statusUnemployed": "Тимчасово не працюю",
+      "statusLooking": "У пошуку роботи",
+      "statusStudent": "Студент",
+      "statusRetired": "Пенсіонер",
+      "statusBusiness": "Приватний бізнес",
+      "workplace": "Місце роботи / Вид діяльності",
+      "workplacePlaceholder": "Де працюєте або чим займаєтесь...",
+      "education": "Освіта",
+      "educationPlaceholder": "Спеціальність, навчальний заклад...",
+      "businessInfo": "Інформація про приватний бізнес",
+      "businessInfoPlaceholder": "Опис напрямку, посилання на сторінку або соцмережі...",
+      "jobSeeking": "У якій сфері шукаєте роботу?",
+      "jobSeekingPlaceholder": "Опишіть, яку роботу шукаєте..."
+    },
+    "step4": {
+      "title": "🎯 Інтереси та стиль життя",
+      "subtitle": "Про ваші захоплення",
+      "hasPets": "Чи є домашні тварини?",
+      "petsInfo": "Які тварини?",
+      "petsInfoPlaceholder": "Опишіть інших тварин",
+      "hobbies": "Хобі / Захоплення",
+      "hobbiesPlaceholder": "Вкажіть інше хобі",
+      "outdoorActivities": "Активності на свіжому повітрі",
+      "outdoorActivitiesPlaceholder": "Опишіть інше",
+      "sports": "Спорт",
+      "sportsPlaceholder": "Опишіть інше",
+      "lifestyle": "Стиль життя",
+      "lifestylePlaceholder": "Опишіть інше",
+      "bio": "Про себе",
+      "bioPlaceholder": "Розкажіть трохи про себе..."
+    },
+    "step5": {
+      "title": "🌐 Соцмережі",
+      "subtitle": "Додайте посилання на ваші профілі",
+      "telegramPlaceholder": "@username або https://t.me/username",
+      "tipLabel": "Порада:",
+      "tipText": "Додайте посилання на соцмережі, щоб інші користувачі могли краще вас пізнати"
+    },
+    "stepMeta": {
+      "title": "🎯 Мета використання сайту",
+      "subtitle": "Навіщо ви користуєтесь платформою?",
+      "otherPlaceholder": "Опишіть інше"
+    },
+    "options": {
+      "otherTransport": {
+        "bicycle": "Велосипед",
+        "scooter": "Самокат",
+        "motorcycle": "Мотоцикл",
+        "skateboard": "Скейт",
+        "mountainBike": "Гірський велосипед",
+        "other": "Інше"
+      },
+      "pets": {
+        "cat": "Кіт",
+        "dog": "Собака",
+        "birds": "Птахи",
+        "fish": "Рибки",
+        "rodents": "Гризуни",
+        "none": "Немає",
+        "other": "Інше"
+      },
+      "hobbies": {
+        "music": "Музика",
+        "movies": "Кіно",
+        "reading": "Читання",
+        "travel": "Подорожі",
+        "photography": "Фотографія",
+        "drawing": "Малювання",
+        "handicrafts": "Рукоділля",
+        "cooking": "Кулінарія",
+        "other": "Інше"
+      },
+      "outdoorActivities": {
+        "walks": "Прогулянки",
+        "picnics": "Пікніки",
+        "hiking": "Походи",
+        "fishing": "Риболовля",
+        "natureTrips": "Поїздки на природу",
+        "cycling": "Покатушки на велосипеді",
+        "other": "Інше"
+      },
+      "sports": {
+        "football": "Футбол",
+        "basketball": "Баскетбол",
+        "swimming": "Плавання",
+        "running": "Біг",
+        "gym": "Тренажерний зал",
+        "yoga": "Йога",
+        "cycling": "Велоспорт",
+        "other": "Інше"
+      },
+      "lifestyle": {
+        "active": "Активний",
+        "calm": "Спокійний",
+        "family": "Сімейний",
+        "social": "Соціальний",
+        "creative": "Творчий",
+        "career": "Кар'єрний",
+        "other": "Інше"
+      },
+      "siteUsageGoal": {
+        "findClients": "Знайти клієнтів",
+        "findContractors": "Знайти підрядників/послуги",
+        "jobSearch": "Пошук роботи",
+        "networking": "Спілкування/мережування",
+        "other": "Інше"
+      }
+    }
+  },
+  "business": {
+    "loading": "Завантаження...",
+    "saveError": "Помилка збереження",
+    "progress": {
+      "step": "Крок {current} з 6"
+    },
+    "common": {
+      "notSpecified": "Не вказано",
+      "yes": "Так",
+      "no": "Ні"
+    },
+    "nav": {
+      "back": "← Назад",
+      "next": "Далі →",
+      "finish": "✓ Завершити",
+      "saving": "Зберігаємо...",
+      "skip": "Пропустити",
+      "footerNote": "Ви зможете змінити ці дані пізніше в налаштуваннях бізнес-профілю"
+    },
+    "step1": {
+      "title": "🏢 Основна інформація",
+      "subtitle": "Розкажіть про ваш бізнес",
+      "companyName": "Назва бізнесу / бренду *",
+      "companyNamePlaceholder": "Введіть назву вашого бізнесу",
+      "representativeName": "Представник бізнесу (ПІБ)",
+      "representativeNamePlaceholder": "Ваше ім'я",
+      "position": "Посада в компанії",
+      "positionPlaceholder": "Оберіть посаду",
+      "positionOwner": "Власник",
+      "positionDirector": "Директор",
+      "positionManager": "Менеджер",
+      "positionAdministrator": "Адміністратор",
+      "positionOther": "Інше",
+      "city": "Місто діяльності",
+      "cityPlaceholder": "Оберіть місто",
+      "region": "Область",
+      "regionPlaceholder": "Введіть область",
+      "businessType": "Тип бізнесу / сфера послуг",
+      "businessTypePlaceholder": "Наприклад: Будівництво, Краса та здоров'я, Ремонт техніки..."
+    },
+    "step2": {
+      "title": "💬 Короткий опис",
+      "subtitle": "Розкажіть про ваші переваги",
+      "description": "Що ви пропонуєте? (1-2 речення)",
+      "descriptionPlaceholder": "Коротко опишіть ваші послуги або товари...",
+      "mission": "Основна місія / цінність",
+      "missionPlaceholder": "Наша місія - ...",
+      "uniqueValue": "Чим ваш бізнес відрізняється від інших?",
+      "uniqueValuePlaceholder": "Наші унікальні переваги..."
+    },
+    "step3": {
+      "title": "📦 Послуги та товари",
+      "subtitle": "Деталі вашої пропозиції",
+      "servicesList": "Список послуг або категорій",
+      "servicesListPlaceholder": "Наприклад: Сантехнічні роботи, Електрика, Ремонт під ключ...",
+      "priceRange": "Ціновий діапазон",
+      "priceRangePlaceholder": "Оберіть діапазон",
+      "priceBudget": "Економ (мінімальна)",
+      "priceMedium": "Середня",
+      "pricePremium": "Преміум",
+      "workHours": "Графік роботи",
+      "workHoursPlaceholder": "Пн-Пт 9:00-18:00",
+      "serviceLocation": "Місце надання послуг",
+      "serviceLocationPlaceholder": "Адреса або 'Онлайн' або 'Виїзд до клієнта'",
+      "address": "Адреса офісу/магазину (якщо є)",
+      "addressPlaceholder": "вул. Хрещатик, 1"
+    },
+    "step4": {
+      "title": "👥 Команда",
+      "subtitle": "Хто працює у вашому бізнесі",
+      "employeeCount": "Кількість працівників",
+      "employeeCountPlaceholder": "Оберіть кількість",
+      "employeeOnlyMe": "Тільки я",
+      "employee2to5": "2-5 осіб",
+      "employee6to10": "6-10 осіб",
+      "employee11to50": "11-50 осіб",
+      "employee50plus": "Більше 50",
+      "keySpecialists": "Ключові учасники / ролі",
+      "keySpecialistsPlaceholder": "Наприклад: Головний майстер - Іван Петренко, Менеджер - Марія...",
+      "teamDescription": "Опис команди (опціонально)",
+      "teamDescriptionPlaceholder": "Розкажіть про вашу команду..."
+    },
+    "step5": {
+      "title": "🌐 Контакти та соцмережі",
+      "subtitle": "Як з вами зв'язатись",
+      "phone": "Телефон",
+      "website": "Сайт",
+      "socialTitle": "Соцмережі"
+    },
+    "step6": {
+      "title": "⭐ Додаткова інформація",
+      "subtitle": "Сертифікати, відгуки, партнери",
+      "yearFounded": "Рік заснування",
+      "registrationType": "Форма реєстрації",
+      "registrationFop": "ФОП",
+      "registrationTov": "ТОВ",
+      "registrationPp": "ПП",
+      "registrationOther": "Інше",
+      "hasCertificates": "Наявність сертифікатів / ліцензій",
+      "certificatesInfo": "Опис сертифікатів / ліцензій",
+      "certificatesInfoPlaceholder": "Які сертифікати або ліцензії у вас є...",
+      "partners": "Партнери або членство у спільнотах",
+      "partnersPlaceholder": "З ким ви співпрацюєте...",
+      "externalReviewsTitle": "Посилання на зовнішні відгуки",
+      "tipLabel": "Порада:",
+      "tipText": "Заповніть якомога більше полів, щоб клієнти могли краще вас знайти та довіряти вашому бізнесу"
+    }
+  }
+}

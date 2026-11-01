@@ -14,6 +14,7 @@ import { prisma } from '@/lib/prisma';
 import { getTokenFromHeader } from '@/lib/auth';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getAuthCookie } from '@/lib/cookies';
+import { getApiT } from '@/i18n/server';
 
 // Деталі пошуку (партнер/інвестор/клієнт) і вакансії зберігаються як JSON;
 // приймаємо і об'єкт, і JSON-рядок, null очищає поле.
@@ -39,13 +40,14 @@ function extractSearchDetails(body: any) {
 
 // GET - Отримати бізнес-профіль
 export async function GET(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'userId обов\'язковий' },
+        { error: t('api.common.userIdRequired') },
         { status: 400 }
       );
     }
@@ -66,7 +68,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get business info error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -74,6 +76,7 @@ export async function GET(request: NextRequest) {
 
 // POST - Створити бізнес-профіль
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'EDIT_BUSINESS_PROFILE');
     if (auth.error) return auth.error;
@@ -87,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: 'Бізнес-профіль вже існує' },
+        { error: t('api.businessInfo.exists') },
         { status: 400 }
       );
     }
@@ -189,14 +192,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Бізнес-профіль створено!',
+      message: t('api.businessInfo.created'),
       businessInfo,
     });
 
   } catch (error) {
     console.error('Create business info error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }
@@ -204,6 +207,7 @@ export async function POST(request: NextRequest) {
 
 // PUT - Оновити бізнес-профіль
 export async function PUT(request: NextRequest) {
+  const t = getApiT(request);
   try {
     const auth = await requireAuthWithPermission(request, 'EDIT_BUSINESS_PROFILE');
     if (auth.error) return auth.error;
@@ -315,14 +319,14 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Бізнес-профіль оновлено!',
+      message: t('api.businessInfo.updated'),
       businessInfo,
     });
 
   } catch (error) {
     console.error('Update business info error:', error);
     return NextResponse.json(
-      { error: 'Помилка сервера' },
+      { error: t('api.common.serverError') },
       { status: 500 }
     );
   }

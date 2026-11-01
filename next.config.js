@@ -100,6 +100,20 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
           },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(), geolocation=(), payment=()'
+          },
+          // A full script-src policy is deliberately not set (Next.js inlines bootstrap scripts);
+          // these directives block clickjacking, <base> hijacking and plugin content without affecting the app.
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'"
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000'
+          },
         ],
       },
     ];

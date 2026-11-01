@@ -9,8 +9,10 @@ import path from 'path';
 import { existsSync } from 'fs';
 import sharp from 'sharp';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { getApiT } from '@/i18n/server';
 
 export async function POST(request: NextRequest) {
+  const t = getApiT(request);
   try {
     // Ендпоінт використовується при реєстрації бізнесу (користувача ще не існує),
     // тому захищаємо його лімітом за IP.
@@ -22,7 +24,7 @@ export async function POST(request: NextRequest) {
     });
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: 'Занадто багато завантажень. Спробуйте пізніше.' },
+        { error: t('api.upload.tooMany') },
         { status: 429 }
       );
     }
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     if (!logo && !banner) {
       return NextResponse.json(
-        { error: 'Не надано жодного файлу для завантаження' },
+        { error: t('api.upload.noFile') },
         { status: 400 }
       );
     }
@@ -73,7 +75,7 @@ export async function POST(request: NextRequest) {
       // Валідація файлу
       if (!logo.type.startsWith('image/')) {
         return NextResponse.json(
-          { error: 'Логотип має бути зображенням' },
+          { error: t('api.upload.logoNotImage') },
           { status: 400 }
         );
       }
@@ -81,7 +83,7 @@ export async function POST(request: NextRequest) {
       // Максимальний розмір 5MB
       if (logo.size > 5 * 1024 * 1024) {
         return NextResponse.json(
-          { error: 'Розмір логотипу не повинен перевищувати 5MB' },
+          { error: t('api.upload.logoTooLarge', { max: 5 }) },
           { status: 400 }
         );
       }
@@ -123,7 +125,7 @@ export async function POST(request: NextRequest) {
       // Валідація файлу
       if (!banner.type.startsWith('image/')) {
         return NextResponse.json(
-          { error: 'Банер має бути зображенням' },
+          { error: t('api.upload.bannerNotImage') },
           { status: 400 }
         );
       }
@@ -131,7 +133,7 @@ export async function POST(request: NextRequest) {
       // Максимальний розмір 10MB для банера
       if (banner.size > 10 * 1024 * 1024) {
         return NextResponse.json(
-          { error: 'Розмір банера не повинен перевищувати 10MB' },
+          { error: t('api.upload.bannerTooLarge', { max: 10 }) },
           { status: 400 }
         );
       }
@@ -173,14 +175,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Зображення успішно завантажені',
+      message: t('api.upload.imagesUploaded'),
       ...uploadResults,
     });
 
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: 'Помилка при завантаженні зображень' },
+      { error: t('api.upload.imagesError') },
       { status: 500 }
     );
   }

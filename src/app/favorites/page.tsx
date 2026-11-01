@@ -7,6 +7,8 @@ import { Heart, MapPin, Star, MessageCircle, Trash2 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar';
 import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
+import { getCityName } from '@/lib/constants';
 
 interface FavoriteItem {
   id: number;
@@ -35,6 +37,7 @@ function authHeaders(): Record<string, string> {
 
 export default function FavoritesPage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const toast = useToast();
   const [items, setItems] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,14 +54,14 @@ export default function FavoritesPage() {
         router.push('/auth/login?returnUrl=/favorites');
         return;
       }
-      if (!res.ok) throw new Error(data.error || 'Не вдалося завантажити обране');
+      if (!res.ok) throw new Error(data.error || t('favorites.errors.loadFailed'));
       setItems(data.favorites || []);
     } catch (e: any) {
-      setError(e.message || 'Не вдалося завантажити обране');
+      setError(e.message || t('favorites.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, t]);
 
   useEffect(() => {
     let hasUser = false;
@@ -84,10 +87,10 @@ export default function FavoritesPage() {
         headers: authHeaders(),
       });
       if (!res.ok) throw new Error();
-      toast.success('Видалено з обраного');
+      toast.success(t('favorites.toast.removed'));
     } catch {
       setItems(previous);
-      toast.error('Не вдалося видалити з обраного');
+      toast.error(t('favorites.toast.removeFailed'));
     }
   };
 
@@ -99,26 +102,26 @@ export default function FavoritesPage() {
             <Heart className="w-6 h-6 fill-current" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900">Обране</h1>
-            <p className="text-neutral-600">Профілі, які ви зберегли</p>
+            <h1 className="text-3xl font-bold text-neutral-900"            >{t('favorites.title')}</h1>
+                        <p className="text-neutral-600">{t('favorites.subtitle')}</p>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-16 text-neutral-600">Завантаження...</div>
+          <div className="text-center py-16 text-neutral-600">{t('favorites.loading')}</div>
         ) : error ? (
           <div className="bg-white rounded-2xl shadow p-8 text-center">
             <p className="text-neutral-700 mb-4">{error}</p>
             <button onClick={load} className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium">
-              Спробувати знову
+              {t('favorites.retry')}
             </button>
           </div>
         ) : items.length === 0 ? (
           <EmptyState
             icon={Heart}
-            title="Обраного поки немає"
-            description="Натисніть на сердечко в профілі фахівця, щоб зберегти його тут і швидко повертатися пізніше."
-            actionLabel="Знайти фахівців"
+            title={t('favorites.empty.title')}
+            description={t('favorites.empty.description')}
+            actionLabel={t('favorites.empty.action')}
             actionHref="/catalog"
           />
         ) : (
@@ -136,13 +139,13 @@ export default function FavoritesPage() {
                       <Link href={`/profile/${u.id}`} className="font-semibold text-lg text-neutral-900 hover:text-primary-600 flex items-center gap-1.5 flex-wrap">
                         <span className="truncate">{name}</span>
                         {u.isVerified && (
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">Перевірений</span>
+                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">{t('favorites.verified')}</span>
                         )}
                       </Link>
                       {u.profession && <p className="text-sm text-neutral-600 truncate">{u.profession}</p>}
                       <div className="mt-1 flex items-center gap-3 text-sm text-neutral-500 flex-wrap">
                         {u.city && (
-                          <span className="inline-flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{u.city}</span>
+                          <span className="inline-flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{getCityName(u.city, locale)}</span>
                         )}
                         {u.totalReviews > 0 && !Number.isNaN(rating) && (
                           <span className="inline-flex items-center gap-1">
@@ -160,21 +163,21 @@ export default function FavoritesPage() {
                         className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium"
                       >
                         <MessageCircle className="w-4 h-4" />
-                        Написати
+                        {t('favorites.message')}
                       </Link>
                     )}
                     <Link
                       href={`/profile/${u.id}`}
                       className={`${isViewer ? 'flex-1 text-center ' : ''}px-4 py-2 border border-neutral-300 hover:bg-neutral-50 text-neutral-700 rounded-lg font-medium`}
                     >
-                      Профіль
+                      {t('favorites.profile')}
                     </Link>
                     <button
                       type="button"
                       onClick={() => remove(u.id)}
                       className="px-3 py-2 border border-red-200 text-red-500 hover:bg-red-50 rounded-lg"
-                      aria-label="Видалити з обраного"
-                      title="Видалити з обраного"
+                      aria-label={t('favorites.remove')}
+                      title={t('favorites.remove')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

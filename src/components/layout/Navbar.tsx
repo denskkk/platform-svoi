@@ -8,10 +8,14 @@ import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
 import { checkAuth, silentFetch } from '@/lib/silentFetch'
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
+import { useI18n } from '@/i18n/client'
+import { localizedPath } from '@/i18n/routes'
 // create page handles opening the request modal when needed
 
 export function Navbar() {
   const router = useRouter()
+  const { t, locale } = useI18n()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -179,7 +183,7 @@ export function Navbar() {
     setIsMenuOpen(false)
     // Повідомляємо інші вкладки/компоненти
     try { window.dispatchEvent(new Event('auth:changed')) } catch {}
-    router.push('/')
+    router.push(localizedPath('/', locale))
   }
 
   return (
@@ -187,17 +191,17 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-4">
           {/* Лого */}
-          <Link href="/" className="flex items-center space-x-2 group shrink-0" aria-label="СВІЙ ДЛЯ СВОЇХ — на головну">
+          <Link href={localizedPath('/', locale)} className="flex items-center space-x-2 group shrink-0" aria-label={t('layout.brand.homeAria')}>
             <Image
               src="/logo.png"
-              alt="Логотип СВІЙ ДЛЯ СВОЇХ"
+              alt={t('layout.brand.logoAlt')}
               width={40}
               height={40}
               priority
               className="w-10 h-10 rounded-full"
             />
             <span className="font-display font-bold text-sm min-[400px]:text-base sm:text-lg leading-tight whitespace-nowrap">
-              СВІЙ ДЛЯ СВОЇХ
+              {t('layout.brand.name')}
             </span>
           </Link>
 
@@ -207,41 +211,42 @@ export function Navbar() {
               href="/catalog" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
-              Люди
+              {t('layout.navbar.people')}
             </Link>
             <Link 
               href="/services" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
-              Послуги
+              {t('layout.navbar.services')}
             </Link>
             <Link 
               href="/public-requests" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
-              Заявки
+              {t('layout.navbar.requests')}
             </Link>
             <Link 
-              href="/about" 
+              href={localizedPath('/about', locale)} 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
-              Про нас
+              {t('layout.navbar.about')}
             </Link>
             <Link 
-              href="/contacts" 
+              href={localizedPath('/contacts', locale)} 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
-              Контакти
+              {t('layout.navbar.contacts')}
             </Link>
           </div>
 
           {/* Права частина */}
           <div className="flex items-center space-x-2 sm:space-x-3 xl:space-x-4 shrink-0">
+            <LanguageSwitcher variant="compact" className="hidden lg:inline-flex" />
             <Link 
               href="/services"
               className="hidden sm:inline-flex p-2 hover:bg-neutral-100 rounded-lg transition-colors"
-              aria-label="Пошук"
-              title="Пошук послуг"
+              aria-label={t('layout.navbar.searchAria')}
+              title={t('layout.navbar.searchTitle')}
             >
               <Search className="w-5 h-5 text-neutral-600" />
             </Link>
@@ -251,13 +256,13 @@ export function Navbar() {
                 <Link
                   href="/chat"
                   className="relative lg:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
-                  aria-label="Повідомлення"
+                  aria-label={t('layout.navbar.messagesAria')}
                 >
                   <MessageCircle className="w-5 h-5 text-neutral-600" />
                   {unreadCount > 0 && (
                     <span
                       className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] leading-none rounded-full bg-primary-600 text-white border-2 border-white"
-                      title={`${unreadCount} непрочитаних`}
+                      title={t('layout.navbar.unreadTitle', { count: unreadCount })}
                     >
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
@@ -276,19 +281,19 @@ export function Navbar() {
                 {/* Глядачі не можуть створювати послуги */}
                 {user.accountType !== 'viewer' && (
                   <Link href="/services/create" className="hidden xl:inline-block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
-                    + Послуга
+                    {t('layout.navbar.addService')}
                   </Link>
                 )}
                 {user.accountType !== 'viewer' && (
                   <Link href="/requests/create" className="hidden xl:inline-block px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium whitespace-nowrap">
-                    + Заявка
+                    {t('layout.navbar.addRequest')}
                   </Link>
                 )}
                 <div className="relative">
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                     className="flex items-center space-x-2 px-2 xl:px-3 py-2 hover:bg-neutral-100 rounded-lg transition-colors"
-                    aria-label="Меню профілю"
+                    aria-label={t('layout.navbar.profileMenuAria')}
                     aria-expanded={showProfileMenu}
                   >
                     <UserOrCompanyAvatar user={user} className="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -301,7 +306,7 @@ export function Navbar() {
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 py-2">
                       {/* Account Type Badge */}
                       <div className="px-4 py-3 border-b border-neutral-200">
-                        <p className="text-xs text-neutral-500 mb-2">Тип акаунту</p>
+                        <p className="text-xs text-neutral-500 mb-2">{t('layout.navbar.accountType')}</p>
                         <AccountTypeBadge accountType={user.accountType || 'basic'} size="sm" />
                       </div>
                       
@@ -310,14 +315,14 @@ export function Navbar() {
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        Мій профіль
+                        {t('layout.navbar.myProfile')}
                       </Link>
                       <Link
                         href="/profile/edit"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        Редагувати профіль
+                        {t('layout.navbar.editProfile')}
                       </Link>
                       {user.accountType !== 'viewer' && (
                         <div className="xl:hidden">
@@ -326,14 +331,14 @@ export function Navbar() {
                             className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                             onClick={() => setShowProfileMenu(false)}
                           >
-                            ➕ Створити послугу
+                            {t('layout.navbar.createService')}
                           </Link>
                           <Link
                             href="/requests/create"
                             className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                             onClick={() => setShowProfileMenu(false)}
                           >
-                            ➕ Створити заявку
+                            {t('layout.navbar.createRequest')}
                           </Link>
                         </div>
                       )}
@@ -343,7 +348,7 @@ export function Navbar() {
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        <span>📩 Заявки мені</span>
+                        <span>{t('layout.navbar.requestsToMe')}</span>
                         {newRequestsCount > 0 && (
                           <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
                             {newRequestsCount}
@@ -355,14 +360,14 @@ export function Navbar() {
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        <span>📝 Мої заявки</span>
+                        <span>{t('layout.navbar.myRequests')}</span>
                       </Link>
                       <Link
                         href="/chat"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        <span>Повідомлення</span>
+                        <span>{t('layout.navbar.messages')}</span>
                         {unreadCount > 0 && (
                           <span className="bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
                             {unreadCount}
@@ -374,14 +379,17 @@ export function Navbar() {
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        Обране
+                        {t('layout.navbar.favorites')}
                       </Link>
+                      <div className="px-4 py-2 border-t border-neutral-200 mt-2">
+                        <LanguageSwitcher variant="buttons" />
+                      </div>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-red-600 hover:bg-neutral-100 flex items-center space-x-2"
                       >
                         <LogOut className="w-4 h-4" />
-                        <span>Вийти</span>
+                        <span>{t('layout.navbar.logout')}</span>
                       </button>
                     </div>
                   )}
@@ -393,13 +401,13 @@ export function Navbar() {
                   href="/auth/login"
                   className="px-3 xl:px-4 py-2 text-neutral-700 hover:text-primary-600 transition-colors whitespace-nowrap"
                 >
-                  Увійти
+                  {t('layout.navbar.login')}
                 </Link>
                 <Link
                   href="/auth/register"
                   className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
                 >
-                  Створити профіль
+                  {t('layout.navbar.register')}
                 </Link>
               </div>
             )}
@@ -407,7 +415,7 @@ export function Navbar() {
             <button
               className="lg:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Меню"
+              aria-label={t('layout.navbar.menuAria')}
               aria-expanded={isMenuOpen}
             >
               <Menu className="w-6 h-6 text-neutral-600" />
@@ -437,7 +445,7 @@ export function Navbar() {
             {/* Основная навигация */}
             <div className="space-y-1">
               <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                Навігація
+                {t('layout.mobileMenu.navigation')}
               </p>
               <Link 
                 href="/catalog" 
@@ -445,7 +453,7 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">👥</span>
-                <span>Люди</span>
+                <span>{t('layout.navbar.people')}</span>
               </Link>
               <Link 
                 href="/services" 
@@ -453,7 +461,7 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">🛠️</span>
-                <span>Послуги</span>
+                <span>{t('layout.navbar.services')}</span>
               </Link>
               <Link 
                 href="/public-requests" 
@@ -461,31 +469,34 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">📋</span>
-                <span>Заявки</span>
+                <span>{t('layout.navbar.requests')}</span>
               </Link>
               <Link 
-                href="/about" 
+                href={localizedPath('/about', locale)} 
                 className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">ℹ️</span>
-                <span>Про нас</span>
+                <span>{t('layout.navbar.about')}</span>
               </Link>
               <Link 
-                href="/contacts" 
+                href={localizedPath('/contacts', locale)} 
                 className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">📞</span>
-                <span>Контакти</span>
+                <span>{t('layout.navbar.contacts')}</span>
               </Link>
+              <div className="px-4 py-2">
+                <LanguageSwitcher variant="buttons" />
+              </div>
             </div>
 
             {/* Действия пользователя */}
             {user && (
               <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
                 <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  Мій акаунт
+                  {t('layout.mobileMenu.myAccount')}
                 </p>
                 <Link
                   href={`/profile/${user.id}`}
@@ -493,7 +504,7 @@ export function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">👤</span>
-                  <span>Мій профіль</span>
+                  <span>{t('layout.navbar.myProfile')}</span>
                 </Link>
                 <Link
                   href="/profile/edit"
@@ -501,7 +512,7 @@ export function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">✏️</span>
-                  <span>Редагувати профіль</span>
+                  <span>{t('layout.navbar.editProfile')}</span>
                 </Link>
                 <Link
                   href="/chat"
@@ -510,7 +521,7 @@ export function Navbar() {
                 >
                   <div className="flex items-center">
                     <span className="text-xl mr-3">💬</span>
-                    <span>Повідомлення</span>
+                    <span>{t('layout.navbar.messages')}</span>
                   </div>
                   {unreadCount > 0 && (
                     <span className="bg-primary-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
@@ -524,7 +535,7 @@ export function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">⭐</span>
-                  <span>Обране</span>
+                  <span>{t('layout.navbar.favorites')}</span>
                 </Link>
               </div>
             )}
@@ -533,7 +544,7 @@ export function Navbar() {
             {user && user.accountType !== 'viewer' && (
               <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
                 <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  Створити
+                  {t('layout.mobileMenu.create')}
                 </p>
                 <Link
                   href="/services/create"
@@ -541,7 +552,7 @@ export function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">➕</span>
-                  <span>Додати послугу</span>
+                  <span>{t('layout.mobileMenu.createService')}</span>
                 </Link>
                 <Link
                   href="/requests/create"
@@ -549,7 +560,7 @@ export function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">📝</span>
-                  <span>Створити заявку</span>
+                  <span>{t('layout.mobileMenu.createRequest')}</span>
                 </Link>
               </div>
             )}
@@ -558,7 +569,7 @@ export function Navbar() {
             {user && (
               <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
                 <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  Заявки
+                  {t('layout.mobileMenu.requests')}
                 </p>
                 <Link
                   href="/service-requests?type=tome"
@@ -567,7 +578,7 @@ export function Navbar() {
                 >
                   <div className="flex items-center">
                     <span className="text-xl mr-3">📩</span>
-                    <span>Заявки мені</span>
+                    <span>{t('layout.mobileMenu.requestsToMe')}</span>
                   </div>
                   {newRequestsCount > 0 && (
                     <span className="bg-green-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
@@ -581,7 +592,7 @@ export function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">📄</span>
-                  <span>Мої заявки</span>
+                  <span>{t('layout.mobileMenu.myRequests')}</span>
                 </Link>
               </div>
             )}
@@ -589,31 +600,39 @@ export function Navbar() {
             {/* Правова інформація (у мобільному застосунку футер прихований) */}
             <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
               <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                Інформація
+                {t('layout.mobileMenu.information')}
               </p>
               <Link
-                href="/privacy"
+                href={localizedPath('/privacy', locale)}
                 className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">🔒</span>
-                <span>Політика конфіденційності</span>
+                <span>{t('layout.footer.privacy')}</span>
               </Link>
               <Link
-                href="/terms-of-use"
+                href={localizedPath('/terms-of-use', locale)}
                 className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">📄</span>
-                <span>Умови використання</span>
+                <span>{t('layout.footer.terms')}</span>
               </Link>
               <Link
-                href="/account-deletion"
+                href={localizedPath('/account-deletion', locale)}
                 className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-xl mr-3">🗑️</span>
-                <span>Видалення акаунта</span>
+                <span>{t('layout.footer.accountDeletion')}</span>
+              </Link>
+              <Link
+                href={localizedPath('/support', locale)}
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">🛟</span>
+                <span>{t('layout.footer.support')}</span>
               </Link>
             </div>
 
@@ -626,7 +645,7 @@ export function Navbar() {
                     className="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium"
                   >
                     <span className="text-xl mr-3">🚪</span>
-                    <span>Вийти</span>
+                    <span>{t('layout.navbar.logout')}</span>
                   </button>
                 </>
               ) : (
@@ -637,7 +656,7 @@ export function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="text-xl mr-3">🔑</span>
-                    <span>Увійти</span>
+                    <span>{t('layout.navbar.login')}</span>
                   </Link>
                   <Link
                     href="/auth/register"
@@ -645,7 +664,7 @@ export function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="text-xl mr-3">✨</span>
-                    <span>Створити профіль</span>
+                    <span>{t('layout.navbar.register')}</span>
                   </Link>
                 </>
               )}

@@ -8,6 +8,9 @@ import Image from 'next/image';
 import { MapPin, Star, Mail, Phone, Facebook, Instagram, Linkedin, Globe, Send, ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { GuestOnly } from '@/components/ui/AuthGate';
+import { getT, formatDateForLocale } from '@/i18n/server';
+import { localizedPath } from '@/i18n/routes';
+import { translateCategory } from '@/lib/translations';
 
 function safeRating(val: any): string {
   if (val === null || val === undefined) return '0.0';
@@ -90,6 +93,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
     notFound();
   }
 
+  const { t, locale } = getT();
   const { user, businessInfo, services, reviews } = data;
   const isBusiness = user.role === 'business';
 
@@ -99,22 +103,22 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              Свій для Своїх
+            <Link href={localizedPath('/', locale)} className="text-2xl font-bold text-blue-600">
+              {t('profile.public.brand')}
             </Link>
             <div className="flex gap-4">
               <Link
-                href="/"
+                href={localizedPath('/', locale)}
                 className="flex items-center gap-2 text-gray-600 hover:text-blue-600"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Назад
+                {t('profile.public.back')}
               </Link>
               <Link
                 href="/auth/login"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
               >
-                Увійти
+                {t('profile.public.login')}
               </Link>
             </div>
           </div>
@@ -152,7 +156,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
                     {user.firstName} {user.lastName}
                     {user.isVerified && (
-                      <span className="ml-2 text-blue-600" title="Верифікований">✓</span>
+                      <span className="ml-2 text-blue-600" title={t('profile.public.verified')}>✓</span>
                     )}
                   </h1>
                   {isBusiness && businessInfo && (
@@ -173,7 +177,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                       <Star className="w-6 h-6 text-yellow-400 fill-current" />
                       {safeRating(user.avgRating)}
                     </div>
-                    <p className="text-sm text-gray-500">{user.totalReviews} відгуків</p>
+                    <p className="text-sm text-gray-500">{t('profile.public.reviewsCount', { count: user.totalReviews })}</p>
                   </div>
                 )}
               </div>
@@ -186,7 +190,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
               {/* Business Description */}
               {isBusiness && businessInfo?.description && (
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                  <h3 className="font-semibold text-blue-900 mb-2">Про бізнес:</h3>
+                  <h3 className="font-semibold text-blue-900 mb-2">{t('profile.public.aboutBusiness')}</h3>
                   <p className="text-gray-700">{businessInfo.description}</p>
                 </div>
               )}
@@ -208,7 +212,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                     className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
                   >
                     <Phone className="w-4 h-4" />
-                    Телефон
+                    {t('profile.public.phone')}
                   </a>
                 )}
               </div>
@@ -216,7 +220,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
               {/* Social Links */}
               {user.socialLinks && Object.keys(user.socialLinks as any).length > 0 && (
                 <div className="mt-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">Соціальні мережі:</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3">{t('profile.public.socialNetworks')}</h3>
                   <div className="flex flex-wrap gap-3">
                     {(user.socialLinks as any).facebook && (
                       <a
@@ -283,11 +287,11 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
         {/* Services */}
         {services.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Послуги</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('profile.public.services')}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service: any) => (
                 <div key={service.id} className="bg-white rounded-lg shadow-md p-6">
-                  <div className="text-sm text-blue-600 mb-2">{service.category?.name}</div>
+                  <div className="text-sm text-blue-600 mb-2">{translateCategory(service.category?.name, locale)}</div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.title}</h3>
                   {service.description && (
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{service.description}</p>
@@ -296,7 +300,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                     <div className="text-lg font-semibold text-gray-900">
                       {service.priceFrom && service.priceTo
                         ? `${service.priceFrom}-${service.priceTo}`
-                        : service.priceFrom || service.priceTo || 'За домовленістю'}{' '}
+                        : service.priceFrom || service.priceTo || t('profile.public.negotiable')}{' '}
                       {service.priceFrom && service.priceUnit}
                     </div>
                   </div>
@@ -309,7 +313,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
         {/* Reviews */}
         {reviews.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Відгуки</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('profile.public.reviews')}</h2>
             <div className="space-y-4">
               {reviews.map((review: any) => (
                 <div key={review.id} className="bg-white rounded-lg shadow-md p-6">
@@ -336,7 +340,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                           {review.reviewer.firstName} {review.reviewer.lastName}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {new Date(review.createdAt).toLocaleDateString('uk-UA')}
+                          {formatDateForLocale(review.createdAt, locale)}
                         </p>
                       </div>
                     </div>
@@ -363,22 +367,22 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
         {/* CTA для незалогінених */}
         <GuestOnly>
         <div className="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Хочете залишити відгук?</h2>
+          <h2 className="text-3xl font-bold mb-4">{t('profile.public.cta.title')}</h2>
           <p className="text-lg mb-6 text-blue-100">
-            Увійдіть або зареєструйтесь, щоб оцінити послуги та залишити відгук
+            {t('profile.public.cta.text')}
           </p>
           <div className="flex gap-4 justify-center">
             <Link
               href="/auth/login"
               className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
             >
-              Увійти
+              {t('profile.public.login')}
             </Link>
             <Link
               href="/auth/register"
               className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition"
             >
-              Зареєструватися
+              {t('profile.public.cta.register')}
             </Link>
           </div>
         </div>
