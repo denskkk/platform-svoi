@@ -29,6 +29,7 @@
 *.crt
 *.cer
 *.key
+!materials/app_store/**/*.key
 *.pub
 
 # debug
