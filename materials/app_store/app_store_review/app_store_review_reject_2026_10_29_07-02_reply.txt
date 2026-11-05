@@ -3,18 +3,21 @@ Hello App Review Team,
 Thank you for your message. Below is the information requested under Guideline 2.1 for "Свій для Своїх" (Sviy dlya Svoikh / Svoi Platform), bundle ID com.sviy-dlya-svoih.ios, version 1.0.1.
 
 ------------------------------------------------------------
-1. SCREEN RECORDING
+1. SCREEN MAP
 ------------------------------------------------------------
-A screen recording captured on a physical iPhone (latest iOS) is attached. It starts with launching the app and shows, in order:
-- Home screen (signed out) and the navigation menu
-- Account registration (Standard, Business and Viewer account types)
-- Sign in with the demo account
-- People Directory search, services and public requests
-- Creating a service and creating a help request (user-generated content)
-- Messages: chat with another user, including the "Report" button
-- Editing the profile
-- Account deletion (Profile > account deletion page > password confirmation > "Delete account permanently")
-- Log out
+Instead of a screen recording, we attached a screen map of the iOS app: "Sviy_Dlya_Svoih_Screen_Map_gen1.pdf". It is a single-page flow diagram of the app's screens, with arrows showing how the user moves between them. It contains the following sections:
+- Home Screen (Not Authenticated) and the Navigation Menu (Not Authenticated)
+- Create Profile > Select Profile Type (Standard, Business and Viewer account types)
+- Create Profile > Standard User Profile, Business Profile and Viewer Profile (registration steps for each account type)
+- Home Screen (Authenticated) and the Navigation Menu (Authenticated)
+- Search Screen tab (People Directory)
+- Chat Screen tab (messages with other users)
+- User Profile Screen (profile, services, log out)
+- User Profile > Create Service Screen (user-generated content)
+- Edit User Profile Screen
+- Delete Account Screen (account deletion flow)
+
+To follow a flow, start at "Home Screen (Not Authenticated)" in the top right of the map and follow the arrows. Each section lists its screens in order from top to bottom.
 
 The app is free. It has no in-app purchases, subscriptions or paid features, so there is no paid content to show.
 
