@@ -14,8 +14,8 @@ Audience: Ukrainian-speaking people and entrepreneurs in Ukraine and abroad. The
 
 3. HOW TO ACCESS THE MAIN FEATURES
 Demo account (Standard user):
-  Email:    [DEMO_ACCOUNT_EMAIL]
-  Password: [DEMO_ACCOUNT_PASSWORD]
+  Email:    testuser@gmail.com
+  Password: testpassword
 1. Launch the app. Open the menu (top right), tap "Sign in" and enter the demo credentials. Alternatively, tap "Join as a viewer".
 2. The bottom tab bar gives access to Home, Search, Messages and Profile.
 3. To create content: Profile > "Add" under Services, or create a help request from the profile page.
