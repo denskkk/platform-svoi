@@ -1,99 +1,47 @@
 Hello App Review Team,
 
-Thank you for your message. Below is the information requested under Guideline 2.1 for "Свій для Своїх" (Sviy dlya Svoikh / Svoi Platform), bundle ID com.sviy-dlya-svoih.ios, version 1.0.1.
+Thank you for your message. Below is the information requested under Guideline 2.1 for "Свій для Своїх" (Sviy dlya Svoikh), bundle ID com.sviy-dlya-svoih.ios, version 1.0.1.
 
-------------------------------------------------------------
 1. SCREEN MAP
-------------------------------------------------------------
-Instead of a screen recording, we attached a screen map of the iOS app: "Sviy_Dlya_Svoih_Screen_Map_gen1.pdf". It is a single-page flow diagram of the app's screens, with arrows showing how the user moves between them. It contains the following sections:
-- Home Screen (Not Authenticated) and the Navigation Menu (Not Authenticated)
-- Create Profile > Select Profile Type (Standard, Business and Viewer account types)
-- Create Profile > Standard User Profile, Business Profile and Viewer Profile (registration steps for each account type)
-- Home Screen (Authenticated) and the Navigation Menu (Authenticated)
-- Search Screen tab (People Directory)
-- Chat Screen tab (messages with other users)
-- User Profile Screen (profile, services, log out)
-- User Profile > Create Service Screen (user-generated content)
-- Edit User Profile Screen
-- Delete Account Screen (account deletion flow)
+Instead of a screen recording, we attached a screen map of the app: "Sviy_Dlya_Svoih_Screen_Map_gen1.pdf". It is a flow diagram with arrows showing how the user moves between screens. Sections: Home and Navigation Menu (signed out); Create Profile (Standard, Business and Viewer account types); Home and Navigation Menu (signed in); Search (People Directory); Chat; User Profile; Create Service; Edit Profile; Delete Account. Start at "Home Screen (Not Authenticated)" in the top right and follow the arrows.
+The app is free, with no in-app purchases, subscriptions or paid features.
 
-To follow a flow, start at "Home Screen (Not Authenticated)" in the top right of the map and follow the arrows. Each section lists its screens in order from top to bottom.
+2. PURPOSE AND AUDIENCE
+Sviy dlya Svoikh ("One of Our Own for Our Own") is a free Ukrainian community platform connecting entrepreneurs and consumers on the basis of trust and shared values.
+Problem: Ukrainians at home and abroad find it hard to locate trusted service providers and small businesses in their own community and language, and entrepreneurs have no dedicated place to present their services.
+Value: a searchable directory of people, businesses and services (by service, profession, category and city); public profiles; public help requests; in-app messaging; reviews and ratings.
+Audience: Ukrainian-speaking people and entrepreneurs in Ukraine and abroad. The interface is in Ukrainian and English.
 
-The app is free. It has no in-app purchases, subscriptions or paid features, so there is no paid content to show.
-
-------------------------------------------------------------
-2. PURPOSE AND TARGET AUDIENCE
-------------------------------------------------------------
-Sviy dlya Svoikh ("One of Our Own for Our Own") is a free Ukrainian community platform that connects entrepreneurs and consumers on the basis of trust and shared values.
-
-Problem it solves: Ukrainians at home and abroad (the diaspora) find it hard to locate trusted service providers and small businesses within their own community, especially in a new country or city and in their own language. Entrepreneurs in the community have no dedicated place to present their services to people who want to support them.
-
-Value it provides:
-- A searchable directory of people, businesses and services. Users search by service, profession, category and city.
-- Public profiles for entrepreneurs, with their services, contacts and location.
-- Public requests ("help requests"), where users post what they need and others respond.
-- In-app messaging between users.
-- Reviews and ratings that help keep service quality high.
-- Categories such as home, auto, beauty, education, entertainment and hobbies, and everything for children.
-
-Target audience: Ukrainian-speaking people and Ukrainian entrepreneurs in Ukraine and abroad, and anyone who wants to find or offer services within this community. The interface is available in Ukrainian and English (language switch in the navigation menu).
-
-------------------------------------------------------------
 3. HOW TO ACCESS THE MAIN FEATURES
-------------------------------------------------------------
 Demo account (Standard user):
-  Email:    [DEMO_ACCOUNT_EMAIL]
-  Password: [DEMO_ACCOUNT_PASSWORD]
-(The same credentials are in the "Sign-in required" fields of App Review Information.)
+  Email:    testuser@gmail.com
+  Password: testpassword
+1. Launch the app. Open the menu (top right), tap "Sign in" and enter the demo credentials. Alternatively, tap "Join as a viewer".
+2. The bottom tab bar gives access to Home, Search, Messages and Profile.
+3. To create content: Profile > "Add" under Services, or create a help request from the profile page.
+4. To create an account: tap "Create a profile" and choose Standard, Business or Viewer. Registration requires acceptance of the Terms of Use.
+5. To delete the account: Profile > account deletion page > enter password > tick the confirmation box > "Delete account permanently".
+No sample files are needed.
 
-Steps:
-1. Launch the app. The home screen is shown, with "Create a profile" and "Join as a viewer" at the bottom.
-2. Open the menu (top right), tap "Sign in", and enter the demo credentials. Alternatively, tap "Join as a viewer" to browse without a full profile.
-3. After signing in, the bottom tab bar gives access to:
-   - Home
-   - Search (People Directory: search by name or profession, filter by city)
-   - Messages (chats with other users; "Report" button in every conversation)
-   - Profile (the user's profile, services, "Create your first service" / "Add", help requests, Edit, Log out)
-4. The menu (top right) also gives access to People, Services, Requests, About us, Contacts, My profile, Edit profile, Messages, and the language switch (Українська / English).
-5. To create content: Profile > "Add" under Services, or create a help request from the profile page.
-6. To create a new account: tap "Create a profile" and choose Standard, Business or Viewer. Registration requires acceptance of the Terms of Use.
-7. To delete the account: Profile > account deletion page (also at https://sviydlyasvoih.com.ua/account-deletion). Enter the password, tick the confirmation box, and tap "Delete account permanently". Account deletion is available in the app.
+USER-GENERATED CONTENT (Guideline 1.2)
+- Terms of Use accepted at registration: https://sviydlyasvoih.com.ua/terms-of-use
+- Reporting: "Report" button in conversations; profiles, services and requests have a "Поскаржитися" (Report) button.
+- Moderation contact: support@sviydlyasvoih.com.ua
+- [CONFIRM BEFORE SENDING: user-blocking mechanism and report response time, e.g. within 24 hours.]
 
-No sample files are needed. Photo upload (profile photo, service photo) is optional.
+4. EXTERNAL SERVICES
+- Our own backend and web platform at https://sviydlyasvoih.com.ua (authentication, profiles, services, requests, messaging, search, reviews). The iOS app is a native app that presents this platform.
+- Support: email and Telegram (https://t.me/sviydlyasvoih, opens outside the app).
+- [LIST ANY OTHERS, e.g. hosting, email provider, image storage.]
+- No third-party advertising SDKs, tracking analytics, AI services, IDFA or cross-app tracking. No payment processors.
 
-------------------------------------------------------------
-USER-GENERATED CONTENT SAFEGUARDS (Guideline 1.2)
-------------------------------------------------------------
-- Users accept the Terms of Use at registration: https://sviydlyasvoih.com.ua/terms-of-use
-- Reporting: a "Report" button is available in conversations. Profiles, services and requests have a "Поскаржитися" (Report) button.
-- Published moderation and support contact: support@sviydlyasvoih.com.ua, https://t.me/sviydlyasvoih
-- [CONFIRM BEFORE SENDING: describe the user-blocking mechanism, and the response time for handling reports, e.g. within 24 hours.]
-
-------------------------------------------------------------
-4. EXTERNAL SERVICES AND PLATFORMS
-------------------------------------------------------------
-- Our own backend and web platform at https://sviydlyasvoih.com.ua. It provides authentication (email and password), profiles, services, requests, messaging, search and reviews. The iOS app is a native app that loads and presents this platform.
-- Support channels: email (support@sviydlyasvoih.com.ua) and Telegram (https://t.me/sviydlyasvoih). The Telegram link opens outside the app.
-- [LIST ANY OTHERS, e.g. hosting/cloud provider, transactional email provider, image storage.]
-- The app does not use third-party advertising SDKs, analytics for tracking, or AI services. It does not use the advertising identifier (IDFA) and does not track users across other companies' apps or websites.
-- No payment processors. The app does not process payments.
-
-------------------------------------------------------------
 5. REGIONAL DIFFERENCES
-------------------------------------------------------------
-The app is available in all countries and regions and functions the same everywhere. There are no regional differences in features or content. The audience is the Ukrainian community in Ukraine and abroad. Users enter their own city, so search results depend on the cities users have entered, not on the user's region. The interface language is Ukrainian or English, chosen by the user.
+Available in all regions with identical features. Search results depend on the cities users enter, not on the user's region.
 
-------------------------------------------------------------
-6. REGULATED INDUSTRY / PROTECTED MATERIAL
-------------------------------------------------------------
-The app does not operate in a regulated industry (no financial, medical, gambling or similar services) and does not contain protected third-party material. All content is created by users or by us. No special licenses or credentials are required.
+6. REGULATED INDUSTRY
+The app is not in a regulated industry and contains no protected third-party material. No special licenses are required.
 
-------------------------------------------------------------
-Contact
-------------------------------------------------------------
-support@sviydlyasvoih.com.ua
-
-We are happy to provide anything else you need. Thank you for your time.
+Contact: support@sviydlyasvoih.com.ua
 
 Best regards,
 The Sviy dlya Svoikh team
