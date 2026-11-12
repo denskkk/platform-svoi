@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, Loader2, Newspaper, Users } from 'lucide-react';
+import { ArrowDown, Clapperboard, Loader2, Newspaper, Users } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useI18n } from '@/i18n/client';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
@@ -169,6 +170,11 @@ export function FeedPage() {
         <h1 className="sr-only">{t('feed.title')}</h1>
 
         <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />
+
+        <Link href="/video" className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-primary-100 to-white border border-primary-200 px-4 py-3">
+          <span className="inline-flex items-center gap-2 font-semibold text-neutral-900"><Clapperboard className="w-5 h-5 text-primary-700" /> {t('projects.video.chip')}</span>
+          <span className="rounded-full bg-primary-500 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">{t('projects.soon')}</span>
+        </Link>
 
         {/* Вкладки */}
         <div role="tablist" className="grid grid-cols-2 rounded-full bg-white border border-neutral-200/70 p-1 shadow-sm">

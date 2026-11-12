@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Newspaper, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-react'
+import { LayoutGrid, Newspaper, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
@@ -12,6 +12,7 @@ import { localizedPath, splitLocalePrefix } from '@/i18n/routes'
 
 const navItems = [
   { href: '/feed', icon: Newspaper, labelKey: 'layout.mobileNav.feed' },
+  { href: '/projects', icon: LayoutGrid, labelKey: 'layout.mobileNav.projects' },
   { href: '/catalog', icon: Search, labelKey: 'layout.mobileNav.search' },
   { href: '/chat', icon: MessageCircle, labelKey: 'layout.mobileNav.messages' },
   { href: '/profile', icon: User, labelKey: 'layout.mobileNav.profile' },
@@ -65,9 +66,9 @@ export function MobileNav() {
   if (loading) {
     return (
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-white border-t border-neutral-200 shadow-lg">
-        <div className="grid grid-cols-4 h-16">
+        <div className="grid grid-cols-5 h-16">
           {navItems.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
             const Icon = item.icon
             return (
               <div key={item.href} className={cn('flex flex-col items-center justify-center space-y-1', isActive ? 'text-primary-600' : 'text-neutral-300')}>
@@ -108,9 +109,9 @@ export function MobileNav() {
   // Авторизованим — стандартні 4 пункти
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-white border-t border-neutral-200 shadow-lg">
-      <div className="grid grid-cols-4 h-16">
+      <div className="grid grid-cols-5 h-16">
         {items.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
           const Icon = item.icon
           return (
             <Link

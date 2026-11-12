@@ -1,0 +1,33 @@
+{
+  "title": "Projects",
+  "subtitle": "All directions of the ecosystem in one place",
+  "soon": "Soon",
+  "open": "Open",
+  "back": "Back to projects",
+  "soonTitle": "This direction opens soon",
+  "soonDescription": "We are getting it ready for launch. Thank you for being with us!",
+  "toFeed": "Go to feed",
+  "loadFailed": "Could not load projects",
+  "retry": "Try again",
+  "notFound": "Project not found",
+  "video": {
+    "title": "Video and stories",
+    "description": "Short vertical videos and stories are coming soon to Sviy dlya Svoikh.",
+    "chip": "Video"
+  },
+  "admin": {
+    "title": "Projects (directions)",
+    "subtitle": "Manage the status and order of directions",
+    "status": "Status",
+    "order": "Order",
+    "save": "Save",
+    "saved": "Saved",
+    "failed": "Could not save",
+    "statusActive": "Active",
+    "statusSoon": "Soon",
+    "statusHidden": "Hidden",
+    "back": "Back to admin",
+    "forbidden": "Administrators only",
+    "link": "Projects"
+  }
+}

@@ -212,5 +212,8 @@
     "blockSelf": "You cannot block yourself",
     "userBlocked": "User blocked",
     "userUnblocked": "User unblocked"
+  },
+  "projects": {
+    "notFound": "Project not found"
   }
 }

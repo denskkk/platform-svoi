@@ -216,6 +216,12 @@ export function Navbar() {
                 {t('layout.navbar.feed')}
               </Link>
             )}
+            <Link
+              href="/projects"
+              className="text-neutral-700 hover:text-primary-600 transition-colors font-medium"
+            >
+              {t('layout.navbar.projects')}
+            </Link>
             <Link 
               href="/catalog" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"

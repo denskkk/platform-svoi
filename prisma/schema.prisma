@@ -968,3 +968,24 @@ model UserBlock {
   @@index([blockedId])
   @@map("user_blocks")
 }
+
+// Напрямки («Проєкти») екосистеми. Контент редагується в адмін-панелі.
+// status: active — працює; coming_soon — показується з міткою «Скоро»; hidden — не показується.
+model Project {
+  id            Int      @id @default(autoincrement()) @map("project_id")
+  slug          String   @unique @db.VarChar(60)
+  icon          String?  @db.VarChar(16)
+  color         String?  @db.VarChar(16)
+  bannerUrl     String?  @map("banner_url") @db.VarChar(255)
+  nameUk        String   @map("name_uk") @db.VarChar(120)
+  nameEn        String   @map("name_en") @db.VarChar(120)
+  descriptionUk String?  @map("description_uk") @db.Text
+  descriptionEn String?  @map("description_en") @db.Text
+  status        String   @default("coming_soon") @db.VarChar(20)
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([status, sortOrder])
+  @@map("projects")
+}
