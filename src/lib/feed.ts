@@ -101,9 +101,9 @@ export async function loadViewerState(userId: number, postIds: number[], authorI
   }
   return {
     userId,
-    liked: new Set(likes.map((l: any) => l.postId)),
-    following: new Set(follows.map((f: any) => f.followingId)),
-    saved: new Set(saved),
+    liked: new Set<number>((likes as { postId: number }[]).map((l) => l.postId)),
+    following: new Set<number>((follows as { followingId: number }[]).map((f) => f.followingId)),
+    saved: new Set<number>(saved),
   };
 }
 
