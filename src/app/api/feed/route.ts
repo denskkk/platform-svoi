@@ -13,6 +13,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
+import { getBlockedIds } from '@/lib/blocks';
 import { FEED_LIMITS, loadViewerState, parseId, postInclude, serializePost } from '@/lib/feed';
 
 export const dynamic = 'force-dynamic';
@@ -32,14 +33,18 @@ export async function GET(request: NextRequest) {
       ? Math.min(requested, FEED_LIMITS.maxPageSize)
       : FEED_LIMITS.pageSize;
 
+    const blocked = await getBlockedIds(userId);
     const where: Prisma.PostWhereInput = { isHidden: false, author: { isActive: true } };
     if (cursor) where.id = { lt: cursor };
     const authorId = parseId(params.get('authorId'));
     if (authorId) {
+      if (blocked.includes(authorId)) return NextResponse.json({ posts: [], nextCursor: null });
       where.authorId = authorId;
     } else if (scope === 'following') {
       const follows = await prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } });
-      where.authorId = { in: [userId, ...follows.map((f) => f.followingId)] };
+      where.authorId = { in: [userId, ...follows.map((f) => f.followingId).filter((id) => !blocked.includes(id))] };
+    } else if (blocked.length > 0) {
+      where.authorId = { notIn: blocked };
     }
 
     const rows = await prisma.post.findMany({

@@ -10,6 +10,7 @@ import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
+import { isBlockedBetween } from '@/lib/blocks';
 import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,10 @@ async function setLike(request: NextRequest, idParam: string, like: boolean) {
       ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true } })
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+
+    if (await isBlockedBetween(userId, post.authorId)) {
+      return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
+    }
 
     let newLike = false;
     const likesCount = await prisma.$transaction(async (tx) => {

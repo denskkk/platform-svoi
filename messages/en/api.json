@@ -207,6 +207,10 @@
     "followed": "You are now following",
     "unfollowed": "You unfollowed",
     "tooManyPosts": "Too many posts. Please try again later.",
-    "tooManyActions": "Too many actions. Please try again later."
+    "tooManyActions": "Too many actions. Please try again later.",
+    "blocked": "Action unavailable: one of the users is blocked",
+    "blockSelf": "You cannot block yourself",
+    "userBlocked": "User blocked",
+    "userUnblocked": "User unblocked"
   }
 }

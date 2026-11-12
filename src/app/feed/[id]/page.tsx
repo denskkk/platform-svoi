@@ -72,6 +72,7 @@ export default function SinglePostPage() {
             onChange={(_id, patch) => setPost((p) => (p ? { ...p, ...patch } : p))}
             onFollowChange={(_authorId, following) => setPost((p) => (p ? { ...p, viewer: { ...p.viewer, following } } : p))}
             onDeleted={() => router.replace('/feed')}
+            onBlocked={() => router.replace('/feed')}
           />
         )}
       </div>

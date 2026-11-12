@@ -30,7 +30,8 @@
     "login": "Log in",
     "register": "Create a profile",
     "menuAria": "Menu",
-    "feed": "Feed"
+    "feed": "Feed",
+    "blockedUsers": "Blocked users"
   },
   "mobileMenu": {
     "navigation": "Navigation",

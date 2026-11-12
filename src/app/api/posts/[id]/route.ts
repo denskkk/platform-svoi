@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
+import { isBlockedBetween } from '@/lib/blocks';
 import { FEED_LIMITS, loadViewerState, parseId, postInclude, removePostImageFiles, serializePost } from '@/lib/feed';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +24,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const post = postId
       ? await prisma.post.findFirst({ where: { id: postId, isHidden: false, author: { isActive: true } }, include: postInclude })
       : null;
-    if (!post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    if (!post || (await isBlockedBetween(userId, post.authorId))) {
+      return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    }
 
     const state = await loadViewerState(userId, [post.id], [post.authorId]);
     return NextResponse.json({ post: serializePost(post, state) });

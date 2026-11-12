@@ -136,6 +136,8 @@ export function FeedPage() {
     setScope(next);
   }, []);
 
+  const removeByAuthor = useCallback((authorId: number) => setPosts((prev) => prev.filter((p) => p.author.id !== authorId)), []);
+
   const removePost = useCallback((id: number) => setPosts((prev) => prev.filter((p) => p.id !== id)), []);
 
   const onPosted = useCallback((post: FeedPost) => {
@@ -223,6 +225,7 @@ export function FeedPage() {
             onChange={patchPost}
             onFollowChange={setFollowing}
             onDeleted={removePost}
+            onBlocked={removeByAuthor}
           />
         ))}
 

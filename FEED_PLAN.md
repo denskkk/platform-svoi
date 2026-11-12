@@ -7,11 +7,12 @@ Branch: `feature/social-feed`. Not deployed, not published.
 - API: `GET /api/feed`, `POST /api/posts`, `DELETE /api/posts/:id`, `POST|DELETE /api/posts/:id/like`, `GET|POST|DELETE /api/posts/:id/comments`, `GET|POST|DELETE /api/follows`.
 - Permissions: viewers can read the feed and follow; basic/business can post, like and comment (`CREATE_POST`, `INTERACT_POST`, `FOLLOW_USER`, `VIEW_FEED`).
 - Also: edit own post (`PATCH /api/posts/:id`), single post page `/feed/:id`, posts block on profile pages (`/api/feed?authorId=`), reporting posts via the existing report flow (`contentType=post`), notifications (`/notifications`, bell in the navbar, `GET /api/notifications`, `POST /api/notifications/read`) for likes, comments and new followers. Notification text is built on the client by `type`, so it follows the viewer's language.
+- Blocking (store-review requirement for user content): `GET|POST|DELETE /api/blocks`, page `/blocked`, "Block" in the post menu and on profiles. Blocking works both ways: hides posts/comments, forbids likes, comments, follows, messages, notifications; removes follows.
 - Uploads: `/api/upload` accepts `type=posts` (aspect ratio kept, max 1440px).
 - i18n: `messages/{uk,en}/feed.json`, `api.feed.*`, `layout.navbar.feed`, `layout.mobileNav.feed`.
 
 ## Database (additive only)
-New tables: `posts`, `post_images`, `post_likes`, `post_comments`, `follows`. No existing table or column is changed.
+New tables: `posts`, `post_images`, `post_likes`, `post_comments`, `follows`, `user_blocks` (second file: `database/migrations/20261112_add_user_blocks.sql`). No existing table or column is changed.
 Apply with either `npx prisma db push` (as in HANDOVER.md) or `database/migrations/20261112_add_social_feed.sql`. Back up first.
 Rollback: `DROP TABLE follows, post_comments, post_likes, post_images, posts;`
 

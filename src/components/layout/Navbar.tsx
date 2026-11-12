@@ -392,6 +392,13 @@ export function Navbar() {
                       >
                         {t('layout.navbar.favorites')}
                       </Link>
+                      <Link
+                        href="/blocked"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.blockedUsers')}
+                      </Link>
                       <div className="px-4 py-2 border-t border-neutral-200 mt-2">
                         <LanguageSwitcher variant="buttons" />
                       </div>
@@ -547,6 +554,14 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">⭐</span>
                   <span>{t('layout.navbar.favorites')}</span>
+                </Link>
+                <Link
+                  href="/blocked"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">🚫</span>
+                  <span>{t('layout.navbar.blockedUsers')}</span>
                 </Link>
               </div>
             )}

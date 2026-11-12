@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/Toast';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ProfilePosts } from '@/components/feed/ProfilePosts';
+import { BlockButton } from '@/components/feed/BlockButton';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
@@ -384,6 +385,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             label={t('profile.view.actions.report')}
                             className="inline-flex items-center gap-1.5 px-3 py-2.5 text-sm text-neutral-500 hover:text-red-600 border border-neutral-200 hover:border-red-200 rounded-lg bg-white transition-colors"
                           />
+                          <BlockButton userId={profile.id} onBlocked={() => router.push('/feed')} />
                         </>
                       )}
                     </div>

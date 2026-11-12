@@ -10,6 +10,7 @@ import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
+import { isBlockedBetween } from '@/lib/blocks';
 import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
@@ -52,6 +53,9 @@ export async function POST(request: NextRequest) {
 
     const target = await prisma.user.findFirst({ where: { id: followingId, isActive: true }, select: { id: true } });
     if (!target) return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
+    if (await isBlockedBetween(followerId, followingId)) {
+      return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
+    }
 
     const already = await prisma.follow.findUnique({
       where: { followerId_followingId: { followerId, followingId } },

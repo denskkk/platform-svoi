@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
+import { isBlockedBetween } from '@/lib/blocks';
 
 // GET - Отримати повідомлення
 export async function GET(request: NextRequest) {
@@ -113,6 +114,10 @@ export async function POST(request: NextRequest) {
         { error: t('api.chat.recipientAndTextRequired') },
         { status: 400 }
       );
+    }
+
+    if (await isBlockedBetween(Number(auth.user.userId), Number(receiverId))) {
+      return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
     }
 
     const message = await prisma.message.create({

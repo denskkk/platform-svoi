@@ -10,6 +10,7 @@ import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { authorSelect, FEED_LIMITS, parseId } from '@/lib/feed';
+import { getBlockedIds, isBlockedBetween } from '@/lib/blocks';
 import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
@@ -47,8 +48,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const requested = Number(search.get('limit'));
     const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 50) : 20;
 
+    const blocked = await getBlockedIds(userId);
     const rows = await prisma.postComment.findMany({
-      where: { postId, author: { isActive: true }, ...(cursor ? { id: { gt: cursor } } : {}) },
+      where: {
+        postId,
+        author: { isActive: true },
+        ...(blocked.length ? { authorId: { notIn: blocked } } : {}),
+        ...(cursor ? { id: { gt: cursor } } : {}),
+      },
       orderBy: { id: 'asc' },
       take: limit + 1,
       include: { author: { select: authorSelect } },
@@ -81,6 +88,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true } })
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+
+    if (await isBlockedBetween(userId, post.authorId)) {
+      return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
+    }
 
     const body = await request.json().catch(() => ({}));
     const content = typeof body?.content === 'string' ? body.content.trim() : '';

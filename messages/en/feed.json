@@ -39,7 +39,9 @@
     "save": "Save",
     "saving": "Saving…",
     "report": "Report",
-    "menuClose": "Close menu"
+    "menuClose": "Close menu",
+    "block": "Block author",
+    "blockConfirm": "Block this user? You will no longer see their posts and they will not see yours."
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -73,7 +75,9 @@
     "followed": "You are now following",
     "unfollowed": "You unfollowed",
     "actionFailed": "Could not complete the action. Please try again.",
-    "saved": "Changes saved"
+    "saved": "Changes saved",
+    "blocked": "User blocked",
+    "unblocked": "User unblocked"
   },
   "errors": {
     "load": "Could not load the feed",
@@ -101,5 +105,15 @@
   "single": {
     "notFound": "This post was not found or has been deleted",
     "back": "Back to feed"
+  },
+  "blocked": {
+    "title": "Blocked users",
+    "empty": "You have not blocked anyone",
+    "unblock": "Unblock",
+    "description": "Blocked users cannot see your posts or message you.",
+    "block": "Block",
+    "unblockLabel": "Unblock",
+    "confirm": "Block this user?",
+    "loadFailed": "Could not load the list"
   }
 }

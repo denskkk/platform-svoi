@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { BadgeCheck, Heart, MessageCircle, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
+import { BlockButton } from './BlockButton';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -19,11 +20,12 @@ interface Props {
   onFollowChange: (authorId: number, following: boolean) => void;
   onDeleted: (id: number) => void;
   autoOpenComments?: boolean;
+  onBlocked?: (authorId: number) => void;
 }
 
 const LONG_TEXT = 280;
 
-function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, onDeleted, autoOpenComments = false }: Props) {
+function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, onDeleted, autoOpenComments = false, onBlocked }: Props) {
   const { t, locale } = useI18n();
   const toast = useToast();
   const [expanded, setExpanded] = useState(false);
@@ -185,13 +187,22 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
                     </>
                   )
                 ) : (
-                  <ReportButton
-                    reportedUserId={author.id}
-                    contentType="post"
-                    contentId={post.id}
-                    label={t('feed.post.report')}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-800 rounded-lg hover:bg-neutral-50"
-                  />
+                  <>
+                    <ReportButton
+                      reportedUserId={author.id}
+                      contentType="post"
+                      contentId={post.id}
+                      label={t('feed.post.report')}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-800 rounded-lg hover:bg-neutral-50"
+                    />
+                    <div className="px-3 py-2">
+                      <BlockButton
+                        userId={author.id}
+                        className="w-full flex items-center gap-2 text-sm text-red-600"
+                        onBlocked={() => { setMenuOpen(false); onBlocked?.(author.id); }}
+                      />
+                    </div>
+                  </>
                 )}
               </div>
             </>

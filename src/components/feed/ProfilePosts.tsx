@@ -56,7 +56,7 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
       ) : (
         <div className="space-y-4 max-w-xl">
           {posts.map((post) => (
-            <PostCard key={post.id} post={post} canInteract={viewerType !== 'viewer'} canFollow onChange={patch} onFollowChange={follow} onDeleted={remove} />
+            <PostCard key={post.id} post={post} canInteract={viewerType !== 'viewer'} canFollow onChange={patch} onFollowChange={follow} onDeleted={remove} onBlocked={() => setPosts([])} />
           ))}
           {cursor && (
             <button type="button" disabled={loadingMore} onClick={() => { setLoadingMore(true); load(cursor); }} className="text-sm font-medium text-accent-600">

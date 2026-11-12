@@ -30,7 +30,8 @@
     "login": "Увійти",
     "register": "Створити профіль",
     "menuAria": "Меню",
-    "feed": "Стрічка"
+    "feed": "Стрічка",
+    "blockedUsers": "Заблоковані"
   },
   "mobileMenu": {
     "navigation": "Навігація",
