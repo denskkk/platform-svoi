@@ -34,14 +34,14 @@ export async function GET(request: NextRequest) {
     const hasMore = rows.length > limit;
     const page = hasMore ? rows.slice(0, limit) : rows;
 
-    const actorIds = Array.from(new Set(page.map((n) => n.relatedUserId).filter((id): id is number => !!id)));
+    const actorIds = Array.from(new Set(page.map((n: any) => n.relatedUserId).filter((id: any): id is number => !!id)));
     const actors = actorIds.length
       ? await prisma.user.findMany({
           where: { id: { in: actorIds } },
           select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } },
         })
       : [];
-    const actorMap = new Map(actors.map((a) => [a.id, {
+    const actorMap = new Map(actors.map((a: any) => [a.id, {
       id: a.id,
       name: a.businessInfo?.companyName || `${a.firstName} ${a.lastName}`.trim(),
       avatarUrl: a.businessInfo?.logoUrl || a.avatarUrl,
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       unreadCount,
-      notifications: page.map((n) => ({
+      notifications: page.map((n: any) => ({
         id: n.id,
         type: n.type,
         title: n.title,
