@@ -1,0 +1,76 @@
+{
+  "title": "Feed",
+  "tabs": {
+    "forYou": "For you",
+    "following": "Following"
+  },
+  "composer": {
+    "prompt": "What's new?",
+    "placeholder": "Share news, a photo or a thought…",
+    "publish": "Post",
+    "publishing": "Posting…",
+    "cancel": "Cancel",
+    "addPhoto": "Add photo",
+    "removePhoto": "Remove photo",
+    "maxPhotos": "Up to {max} photos",
+    "uploading": "Uploading photo…",
+    "uploadFailed": "Could not upload the photo",
+    "charsLeft": "Characters left: {count}",
+    "viewerNotice": "Create a full profile to post and comment.",
+    "viewerAction": "Create a profile"
+  },
+  "post": {
+    "follow": "Follow",
+    "following": "Following",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this post?",
+    "deleteCancel": "Keep",
+    "like": "Like",
+    "unlike": "Remove like",
+    "comments": "Comments",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "menu": "Post actions",
+    "openPhoto": "Open photo",
+    "closePhoto": "Close",
+    "justNow": "just now"
+  },
+  "comments": {
+    "placeholder": "Write a comment…",
+    "send": "Send",
+    "loadMore": "Show more",
+    "empty": "No comments yet. Be the first!",
+    "delete": "Delete comment",
+    "viewerNotice": "Only full profiles can comment."
+  },
+  "empty": {
+    "forYou": {
+      "title": "It's quiet in the feed",
+      "description": "Publish the first post and your neighbours will see it."
+    },
+    "following": {
+      "title": "Posts from people you follow will appear here",
+      "description": "Follow people and businesses from the \"For you\" feed.",
+      "action": "Go to \"For you\""
+    }
+  },
+  "end": "You're all caught up. Check back later!",
+  "retry": "Try again",
+  "pull": {
+    "pull": "Pull to refresh",
+    "release": "Release to refresh",
+    "refreshing": "Refreshing…"
+  },
+  "toast": {
+    "posted": "Post published",
+    "deleted": "Post deleted",
+    "followed": "You are now following",
+    "unfollowed": "You unfollowed",
+    "actionFailed": "Could not complete the action. Please try again."
+  },
+  "errors": {
+    "load": "Could not load the feed",
+    "comments": "Could not load comments",
+    "publish": "Could not publish the post"
+  }
+}

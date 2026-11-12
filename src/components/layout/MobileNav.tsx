@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-react'
+import { Newspaper, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
@@ -11,7 +11,7 @@ import { useI18n } from '@/i18n/client'
 import { localizedPath, splitLocalePrefix } from '@/i18n/routes'
 
 const navItems = [
-  { href: '/', icon: Home, labelKey: 'layout.mobileNav.home' },
+  { href: '/feed', icon: Newspaper, labelKey: 'layout.mobileNav.feed' },
   { href: '/catalog', icon: Search, labelKey: 'layout.mobileNav.search' },
   { href: '/chat', icon: MessageCircle, labelKey: 'layout.mobileNav.messages' },
   { href: '/profile', icon: User, labelKey: 'layout.mobileNav.profile' },

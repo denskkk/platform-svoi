@@ -207,6 +207,14 @@ export function Navbar() {
 
           {/* Desktop меню */}
           <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 whitespace-nowrap text-sm xl:text-base">
+            {user && (
+              <Link
+                href="/feed"
+                className="text-neutral-700 hover:text-primary-600 transition-colors font-medium"
+              >
+                {t('layout.navbar.feed')}
+              </Link>
+            )}
             <Link 
               href="/catalog" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"

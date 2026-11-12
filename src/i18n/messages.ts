@@ -18,6 +18,7 @@ import uk_reviews from '../../messages/uk/reviews.json'
 import uk_catalog from '../../messages/uk/catalog.json'
 import uk_chat from '../../messages/uk/chat.json'
 import uk_favorites from '../../messages/uk/favorites.json'
+import uk_feed from '../../messages/uk/feed.json'
 import uk_contacts from '../../messages/uk/contacts.json'
 import uk_admin from '../../messages/uk/admin.json'
 import uk_api from '../../messages/uk/api.json'
@@ -42,6 +43,7 @@ import en_reviews from '../../messages/en/reviews.json'
 import en_catalog from '../../messages/en/catalog.json'
 import en_chat from '../../messages/en/chat.json'
 import en_favorites from '../../messages/en/favorites.json'
+import en_feed from '../../messages/en/feed.json'
 import en_contacts from '../../messages/en/contacts.json'
 import en_admin from '../../messages/en/admin.json'
 import en_api from '../../messages/en/api.json'
@@ -70,6 +72,7 @@ const uk = {
   catalog: uk_catalog,
   chat: uk_chat,
   favorites: uk_favorites,
+  feed: uk_feed,
   contacts: uk_contacts,
   admin: uk_admin,
   api: uk_api,
@@ -97,6 +100,7 @@ const en = {
   catalog: en_catalog,
   chat: en_chat,
   favorites: en_favorites,
+  feed: en_feed,
   contacts: en_contacts,
   admin: en_admin,
   api: en_api,

@@ -37,7 +37,9 @@
     "createRequest": "Creating requests is available with a \"{type}\" account. Please register.",
     "sendMessage": "Sending messages is available with a \"{type}\" account. Please register.",
     "autoProposals": "Automatic proposals are a paid option. Activate it in your profile.",
-    "default": "This feature is available with a \"{type}\" account. Please register."
+    "default": "This feature is available with a \"{type}\" account. Please register.",
+    "createPost": "Posting to the feed and interacting with posts is available with a \"{type}\" account. Please register.",
+    "interactPost": "Liking and commenting is available with a \"{type}\" account. Please register."
   },
   "chat": {
     "viewerCannotWrite": "Viewers cannot write in chat. Switch to a regular profile on your profile page.",
@@ -187,5 +189,24 @@
     "alreadyHasType": "You already have this account type",
     "upgraded": "You now have a regular profile!",
     "upgradeError": "Failed to update the account"
+  },
+  "feed": {
+    "emptyPost": "A post cannot be empty",
+    "postTooLong": "Post is too long (maximum {max} characters)",
+    "tooManyImages": "Too many photos (maximum {max})",
+    "invalidImage": "Invalid image",
+    "postNotFound": "Post not found",
+    "postCreated": "Post published",
+    "postDeleted": "Post deleted",
+    "forbidden": "You cannot do this",
+    "commentEmpty": "A comment cannot be empty",
+    "commentTooLong": "Comment is too long (maximum {max} characters)",
+    "commentNotFound": "Comment not found",
+    "commentDeleted": "Comment deleted",
+    "selfFollow": "You cannot follow yourself",
+    "followed": "You are now following",
+    "unfollowed": "You unfollowed",
+    "tooManyPosts": "Too many posts. Please try again later.",
+    "tooManyActions": "Too many actions. Please try again later."
   }
 }

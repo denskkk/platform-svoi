@@ -30,6 +30,12 @@ export const PERMISSIONS = {
   VIEW_REQUESTS: ['basic', 'business'] as AccountType[],
   RESPOND_TO_REQUEST: ['basic', 'business'] as AccountType[],
   
+  // Стрічка
+  VIEW_FEED: ['viewer', 'basic', 'business'] as AccountType[],
+  CREATE_POST: ['basic', 'business'] as AccountType[],
+  INTERACT_POST: ['basic', 'business'] as AccountType[],
+  FOLLOW_USER: ['viewer', 'basic', 'business'] as AccountType[],
+
   // Повідомлення
   SEND_MESSAGE: ['basic', 'business'] as AccountType[],
   VIEW_MESSAGES: ['basic', 'business'] as AccountType[],
@@ -86,6 +92,8 @@ export function getPermissionError(permission: keyof typeof PERMISSIONS, t: Tran
     CREATE_SERVICE: 'api.permissions.createService',
     CREATE_REQUEST: 'api.permissions.createRequest',
     SEND_MESSAGE: 'api.permissions.sendMessage',
+    CREATE_POST: 'api.permissions.createPost',
+    INTERACT_POST: 'api.permissions.interactPost',
     AUTO_PROPOSALS: 'api.permissions.autoProposals',
   };
   
