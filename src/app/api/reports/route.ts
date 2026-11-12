@@ -11,7 +11,7 @@ import { getApiT } from '@/i18n/server';
 export const dynamic = 'force-dynamic';
 
 const CATEGORIES = ['spam', 'fraud', 'abuse', 'inappropriate', 'fake', 'other'] as const;
-const CONTENT_TYPES = ['user', 'service', 'request', 'review', 'message'] as const;
+const CONTENT_TYPES = ['user', 'service', 'request', 'review', 'message', 'post', 'comment'] as const;
 
 export async function POST(request: NextRequest) {
   const t = getApiT(request);

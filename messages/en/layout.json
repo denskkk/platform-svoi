@@ -29,7 +29,8 @@
     "logout": "Log out",
     "login": "Log in",
     "register": "Create a profile",
-    "menuAria": "Menu"
+    "menuAria": "Menu",
+    "feed": "Feed"
   },
   "mobileMenu": {
     "navigation": "Navigation",
@@ -49,7 +50,8 @@
     "profile": "Profile",
     "favorites": "Favorites",
     "register": "Create a profile",
-    "viewer": "Join as a viewer"
+    "viewer": "Join as a viewer",
+    "feed": "Feed"
   },
   "footer": {
     "description": "A platform for finding and offering services from Ukrainians to Ukrainians. Let's support each other and build a strong community.",

@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get('file') as File;
   const rawType = (formData.get('type') as string) || 'avatars';
-  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc', 'requests']);
+  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc', 'requests', 'posts']);
   const safeDir = allowedDirs.has(rawType) ? rawType : 'avatars';
     
     if (!file) {
@@ -131,6 +131,7 @@ export async function POST(request: NextRequest) {
   const isAvatar = safeDir === 'avatars' || safeDir === 'logos';
   const isService = safeDir === 'services' || safeDir === 'requests';
   const isBanner = safeDir === 'banners';
+  const isPost = safeDir === 'posts';
 
     let pipeline = sharp(buffer);
 
@@ -143,6 +144,12 @@ export async function POST(request: NextRequest) {
       pipeline = pipeline.resize(1200, 800, {
         fit: 'cover',
         position: 'center',
+        withoutEnlargement: true,
+      });
+    } else if (isPost) {
+      // Фото в стрічці: зберігаємо пропорції (без обрізання), до 1440px по більшій стороні
+      pipeline = pipeline.rotate().resize(1440, 1440, {
+        fit: 'inside',
         withoutEnlargement: true,
       });
     } else if (isBanner) {
