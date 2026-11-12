@@ -12,6 +12,7 @@ import { checkAuth, ensureToken } from '@/lib/silentFetch';
 import { useToast } from '@/components/ui/Toast';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { ReportButton } from '@/components/ui/ReportButton';
+import { ProfilePosts } from '@/components/feed/ProfilePosts';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
@@ -962,6 +963,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 </div>
               )}
             </div>
+
+            {/* Дописи зі стрічки */}
+            {profile?.id && <ProfilePosts authorId={Number(profile.id)} />}
 
             {/* Відгуки */}
             {profile.reviewsReceived && profile.reviewsReceived.length > 0 && (

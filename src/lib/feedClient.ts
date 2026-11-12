@@ -31,6 +31,7 @@ export interface FeedPost {
   likesCount: number;
   commentsCount: number;
   createdAt: string;
+  edited?: boolean;
   images: { id: number; url: string }[];
   author: FeedAuthor;
   viewer: { liked: boolean; isOwn: boolean; following: boolean };

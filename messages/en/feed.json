@@ -33,7 +33,13 @@
     "menu": "Post actions",
     "openPhoto": "Open photo",
     "closePhoto": "Close",
-    "justNow": "just now"
+    "justNow": "just now",
+    "edit": "Edit",
+    "edited": "edited",
+    "save": "Save",
+    "saving": "Saving…",
+    "report": "Report",
+    "menuClose": "Close menu"
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -66,11 +72,34 @@
     "deleted": "Post deleted",
     "followed": "You are now following",
     "unfollowed": "You unfollowed",
-    "actionFailed": "Could not complete the action. Please try again."
+    "actionFailed": "Could not complete the action. Please try again.",
+    "saved": "Changes saved"
   },
   "errors": {
     "load": "Could not load the feed",
     "comments": "Could not load comments",
     "publish": "Could not publish the post"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "someone": "Someone",
+    "postLike": "{name} liked your post",
+    "postComment": "{name} commented on your post",
+    "newFollower": "{name} started following you",
+    "loadFailed": "Could not load notifications",
+    "empty": {
+      "title": "No notifications yet",
+      "description": "Likes, comments and new followers will show up here."
+    }
+  },
+  "profile": {
+    "title": "Posts",
+    "empty": "No posts yet",
+    "loadMore": "Show more"
+  },
+  "single": {
+    "notFound": "This post was not found or has been deleted",
+    "back": "Back to feed"
   }
 }

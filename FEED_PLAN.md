@@ -6,6 +6,7 @@ Branch: `feature/social-feed`. Not deployed, not published.
 - `/feed` (logged-in users): "For you" and "Following" tabs, composer (text + up to 6 photos), likes, comments, follow/unfollow, infinite scroll, pull-to-refresh. Private path (noindex). Mobile bottom nav's first item is now "Feed" (was "Home"); the logo still leads to the landing page.
 - API: `GET /api/feed`, `POST /api/posts`, `DELETE /api/posts/:id`, `POST|DELETE /api/posts/:id/like`, `GET|POST|DELETE /api/posts/:id/comments`, `GET|POST|DELETE /api/follows`.
 - Permissions: viewers can read the feed and follow; basic/business can post, like and comment (`CREATE_POST`, `INTERACT_POST`, `FOLLOW_USER`, `VIEW_FEED`).
+- Also: edit own post (`PATCH /api/posts/:id`), single post page `/feed/:id`, posts block on profile pages (`/api/feed?authorId=`), reporting posts via the existing report flow (`contentType=post`), notifications (`/notifications`, bell in the navbar, `GET /api/notifications`, `POST /api/notifications/read`) for likes, comments and new followers. Notification text is built on the client by `type`, so it follows the viewer's language.
 - Uploads: `/api/upload` accepts `type=posts` (aspect ratio kept, max 1440px).
 - i18n: `messages/{uk,en}/feed.json`, `api.feed.*`, `layout.navbar.feed`, `layout.mobileNav.feed`.
 
@@ -22,6 +23,7 @@ A store update is only needed when native parts change (icons, permissions, vers
 `npm ci`, `prisma generate`, `next build` and the tests could not run in the agent environment (no package install). Run `npm ci && npx prisma generate && npm run build && npm run test:auth && npm run test:i18n` before merging.
 
 ## Known limits / next steps
-- Deleting a post leaves its uploaded files on disk (no cleanup job yet).
-- No notifications for likes/comments/follows yet, no reporting of posts (use existing `Report` flow later), no edit of posts.
+- Notifications are pull-based (refresh every 60 s and when the app returns to foreground); no push notifications (FCM/APNs) yet — that needs a native plugin and a store update.
+- Post images cannot be changed when editing (text only).
+- Deleted posts remove their image files; comments/likes cascade in the DB.
 - Feed ranking is chronological; "For you" = all public posts.

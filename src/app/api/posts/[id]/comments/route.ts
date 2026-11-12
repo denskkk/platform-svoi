@@ -10,6 +10,7 @@ import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { authorSelect, FEED_LIMITS, parseId } from '@/lib/feed';
+import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     const postId = parseId(params.id);
     const post = postId
-      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true } })
+      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true } })
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
 
@@ -96,6 +97,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       await tx.post.update({ where: { id: postId }, data: { commentsCount: { increment: 1 } } });
       return created;
     });
+
+    await notifyFeed({ type: 'post_comment', recipientId: post.authorId, actorId: userId, postId, message: content });
 
     return NextResponse.json({ success: true, comment: serializeComment(comment, userId) }, { status: 201 });
   } catch (error) {

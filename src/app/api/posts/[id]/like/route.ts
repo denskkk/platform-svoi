@@ -10,6 +10,7 @@ import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
+import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,14 +26,18 @@ async function setLike(request: NextRequest, idParam: string, like: boolean) {
 
     const postId = parseId(idParam);
     const post = postId
-      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true } })
+      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true } })
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
 
+    let newLike = false;
     const likesCount = await prisma.$transaction(async (tx) => {
       if (like) {
         const created = await tx.postLike.createMany({ data: [{ postId, userId }], skipDuplicates: true });
-        if (created.count > 0) await tx.post.update({ where: { id: postId }, data: { likesCount: { increment: 1 } } });
+        if (created.count > 0) {
+          newLike = true;
+          await tx.post.update({ where: { id: postId }, data: { likesCount: { increment: 1 } } });
+        }
       } else {
         const removed = await tx.postLike.deleteMany({ where: { postId, userId } });
         if (removed.count > 0) await tx.post.update({ where: { id: postId }, data: { likesCount: { decrement: 1 } } });
@@ -40,6 +45,8 @@ async function setLike(request: NextRequest, idParam: string, like: boolean) {
       const fresh = await tx.post.findUnique({ where: { id: postId }, select: { likesCount: true } });
       return Math.max(0, fresh?.likesCount ?? 0);
     });
+
+    if (newLike) await notifyFeed({ type: 'post_like', recipientId: post.authorId, actorId: userId, postId });
 
     return NextResponse.json({ success: true, liked: like, likesCount });
   } catch (error) {

@@ -50,6 +50,7 @@ export const PRIVATE_PATH_PREFIXES = [
   '/chat',
   '/favorites',
   '/feed',
+  '/notifications',
   '/profile/edit',
   '/profile/edit-business',
   '/service-requests',

@@ -2,6 +2,8 @@
  * Спільна логіка стрічки: ліміти, вибірка автора, серіалізація допису.
  */
 
+import { unlink } from 'fs/promises';
+import { join } from 'path';
 import { prisma } from '@/lib/prisma';
 
 export const FEED_LIMITS = {
@@ -35,6 +37,7 @@ type PostRow = {
   likesCount: number;
   commentsCount: number;
   createdAt: Date;
+  updatedAt: Date;
   author: {
     id: number;
     firstName: string;
@@ -57,6 +60,7 @@ export function serializePost(post: PostRow, viewer: { liked: Set<number>; follo
     likesCount: post.likesCount,
     commentsCount: post.commentsCount,
     createdAt: post.createdAt.toISOString(),
+    edited: post.updatedAt.getTime() - post.createdAt.getTime() > 60_000,
     images: post.images,
     author: {
       id: author.id,
@@ -100,4 +104,16 @@ export function parseId(value: unknown): number | null {
 /** Фото допису можуть бути тільки з наших завантажень (захист від сторонніх URL). */
 export function isOwnPostImage(url: unknown): url is string {
   return typeof url === 'string' && /^\/uploads\/posts\/[A-Za-z0-9._-]+\.(webp|jpg)$/.test(url);
+}
+
+/** Видаляє файли фото допису (WebP + JPEG-копію). Помилки ігноруються — це лише прибирання. */
+export async function removePostImageFiles(urls: string[]) {
+  const root = process.env.UPLOADS_DIR || join(process.cwd(), 'public', 'uploads');
+  await Promise.all(
+    urls.filter(isOwnPostImage).flatMap((url) => {
+      const name = url.replace('/uploads/posts/', '');
+      const base = name.replace(/\.(webp|jpg)$/, '');
+      return [`${base}.webp`, `${base}.jpg`].map((f) => unlink(join(root, 'posts', f)).catch(() => undefined));
+    })
+  );
 }

@@ -10,6 +10,7 @@ import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
+import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,11 +53,18 @@ export async function POST(request: NextRequest) {
     const target = await prisma.user.findFirst({ where: { id: followingId, isActive: true }, select: { id: true } });
     if (!target) return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
 
-    await prisma.follow.upsert({
+    const already = await prisma.follow.findUnique({
       where: { followerId_followingId: { followerId, followingId } },
-      create: { followerId, followingId },
-      update: {},
+      select: { id: true },
     });
+    if (!already) {
+      await prisma.follow.upsert({
+        where: { followerId_followingId: { followerId, followingId } },
+        create: { followerId, followingId },
+        update: {},
+      });
+      await notifyFeed({ type: 'new_follower', recipientId: followingId, actorId: followerId });
+    }
     return NextResponse.json({ success: true, following: true, message: t('api.feed.followed') }, { status: 201 });
   } catch (error) {
     console.error('Follow error:', error);

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Search, User, Menu, LogOut, MessageCircle } from 'lucide-react'
+import { NotificationBell } from '@/components/feed/NotificationBell'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
@@ -258,6 +259,8 @@ export function Navbar() {
             >
               <Search className="w-5 h-5 text-neutral-600" />
             </Link>
+
+              {user && <NotificationBell />}
 
               {/* Mobile messages icon with unread badge */}
               {user && (

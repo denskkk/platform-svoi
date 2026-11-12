@@ -2,8 +2,9 @@
 
 import { memo, useState } from 'react';
 import Link from 'next/link';
-import { BadgeCheck, Heart, MessageCircle, MoreHorizontal, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
+import { BadgeCheck, Heart, MessageCircle, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { ReportButton } from '@/components/ui/ReportButton';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -17,15 +18,19 @@ interface Props {
   onChange: (id: number, patch: Partial<FeedPost>) => void;
   onFollowChange: (authorId: number, following: boolean) => void;
   onDeleted: (id: number) => void;
+  autoOpenComments?: boolean;
 }
 
 const LONG_TEXT = 280;
 
-function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, onDeleted }: Props) {
+function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, onDeleted, autoOpenComments = false }: Props) {
   const { t, locale } = useI18n();
   const toast = useToast();
   const [expanded, setExpanded] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(autoOpenComments);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState('');
+  const [saving, setSaving] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -79,6 +84,30 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
     }
   };
 
+  const startEdit = () => {
+    setDraft(post.content);
+    setEditing(true);
+    setMenuOpen(false);
+  };
+
+  const saveEdit = async () => {
+    const content = draft.trim();
+    if (saving || (!content && post.images.length === 0)) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/posts/${post.id}`, { method: 'PATCH', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error);
+      onChange(post.id, { content: data.post.content, edited: data.post.edited });
+      setEditing(false);
+      toast.success(t('feed.toast.saved'));
+    } catch (e: any) {
+      toast.error(e?.message || t('feed.toast.actionFailed'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const doDelete = async () => {
     try {
       const res = await fetch(`/api/posts/${post.id}`, { method: 'DELETE', credentials: 'include', headers: authHeaders() });
@@ -97,7 +126,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
   const gridClass = imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
 
   return (
-    <article className="bg-white rounded-2xl shadow-sm border border-neutral-200/70 overflow-hidden">
+    <article className="bg-white rounded-2xl shadow-sm border border-neutral-200/70">
       {/* Автор */}
       <header className="flex items-center gap-3 px-4 pt-4">
         <Link href={`/profile/${author.id}`} className="shrink-0">
@@ -109,7 +138,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
             {author.isVerified && <BadgeCheck className="w-4 h-4 text-accent-500 shrink-0" aria-hidden />}
           </Link>
           <p className="text-xs text-neutral-500 truncate">
-            {[author.city, timeAgo(post.createdAt, locale, t('feed.post.justNow'))].filter(Boolean).join(' · ')}
+            {[author.city, timeAgo(post.createdAt, locale, t('feed.post.justNow')), post.edited ? t('feed.post.edited') : null].filter(Boolean).join(' · ')}
           </p>
         </div>
 
@@ -128,34 +157,67 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
           </button>
         )}
 
-        {viewer.isOwn && (
-          <div className="relative shrink-0">
-            <button type="button" onClick={() => setMenuOpen((v) => !v)} aria-label={t('feed.post.menu')} className="p-2 -mr-2 rounded-full text-neutral-500 hover:bg-neutral-100">
-              <MoreHorizontal className="w-5 h-5" />
-            </button>
-            {menuOpen && (
+        <div className="relative shrink-0">
+          <button type="button" onClick={() => { setMenuOpen((v) => !v); setConfirmDelete(false); }} aria-label={t('feed.post.menu')} aria-expanded={menuOpen} className="p-2 -mr-2 rounded-full text-neutral-500 hover:bg-neutral-100">
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+          {menuOpen && (
+            <>
+              <button type="button" aria-label={t('feed.post.menuClose')} className="fixed inset-0 z-[5] cursor-default" onClick={() => { setMenuOpen(false); setConfirmDelete(false); }} />
               <div className="absolute right-0 mt-1 w-56 rounded-xl bg-white shadow-lg border border-neutral-200 z-10 p-1">
-                {confirmDelete ? (
-                  <div className="p-2 space-y-2">
-                    <p className="text-sm text-neutral-800">{t('feed.post.deleteConfirm')}</p>
-                    <div className="flex gap-2">
-                      <button type="button" onClick={doDelete} className="flex-1 rounded-lg bg-red-600 text-white text-sm py-1.5">{t('feed.post.delete')}</button>
-                      <button type="button" onClick={() => { setConfirmDelete(false); setMenuOpen(false); }} className="flex-1 rounded-lg bg-neutral-100 text-sm py-1.5">{t('feed.post.deleteCancel')}</button>
+                {viewer.isOwn ? (
+                  confirmDelete ? (
+                    <div className="p-2 space-y-2">
+                      <p className="text-sm text-neutral-800">{t('feed.post.deleteConfirm')}</p>
+                      <div className="flex gap-2">
+                        <button type="button" onClick={doDelete} className="flex-1 rounded-lg bg-red-600 text-white text-sm py-1.5">{t('feed.post.delete')}</button>
+                        <button type="button" onClick={() => { setConfirmDelete(false); setMenuOpen(false); }} className="flex-1 rounded-lg bg-neutral-100 text-sm py-1.5">{t('feed.post.deleteCancel')}</button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      <button type="button" onClick={startEdit} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-800 rounded-lg hover:bg-neutral-50">
+                        <Pencil className="w-4 h-4" /> {t('feed.post.edit')}
+                      </button>
+                      <button type="button" onClick={() => setConfirmDelete(true)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50">
+                        <Trash2 className="w-4 h-4" /> {t('feed.post.delete')}
+                      </button>
+                    </>
+                  )
                 ) : (
-                  <button type="button" onClick={() => setConfirmDelete(true)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50">
-                    <Trash2 className="w-4 h-4" /> {t('feed.post.delete')}
-                  </button>
+                  <ReportButton
+                    reportedUserId={author.id}
+                    contentType="post"
+                    contentId={post.id}
+                    label={t('feed.post.report')}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-800 rounded-lg hover:bg-neutral-50"
+                  />
                 )}
               </div>
-            )}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </header>
 
       {/* Текст */}
-      {post.content && (
+      {editing ? (
+        <div className="px-4 pt-3 space-y-2">
+          <textarea
+            autoFocus
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            maxLength={2000}
+            rows={4}
+            className="w-full resize-none rounded-xl border border-neutral-200 px-3 py-2 text-base md:text-[15px] focus:outline-none focus:ring-2 focus:ring-primary-400"
+          />
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={() => setEditing(false)} className="rounded-full px-4 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100">{t('feed.composer.cancel')}</button>
+            <button type="button" onClick={saveEdit} disabled={saving || (!draft.trim() && post.images.length === 0)} className="rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-1.5 disabled:opacity-40">
+              {saving ? t('feed.post.saving') : t('feed.post.save')}
+            </button>
+          </div>
+        </div>
+      ) : post.content && (
         <div className="px-4 pt-3">
           <p className="text-[15px] leading-relaxed text-neutral-800 whitespace-pre-wrap break-words">{text}</p>
           {isLong && (
@@ -168,7 +230,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
 
       {/* Фото */}
       {imgs.length > 0 && (
-        <div className={cn('grid gap-0.5 mt-3', gridClass)}>
+        <div className={cn('grid gap-0.5 mt-3 overflow-hidden', gridClass)}>
           {imgs.slice(0, 4).map((img, i) => (
             <button
               key={img.id}
