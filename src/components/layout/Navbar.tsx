@@ -399,6 +399,13 @@ export function Navbar() {
                         {t('layout.navbar.favorites')}
                       </Link>
                       <Link
+                        href="/business/apply"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.businessApply')}
+                      </Link>
+                      <Link
                         href="/my-listings"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
@@ -567,6 +574,14 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">⭐</span>
                   <span>{t('layout.navbar.favorites')}</span>
+                </Link>
+                <Link
+                  href="/business/apply"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">🏢</span>
+                  <span>{t('layout.navbar.businessApply')}</span>
                 </Link>
                 <Link
                   href="/my-listings"

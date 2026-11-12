@@ -78,6 +78,7 @@ export default function NotificationsPage() {
   const hrefFor = (n: Item): string | null => {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'business_application') return '/business/apply';
     if (n.type === 'new_follower' && n.actor) return `/profile/${n.actor.id}`;
     return null;
   };
@@ -89,6 +90,8 @@ export default function NotificationsPage() {
     if (n.type === 'new_follower') return t('feed.notifications.newFollower', { name: who });
     if (n.type === 'listing_approved') return t('feed.notifications.listingApproved');
     if (n.type === 'listing_rejected') return t('feed.notifications.listingRejected');
+    if (n.type === 'business_approved') return t('feed.notifications.businessApproved');
+    if (n.type === 'business_rejected') return t('feed.notifications.businessRejected');
     return n.title;
   };
 

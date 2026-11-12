@@ -32,3 +32,7 @@ A store update is only needed when native parts change (icons, permissions, vers
 ## Оголошення (Авто, Нерухомість)
 - Міграція: `database/migrations/20261113_add_listings.sql` (listings, listing_images, saved_listings, audit_log; активує проєкти cars/real-estate).
 - Публікація → модерація (`/admin/listings`) → каталог `/projects/<slug>`; кабінет `/my-listings`; картка `/listings/<id>`.
+
+## Заявка бізнесу
+- Міграція: `database/migrations/20261114_add_business_applications.sql`.
+- Користувач: `/business/apply` (форма + статус). Адмін: `/admin/business-applications` (схвалення з необов’язковим орієнтовним % — лише пропозиція, не гарантія; відхилення з причиною). Дії пишуться в `audit_logs`, заявник отримує сповіщення.

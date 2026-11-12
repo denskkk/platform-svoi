@@ -238,6 +238,7 @@ model User {
   blocksMade         UserBlock[]   @relation("Blocker")
   listings           Listing[]
   savedListings      SavedListing[]
+  businessApplications BusinessApplication[]
   blocksReceived     UserBlock[]   @relation("Blocked")
   
   @@index([email])
@@ -1072,4 +1073,31 @@ model AuditLog {
   @@index([actorId])
   @@index([createdAt(sort: Desc)])
   @@map("audit_logs")
+}
+
+// Заявка бізнесу на участь в екосистемі. Орієнтовний відсоток винагороди — лише попередня пропозиція, не гарантія.
+model BusinessApplication {
+  id                    Int       @id @default(autoincrement()) @map("application_id")
+  userId                Int       @map("user_id")
+  companyName           String    @map("company_name") @db.VarChar(150)
+  activity              String    @db.VarChar(150)
+  city                  String    @db.VarChar(100)
+  contactName           String?   @map("contact_name") @db.VarChar(100)
+  phone                 String    @db.VarChar(30)
+  website               String?   @db.VarChar(255)
+  description           String    @db.Text
+  projectSlug           String?   @map("project_slug") @db.VarChar(60)
+  status                String    @default("pending") @db.VarChar(20)
+  proposedRewardPercent Decimal?  @map("proposed_reward_percent") @db.Decimal(5, 2)
+  rejectReason          String?   @map("reject_reason") @db.VarChar(500)
+  moderatedAt           DateTime? @map("moderated_at")
+  moderatedById         Int?      @map("moderated_by_id")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status, createdAt])
+  @@map("business_applications")
 }

@@ -53,6 +53,7 @@ export const PRIVATE_PATH_PREFIXES = [
   '/notifications',
   '/blocked',
   '/my-listings',
+  '/business/apply',
   '/listings',
   '/profile/edit',
   '/profile/edit-business',

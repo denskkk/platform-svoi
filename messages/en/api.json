@@ -240,5 +240,14 @@
     "renewed": "Publication extended",
     "reasonRequired": "Enter a rejection reason",
     "alreadyModerated": "This listing has already been processed"
+  },
+  "businessApplications": {
+    "fieldsInvalid": "Fill in all required fields (description — at least 20 characters)",
+    "phoneInvalid": "Invalid phone number",
+    "websiteInvalid": "Invalid website address",
+    "alreadyExists": "You already have an active application",
+    "submitted": "Application submitted",
+    "notFound": "Application not found",
+    "percentInvalid": "Percentage must be between 0 and 50"
   }
 }

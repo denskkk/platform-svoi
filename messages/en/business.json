@@ -1,0 +1,58 @@
+{
+  "title": "Business application",
+  "subtitle": "Tell us about your business — we will review the application and let you know.",
+  "fields": {
+    "companyName": "Company name",
+    "activity": "Line of business",
+    "city": "City",
+    "contactName": "Contact person",
+    "phone": "Phone",
+    "website": "Website or social page",
+    "project": "Direction of interest",
+    "projectNone": "Not selected",
+    "description": "About the business"
+  },
+  "hints": {
+    "description": "At least 20 characters: what you do and what you expect from the partnership."
+  },
+  "submit": "Submit application",
+  "sending": "Sending…",
+  "success": "Application sent. We will notify you of the decision.",
+  "failed": "Could not submit the application",
+  "loadFailed": "Could not load data",
+  "status": {
+    "pending": "Under review",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "statusTitle": "Your application",
+  "submittedAt": "Submitted",
+  "reason": "Reason",
+  "reapply": "Submit a new application",
+  "reward": "Indicative reward proposal",
+  "rewardNote": "This is a preliminary proposal, not a guarantee. Final terms are set in a separate agreement.",
+  "approvedHint": "Your application is approved. Our managers will contact you about next steps.",
+  "pendingHint": "Your application is under review. This usually takes a few days.",
+  "link": "Business application",
+  "admin": {
+    "title": "Business applications",
+    "subtitle": "Review applications and optionally set an indicative percentage",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "approve": "Approve",
+    "reject": "Reject",
+    "percent": "Indicative reward % (0–50)",
+    "reasonPlaceholder": "Rejection reason (visible to the applicant)",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "empty": "Queue is empty",
+    "done": "Done",
+    "failed": "Could not complete the action",
+    "back": "Back to admin panel",
+    "forbidden": "Administrators only",
+    "link": "Business applications",
+    "applicant": "Applicant",
+    "loadMore": "Show more"
+  }
+}
