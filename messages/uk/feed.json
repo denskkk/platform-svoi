@@ -99,7 +99,9 @@
     "listingApproved": "Ваше оголошення схвалено і опубліковано",
     "listingRejected": "Ваше оголошення відхилено",
     "businessApproved": "Вашу заявку бізнесу схвалено",
-    "businessRejected": "Вашу заявку бізнесу відхилено"
+    "businessRejected": "Вашу заявку бізнесу відхилено",
+    "partnerApproved": "Вашу заявку на партнерство схвалено",
+    "partnerRejected": "Вашу заявку на партнерство відхилено"
   },
   "profile": {
     "title": "Дописи",

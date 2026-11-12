@@ -72,6 +72,9 @@ export default function ProjectPage() {
                 {description && <p className="text-sm text-neutral-600 mt-0.5">{description}</p>}
               </div>
             </header>
+            <Link href={`/projects/${project.slug}/earn`} className="block rounded-2xl bg-accent-50 hover:bg-accent-100 border border-accent-200 text-accent-800 font-semibold text-center py-3">
+              💼 {t('projects.earn.button')}
+            </Link>
             {loggedIn ? (
               <ProjectCatalog slug={project.slug} />
             ) : (

@@ -249,5 +249,9 @@
     "submitted": "Application submitted",
     "notFound": "Application not found",
     "percentInvalid": "Percentage must be between 0 and 50"
+  },
+  "partnerApplications": {
+    "messageInvalid": "Describe why you want to cooperate (at least 10 characters)",
+    "notFound": "Application not found"
   }
 }

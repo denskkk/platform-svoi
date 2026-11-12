@@ -239,6 +239,7 @@ model User {
   listings           Listing[]
   savedListings      SavedListing[]
   businessApplications BusinessApplication[]
+  partnerApplications  PartnerApplication[]
   blocksReceived     UserBlock[]   @relation("Blocked")
   
   @@index([email])
@@ -1100,4 +1101,39 @@ model BusinessApplication {
   @@index([userId])
   @@index([status, createdAt])
   @@map("business_applications")
+}
+
+// Сторінка «Як заробити з нами?» для напрямку (редагується адміністратором; без запису — типовий текст з перекладів).
+model ProjectEarnPage {
+  id          Int      @id @default(autoincrement()) @map("earn_page_id")
+  projectSlug String   @unique @map("project_slug") @db.VarChar(60)
+  titleUk     String   @default("") @map("title_uk") @db.VarChar(150)
+  titleEn     String   @default("") @map("title_en") @db.VarChar(150)
+  bodyUk      String   @default("") @map("body_uk") @db.Text
+  bodyEn      String   @default("") @map("body_en") @db.Text
+  updatedById Int?     @map("updated_by_id")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("project_earn_pages")
+}
+
+// Заявка на партнерство в конкретному напрямку.
+model PartnerApplication {
+  id            Int       @id @default(autoincrement()) @map("partner_application_id")
+  userId        Int       @map("user_id")
+  projectSlug   String    @map("project_slug") @db.VarChar(60)
+  phone         String    @db.VarChar(30)
+  message       String    @db.Text
+  status        String    @default("pending") @db.VarChar(20)
+  rejectReason  String?   @map("reject_reason") @db.VarChar(500)
+  moderatedAt   DateTime? @map("moderated_at")
+  moderatedById Int?      @map("moderated_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, projectSlug])
+  @@index([status, createdAt])
+  @@map("partner_applications")
 }

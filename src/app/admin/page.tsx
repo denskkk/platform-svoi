@@ -283,6 +283,12 @@ export default function AdminDashboard() {
             >
               {t('business.admin.link')}
             </button>
+            <button
+              onClick={() => router.push('/admin/partners')}
+              className="flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('projects.partnerAdmin.link')}
+            </button>
           </div>
         </div>
 

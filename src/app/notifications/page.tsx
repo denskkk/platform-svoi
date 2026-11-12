@@ -79,6 +79,7 @@ export default function NotificationsPage() {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'business_application') return '/business/apply';
+    if (n.relatedEntityType === 'partner_application') return '/projects';
     if (n.type === 'new_follower' && n.actor) return `/profile/${n.actor.id}`;
     return null;
   };
@@ -92,6 +93,8 @@ export default function NotificationsPage() {
     if (n.type === 'listing_rejected') return t('feed.notifications.listingRejected');
     if (n.type === 'business_approved') return t('feed.notifications.businessApproved');
     if (n.type === 'business_rejected') return t('feed.notifications.businessRejected');
+    if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
+    if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
     return n.title;
   };
 

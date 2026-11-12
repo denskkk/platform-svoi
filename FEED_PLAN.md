@@ -36,3 +36,8 @@ A store update is only needed when native parts change (icons, permissions, vers
 ## Заявка бізнесу
 - Міграція: `database/migrations/20261114_add_business_applications.sql`.
 - Користувач: `/business/apply` (форма + статус). Адмін: `/admin/business-applications` (схвалення з необов’язковим орієнтовним % — лише пропозиція, не гарантія; відхилення з причиною). Дії пишуться в `audit_logs`, заявник отримує сповіщення.
+
+## «Як заробити з нами?» і партнерські заявки
+- Міграція: `database/migrations/20261115_add_partner_pages.sql` (project_earn_pages, partner_applications).
+- Сторінка: `/projects/<slug>/earn` (кнопка на активних напрямках). Без запису в БД показується типовий текст з перекладів.
+- Адмін: `/admin/partners` — вкладки «Заявки» (схвалення/відхилення з причиною, аудит, сповіщення) та «Тексти сторінок» (uk/en, звичайний текст без HTML).
