@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       include: listingInclude,
     });
     return NextResponse.json({
-      listings: rows.map((r) => ({ ...serializeListing(r as any, userId, new Set()), rejectReason: r.rejectReason, expiresAt: r.expiresAt?.toISOString() ?? null })),
+      listings: rows.map((r: any) => ({ ...serializeListing(r as any, userId, new Set()), rejectReason: r.rejectReason, expiresAt: r.expiresAt?.toISOString() ?? null })),
     });
   } catch (error) {
     console.error('Get my listings error:', error);

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      blocks: rows.map((r) => ({
+      blocks: rows.map((r: any) => ({
         userId: r.blocked.id,
         name: r.blocked.businessInfo?.companyName || `${r.blocked.firstName} ${r.blocked.lastName}`.trim(),
         avatarUrl: r.blocked.businessInfo?.logoUrl || r.blocked.avatarUrl,

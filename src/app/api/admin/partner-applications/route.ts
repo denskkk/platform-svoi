@@ -29,7 +29,7 @@ async function handler(request: NextRequest) {
     const page = hasMore ? rows.slice(0, 20) : rows;
 
     return NextResponse.json({
-      applications: page.map((a) => ({
+      applications: page.map((a: any) => ({
         id: a.id, projectSlug: a.projectSlug, phone: a.phone, message: a.message,
         status: a.status, createdAt: a.createdAt, rejectReason: a.rejectReason,
         user: { id: a.user.id, name: `${a.user.firstName} ${a.user.lastName}`.trim(), email: a.user.email },

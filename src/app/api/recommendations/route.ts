@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       getBlockedIds(userId),
       prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
     ]);
-    const excluded = [userId, ...blocked, ...follows.map((f) => f.followingId)];
+    const excluded = [userId, ...blocked, ...follows.map((f: any) => f.followingId)];
     const city = me?.city?.trim() || null;
 
     // Люди
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     let people = sameCity;
     if (people.length < LIMIT) {
       const rest = await prisma.user.findMany({
-        where: { ...personBase, id: { notIn: [...excluded, ...people.map((p) => p.id)] }, posts: { some: { isHidden: false } } },
+        where: { ...personBase, id: { notIn: [...excluded, ...people.map((p: any) => p.id)] }, posts: { some: { isHidden: false } } },
         select: personSelect, orderBy: { id: 'desc' }, take: LIMIT - people.length,
       });
       people = [...people, ...rest];
@@ -56,15 +56,15 @@ export async function GET(request: NextRequest) {
     let business = bizSame;
     if (business.length < LIMIT) {
       const rest = await prisma.businessInfo.findMany({
-        where: { user: { isActive: true, id: { notIn: [...excluded, ...business.map((b) => b.userId)] } } },
+        where: { user: { isActive: true, id: { notIn: [...excluded, ...business.map((b: any) => b.userId)] } } },
         select: bizSelect, orderBy: [{ user: { isVerified: 'desc' } }, { id: 'desc' }], take: LIMIT - business.length,
       });
       business = [...business, ...rest];
     }
 
     return NextResponse.json({
-      people: people.map((u) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`.trim(), avatarUrl: u.avatarUrl, city: u.city, subtitle: u.profession, isVerified: u.isVerified })),
-      business: business.map((b) => ({ id: b.userId, name: b.companyName, avatarUrl: b.logoUrl, city: b.city, subtitle: b.businessType, isVerified: b.user.isVerified })),
+      people: people.map((u: any) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`.trim(), avatarUrl: u.avatarUrl, city: u.city, subtitle: u.profession, isVerified: u.isVerified })),
+      business: business.map((b: any) => ({ id: b.userId, name: b.companyName, avatarUrl: b.logoUrl, city: b.city, subtitle: b.businessType, isVerified: b.user.isVerified })),
     });
   } catch (error) {
     console.error('Recommendations error:', error);

@@ -86,17 +86,17 @@ export async function GET(request: NextRequest) {
         : [],
     ]);
 
-    const saved = listings.length ? await loadSavedIds(prisma, userId, listings.map((l) => l.id)) : new Set<number>();
+    const saved = listings.length ? await loadSavedIds(prisma, userId, listings.map((l: any) => l.id)) : new Set<number>();
 
     return NextResponse.json({
       q,
-      people: people.map((u) => ({
+      people: people.map((u: any) => ({
         id: u.id, name: `${u.firstName} ${u.lastName}`.trim(), avatarUrl: u.avatarUrl, city: u.city, profession: u.profession, isVerified: u.isVerified,
       })),
-      business: business.map((b) => ({
+      business: business.map((b: any) => ({
         id: b.userId, name: b.companyName, avatarUrl: b.logoUrl, city: b.city, businessType: b.businessType, isVerified: b.user.isVerified,
       })),
-      listings: listings.map((l) => serializeListing(l as any, userId, saved)),
+      listings: listings.map((l: any) => serializeListing(l as any, userId, saved)),
     });
   } catch (error) {
     console.error('Search error:', error);

@@ -36,7 +36,7 @@ async function setLike(request: NextRequest, idParam: string, like: boolean) {
     }
 
     let newLike = false;
-    const likesCount = await prisma.$transaction(async (tx) => {
+    const likesCount = await prisma.$transaction(async (tx: any) => {
       if (like) {
         const created = await tx.postLike.createMany({ data: [{ postId, userId }], skipDuplicates: true });
         if (created.count > 0) {

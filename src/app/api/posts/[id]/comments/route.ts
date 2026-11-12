@@ -64,7 +64,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const page = hasMore ? rows.slice(0, limit) : rows;
 
     return NextResponse.json({
-      comments: page.map((c) => serializeComment(c, userId)),
+      comments: page.map((c: any) => serializeComment(c, userId)),
       nextCursor: hasMore ? page[page.length - 1].id : null,
     });
   } catch (error) {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ error: t('api.feed.commentTooLong', { max: FEED_LIMITS.commentMaxLength }) }, { status: 400 });
     }
 
-    const comment = await prisma.$transaction(async (tx) => {
+    const comment = await prisma.$transaction(async (tx: any) => {
       const created = await tx.postComment.create({
         data: { postId, authorId: userId, content },
         include: { author: { select: authorSelect } },
@@ -142,7 +142,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       if (!me?.isAdmin) return NextResponse.json({ error: t('api.feed.forbidden') }, { status: 403 });
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       const removed = await tx.postComment.deleteMany({ where: { id: commentId, postId } });
       if (removed.count > 0) await tx.post.update({ where: { id: postId }, data: { commentsCount: { decrement: 1 } } });
     });

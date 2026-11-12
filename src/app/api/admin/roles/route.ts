@@ -26,7 +26,7 @@ async function getHandler(request: NextRequest) {
     });
     return NextResponse.json({
       roles: ADMIN_ROLES,
-      staff: rows.map((r) => ({ userId: r.userId, role: r.role, name: `${r.user.firstName} ${r.user.lastName}`.trim(), email: r.user.email })),
+      staff: rows.map((r: any) => ({ userId: r.userId, role: r.role, name: `${r.user.firstName} ${r.user.lastName}`.trim(), email: r.user.email })),
     });
   } catch (error) {
     console.error('List admin roles error:', error);

@@ -32,7 +32,7 @@ async function handler(request: NextRequest) {
     const page = hasMore ? rows.slice(0, 20) : rows;
 
     return NextResponse.json({
-      listings: page.map((r) => ({ ...serializeListing(r as any, userId, new Set(), { full: true }), rejectReason: r.rejectReason })),
+      listings: page.map((r: any) => ({ ...serializeListing(r as any, userId, new Set(), { full: true }), rejectReason: r.rejectReason })),
       nextCursor: hasMore ? page[page.length - 1].id : null,
     });
   } catch (error) {

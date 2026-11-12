@@ -90,7 +90,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     await prisma.post.delete({ where: { id: postId } });
-    await removePostImageFiles(post.images.map((i) => i.url));
+    await removePostImageFiles(post.images.map((i: any) => i.url));
     return NextResponse.json({ success: true, message: t('api.feed.postDeleted') });
   } catch (error) {
     console.error('Delete post error:', error);

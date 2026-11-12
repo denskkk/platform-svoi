@@ -50,10 +50,10 @@ export async function GET(request: NextRequest) {
     const rows = await prisma.listing.findMany({ where, orderBy: { id: 'desc' }, take: limit + 1, include: listingInclude });
     const hasMore = rows.length > limit;
     const page = hasMore ? rows.slice(0, limit) : rows;
-    const saved = await loadSavedIds(prisma, userId, page.map((r) => r.id));
+    const saved = await loadSavedIds(prisma, userId, page.map((r: any) => r.id));
 
     return NextResponse.json({
-      listings: page.map((r) => serializeListing(r as any, userId, saved)),
+      listings: page.map((r: any) => serializeListing(r as any, userId, saved)),
       nextCursor: hasMore ? page[page.length - 1].id : null,
     });
   } catch (error) {

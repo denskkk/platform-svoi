@@ -39,14 +39,14 @@ export async function GET(request: NextRequest) {
     const authorId = parseId(params.get('authorId'));
     if (params.get('saved') === '1') {
       const rows = await prisma.savedPost.findMany({ where: { userId }, select: { postId: true }, orderBy: { id: 'desc' }, take: 1000 });
-      where.id = { ...(cursor ? { lt: cursor } : {}), in: rows.map((r) => r.postId) };
+      where.id = { ...(cursor ? { lt: cursor } : {}), in: rows.map((r: any) => r.postId) };
       if (blocked.length > 0) where.authorId = { notIn: blocked };
     } else if (authorId) {
       if (blocked.includes(authorId)) return NextResponse.json({ posts: [], nextCursor: null });
       where.authorId = authorId;
     } else if (scope === 'following') {
       const follows = await prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } });
-      where.authorId = { in: [userId, ...follows.map((f) => f.followingId).filter((id) => !blocked.includes(id))] };
+      where.authorId = { in: [userId, ...follows.map((f: any) => f.followingId).filter((id: any) => !blocked.includes(id))] };
     } else if (blocked.length > 0) {
       where.authorId = { notIn: blocked };
     }
@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
 
     const hasMore = rows.length > limit;
     const page = hasMore ? rows.slice(0, limit) : rows;
-    const state = await loadViewerState(userId, page.map((p) => p.id), Array.from(new Set(page.map((p) => p.authorId))));
+    const state = await loadViewerState(userId, page.map((p: any) => p.id), Array.from(new Set(page.map((p: any) => p.authorId))));
 
     return NextResponse.json({
-      posts: page.map((p) => serializePost(p, state)),
+      posts: page.map((p: any) => serializePost(p, state)),
       nextCursor: hasMore ? page[page.length - 1].id : null,
     });
   } catch (error) {

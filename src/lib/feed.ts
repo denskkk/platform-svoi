@@ -94,15 +94,15 @@ export async function loadViewerState(userId: number, postIds: number[], authorI
   let saved: number[] = [];
   if (postIds.length) {
     try {
-      saved = (await prisma.savedPost.findMany({ where: { userId, postId: { in: postIds } }, select: { postId: true } })).map((r) => r.postId);
+      saved = (await prisma.savedPost.findMany({ where: { userId, postId: { in: postIds } }, select: { postId: true } })).map((r: any) => r.postId);
     } catch {
       saved = [];
     }
   }
   return {
     userId,
-    liked: new Set(likes.map((l) => l.postId)),
-    following: new Set(follows.map((f) => f.followingId)),
+    liked: new Set(likes.map((l: any) => l.postId)),
+    following: new Set(follows.map((f: any) => f.followingId)),
     saved: new Set(saved),
   };
 }

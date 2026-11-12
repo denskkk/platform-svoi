@@ -46,7 +46,7 @@ export async function listProjects(options: { includeHidden?: boolean } = {}): P
   let rows: ProjectDTO[] = [];
   try {
     const found = await prisma.project.findMany({ orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }] });
-    rows = found.map((p) => ({
+    rows = found.map((p: any) => ({
       slug: p.slug, icon: p.icon, color: p.color, bannerUrl: p.bannerUrl,
       nameUk: p.nameUk, nameEn: p.nameEn, descriptionUk: p.descriptionUk, descriptionEn: p.descriptionEn,
       status: normalize(p.status), sortOrder: p.sortOrder,

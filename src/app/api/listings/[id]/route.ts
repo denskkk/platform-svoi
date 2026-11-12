@@ -70,7 +70,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (!result.ok) return NextResponse.json({ error: t(`api.listings.${result.error}`), field: result.field }, { status: 400 });
 
     const v = result.value;
-    const removedUrls = existing.images.map((i) => i.url).filter((u) => !v.images.includes(u));
+    const removedUrls = existing.images.map((i: any) => i.url).filter((u: any) => !v.images.includes(u));
 
     await prisma.$transaction([
       prisma.listingImage.deleteMany({ where: { listingId: id } }),
@@ -109,7 +109,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     if (row.ownerId !== userId && !admin) return NextResponse.json({ error: t('api.listings.forbidden') }, { status: 403 });
 
     await prisma.listing.delete({ where: { id } });
-    await removeListingImageFiles(row.images.map((i) => i.url));
+    await removeListingImageFiles(row.images.map((i: any) => i.url));
     if (admin) await logAudit({ actorId: userId, action: 'listing.delete', entityType: 'listing', entityId: id });
 
     return NextResponse.json({ success: true, message: t('api.listings.deleted') });
