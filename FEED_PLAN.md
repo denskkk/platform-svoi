@@ -41,3 +41,8 @@ A store update is only needed when native parts change (icons, permissions, vers
 - Міграція: `database/migrations/20261115_add_partner_pages.sql` (project_earn_pages, partner_applications).
 - Сторінка: `/projects/<slug>/earn` (кнопка на активних напрямках). Без запису в БД показується типовий текст з перекладів.
 - Адмін: `/admin/partners` — вкладки «Заявки» (схвалення/відхилення з причиною, аудит, сповіщення) та «Тексти сторінок» (uk/en, звичайний текст без HTML).
+
+## Єдиний пошук
+- `/search` + `GET /api/search?q=&type=all|people|business|listings` (лише для авторизованих; без нових таблиць).
+- Показує тільки публічні поля, ховає заблокованих і неактивні акаунти, обмеження 60 запитів/хв.
+- Усі міграції оновлення можна застосувати разом: `DATABASE_URL=... ./database/apply_social_update.sh` (скрипт безпечний для повторного запуску).

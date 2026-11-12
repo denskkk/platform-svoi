@@ -229,6 +229,12 @@ export function Navbar() {
               {t('layout.navbar.people')}
             </Link>
             <Link 
+              href="/search" 
+              className="text-neutral-700 hover:text-primary-600 transition-colors"
+            >
+              {t('layout.navbar.search')}
+            </Link>
+            <Link 
               href="/services" 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
@@ -492,6 +498,14 @@ export function Navbar() {
               >
                 <span className="text-xl mr-3">👥</span>
                 <span>{t('layout.navbar.people')}</span>
+              </Link>
+              <Link 
+                href="/search" 
+                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-xl mr-3">🔎</span>
+                <span>{t('layout.navbar.search')}</span>
               </Link>
               <Link 
                 href="/services" 

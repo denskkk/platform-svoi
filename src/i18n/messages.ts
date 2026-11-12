@@ -22,6 +22,7 @@ import uk_feed from '../../messages/uk/feed.json'
 import uk_projects from '../../messages/uk/projects.json'
 import uk_listings from '../../messages/uk/listings.json'
 import uk_business from '../../messages/uk/business.json'
+import uk_search from '../../messages/uk/search.json'
 import uk_contacts from '../../messages/uk/contacts.json'
 import uk_admin from '../../messages/uk/admin.json'
 import uk_api from '../../messages/uk/api.json'
@@ -50,6 +51,7 @@ import en_feed from '../../messages/en/feed.json'
 import en_projects from '../../messages/en/projects.json'
 import en_listings from '../../messages/en/listings.json'
 import en_business from '../../messages/en/business.json'
+import en_search from '../../messages/en/search.json'
 import en_contacts from '../../messages/en/contacts.json'
 import en_admin from '../../messages/en/admin.json'
 import en_api from '../../messages/en/api.json'
@@ -82,6 +84,7 @@ const uk = {
   projects: uk_projects,
   listings: uk_listings,
   business: uk_business,
+  search: uk_search,
   contacts: uk_contacts,
   admin: uk_admin,
   api: uk_api,
@@ -113,6 +116,7 @@ const en = {
   projects: en_projects,
   listings: en_listings,
   business: en_business,
+  search: en_search,
   contacts: en_contacts,
   admin: en_admin,
   api: en_api,

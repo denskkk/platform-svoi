@@ -1,0 +1,14 @@
+{
+  "title": "Search",
+  "placeholder": "People, businesses, listings…",
+  "clear": "Clear",
+  "hint": "Enter at least 2 characters",
+  "empty": "Nothing found",
+  "failed": "Search failed",
+  "tabs": {
+    "all": "All",
+    "people": "People",
+    "business": "Businesses",
+    "listings": "Listings"
+  }
+}
