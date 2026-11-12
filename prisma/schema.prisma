@@ -236,6 +236,8 @@ model User {
   following          Follow[]      @relation("Follower")
   followers          Follow[]      @relation("Following")
   blocksMade         UserBlock[]   @relation("Blocker")
+  listings           Listing[]
+  savedListings      SavedListing[]
   blocksReceived     UserBlock[]   @relation("Blocked")
   
   @@index([email])
@@ -988,4 +990,86 @@ model Project {
 
   @@index([status, sortOrder])
   @@map("projects")
+}
+
+// ========================================
+// ОГОЛОШЕННЯ (єдиний модуль для всіх проєктів)
+// ========================================
+// Поля, специфічні для проєкту (марка авто, кількість кімнат тощо), зберігаються в data (JSON)
+// і описуються конфігурацією в src/lib/listingFields.ts — окремі таблиці на кожну категорію не потрібні.
+// status: pending | approved | rejected
+model Listing {
+  id            Int       @id @default(autoincrement()) @map("listing_id")
+  projectSlug   String    @map("project_slug") @db.VarChar(60)
+  ownerId       Int       @map("owner_id")
+  title         String    @db.VarChar(150)
+  description   String    @db.Text
+  price         Decimal?  @db.Decimal(14, 2)
+  currency      String    @default("UAH") @db.VarChar(3)
+  city          String?   @db.VarChar(100)
+  contactName   String?   @map("contact_name") @db.VarChar(100)
+  phone         String?   @db.VarChar(30)
+  data          Json      @default("{}")
+  status        String    @default("pending") @db.VarChar(20)
+  rejectReason  String?   @map("reject_reason") @db.Text
+  expiresAt     DateTime? @map("expires_at")
+  viewsCount    Int       @default(0) @map("views_count")
+  moderatedAt   DateTime? @map("moderated_at")
+  moderatedById Int?      @map("moderated_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  owner         User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  images        ListingImage[]
+  saves         SavedListing[]
+
+  @@index([projectSlug, status, createdAt(sort: Desc)])
+  @@index([ownerId, createdAt(sort: Desc)])
+  @@index([status, createdAt])
+  @@index([city])
+  @@index([price])
+  @@map("listings")
+}
+
+model ListingImage {
+  id        Int      @id @default(autoincrement()) @map("listing_image_id")
+  listingId Int      @map("listing_id")
+  url       String   @db.VarChar(255)
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, position])
+  @@map("listing_images")
+}
+
+model SavedListing {
+  id        Int      @id @default(autoincrement()) @map("saved_listing_id")
+  userId    Int      @map("user_id")
+  listingId Int      @map("listing_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("saved_listings")
+}
+
+// Журнал аудиту (дії адміністраторів/модераторів). Записи не змінюються й не видаляються.
+model AuditLog {
+  id         Int      @id @default(autoincrement()) @map("audit_id")
+  actorId    Int?     @map("actor_id")
+  action     String   @db.VarChar(60)
+  entityType String   @map("entity_type") @db.VarChar(40)
+  entityId   Int?     @map("entity_id")
+  details    Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt(sort: Desc)])
+  @@map("audit_logs")
 }

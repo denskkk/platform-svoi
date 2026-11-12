@@ -39,7 +39,8 @@
     "autoProposals": "Automatic proposals are a paid option. Activate it in your profile.",
     "default": "This feature is available with a \"{type}\" account. Please register.",
     "createPost": "Posting to the feed and interacting with posts is available with a \"{type}\" account. Please register.",
-    "interactPost": "Liking and commenting is available with a \"{type}\" account. Please register."
+    "interactPost": "Liking and commenting is available with a \"{type}\" account. Please register.",
+    "createListing": "Posting listings is available with a \"{type}\" account. Please register."
   },
   "chat": {
     "viewerCannotWrite": "Viewers cannot write in chat. Switch to a regular profile on your profile page.",
@@ -215,5 +216,29 @@
   },
   "projects": {
     "notFound": "Project not found"
+  },
+  "listings": {
+    "projectInvalid": "This direction is not available for listings",
+    "tooMany": "Too many listings today. Please try tomorrow.",
+    "titleInvalid": "Enter a title (up to 150 characters)",
+    "descriptionInvalid": "Add a description (up to 5000 characters)",
+    "priceInvalid": "Invalid price",
+    "currencyInvalid": "Invalid currency",
+    "cityRequired": "Enter a city",
+    "phoneInvalid": "Invalid phone number",
+    "fieldRequired": "Fill in the required field",
+    "fieldInvalid": "Invalid value in one of the fields",
+    "tooManyImages": "Too many photos (maximum 10)",
+    "imageInvalid": "Invalid image",
+    "tooManyPending": "You have too many listings awaiting moderation (maximum {max}). Please wait for the review.",
+    "submitted": "Listing submitted for moderation",
+    "notFound": "Listing not found",
+    "forbidden": "You cannot do this",
+    "updated": "Changes saved, the listing is back on moderation",
+    "deleted": "Listing deleted",
+    "renewNotAllowed": "Only an approved listing can be renewed",
+    "renewed": "Publication extended",
+    "reasonRequired": "Enter a rejection reason",
+    "alreadyModerated": "This listing has already been processed"
   }
 }

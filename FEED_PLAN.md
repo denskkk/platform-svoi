@@ -28,3 +28,7 @@ A store update is only needed when native parts change (icons, permissions, vers
 - Post images cannot be changed when editing (text only).
 - Deleted posts remove their image files; comments/likes cascade in the DB.
 - Feed ranking is chronological; "For you" = all public posts.
+
+## Оголошення (Авто, Нерухомість)
+- Міграція: `database/migrations/20261113_add_listings.sql` (listings, listing_images, saved_listings, audit_log; активує проєкти cars/real-estate).
+- Публікація → модерація (`/admin/listings`) → каталог `/projects/<slug>`; кабінет `/my-listings`; картка `/listings/<id>`.

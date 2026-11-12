@@ -6,7 +6,7 @@ import { Flag, X } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 
-type ContentType = 'user' | 'service' | 'request' | 'review' | 'message' | 'post' | 'comment';
+type ContentType = 'user' | 'service' | 'request' | 'review' | 'message' | 'post' | 'comment' | 'listing';
 
 interface ReportButtonProps {
   reportedUserId: number;

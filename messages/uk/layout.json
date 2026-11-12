@@ -32,7 +32,9 @@
     "menuAria": "Меню",
     "feed": "Стрічка",
     "blockedUsers": "Заблоковані",
-    "projects": "Проєкти"
+    "projects": "Проєкти",
+    "myListings": "Мої оголошення",
+    "savedListings": "Збережені оголошення"
   },
   "mobileMenu": {
     "navigation": "Навігація",

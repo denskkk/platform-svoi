@@ -32,7 +32,9 @@
     "menuAria": "Menu",
     "feed": "Feed",
     "blockedUsers": "Blocked users",
-    "projects": "Projects"
+    "projects": "Projects",
+    "myListings": "My listings",
+    "savedListings": "Saved listings"
   },
   "mobileMenu": {
     "navigation": "Navigation",

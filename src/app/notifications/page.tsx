@@ -77,6 +77,7 @@ export default function NotificationsPage() {
 
   const hrefFor = (n: Item): string | null => {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
     if (n.type === 'new_follower' && n.actor) return `/profile/${n.actor.id}`;
     return null;
   };
@@ -86,6 +87,8 @@ export default function NotificationsPage() {
     if (n.type === 'post_like') return t('feed.notifications.postLike', { name: who });
     if (n.type === 'post_comment') return t('feed.notifications.postComment', { name: who });
     if (n.type === 'new_follower') return t('feed.notifications.newFollower', { name: who });
+    if (n.type === 'listing_approved') return t('feed.notifications.listingApproved');
+    if (n.type === 'listing_rejected') return t('feed.notifications.listingRejected');
     return n.title;
   };
 

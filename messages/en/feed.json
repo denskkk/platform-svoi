@@ -95,7 +95,9 @@
     "empty": {
       "title": "No notifications yet",
       "description": "Likes, comments and new followers will show up here."
-    }
+    },
+    "listingApproved": "Your listing was approved and published",
+    "listingRejected": "Your listing was rejected"
   },
   "profile": {
     "title": "Posts",

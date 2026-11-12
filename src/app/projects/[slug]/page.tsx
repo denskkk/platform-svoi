@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { ComingSoon } from '@/components/projects/ComingSoon';
+import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
+import { hasListings } from '@/lib/listingFields';
+import { readStoredUser } from '@/lib/feedClient';
 import { useI18n } from '@/i18n/client';
 
 interface Project {
@@ -22,7 +25,10 @@ export default function ProjectPage() {
   const params = useParams<{ slug: string }>();
   const { t, locale } = useI18n();
   const [project, setProject] = useState<Project | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [state, setState] = useState<'loading' | 'ready' | 'missing' | 'error'>('loading');
+
+  useEffect(() => { setLoggedIn(!!readStoredUser()); }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -57,7 +63,26 @@ export default function ProjectPage() {
         {state === 'missing' && <div className="bg-white rounded-2xl border border-neutral-200 p-6 text-center text-neutral-600">{t('projects.notFound')}</div>}
         {state === 'error' && <div className="bg-white rounded-2xl border border-red-100 p-6 text-center text-sm text-red-600">{t('projects.loadFailed')}</div>}
 
-        {state === 'ready' && project && (
+        {state === 'ready' && project && project.status === 'active' && hasListings(project.slug) && (
+          <>
+            <header className="bg-white rounded-3xl border border-neutral-200/70 shadow-sm p-5 flex items-center gap-4">
+              <span className="text-4xl" aria-hidden>{project.icon}</span>
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold text-neutral-900">{name}</h1>
+                {description && <p className="text-sm text-neutral-600 mt-0.5">{description}</p>}
+              </div>
+            </header>
+            {loggedIn ? (
+              <ProjectCatalog slug={project.slug} />
+            ) : (
+              <div className="bg-white rounded-2xl border border-neutral-200 p-6 text-center space-y-3">
+                <p className="text-neutral-700">{t('listings.common.loginRequired')}</p>
+                <Link href={`/auth/login?returnUrl=/projects/${project.slug}`} className="inline-block rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-2.5">{t('listings.common.login')}</Link>
+              </div>
+            )}
+          </>
+        )}
+        {state === 'ready' && project && !(project.status === 'active' && hasListings(project.slug)) && (
           <ComingSoon icon={project.icon} title={name} description={description} backHref="/projects" backLabel={t('projects.back')} />
         )}
       </div>
