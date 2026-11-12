@@ -4,7 +4,7 @@
  * Стрічка дописів (нові зверху), курсорна пагінація за id допису.
  *  - scope=all        — усі публічні дописи
  *  - scope=following  — дописи тих, на кого підписаний користувач, та власні
- * Додатково: authorId=ID — лише дописи одного автора (для сторінки профілю).
+ * Додатково: saved=1 — лише збережені користувачем дописи; authorId=ID — лише дописи одного автора (для сторінки профілю).
  * Відповідь: { posts, nextCursor }  (nextCursor === null — це кінець стрічки)
  */
 
@@ -37,7 +37,11 @@ export async function GET(request: NextRequest) {
     const where: Prisma.PostWhereInput = { isHidden: false, author: { isActive: true } };
     if (cursor) where.id = { lt: cursor };
     const authorId = parseId(params.get('authorId'));
-    if (authorId) {
+    if (params.get('saved') === '1') {
+      const rows = await prisma.savedPost.findMany({ where: { userId }, select: { postId: true }, orderBy: { id: 'desc' }, take: 1000 });
+      where.id = { ...(cursor ? { lt: cursor } : {}), in: rows.map((r) => r.postId) };
+      if (blocked.length > 0) where.authorId = { notIn: blocked };
+    } else if (authorId) {
       if (blocked.includes(authorId)) return NextResponse.json({ posts: [], nextCursor: null });
       where.authorId = authorId;
     } else if (scope === 'following') {

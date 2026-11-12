@@ -52,7 +52,7 @@ type PostRow = {
   images: { id: number; url: string }[];
 };
 
-export function serializePost(post: PostRow, viewer: { liked: Set<number>; following: Set<number>; userId: number }) {
+export function serializePost(post: PostRow, viewer: { liked: Set<number>; following: Set<number>; saved?: Set<number>; userId: number }) {
   const { author } = post;
   return {
     id: post.id,
@@ -75,6 +75,7 @@ export function serializePost(post: PostRow, viewer: { liked: Set<number>; follo
       liked: viewer.liked.has(post.id),
       isOwn: author.id === viewer.userId,
       following: viewer.following.has(author.id),
+      saved: viewer.saved?.has(post.id) ?? false,
     },
   };
 }
@@ -89,10 +90,20 @@ export async function loadViewerState(userId: number, postIds: number[], authorI
       ? prisma.follow.findMany({ where: { followerId: userId, followingId: { in: authorIds } }, select: { followingId: true } })
       : Promise.resolve([] as { followingId: number }[]),
   ]);
+  // Закладки: якщо таблиці ще немає — стрічка працює без них
+  let saved: number[] = [];
+  if (postIds.length) {
+    try {
+      saved = (await prisma.savedPost.findMany({ where: { userId, postId: { in: postIds } }, select: { postId: true } })).map((r) => r.postId);
+    } catch {
+      saved = [];
+    }
+  }
   return {
     userId,
     liked: new Set(likes.map((l) => l.postId)),
     following: new Set(follows.map((f) => f.followingId)),
+    saved: new Set(saved),
   };
 }
 

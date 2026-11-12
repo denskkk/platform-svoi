@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, Clapperboard, Loader2, Newspaper, Users } from 'lucide-react';
@@ -10,6 +10,7 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 import { PostCard } from './PostCard';
+import { Recommendations } from './Recommendations';
 import { PostComposer } from './PostComposer';
 
 type Scope = 'all' | 'following';
@@ -222,9 +223,9 @@ export function FeedPage() {
           )
         )}
 
-        {!loading && posts.map((post) => (
+        {!loading && posts.map((post, index) => (
+          <Fragment key={post.id}>
           <PostCard
-            key={post.id}
             post={post}
             canInteract={canInteract}
             canFollow
@@ -233,6 +234,8 @@ export function FeedPage() {
             onDeleted={removePost}
             onBlocked={removeByAuthor}
           />
+          {scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
+          </Fragment>
         ))}
 
         <div ref={sentinel} aria-hidden className="h-1" />

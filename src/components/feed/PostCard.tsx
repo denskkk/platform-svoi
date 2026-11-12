@@ -2,7 +2,7 @@
 
 import { memo, useState } from 'react';
 import Link from 'next/link';
-import { BadgeCheck, Heart, MessageCircle, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
+import { BadgeCheck, Heart, MessageCircle, Bookmark, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { BlockButton } from './BlockButton';
@@ -38,10 +38,28 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [likeBusy, setLikeBusy] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
+  const [saveBusy, setSaveBusy] = useState(false);
 
   const { author, viewer } = post;
   const isLong = post.content.length > LONG_TEXT;
   const text = isLong && !expanded ? `${post.content.slice(0, LONG_TEXT).trimEnd()}…` : post.content;
+
+  const toggleSave = async () => {
+    if (saveBusy) return;
+    setSaveBusy(true);
+    const was = !!viewer.saved;
+    onChange(post.id, { viewer: { ...viewer, saved: !was } });
+    try {
+      const res = await fetch(`/api/posts/${post.id}/save`, { method: was ? 'DELETE' : 'POST', credentials: 'include', headers: authHeaders() });
+      if (!res.ok) throw new Error();
+      toast.success(was ? t('feed.post.unsavedToast') : t('feed.post.savedToast'));
+    } catch {
+      onChange(post.id, { viewer });
+      toast.error(t('feed.toast.actionFailed'));
+    } finally {
+      setSaveBusy(false);
+    }
+  };
 
   const toggleLike = async () => {
     if (!canInteract || likeBusy) return;
@@ -282,6 +300,15 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
         >
           <MessageCircle className="w-5 h-5" />
           <span>{post.commentsCount}</span>
+        </button>
+        <button
+          type="button"
+          onClick={toggleSave}
+          aria-pressed={!!viewer.saved}
+          aria-label={viewer.saved ? t('feed.post.unsave') : t('feed.post.save')}
+          className={cn('ml-auto inline-flex items-center px-3 py-2 rounded-full transition active:scale-95', viewer.saved ? 'text-primary-700' : 'text-neutral-600 hover:bg-neutral-100')}
+        >
+          <Bookmark className={cn('w-5 h-5', viewer.saved && 'fill-current')} />
         </button>
       </div>
 

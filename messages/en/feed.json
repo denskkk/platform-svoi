@@ -41,7 +41,10 @@
     "report": "Report",
     "menuClose": "Close menu",
     "block": "Block author",
-    "blockConfirm": "Block this user? You will no longer see their posts and they will not see yours."
+    "blockConfirm": "Block this user? You will no longer see their posts and they will not see yours.",
+    "unsave": "Remove from saved",
+    "savedToast": "Saved",
+    "unsavedToast": "Removed from saved"
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -121,5 +124,18 @@
     "unblockLabel": "Unblock",
     "confirm": "Block this user?",
     "loadFailed": "Could not load the list"
+  },
+  "recommendations": {
+    "title": "Recommendations",
+    "people": "People you may know",
+    "business": "Recommended businesses",
+    "follow": "Follow",
+    "followed": "Following"
+  },
+  "saved": {
+    "title": "Saved posts",
+    "empty": "Posts you save will appear here",
+    "back": "Back to feed",
+    "link": "Saved posts"
   }
 }

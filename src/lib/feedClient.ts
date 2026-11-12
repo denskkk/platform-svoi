@@ -34,7 +34,7 @@ export interface FeedPost {
   edited?: boolean;
   images: { id: number; url: string }[];
   author: FeedAuthor;
-  viewer: { liked: boolean; isOwn: boolean; following: boolean };
+  viewer: { liked: boolean; isOwn: boolean; following: boolean; saved?: boolean };
 }
 
 export interface FeedComment {

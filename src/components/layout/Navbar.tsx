@@ -414,6 +414,13 @@ export function Navbar() {
                       </Link>
                       <StaffLink className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100" onClick={() => setShowProfileMenu(false)} />
                       <Link
+                        href="/saved"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.savedPosts')}
+                      </Link>
+                      <Link
                         href="/my-listings"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
@@ -600,6 +607,14 @@ export function Navbar() {
                   <span>{t('layout.navbar.businessApply')}</span>
                 </Link>
                 <StaffLink className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors" onClick={() => setIsMenuOpen(false)} icon="🛡️" />
+                <Link
+                  href="/saved"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">🔖</span>
+                  <span>{t('layout.navbar.savedPosts')}</span>
+                </Link>
                 <Link
                   href="/my-listings"
                   className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"

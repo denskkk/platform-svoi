@@ -11,7 +11,8 @@ for f in \
   20261113_add_listings.sql \
   20261114_add_business_applications.sql \
   20261115_add_partner_pages.sql \
-  20261116_add_admin_roles.sql; do
+  20261116_add_admin_roles.sql \
+  20261117_add_saved_posts.sql; do
   echo ">> $f"
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
 done

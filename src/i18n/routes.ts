@@ -54,6 +54,7 @@ export const PRIVATE_PATH_PREFIXES = [
   '/blocked',
   '/my-listings',
   '/search',
+  '/saved',
   '/business/apply',
   '/listings',
   '/profile/edit',
