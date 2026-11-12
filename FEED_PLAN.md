@@ -46,3 +46,9 @@ A store update is only needed when native parts change (icons, permissions, vers
 - `/search` + `GET /api/search?q=&type=all|people|business|listings` (лише для авторизованих; без нових таблиць).
 - Показує тільки публічні поля, ховає заблокованих і неактивні акаунти, обмеження 60 запитів/хв.
 - Усі міграції оновлення можна застосувати разом: `DATABASE_URL=... ./database/apply_social_update.sh` (скрипт безпечний для повторного запуску).
+
+## Ролі персоналу
+- Міграція: `database/migrations/20261116_add_admin_roles.sql` (нова таблиця `admin_roles`, таблиця `users` не змінюється).
+- Ролі: moderator (оголошення, скарги), business_manager (заявки бізнесу, партнерство, тексти), support (скарги). `User.isAdmin` лишається повним доступом.
+- Перевірки прав: `src/lib/adminAccess.ts` (`hasAdminPermission`), застосовані до адмін-API оголошень, заявок бізнесу, партнерських заявок, текстів «Як заробити» та скарг.
+- Призначення: `/admin/roles` (лише повний адмін, з записом в аудит). Кабінет: `/admin/staff` (посилання в меню профілю з’являється тільки у співробітників із роллю).

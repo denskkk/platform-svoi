@@ -60,7 +60,7 @@ export default function AdminReportsPage() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('user');
-      if (!stored || !JSON.parse(stored).isAdmin) {
+      if (!stored) { // права перевіряє API (адміністратор або роль персоналу)
         router.push('/auth/login');
         return;
       }

@@ -253,5 +253,8 @@
   "partnerApplications": {
     "messageInvalid": "Describe why you want to cooperate (at least 10 characters)",
     "notFound": "Application not found"
+  },
+  "adminRoles": {
+    "alreadyAdmin": "This user is already a full administrator"
   }
 }

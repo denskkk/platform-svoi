@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasAdminPermission } from '@/lib/adminAccess';
 import { withAuth } from '@/lib/authMiddleware';
 import { getApiT } from '@/i18n/server';
 import { getProject } from '@/lib/projects';
@@ -18,8 +19,7 @@ async function handler(request: NextRequest, slug: string) {
   const t = getApiT(request);
   try {
     const adminId = Number((request as any).user?.userId);
-    const me = adminId ? await prisma.user.findUnique({ where: { id: adminId }, select: { isAdmin: true } }) : null;
-    if (!me?.isAdmin) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
+    if (!adminId || !(await hasAdminPermission(adminId, 'content.edit'))) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
     if (!(await getProject(slug))) return NextResponse.json({ error: t('api.projects.notFound') }, { status: 404 });
 
     if (request.method === 'GET') {

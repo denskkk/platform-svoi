@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasAdminPermission } from '@/lib/adminAccess';
 import { withAuth } from '@/lib/authMiddleware';
 import { getApiT } from '@/i18n/server';
 import { LISTING_LIMITS } from '@/lib/listingFields';
@@ -18,8 +19,7 @@ async function handler(request: NextRequest, idParam: string) {
   const t = getApiT(request);
   try {
     const adminId = Number((request as any).user?.userId);
-    const me = adminId ? await prisma.user.findUnique({ where: { id: adminId }, select: { isAdmin: true } }) : null;
-    if (!me?.isAdmin) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
+    if (!adminId || !(await hasAdminPermission(adminId, 'listings.moderate'))) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
 
     const id = parseId(idParam);
     const body = await request.json().catch(() => ({}));

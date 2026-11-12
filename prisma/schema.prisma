@@ -240,6 +240,7 @@ model User {
   savedListings      SavedListing[]
   businessApplications BusinessApplication[]
   partnerApplications  PartnerApplication[]
+  adminRole            AdminRole?
   blocksReceived     UserBlock[]   @relation("Blocked")
   
   @@index([email])
@@ -1136,4 +1137,17 @@ model PartnerApplication {
   @@index([userId, projectSlug])
   @@index([status, createdAt])
   @@map("partner_applications")
+}
+
+// Роль персоналу (модератор / менеджер бізнесу / підтримка). Повний адміністратор визначається полем User.isAdmin.
+model AdminRole {
+  id          Int      @id @default(autoincrement()) @map("admin_role_id")
+  userId      Int      @unique @map("user_id")
+  role        String   @db.VarChar(30)
+  grantedById Int?     @map("granted_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admin_roles")
 }

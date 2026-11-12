@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasAdminPermission } from '@/lib/adminAccess';
 import { withAuth } from '@/lib/authMiddleware';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
@@ -12,8 +13,7 @@ async function handler(request: NextRequest) {
   const t = getApiT(request);
   try {
     const userId = Number((request as any).user?.userId);
-    const me = userId ? await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true } }) : null;
-    if (!me?.isAdmin) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
+    if (!userId || !(await hasAdminPermission(userId, 'partners.review'))) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
 
     const params = new URL(request.url).searchParams;
     const status = ['pending', 'approved', 'rejected'].includes(params.get('status') || '') ? (params.get('status') as string) : 'pending';

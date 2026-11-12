@@ -1,0 +1,41 @@
+{
+  "hub": {
+    "title": "Staff workspace",
+    "subtitle": "Available sections depend on your role",
+    "role": "Your role",
+    "fullAdmin": "Administrator",
+    "noAccess": "You do not have access to staff sections",
+    "forbiddenTitle": "Unavailable",
+    "sections": {
+      "listings": "Listing moderation",
+      "business": "Business applications",
+      "partners": "Partnership",
+      "reports": "Reports"
+    }
+  },
+  "roles": {
+    "moderator": "Moderator",
+    "business_manager": "Business manager",
+    "support": "Support"
+  },
+  "manage": {
+    "title": "Staff roles",
+    "subtitle": "Assign a role to a user by email",
+    "email": "User email",
+    "role": "Role",
+    "assign": "Assign",
+    "revoke": "Remove role",
+    "saved": "Saved",
+    "failed": "Could not complete the action",
+    "empty": "No staff with roles yet",
+    "back": "Back to admin panel",
+    "forbidden": "Administrators only",
+    "link": "Staff roles",
+    "hubLink": "Staff workspace",
+    "perms": {
+      "moderator": "Listings, reports",
+      "business_manager": "Business applications, partnership, texts",
+      "support": "Reports"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasAdminPermission } from '@/lib/adminAccess';
 import { withAuth } from '@/lib/authMiddleware';
 import { getApiT } from '@/i18n/server';
 import { AdminForbiddenError } from '@/lib/api-middleware';
@@ -10,8 +11,7 @@ export const dynamic = 'force-dynamic';
 const STATUSES = ['new', 'in_review', 'resolved', 'rejected'] as const;
 
 async function assertAdmin(userId: number) {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true } });
-  if (!user?.isAdmin) {
+  if (!(await hasAdminPermission(Number(userId), 'reports.handle'))) {
     throw new AdminForbiddenError();
   }
 }
