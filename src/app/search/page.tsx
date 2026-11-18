@@ -54,7 +54,7 @@ export default function SearchPage() {
     const initial = new URLSearchParams(window.location.search).get('q');
     if (initial) setQ(initial.slice(0, 80));
     const initialType = new URLSearchParams(window.location.search).get('type');
-    if (initialType === 'posts') setTab('posts');
+    if (initialType && (['posts', 'people', 'business', 'listings', 'clubs'] as string[]).includes(initialType)) setTab(initialType as Tab);
     const sp = new URLSearchParams(window.location.search);
     if (sp.get('city')) setCity((sp.get('city') as string).slice(0, 60));
     if (sp.get('project')) setProject((sp.get('project') as string).slice(0, 60));

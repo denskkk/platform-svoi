@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, Clapperboard, Loader2, Newspaper, Users } from 'lucide-react';
+import { ArrowDown, Clapperboard, Loader2, Newspaper, Search, Users } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useI18n } from '@/i18n/client';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
@@ -182,6 +182,10 @@ export function FeedPage() {
         <FeedSidebar user={user} />
         <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>
+
+        <Link href="/search?type=people" className="flex items-center gap-3 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-2.5 text-neutral-500 hover:bg-neutral-50">
+          <Search className="w-5 h-5 shrink-0" /> <span className="text-[15px] truncate">{t('cabinet.feedSearch')}</span>
+        </Link>
 
         {canInteract && <StoriesBar me={user} />}
         <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />

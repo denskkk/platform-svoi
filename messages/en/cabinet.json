@@ -17,7 +17,8 @@
     "story": "Story",
     "live": "Go live",
     "liveSoon": "Live streams are coming in the next update",
-    "close": "Close"
+    "close": "Close",
+    "storyHint": "Tap “+” in the stories bar to add yours"
   },
   "nav": {
     "home": "Feed",
@@ -225,5 +226,27 @@
     "shareText": "My profile on “Svij dlya Svoyikh”",
     "shareOpen": "Share profile",
     "linkCopied": "Link copied"
+  },
+  "feedSearch": "Search people",
+  "projectsSearch": "Search businesses",
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Pick a direction — everything for your own in one place",
+    "searchPlaceholder": "Search businesses",
+    "offline": "Offline business",
+    "offlineHint": "Shops and venues — by city and on the map",
+    "online": "Online business",
+    "onlineHint": "Search online projects and services",
+    "earnTile": "Earn with your own",
+    "earnHint": "Active member status and rewards",
+    "taxi": {
+      "order": "Order a taxi",
+      "orderHint": "Call a car right from the project",
+      "map": "Trip map",
+      "mapHint": "See where drivers are nearby",
+      "apply": "Apply as a taxi driver",
+      "applyHint": "Become a platform driver",
+      "soon": "This feature is being finished — it will work in the next update."
+    }
   }
 }

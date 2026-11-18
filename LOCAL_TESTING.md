@@ -79,6 +79,12 @@ docker exec -i svoi-pg psql -U postgres -d svoi < database/migrations/20261121_a
 docker exec -i svoi-pg psql -U postgres -d svoi < database/migrations/20261122_add_outbound_clicks.sql
 docker exec -i svoi-pg psql -U postgres -d svoi < database/migrations/20261123_add_clubs.sql
 ```
+```powershell
+# Windows (PowerShell), если psql не в PATH:
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d svoi -f database\migrations\20261132_invites_views_settings.sql
+npx prisma generate
+```
+Эта миграция добавляет проект «Таксі» и «Адвокатські об’єднання» и таблицы приглашений/просмотров/настроек.
 (или `/admin/projects` — включить нужные направления вручную).
 
 ## 9. Прогон «от А до Я»

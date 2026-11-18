@@ -32,6 +32,7 @@ export function StoriesBar({ me }: { me: { firstName?: string; lastName?: string
   useEffect(() => {
     const onPick = () => fileRef.current?.click();
     window.addEventListener('svoi:story-pick', onPick);
+    if (new URLSearchParams(window.location.search).get('create') === 'story') toast.info(t('cabinet.create.storyHint'));
     return () => window.removeEventListener('svoi:story-pick', onPick);
   }, []);
 

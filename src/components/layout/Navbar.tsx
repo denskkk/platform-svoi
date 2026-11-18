@@ -62,7 +62,7 @@ export function Navbar() {
             })
             if (unreadRes.ok) {
               const unreadData = await unreadRes.json()
-              setUnreadCount(unreadData.unreadCount || 0)
+              setUnreadCount(unreadData.unreadCount || 0); try { window.dispatchEvent(new CustomEvent('svoi:unread', { detail: unreadData.unreadCount || 0 })) } catch {}
             }
           } catch {
             // ignore
@@ -130,7 +130,7 @@ export function Navbar() {
         })
         if (res.ok) {
           const data = await res.json()
-          setUnreadCount(data.unreadCount || 0)
+          setUnreadCount(data.unreadCount || 0); try { window.dispatchEvent(new CustomEvent('svoi:unread', { detail: data.unreadCount || 0 })) } catch {}
         }
       } catch {}
     }
@@ -166,7 +166,7 @@ export function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 pt-[var(--safe-area-inset-top,0px)] bg-white/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm">
+    <nav className="sticky top-0 z-50 pt-[var(--safe-area-inset-top,0px)] bg-white/95 backdrop-blur-sm border-b-2 border-primary-500 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-4">
           {/* Лого */}
@@ -276,13 +276,18 @@ export function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-3 xl:space-x-4 shrink-0">
             <LanguageSwitcher variant="compact" className="hidden lg:inline-flex" />
 
+              {user && (
+                <Link href="/search" aria-label={t('layout.navbar.searchAria')} className="lg:hidden w-10 h-10 flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors">
+                  <Search className="w-5 h-5 text-neutral-700" />
+                </Link>
+              )}
               {user && <NotificationBell />}
 
               {/* Mobile messages icon with unread badge */}
               {user && (
                 <Link
                   href="/chat"
-                  className="relative w-10 h-10 flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors"
+                  className="relative hidden lg:flex w-10 h-10 items-center justify-center bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors"
                   aria-label={t('layout.navbar.messagesAria')}
                 >
                   <MessageCircle className="w-5 h-5 text-neutral-700" />
@@ -443,7 +448,7 @@ export function Navbar() {
             )}
 
             <button
-              className="lg:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+              className={`${user ? 'hidden' : 'lg:hidden'} p-2 hover:bg-neutral-100 rounded-lg transition-colors`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={t('layout.navbar.menuAria')}
               aria-expanded={isMenuOpen}

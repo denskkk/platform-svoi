@@ -172,7 +172,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         credentials: 'include',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
+          'Pragma': 'no-cache',
+          ...authHeaders()
         }
       });
       const data = await response.json();

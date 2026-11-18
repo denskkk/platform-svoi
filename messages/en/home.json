@@ -113,7 +113,7 @@
         "text": "Find people by interests or create your own community."
       },
       "earn": {
-        "title": "Earn with us",
+        "title": "Earn with your own",
         "text": "Recommend companies to friends and get a reward for closed deals."
       }
     },
@@ -126,7 +126,7 @@
       "services": "Services",
       "shops": "Shops"
     },
-    "earnTitle": "How to earn with us",
+    "earnTitle": "Earn with your own",
     "earnText": "A transparent partner program: the reward is accrued only after a confirmed deal.",
     "earnSteps": {
       "s1": "Sign up and find a company with a partner program.",

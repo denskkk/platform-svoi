@@ -32,8 +32,8 @@
     "link": "Projects"
   },
   "earn": {
-    "button": "How to earn with us?",
-    "title": "How to earn with us?",
+    "button": "Earn with your own",
+    "title": "Earn with your own",
     "defaultBody": "Become a partner of this direction: recommend customers, offer cooperation to businesses and grow the direction together with us.\n\nSubmit an application below — a manager will contact you and explain the terms. Terms are agreed separately and are not a guarantee of income.",
     "applyTitle": "Partnership application",
     "phone": "Phone",
@@ -63,7 +63,7 @@
   },
   "partnerAdmin": {
     "title": "Partnership",
-    "subtitle": "Partnership applications and “How to earn with us?” texts",
+    "subtitle": "Partnership applications and “Earn with your own” texts",
     "tabApplications": "Applications",
     "tabContent": "Page texts",
     "pending": "Pending",
