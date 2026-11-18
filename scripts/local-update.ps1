@@ -44,6 +44,9 @@ foreach ($f in $files) {
 }
 
 Write-Host "4/5 Build (catches type errors)" -ForegroundColor Cyan
+# OneDrive turns .next into cloud placeholders and Next.js cannot clean it: remove it first
+if (Test-Path ".next") { Remove-Item -Recurse -Force ".next" -ErrorAction SilentlyContinue }
+if (Test-Path ".next") { Write-Host ".next is locked: pause OneDrive sync (tray icon) or move the project out of OneDrive, then run again" -ForegroundColor Red; exit 1 }
 npm run build
 if ($LASTEXITCODE -ne 0) { Write-Host "BUILD FAILED - copy the error text above and send it" -ForegroundColor Red; exit 1 }
 
