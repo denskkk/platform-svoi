@@ -76,7 +76,7 @@ export function PostComments({ postId, canComment, onCountChange }: Props) {
   };
 
   return (
-    <div className="border-t border-neutral-100 px-4 pb-4 pt-3 space-y-3">
+    <div className="px-4 pb-3 pt-2 space-y-3">
       {loading ? (
         <div className="space-y-2" aria-hidden>
           <div className="h-10 rounded-lg bg-neutral-100 animate-pulse" />
@@ -90,7 +90,7 @@ export function PostComments({ postId, canComment, onCountChange }: Props) {
             <li key={c.id} className="flex gap-2.5">
               <UserAvatar src={c.author.avatarUrl} alt={c.author.name} fallbackName={c.author.name} className="w-8 h-8 rounded-full shrink-0" />
               <div className="min-w-0 flex-1">
-                <div className="bg-neutral-50 rounded-2xl rounded-tl-md px-3 py-2">
+                <div className="inline-block max-w-full bg-neutral-100 rounded-2xl px-3 py-2">
                   <p className="text-xs font-semibold text-neutral-800 truncate">{c.author.name}</p>
                   <p className="text-sm text-neutral-800 whitespace-pre-wrap break-words">{c.content}</p>
                 </div>
@@ -122,7 +122,7 @@ export function PostComments({ postId, canComment, onCountChange }: Props) {
             maxLength={1000}
             rows={1}
             placeholder={t('feed.comments.placeholder')}
-            className="flex-1 resize-none rounded-2xl border border-neutral-200 bg-white px-3.5 py-2 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+            className="flex-1 resize-none rounded-2xl bg-neutral-100 px-3.5 py-2.5 text-base md:text-sm placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-300"
           />
           <button type="submit" disabled={!text.trim() || sending} aria-label={t('feed.comments.send')}
             className="h-10 w-10 shrink-0 rounded-full bg-primary-500 text-white flex items-center justify-center disabled:opacity-40 active:scale-95 transition">

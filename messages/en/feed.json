@@ -117,7 +117,12 @@
   "profile": {
     "title": "Posts",
     "empty": "No posts yet",
-    "loadMore": "Show more"
+    "loadMore": "Show more",
+    "stats": {
+      "posts": "Posts",
+      "followers": "Followers",
+      "following": "Following"
+    }
   },
   "single": {
     "notFound": "This post was not found or has been deleted",

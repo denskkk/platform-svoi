@@ -14,6 +14,7 @@ import { PermissionButton } from '@/components/ui/RequirePermission';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ProfilePosts } from '@/components/feed/ProfilePosts';
 import { BlockButton } from '@/components/feed/BlockButton';
+import { ProfileSocialBar } from '@/components/feed/ProfileSocialBar';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
@@ -411,6 +412,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       <span className="text-neutral-600">{t('profile.view.header.reviewsCount', { count: profile.totalReviews })}</span>
                     </div>
                   )}
+
+                  {profile?.id && <ProfileSocialBar userId={Number(profile.id)} isOwn={!!isOwnProfile} />}
                 </div>
               </div>
             </div>
