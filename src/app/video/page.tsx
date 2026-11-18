@@ -117,7 +117,7 @@ export default function VideoPage() {
   const empty = !loading && posts.length === 0;
 
   return (
-    <div className="fixed inset-x-0 top-0 bottom-[calc(4rem+var(--safe-area-inset-bottom,0px))] z-40 bg-black md:static md:inset-auto md:z-auto md:h-[calc(100dvh-4rem)]">
+    <div className="fixed inset-x-0 top-0 bottom-[calc(4rem+var(--safe-area-inset-bottom,0px))] z-40 bg-black md:relative md:inset-auto md:z-auto md:h-[calc(100dvh-4rem)]">
       {/* Вкладки зверху */}
       <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-6 pt-[calc(0.75rem+var(--safe-area-inset-top,0px))] pb-3 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
         {(['following', 'all'] as Tab[]).map((k) => (

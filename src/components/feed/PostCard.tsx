@@ -325,7 +325,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
       {post.repostUnavailable && <p className="mx-4 mt-3 rounded-xl bg-neutral-100 px-3 py-3 text-sm text-neutral-500">{t('feed.post.repostUnavailable')}</p>}
       {post.video && (
         <div className="mt-3 bg-black">
-          <video src={post.video.url} poster={post.video.posterUrl || undefined} controls playsInline preload="none" className="w-full max-h-[80vh] mx-auto" />
+          <video src={post.video.url} poster={post.video.posterUrl || undefined} controls playsInline preload="metadata" className="w-full max-h-[80vh] mx-auto" />
         </div>
       )}
       {imgs.length > 0 && (

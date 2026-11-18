@@ -18,7 +18,7 @@ interface Results { people: Person[]; business: Person[]; listings: ListingCardD
 type Tab = 'all' | 'people' | 'business' | 'listings' | 'clubs' | 'posts';
 
 const EMPTY: Results = { people: [], business: [], listings: [], clubs: [], posts: [] };
-const DIRECTION_SLUGS = ['cars', 'real-estate', 'health', 'sport', 'services', 'jobs', 'shops', 'events', 'trade', 'china'];
+const DIRECTION_SLUGS = ['antiques', 'mystic', 'china', 'shops', 'trade', 'rebuild', 'cooperatives', 'grants', 'turnkey', 'jobs', 'apps', 'translator', 'health', 'invest', 'travel', 'real-estate', 'cars', 'pets'];
 
 function PersonRow({ p, href, sub }: { p: Person; href: string; sub: string | null }) {
   return (

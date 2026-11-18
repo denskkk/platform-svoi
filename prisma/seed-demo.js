@@ -13,8 +13,19 @@ const ago = (days, hours = 0) => new Date(Date.now() - days * DAY - hours * 3600
 const pick = (arr, i) => arr[i % arr.length];
 const pic = (seed, w = 900, h = 700) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
 const portrait = (g, n) => `https://randomuser.me/api/portraits/${g === 'female' ? 'women' : 'men'}/${n}.jpg`;
-const VID = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
-const REELS = ['ForBiggerBlazes', 'ForBiggerEscapes', 'ForBiggerFun', 'ForBiggerJoyrides', 'ForBiggerMeltdowns', 'BigBuckBunny', 'Sintel', 'TearsOfSteel', 'ElephantsDream', 'SubaruOutbackOnStreetAndDirt', 'WeAreGoingOnBullrun', 'VolkswagenGTIReview'];
+// Перевірені відкриті відео (Google sample-bucket більше не віддає файли — 403). Усі відтворюються в браузері.
+const REELS = [
+  'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+  'https://download.samplelib.com/mp4/sample-10s.mp4',
+  'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4',
+  'https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_1MB.mp4',
+  'https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_1MB.mp4',
+  'https://download.samplelib.com/mp4/sample-15s.mp4',
+  'https://www.w3schools.com/html/mov_bbb.mp4',
+  'https://filesamples.com/samples/video/mp4/sample_640x360.mp4',
+  'https://download.samplelib.com/mp4/sample-5s.mp4',
+  'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4',
+];
 
 // first, last, gender, portrait#, city, region, age, bio
 const PEOPLE = [
@@ -69,6 +80,10 @@ const REEL_CAPS = [
 const STORY_CAPS = ['Доброго дня! ☀️', 'Мій вечір 🌇', 'Нова робота 💼', 'Зустріч зі своїми 🤝', 'Смачна вечеря 🍲', 'Вихідні 🏞️', 'Мої діти 💙', 'Кава ☕'];
 
 async function main() {
+  // Ремонт: старі демо-відео зі зламаними посиланнями замінюємо на робочі (без перестворення даних)
+  const broken = await prisma.postVideo.findMany({ where: { url: { contains: 'gtv-videos-bucket' } }, select: { id: true } });
+  for (const [i, v] of broken.entries()) await prisma.postVideo.update({ where: { id: v.id }, data: { url: REELS[i % REELS.length], posterUrl: null } });
+  if (broken.length) console.log(`Замінено зламаних відео: ${broken.length}`);
   if (process.argv.includes('--reset')) {
     const del = await prisma.user.deleteMany({ where: { email: { endsWith: '@svoi.test' } } });
     console.log(`Видалено демо-акаунтів: ${del.count}`);
@@ -135,7 +150,7 @@ async function main() {
     for (const rep of [0, 1]) {
       const author = everyone[(i * 2 + rep * 5) % everyone.length];
       const post = await prisma.post.create({ data: { authorId: author.id, content: pick(REEL_CAPS, i + rep * 3), createdAt: ago(i % 6, i * 2) } });
-      await prisma.postVideo.create({ data: { ownerId: author.id, postId: post.id, status: 'ready', url: `${VID}${name}.mp4`, posterUrl: `${VID}images/${name}.jpg`, durationSec: 15 } });
+      await prisma.postVideo.create({ data: { ownerId: author.id, postId: post.id, status: 'ready', url: name, posterUrl: null, durationSec: 10 } });
       reels.push(post);
     }
   }

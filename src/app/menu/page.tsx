@@ -44,7 +44,7 @@ export default function MenuPage() {
         <MenuRow href="/menu/qr" icon={<QrCode className="w-5 h-5" />} label={t('cabinet.menu.qr')} />
         <MenuRow href="/menu/viewers" icon={<Eye className="w-5 h-5" />} label={t('cabinet.menu.viewers')} />
         <MenuRow href="/invoices" icon={<Receipt className="w-5 h-5" />} label={t('cabinet.menu.invoices')} />
-        <MenuRow href="/earnings" icon={<Banknote className="w-5 h-5" />} label={t('layout.navbar.earnings')} hint={t('cabinet.menu.deals')} />
+        <MenuRow href="/earnings" icon={<Banknote className="w-5 h-5" />} label={t('cabinet.menu.deals')} />
       </MenuGroup>
 
       <MenuGroup title={t('cabinet.menu.sections')}>
