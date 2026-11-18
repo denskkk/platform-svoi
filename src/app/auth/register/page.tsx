@@ -1,200 +1,128 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
-  User, 
-  Building2, 
-  Eye, 
-  CheckCircle, 
-  X, 
-  ArrowRight
-} from 'lucide-react';
+import { Eye, EyeOff, Loader2, Newspaper, Store, Wallet } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
+import { saveToken, saveUser } from '@/lib/client-auth';
 
+const inputCls =
+  'w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-[16px] text-neutral-900 placeholder:text-neutral-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200';
+
+/**
+ * Єдина проста реєстрація (як у соцмережах): ім'я, прізвище, пошта, пароль.
+ * Решту (місто, інтереси, бізнес-профіль, організація) людина додає пізніше в профілі.
+ */
 export default function RegisterPage() {
   const router = useRouter();
   const { t } = useI18n();
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const accountTypes = [
-    {
-      id: 'viewer',
-      name: t('auth.register.types.viewer.name'),
-      icon: Eye,
-      color: 'bg-neutral-500',
-      hoverColor: 'hover:bg-neutral-600',
-      price: t('auth.register.free'),
-      description: t('auth.register.types.viewer.description'),
-      features: [
-        t('auth.register.types.viewer.features.browse'),
-        t('auth.register.types.viewer.features.favorites'),
-        t('auth.register.types.viewer.features.upgrade'),
-      ],
-      limitations: []
-    },
-    {
-      id: 'individual',
-      name: t('auth.register.types.individual.name'),
-      icon: User,
-      color: 'bg-blue-500',
-      hoverColor: 'hover:bg-blue-600',
-      price: t('auth.register.free'),
-      description: t('auth.register.types.individual.description'),
-      features: [
-        t('auth.register.types.individual.features.fullProfile'),
-        t('auth.register.types.individual.features.publish'),
-        t('auth.register.types.individual.features.messages'),
-      ],
-      limitations: []
-    },
-    {
-      id: 'business',
-      name: t('auth.register.types.business.name'),
-      icon: Building2,
-      color: 'bg-gradient-to-r from-orange-500 to-red-500',
-      hoverColor: 'hover:from-orange-600 hover:to-red-600',
-      price: t('auth.register.free'),
-      description: t('auth.register.types.business.description'),
-      features: [
-        t('auth.register.types.business.features.profile'),
-        t('auth.register.types.business.features.partners'),
-        t('auth.register.types.business.features.vacancies'),
-      ],
-      limitations: []
-    },
-  ];
+  const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const handleSelect = (typeId: string) => {
-    if (typeId === 'viewer') {
-      router.push('/auth/register/viewer');
-    } else if (typeId === 'individual') {
-      router.push('/auth/register/individual');
-    } else if (typeId === 'business') {
-      router.push('/auth/register/business');
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setError('');
+    const firstName = form.firstName.trim();
+    const lastName = form.lastName.trim();
+    const email = form.email.trim();
+    if (!firstName || !lastName || !email || !form.password) { setError(t('auth.register.simple.errors.required')); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError(t('auth.register.simple.errors.email')); return; }
+    if (form.password.length < 6) { setError(t('auth.register.simple.errors.password')); return; }
+
+    setLoading(true);
+    try {
+      let res: Response;
+      try {
+        res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ firstName, lastName, email, password: form.password, accountType: 'basic' }),
+        });
+      } catch {
+        throw new Error(t('auth.register.simple.errors.network'));
+      }
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.user) throw new Error(data?.error || t('auth.register.simple.errors.failed'));
+
+      saveUser(data.user);
+      if (data.token) saveToken(data.token);
+      window.dispatchEvent(new Event('auth:changed'));
+      router.push('/feed');
+    } catch (err: any) {
+      setError(err?.message || t('auth.register.simple.errors.failed'));
+    } finally {
+      setLoading(false);
     }
   };
 
+  const perks = [
+    { icon: Newspaper, text: t('auth.register.simple.perks.people') },
+    { icon: Store, text: t('auth.register.simple.perks.business') },
+    { icon: Wallet, text: t('auth.register.simple.perks.earn') },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            {t('auth.register.title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('auth.register.subtitle')}
-          </p>
+    <div className="min-h-screen bg-neutral-100 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
+        <div className="text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-primary-600">{t('auth.register.simple.heroTitle')}</h1>
+          <p className="mt-3 text-lg md:text-2xl text-neutral-800">{t('auth.register.simple.heroText')}</p>
+          <ul className="mt-6 hidden md:block space-y-3">
+            {perks.map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-3 text-neutral-700">
+                <span className="h-9 w-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center"><Icon className="w-5 h-5" /></span>
+                {text}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Account Type Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {accountTypes.map((type) => {
-            const Icon = type.icon;
-            const isSelected = selectedType === type.id;
-            
-            return (
-              <div
-                key={type.id}
-                onClick={() => setSelectedType(type.id)}
-                className={`
-                  relative bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer
-                  transform transition-all duration-300
-                  ${isSelected ? 'ring-4 ring-offset-2 scale-105' : 'hover:shadow-2xl hover:scale-102'}
-                  ${isSelected && type.id === 'individual' ? 'ring-blue-500' : ''}
-                  ${isSelected && type.id === 'business' ? 'ring-orange-500' : ''}
-                  ${isSelected && type.id === 'viewer' ? 'ring-neutral-500' : ''}
-                `}
-              >
-                {/* Header */}
-                <div className={`${type.color} p-6 text-white relative overflow-hidden`}>
-                  <div className="absolute top-0 right-0 opacity-10">
-                    <Icon className="w-32 h-32" />
-                  </div>
-                  <div className="relative z-10">
-                    <Icon className="w-12 h-12 mb-3" />
-                    <h3 className="text-2xl font-bold mb-1">{type.name}</h3>
-                    <p className="text-sm opacity-90">{type.description}</p>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="px-6 py-4 border-b border-gray-100">
-                  <div className="text-2xl font-bold text-gray-900">{type.price}</div>
-                </div>
-
-                {/* Features */}
-                <div className="p-6">
-                  <div className="space-y-3 mb-4">
-                    {type.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-gray-700">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {type.limitations.length > 0 && (
-                    <div className="space-y-2 pt-4 border-t border-gray-100">
-                      {type.limitations.map((limitation, idx) => (
-                        <div key={idx} className="flex items-start gap-2">
-                          <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-gray-500">{limitation}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Select Button */}
-                <div className="px-6 pb-6">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelect(type.id);
-                    }}
-                    className={`
-                      w-full ${type.color} ${type.hoverColor} text-white 
-                      py-3 px-6 rounded-lg font-semibold 
-                      transition-all duration-300 
-                      flex items-center justify-center gap-2
-                      shadow-md hover:shadow-lg
-                    `}
-                  >
-                    {t('auth.register.select')}
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Info Text */}
-        <div className="text-center mt-12 space-y-4">
-          <p className="text-gray-600">
-            {t('auth.register.haveAccount')}{' '}
-            <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-              {t('auth.register.signIn')}
-            </Link>
-          </p>
-          
-          <div className="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-xl p-6">
-            <h4 className="font-semibold text-blue-900 mb-2">{t('auth.register.tipTitle')}</h4>
-            <p className="text-sm text-blue-800">
-              {t('auth.register.tip.before')}<strong>{t('auth.register.types.viewer.name')}</strong>
-              {t('auth.register.tip.afterViewer')}
-              <strong>{t('auth.register.types.individual.name')}</strong>
-              {t('auth.register.tip.afterIndividual')}
-              <strong>{t('auth.register.types.business.name')}</strong>
-              {t('auth.register.tip.afterBusiness')}
-            </p>
+        <form onSubmit={submit} noValidate className="bg-white rounded-xl shadow-lg p-5 sm:p-6 space-y-3">
+          <div>
+            <h2 className="text-2xl font-bold text-neutral-900">{t('auth.register.simple.formTitle')}</h2>
+            <p className="text-sm text-neutral-500">{t('auth.register.simple.formSubtitle')}</p>
           </div>
-        </div>
+          <hr className="border-neutral-200" />
+
+          <div className="grid grid-cols-2 gap-3">
+            <input className={inputCls} placeholder={t('auth.register.simple.firstName')} aria-label={t('auth.register.simple.firstName')} autoComplete="given-name" value={form.firstName} onChange={set('firstName')} maxLength={50} />
+            <input className={inputCls} placeholder={t('auth.register.simple.lastName')} aria-label={t('auth.register.simple.lastName')} autoComplete="family-name" value={form.lastName} onChange={set('lastName')} maxLength={50} />
+          </div>
+          <input className={inputCls} type="email" inputMode="email" autoCapitalize="none" placeholder={t('auth.register.simple.email')} aria-label={t('auth.register.simple.email')} autoComplete="email" value={form.email} onChange={set('email')} maxLength={120} />
+          <div className="relative">
+            <input className={`${inputCls} pr-12`} type={showPassword ? 'text' : 'password'} placeholder={t('auth.register.simple.password')} aria-label={t('auth.register.simple.password')} autoComplete="new-password" value={form.password} onChange={set('password')} maxLength={100} />
+            <button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? t('auth.register.simple.hidePassword') : t('auth.register.simple.showPassword')} className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100">
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
+
+          <p className="text-xs text-neutral-500 leading-relaxed">
+            {t('auth.register.simple.agreePrefix')}{' '}
+            <Link href="/terms-of-use" className="text-primary-700 hover:underline">{t('auth.register.simple.terms')}</Link>{' '}
+            {t('auth.register.simple.and')}{' '}
+            <Link href="/privacy" className="text-primary-700 hover:underline">{t('auth.register.simple.privacy')}</Link>.
+          </p>
+
+          {error && <p role="alert" className="rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</p>}
+
+          <button type="submit" disabled={loading} className="w-full rounded-lg bg-primary-500 hover:bg-primary-600 disabled:opacity-70 text-white text-lg font-bold py-3 flex items-center justify-center gap-2">
+            {loading && <Loader2 className="w-5 h-5 animate-spin" />}
+            {loading ? t('auth.register.simple.submitting') : t('auth.register.simple.submit')}
+          </button>
+
+          <p className="text-center text-sm text-neutral-600 pt-1">
+            {t('auth.register.simple.haveAccount')}{' '}
+            <Link href="/auth/login" className="text-primary-700 font-semibold hover:underline">{t('auth.register.simple.signIn')}</Link>
+          </p>
+        </form>
       </div>
     </div>
   );
 }
-

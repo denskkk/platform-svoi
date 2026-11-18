@@ -61,9 +61,8 @@ export default function LoginPage() {
         // Повертаємо на сторінку, з якої перекинуло на вхід
         router.push(redirectTo)
       } else {
-        // Звичайний користувач - на профіль
-        const target = data?.user?.id ? `/profile/${data.user.id}` : '/catalog'
-        router.push(target)
+        // Звичайний користувач - на стрічку (головна сторінка соцмережі)
+        router.push('/feed')
       }
     } catch (err: any) {
       setError(err.message || t('auth.login.errors.generic'))
