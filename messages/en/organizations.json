@@ -1,0 +1,56 @@
+{
+  "title": "Non-profit organization application",
+  "subtitle": "The organization is linked to your main account — no need to register again.",
+  "loadFailed": "Could not load data",
+  "failed": "Could not send the application",
+  "success": "Application sent for moderation",
+  "statusTitle": "Application status",
+  "submittedAt": "Submitted",
+  "pendingHint": "Your application is under review. We will contact you after the check.",
+  "approvedHint": "The organization is confirmed.",
+  "reason": "Reason",
+  "reapply": "Apply again",
+  "sending": "Sending…",
+  "submit": "Send application",
+  "status": {
+    "pending": "Under review",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "fields": {
+    "name": "Organization name",
+    "direction": "Field of activity",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "socialLinks": "Social networks (links)",
+    "description": "Description",
+    "goals": "Goals and objectives of the organization",
+    "participation": "Ways to take part and help"
+  },
+  "hints": {
+    "contact": "Provide a phone or an email — at least one."
+  },
+  "admin": {
+    "link": "Organizations",
+    "title": "Non-profit organization applications",
+    "subtitle": "Review the information and approve or reject the application",
+    "back": "Back to admin panel",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "empty": "No applications",
+    "approve": "Approve",
+    "reject": "Reject",
+    "reasonPlaceholder": "Rejection reason (the applicant will see it)",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "loadMore": "Load more",
+    "done": "Done",
+    "failed": "Action failed",
+    "forbidden": "Not available",
+    "applicant": "Applicant"
+  }
+}

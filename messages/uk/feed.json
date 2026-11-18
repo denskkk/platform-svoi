@@ -119,7 +119,9 @@
     "businessApproved": "Вашу заявку бізнесу схвалено",
     "businessRejected": "Вашу заявку бізнесу відхилено",
     "partnerApproved": "Вашу заявку на партнерство схвалено",
-    "partnerRejected": "Вашу заявку на партнерство відхилено"
+    "partnerRejected": "Вашу заявку на партнерство відхилено",
+    "organizationApproved": "Вашу заявку організації схвалено",
+    "organizationRejected": "Вашу заявку організації відхилено"
   },
   "profile": {
     "title": "Дописи",

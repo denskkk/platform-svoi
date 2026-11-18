@@ -24,6 +24,7 @@ import uk_listings from '../../messages/uk/listings.json'
 import uk_business from '../../messages/uk/business.json'
 import uk_search from '../../messages/uk/search.json'
 import uk_staff from '../../messages/uk/staff.json'
+import uk_organizations from '../../messages/uk/organizations.json'
 import uk_contacts from '../../messages/uk/contacts.json'
 import uk_admin from '../../messages/uk/admin.json'
 import uk_api from '../../messages/uk/api.json'
@@ -54,6 +55,7 @@ import en_listings from '../../messages/en/listings.json'
 import en_business from '../../messages/en/business.json'
 import en_search from '../../messages/en/search.json'
 import en_staff from '../../messages/en/staff.json'
+import en_organizations from '../../messages/en/organizations.json'
 import en_contacts from '../../messages/en/contacts.json'
 import en_admin from '../../messages/en/admin.json'
 import en_api from '../../messages/en/api.json'
@@ -88,6 +90,7 @@ const uk = {
   business: uk_business,
   search: uk_search,
   staff: uk_staff,
+  organizations: uk_organizations,
   contacts: uk_contacts,
   admin: uk_admin,
   api: uk_api,
@@ -121,6 +124,7 @@ const en = {
   business: en_business,
   search: en_search,
   staff: en_staff,
+  organizations: en_organizations,
   contacts: en_contacts,
   admin: en_admin,
   api: en_api,

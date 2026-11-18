@@ -256,5 +256,11 @@
   },
   "adminRoles": {
     "alreadyAdmin": "This user is already a full administrator"
+  },
+  "organizationApplications": {
+    "fieldsInvalid": "Fill in all required fields (description — at least 20 characters)",
+    "contactRequired": "Provide a phone or an email",
+    "emailInvalid": "Invalid email address",
+    "notFound": "Application not found"
   }
 }

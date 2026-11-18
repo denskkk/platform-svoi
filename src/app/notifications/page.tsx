@@ -93,6 +93,8 @@ export default function NotificationsPage() {
     if (n.type === 'listing_rejected') return t('feed.notifications.listingRejected');
     if (n.type === 'business_approved') return t('feed.notifications.businessApproved');
     if (n.type === 'business_rejected') return t('feed.notifications.businessRejected');
+    if (n.type === 'organization_approved') return t('feed.notifications.organizationApproved');
+    if (n.type === 'organization_rejected') return t('feed.notifications.organizationRejected');
     if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
     if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
     return n.title;

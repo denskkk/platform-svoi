@@ -10,7 +10,8 @@
       "listings": "Listing moderation",
       "business": "Business applications",
       "partners": "Partnership",
-      "reports": "Reports"
+      "reports": "Reports",
+      "organizations": "Organization applications"
     }
   },
   "roles": {

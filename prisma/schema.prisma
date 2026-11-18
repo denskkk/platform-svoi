@@ -243,6 +243,7 @@ model User {
   adminRole            AdminRole?
   savedPosts           SavedPost[]
   postCommentLikes     PostCommentLike[]
+  organizationApplications OrganizationApplication[]
   blocksReceived     UserBlock[]   @relation("Blocked")
   
   @@index([email])
@@ -1137,6 +1138,35 @@ model BusinessApplication {
 }
 
 // Сторінка «Як заробити з нами?» для напрямку (редагується адміністратором; без запису — типовий текст з перекладів).
+// Заявка громадської організації (прив’язана до основного акаунта користувача)
+model OrganizationApplication {
+  id            Int       @id @default(autoincrement()) @map("organization_application_id")
+  userId        Int       @map("user_id")
+  name          String    @db.VarChar(150)
+  direction     String    @db.VarChar(150)
+  description   String    @db.Text
+  country       String?   @db.VarChar(100)
+  city          String    @db.VarChar(100)
+  phone         String?   @db.VarChar(30)
+  email         String?   @db.VarChar(150)
+  website       String?   @db.VarChar(255)
+  socialLinks   String?   @map("social_links") @db.VarChar(500)
+  goals         String?   @db.VarChar(2000)
+  participation String?   @db.VarChar(1000)
+  status        String    @default("pending") @db.VarChar(20)
+  rejectReason  String?   @map("reject_reason") @db.VarChar(500)
+  moderatedAt   DateTime? @map("moderated_at")
+  moderatedById Int?      @map("moderated_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status, createdAt])
+  @@map("organization_applications")
+}
+
 model ProjectEarnPage {
   id          Int      @id @default(autoincrement()) @map("earn_page_id")
   projectSlug String   @unique @map("project_slug") @db.VarChar(60)

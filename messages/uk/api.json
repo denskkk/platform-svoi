@@ -256,5 +256,11 @@
   },
   "adminRoles": {
     "alreadyAdmin": "Цей користувач уже є повним адміністратором"
+  },
+  "organizationApplications": {
+    "fieldsInvalid": "Заповніть усі обов’язкові поля (опис — щонайменше 20 символів)",
+    "contactRequired": "Вкажіть телефон або email",
+    "emailInvalid": "Невірна адреса email",
+    "notFound": "Заявку не знайдено"
   }
 }

@@ -119,7 +119,9 @@
     "businessApproved": "Your business application was approved",
     "businessRejected": "Your business application was rejected",
     "partnerApproved": "Your partnership application was approved",
-    "partnerRejected": "Your partnership application was rejected"
+    "partnerRejected": "Your partnership application was rejected",
+    "organizationApproved": "Your organization application was approved",
+    "organizationRejected": "Your organization application was rejected"
   },
   "profile": {
     "title": "Posts",

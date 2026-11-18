@@ -461,6 +461,13 @@ export function Navbar() {
                       >
                         {t('layout.navbar.businessApply')}
                       </Link>
+                      <Link
+                        href="/organizations/apply"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.organizationApply')}
+                      </Link>
                       <StaffLink className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100" onClick={() => setShowProfileMenu(false)} />
                       <Link
                         href="/friends"
@@ -661,6 +668,14 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">🏢</span>
                   <span>{t('layout.navbar.businessApply')}</span>
+                </Link>
+                <Link
+                  href="/organizations/apply"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">🎗️</span>
+                  <span>{t('layout.navbar.organizationApply')}</span>
                 </Link>
                 <StaffLink className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors" onClick={() => setIsMenuOpen(false)} icon="🛡️" />
                 <Link
