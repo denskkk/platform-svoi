@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart3, Banknote, Receipt, Eye, Handshake, Info, QrCode, Settings, Users, Wallet, LogOut } from 'lucide-react';
 import { MenuGroup, MenuRow, MenuShell } from '@/components/cabinet/MenuShell';
+import { AccountSwitcher } from '@/components/cabinet/AccountSwitcher';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/i18n/client';
 import { authHeaders } from '@/lib/feedClient';
@@ -29,6 +30,8 @@ export default function MenuPage() {
 
   return (
     <MenuShell title={t('cabinet.menu.title')} backHref="/profile">
+      <AccountSwitcher />
+
       <MenuGroup title={t('cabinet.menu.resources')}>
         <MenuRow href="/menu/balance" icon={<Wallet className="w-5 h-5" />} label={t('cabinet.menu.balance')}
           hint={c ? `${t('cabinet.balance.invited')}: ${c.invited} · ${t('cabinet.balance.deals')}: ${c.completedDeals}` : t('cabinet.menu.balanceHint')} />

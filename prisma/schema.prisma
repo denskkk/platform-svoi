@@ -134,6 +134,8 @@ model User {
   profileViewsGiven    ProfileView[] @relation("ProfileViewer")
   profileViewsReceived ProfileView[] @relation("ProfileViewed")
   settings     UserSettings?
+  linkedAccounts   LinkedAccount[] @relation("LinkedOwner")
+  linkedTo         LinkedAccount[] @relation("LinkedTarget")
   projectSuggestions ProjectSuggestion[]
   groupChatsOwned  GroupChat[] @relation("GroupChatOwner")
   groupChatMemberships GroupChatMember[]
@@ -1572,4 +1574,17 @@ model ProjectSuggestion {
 
   @@index([status, id(sort: Desc)])
   @@map("project_suggestions")
+}
+
+// Зв'язані акаунти: особистий ↔ бізнес. Створюється в обидва боки після підтвердження пароля; дає перемикання без повторного входу.
+model LinkedAccount {
+  userId       Int      @map("user_id")
+  linkedUserId Int      @map("linked_user_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user   User @relation("LinkedOwner", fields: [userId], references: [id], onDelete: Cascade)
+  linked User @relation("LinkedTarget", fields: [linkedUserId], references: [id], onDelete: Cascade)
+
+  @@id([userId, linkedUserId])
+  @@map("linked_accounts")
 }

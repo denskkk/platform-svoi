@@ -337,5 +337,20 @@
     "send": "Send",
     "cancel": "Cancel",
     "sent": "Thank you! We will review your message"
+  },
+  "accounts": {
+    "title": "My accounts",
+    "hint": "Personal and business in one place",
+    "nowBusiness": "now: business",
+    "nowPersonal": "now: personal",
+    "business": "Business",
+    "personal": "Personal",
+    "switch": "Switch",
+    "unlink": "Unlink",
+    "add": "Link an account",
+    "create": "Create a business account",
+    "password": "Password of that account",
+    "link": "Link",
+    "linked": "Accounts linked"
   }
 }

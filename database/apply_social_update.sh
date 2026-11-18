@@ -33,7 +33,8 @@ for f in \
   20261135_project_catalog_client_list.sql \
   20261136_activate_project_boards.sql \
   20261137_group_chats.sql \
-  20261138_project_suggestions.sql; do
+  20261138_project_suggestions.sql \
+  20261139_linked_accounts.sql; do
   echo ">> $f"
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
 done
