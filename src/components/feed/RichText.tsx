@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Fragment } from 'react';
 
-const TAG = /(#[\p{L}\p{N}_]{2,40})/gu;
+const TAG = /(#[A-Za-z0-9_\u00C0-\u024F\u0400-\u04FF]{2,40})/g;
 
 /** Текст допису: хештеги (#слово) стають посиланнями на пошук по дописах. */
 export function RichText({ text }: { text: string }) {

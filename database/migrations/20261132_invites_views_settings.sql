@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS user_settings (
 );
 
 -- Проєкти: «Таксі» першим, адвокатські об'єднання; «Автомобілі» → «Автосалони» (лише якщо назву не змінювали).
-INSERT INTO projects (slug, icon, color, name_uk, name_en, description_uk, description_en, status, sort_order) VALUES
-  ('taxi', '🚕', '#eab308', 'Таксі', 'Taxi', 'Замовити таксі, стати водієм, заробляти зі своїми.', 'Order a taxi, become a driver, earn with your own people.', 'active', 1),
-  ('lawyers', '⚖️', '#1e3a8a', 'Адвокатські об’єднання', 'Law associations', 'Адвокати та адвокатські об’єднання, консультації.', 'Lawyers and law associations, consultations.', 'coming_soon', 25)
+INSERT INTO projects (slug, icon, color, name_uk, name_en, description_uk, description_en, status, sort_order, updated_at) VALUES
+  ('taxi', '🚕', '#eab308', 'Таксі', 'Taxi', 'Замовити таксі, стати водієм, заробляти зі своїми.', 'Order a taxi, become a driver, earn with your own people.', 'active', 1, NOW()),
+  ('lawyers', '⚖️', '#1e3a8a', 'Адвокатські об’єднання', 'Law associations', 'Адвокати та адвокатські об’єднання, консультації.', 'Lawyers and law associations, consultations.', 'coming_soon', 25, NOW())
 ON CONFLICT (slug) DO NOTHING;
 UPDATE projects SET name_uk = 'Автосалони', name_en = 'Car dealerships' WHERE slug = 'cars' AND name_uk = 'Автомобілі';
