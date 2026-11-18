@@ -15,7 +15,7 @@ import { listingInclude, loadSavedIds, publicWhere, serializeListing } from '@/l
 
 export const dynamic = 'force-dynamic';
 
-const TYPES = ['all', 'people', 'business', 'listings', 'clubs'] as const;
+const TYPES = ['all', 'people', 'business', 'listings', 'clubs', 'posts'] as const;
 type SearchType = (typeof TYPES)[number];
 
 export async function GET(request: NextRequest) {
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const city = (params.get('city') || '').trim().slice(0, 60);
     const project = /^[a-z0-9-]{1,60}$/.test(params.get('project') || '') ? (params.get('project') as string) : '';
     // Без тексту пошук можливий, якщо задано фільтр (місто або напрям)
-    if (q.length < 2 && !city && !project) return NextResponse.json({ q, people: [], business: [], listings: [], clubs: [] });
+    if (q.length < 2 && !city && !project) return NextResponse.json({ q, people: [], business: [], listings: [], clubs: [], posts: [] });
     const textOr = (fields: string[]) => (q.length >= 2 ? { OR: fields.map(contains) } : {});
     const cityIs = (field = 'city') => (city ? { [field]: { contains: city, mode: 'insensitive' as const } } : {});
 
@@ -48,8 +48,9 @@ export async function GET(request: NextRequest) {
     const wantBusiness = (type === 'all' || type === 'business') && !project;
     const wantListings = type === 'all' || type === 'listings' || !!project;
     const wantClubs = (type === 'all' || type === 'clubs') && !project;
+    const wantPosts = (type === 'all' || type === 'posts') && !project && q.length >= 2;
 
-    const [people, business, listings, clubs] = await Promise.all([
+    const [people, business, listings, clubs, posts] = await Promise.all([
       wantPeople
         ? prisma.user.findMany({
             where: {
@@ -102,12 +103,21 @@ export async function GET(request: NextRequest) {
             select: { id: true, name: true, city: true, category: true, membersCount: true, imageUrl: true },
           })
         : [],
+      wantPosts
+        ? prisma.post.findMany({
+            where: { isHidden: false, author: { isActive: true }, authorId: { notIn: excluded }, content: { contains: q, mode: 'insensitive' } },
+            orderBy: { id: 'desc' },
+            take,
+            select: { id: true, content: true, createdAt: true, author: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } } } },
+          })
+        : [],
     ]);
 
     const saved = listings.length ? await loadSavedIds(prisma, userId, listings.map((l: any) => l.id)) : new Set<number>();
 
     return NextResponse.json({
       q,
+      posts: posts.map((p: any) => ({ id: p.id, snippet: p.content.length > 160 ? `${p.content.slice(0, 160)}…` : p.content, createdAt: p.createdAt, author: { id: p.author.id, name: p.author.businessInfo?.companyName || `${p.author.firstName} ${p.author.lastName}`.trim(), avatarUrl: p.author.businessInfo?.logoUrl || p.author.avatarUrl } })),
       clubs: clubs.map((c: any) => ({ id: c.id, name: c.name, avatarUrl: c.imageUrl, city: c.city, category: c.category, membersCount: c.membersCount })),
       people: people.map((u: any) => ({
         id: u.id, name: `${u.firstName} ${u.lastName}`.trim(), avatarUrl: u.avatarUrl, city: u.city, profession: u.profession, isVerified: u.isVerified,

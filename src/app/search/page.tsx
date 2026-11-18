@@ -13,10 +13,11 @@ import { authHeaders, readStoredUser } from '@/lib/feedClient';
 
 interface Person { id: number; name: string; avatarUrl: string | null; city: string | null; profession?: string | null; businessType?: string | null; isVerified: boolean }
 interface ClubHit { id: number; name: string; avatarUrl: string | null; city: string | null; category: string; membersCount: number }
-interface Results { people: Person[]; business: Person[]; listings: ListingCardData[]; clubs: ClubHit[] }
-type Tab = 'all' | 'people' | 'business' | 'listings' | 'clubs';
+interface PostHit { id: number; snippet: string; createdAt: string; author: { id: number; name: string; avatarUrl: string | null } }
+interface Results { people: Person[]; business: Person[]; listings: ListingCardData[]; clubs: ClubHit[]; posts: PostHit[] }
+type Tab = 'all' | 'people' | 'business' | 'listings' | 'clubs' | 'posts';
 
-const EMPTY: Results = { people: [], business: [], listings: [], clubs: [] };
+const EMPTY: Results = { people: [], business: [], listings: [], clubs: [], posts: [] };
 const DIRECTION_SLUGS = ['cars', 'real-estate', 'health', 'sport', 'services', 'jobs', 'shops', 'events', 'trade', 'china'];
 
 function PersonRow({ p, href, sub }: { p: Person; href: string; sub: string | null }) {
@@ -52,6 +53,8 @@ export default function SearchPage() {
     if (!readStoredUser()) { router.replace('/auth/login?returnUrl=/search'); return; }
     const initial = new URLSearchParams(window.location.search).get('q');
     if (initial) setQ(initial.slice(0, 80));
+    const initialType = new URLSearchParams(window.location.search).get('type');
+    if (initialType === 'posts') setTab('posts');
     const sp = new URLSearchParams(window.location.search);
     if (sp.get('city')) setCity((sp.get('city') as string).slice(0, 60));
     if (sp.get('project')) setProject((sp.get('project') as string).slice(0, 60));
@@ -68,7 +71,7 @@ export default function SearchPage() {
         if (!res.ok) throw new Error();
         const data = await res.json();
         if (id !== reqId.current) return;
-        setResults({ people: data.people, business: data.business, listings: data.listings, clubs: data.clubs || [] });
+        setResults({ people: data.people, business: data.business, listings: data.listings, clubs: data.clubs || [], posts: data.posts || [] });
         setError(false);
         setSearched(true);
       } catch {
@@ -80,8 +83,8 @@ export default function SearchPage() {
     return () => clearTimeout(timer);
   }, [q, tab, city, project]);
 
-  const total = results.people.length + results.business.length + results.listings.length + results.clubs.length;
-  const tabs: Tab[] = ['all', 'people', 'business', 'listings', 'clubs'];
+  const total = results.people.length + results.business.length + results.listings.length + results.clubs.length + results.posts.length;
+  const tabs: Tab[] = ['all', 'posts', 'people', 'business', 'listings', 'clubs'];
   const hasQuery = q.trim().length >= 2 || city.trim().length > 0 || !!project;
 
   return (
@@ -132,6 +135,19 @@ export default function SearchPage() {
         {error && !loading && <p className="text-center text-sm text-red-600 py-6">{t('search.failed')}</p>}
         {searched && !loading && !error && total === 0 && <p className="text-center text-neutral-600 py-10">{t('search.empty')}</p>}
 
+        {!error && results.posts.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="font-semibold text-neutral-900">{t('search.tabs.posts')}</h2>
+            <ul className="space-y-2">{results.posts.map((p) => (
+              <li key={p.id}>
+                <Link href={`/feed/${p.id}`} className="block rounded-2xl bg-white border border-neutral-200/70 p-3 hover:border-primary-300 transition">
+                  <span className="flex items-center gap-2 text-sm font-semibold text-neutral-900"><UserAvatar src={p.author.avatarUrl} alt={p.author.name} fallbackName={p.author.name} className="w-7 h-7 rounded-full" /><span className="truncate">{p.author.name}</span></span>
+                  <span className="mt-1 block text-sm text-neutral-700 whitespace-pre-wrap break-words">{p.snippet}</span>
+                </Link>
+              </li>
+            ))}</ul>
+          </section>
+        )}
         {!error && results.people.length > 0 && (
           <section className="space-y-2">
             <h2 className="font-semibold text-neutral-900">{t('search.tabs.people')}</h2>

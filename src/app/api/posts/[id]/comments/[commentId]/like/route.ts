@@ -29,6 +29,7 @@ async function setLike(request: NextRequest, params: { id: string; commentId: st
     const comment = postId && commentId
       ? await prisma.postComment.findFirst({ where: { id: commentId, postId, post: { isHidden: false } }, select: { authorId: true } })
       : null;
+    if (!postId || !commentId || !comment) console.warn('[comment-like] not found', { params, postId, commentId, found: !!comment });
     if (!postId || !commentId || !comment) return NextResponse.json({ error: t('api.feed.commentNotFound') }, { status: 404 });
     if (comment.authorId !== userId && (await isBlockedBetween(userId, comment.authorId))) {
       return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });

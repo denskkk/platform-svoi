@@ -11,6 +11,7 @@ import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, jsonHeaders, timeAgo } from '@/lib/feedClient';
 import { PostComments } from './PostComments';
+import { RichText } from './RichText';
 
 interface Props {
   post: FeedPost;
@@ -294,7 +295,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
         </div>
       ) : post.content && (
         <div className="px-4 pt-3">
-          <p className="text-[15px] leading-relaxed text-neutral-800 whitespace-pre-wrap break-words">{text}</p>
+          <p className="text-[15px] leading-relaxed text-neutral-800 whitespace-pre-wrap break-words"><RichText text={text} /></p>
           {isLong && (
             <button type="button" onClick={() => setExpanded((v) => !v)} className="mt-1 text-sm font-medium text-accent-600">
               {expanded ? t('feed.post.showLess') : t('feed.post.showMore')}

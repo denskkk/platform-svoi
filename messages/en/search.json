@@ -10,7 +10,8 @@
     "people": "People",
     "business": "Businesses",
     "listings": "Listings",
-    "clubs": "Clubs"
+    "clubs": "Clubs",
+    "posts": "Posts"
   },
   "cityPlaceholder": "City",
   "directionLabel": "Direction",
