@@ -43,7 +43,8 @@
     "tabFeed": "Feed",
     "tabProjects": "Projects",
     "tabPeople": "People",
-    "tabServices": "Services"
+    "tabServices": "Services",
+    "friends": "Friends"
   },
   "mobileMenu": {
     "navigation": "Navigation",

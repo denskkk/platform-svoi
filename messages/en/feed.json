@@ -169,6 +169,20 @@
     "listings": "My listings",
     "chat": "Messages",
     "business": "Business application",
-    "menu": "Menu"
+    "menu": "Menu",
+    "friends": "Friends"
+  },
+  "friends": {
+    "title": "Friends",
+    "following": "Following",
+    "followers": "Followers",
+    "mutual": "Mutual",
+    "searchPlaceholder": "Search by name",
+    "noResults": "No one found",
+    "empty": {
+      "following": "You aren't following anyone yet",
+      "followers": "No followers yet",
+      "mutual": "No mutual follows yet"
+    }
   }
 }
