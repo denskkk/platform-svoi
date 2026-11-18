@@ -60,7 +60,14 @@
     "loadMore": "Show more",
     "empty": "No comments yet. Be the first!",
     "delete": "Delete comment",
-    "viewerNotice": "Only full profiles can comment."
+    "viewerNotice": "Only full profiles can comment.",
+    "like": "Like",
+    "reply": "Reply",
+    "replyPlaceholder": "Write a reply…",
+    "replyingTo": "Replying to {name}",
+    "cancelReply": "Cancel reply",
+    "showReplies": "Replies: {count}",
+    "hideReplies": "Hide replies"
   },
   "empty": {
     "forYou": {

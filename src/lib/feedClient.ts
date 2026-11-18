@@ -42,6 +42,10 @@ export interface FeedComment {
   content: string;
   createdAt: string;
   isOwn: boolean;
+  parentId?: number | null;
+  likesCount?: number;
+  liked?: boolean;
+  repliesCount?: number;
   author: { id: number; name: string; avatarUrl: string | null; isVerified: boolean };
 }
 
