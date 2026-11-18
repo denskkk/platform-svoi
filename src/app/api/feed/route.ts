@@ -70,9 +70,11 @@ export async function GET(request: NextRequest) {
         const place = pref.scope === 'country' ? pref.country : pref.scope === 'region' ? pref.region : '';
         if (place) {
           const follows = await prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } });
-          const field = pref.scope === 'country' ? 'country' : 'region';
-          const near: any[] = [{ author: { [field]: { contains: place, mode: 'insensitive' } } }];
-          if (pref.scope === 'region') near.push({ author: { city: { contains: place, mode: 'insensitive' } } });
+          // У профілі немає окремого поля «країна»: збіг шукаємо в області/регіоні та місті (напр. «Польща», «Київська», «Варшава»)
+          const near: any[] = [
+            { author: { region: { contains: place, mode: 'insensitive' } } },
+            { author: { city: { contains: place, mode: 'insensitive' } } },
+          ];
           (where as any).AND = [{ OR: [...near, { authorId: { in: [userId, ...follows.map((f: any) => f.followingId)] } }] }];
         }
       }

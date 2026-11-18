@@ -48,7 +48,13 @@
     "language": "Language",
     "logout": "Log out",
     "balanceHint": "Invited, deals, wallet",
-    "invoices": "Invoices"
+    "invoices": "Invoices",
+    "sections": "My sections",
+    "find": "Find and order",
+    "applications": "Applications and safety",
+    "saved": "Saved posts and listings",
+    "requestsToMe": "Requests to me",
+    "myRequests": "My requests"
   },
   "balance": {
     "title": "Balance",

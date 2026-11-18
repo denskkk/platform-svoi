@@ -146,7 +146,7 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
   const canSubmit = !publishing && uploading === 0 && !videoBusy && (text.trim().length > 0 || images.length > 0 || video?.status === 'ready');
 
   return (
-    <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 sm:p-4">
+    <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 sm:p-4 min-w-0 max-w-full overflow-hidden">
       <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => pickFiles(e.target.files)} />
       <input ref={videoRef} type="file" accept="video/mp4,video/quicktime,video/webm" hidden onChange={(e) => pickVideo(e.target.files?.[0])} />
       <div className="flex gap-3">
@@ -217,7 +217,7 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
                   <img src={video.posterUrl} alt="" className="w-full h-full object-cover" />
                 ) : videoBusy ? <Loader2 className="w-5 h-5 animate-spin text-neutral-400" /> : <Clapperboard className="w-6 h-6 text-neutral-400" />}
               </div>
-              <p className={`flex-1 text-sm ${video.status === 'failed' ? 'text-red-600' : 'text-neutral-700'}`}>
+              <p className={`flex-1 min-w-0 text-sm ${video.status === 'failed' ? 'text-red-600' : 'text-neutral-700'}`}>
                 {video.status === 'uploading' ? t('feed.composer.videoUploading') : video.status === 'processing' ? t('feed.composer.videoProcessing') : video.status === 'failed' ? t('feed.composer.videoFailed') : t('feed.composer.addVideo')}
               </p>
               <button type="button" onClick={removeVideo} aria-label={t('feed.composer.removeVideo')} className="h-7 w-7 rounded-full bg-black/60 text-white flex items-center justify-center shrink-0">
@@ -226,21 +226,21 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
             </div>
           )}
 
-          <div className="mt-3 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1 min-w-0">
               <button type="button" onClick={() => videoRef.current?.click()} disabled={!!video && video.status !== 'failed'}
-                className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 disabled:opacity-40">
-                <Clapperboard className="w-5 h-5" /> {t('feed.composer.addVideo')}
+                aria-label={t('feed.composer.addVideo')} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 disabled:opacity-40">
+                <Clapperboard className="w-5 h-5" /> <span className="hidden sm:inline">{t('feed.composer.addVideo')}</span>
               </button>
               <button type="button" onClick={() => fileRef.current?.click()} disabled={images.length + uploading >= MAX_IMAGES}
-                className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-accent-600 hover:bg-accent-50 disabled:opacity-40">
-                <ImagePlus className="w-5 h-5" /> {t('feed.composer.addPhoto')}
+                aria-label={t('feed.composer.addPhoto')} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-accent-600 hover:bg-accent-50 disabled:opacity-40">
+                <ImagePlus className="w-5 h-5" /> <span className="hidden sm:inline">{t('feed.composer.addPhoto')}</span>
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={reset} className="rounded-full px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100">{t('feed.composer.cancel')}</button>
+            <div className="flex items-center gap-2 ml-auto">
+              <button type="button" onClick={reset} className="rounded-full px-3 sm:px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 whitespace-nowrap">{t('feed.composer.cancel')}</button>
               <button type="button" onClick={publish} disabled={!canSubmit}
-                className="rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-5 py-2 disabled:opacity-40 inline-flex items-center gap-2">
+                className="rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 sm:px-5 py-2 disabled:opacity-40 inline-flex items-center gap-2 whitespace-nowrap">
                 {publishing && <Loader2 className="w-4 h-4 animate-spin" />}
                 {publishing ? t('feed.composer.publishing') : t('feed.composer.publish')}
               </button>

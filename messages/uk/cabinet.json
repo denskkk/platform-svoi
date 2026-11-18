@@ -48,7 +48,13 @@
     "language": "Мова",
     "logout": "Вийти",
     "balanceHint": "Запрошені, угоди, гаманець",
-    "invoices": "Рахунки"
+    "invoices": "Рахунки",
+    "sections": "Мої розділи",
+    "find": "Знайти й замовити",
+    "applications": "Заявки та безпека",
+    "saved": "Збережені дописи й оголошення",
+    "requestsToMe": "Заявки мені",
+    "myRequests": "Мої заявки"
   },
   "balance": {
     "title": "Баланс",

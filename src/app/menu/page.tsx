@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart3, Banknote, Receipt, Eye, Handshake, Info, QrCode, Settings, Users, Wallet, LogOut } from 'lucide-react';
+import { BarChart3, Banknote, Bookmark, Building2, ClipboardList, Clapperboard, Heart, Inbox, Receipt, Eye, Handshake, Info, MessagesSquare, QrCode, Settings, Store, Tags, UserCircle, UserPlus, Users, UsersRound, Wallet, Wrench, Ban, LogOut, Pencil } from 'lucide-react';
 import { MenuGroup, MenuRow, MenuShell } from '@/components/cabinet/MenuShell';
 import { AccountSwitcher } from '@/components/cabinet/AccountSwitcher';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/i18n/client';
-import { authHeaders } from '@/lib/feedClient';
+import { authHeaders, readStoredUser } from '@/lib/feedClient';
 
 interface Cabinet { invited: number; completedDeals: number; isBusiness: boolean }
 
@@ -16,6 +16,8 @@ export default function MenuPage() {
   const { t } = useI18n();
   const router = useRouter();
   const [c, setC] = useState<Cabinet | null>(null);
+  const [me, setMe] = useState<{ id: number } | null>(null);
+  useEffect(() => { setMe(readStoredUser()); }, []);
 
   useEffect(() => {
     fetch('/api/me/cabinet', { credentials: 'include', headers: authHeaders(), cache: 'no-store' })
@@ -42,7 +44,34 @@ export default function MenuPage() {
         <MenuRow href="/menu/qr" icon={<QrCode className="w-5 h-5" />} label={t('cabinet.menu.qr')} />
         <MenuRow href="/menu/viewers" icon={<Eye className="w-5 h-5" />} label={t('cabinet.menu.viewers')} />
         <MenuRow href="/invoices" icon={<Receipt className="w-5 h-5" />} label={t('cabinet.menu.invoices')} />
-        <MenuRow href="/earnings" icon={<Banknote className="w-5 h-5" />} label={t('cabinet.menu.deals')} />
+        <MenuRow href="/earnings" icon={<Banknote className="w-5 h-5" />} label={t('layout.navbar.earnings')} hint={t('cabinet.menu.deals')} />
+      </MenuGroup>
+
+      <MenuGroup title={t('cabinet.menu.sections')}>
+        {me && <MenuRow href={`/profile/${me.id}`} icon={<UserCircle className="w-5 h-5" />} label={t('layout.navbar.myProfile')} />}
+        <MenuRow href="/profile/edit" icon={<Pencil className="w-5 h-5" />} label={t('layout.navbar.editProfile')} />
+        <MenuRow href="/friends" icon={<UserPlus className="w-5 h-5" />} label={t('layout.navbar.friends')} />
+        <MenuRow href="/clubs" icon={<UsersRound className="w-5 h-5" />} label={t('clubs.title')} />
+        <MenuRow href="/chat/groups" icon={<MessagesSquare className="w-5 h-5" />} label={t('cabinet.groupChats.title')} />
+        <MenuRow href="/saved" icon={<Bookmark className="w-5 h-5" />} label={t('cabinet.menu.saved')} />
+        <MenuRow href="/favorites" icon={<Heart className="w-5 h-5" />} label={t('layout.navbar.favorites')} />
+        <MenuRow href="/my-listings" icon={<Tags className="w-5 h-5" />} label={t('layout.navbar.myListings')} />
+        <MenuRow href="/video" icon={<Clapperboard className="w-5 h-5" />} label={t('layout.navbar.video')} />
+      </MenuGroup>
+
+      <MenuGroup title={t('cabinet.menu.find')}>
+        <MenuRow href="/catalog" icon={<Users className="w-5 h-5" />} label={t('layout.navbar.people')} />
+        <MenuRow href="/services" icon={<Wrench className="w-5 h-5" />} label={t('layout.navbar.services')} />
+        <MenuRow href="/public-requests" icon={<ClipboardList className="w-5 h-5" />} label={t('layout.navbar.requests')} />
+        <MenuRow href="/service-requests?type=tome" icon={<Inbox className="w-5 h-5" />} label={t('cabinet.menu.requestsToMe')} />
+        <MenuRow href="/service-requests?type=my" icon={<ClipboardList className="w-5 h-5" />} label={t('cabinet.menu.myRequests')} />
+        <MenuRow href="/companies" icon={<Store className="w-5 h-5" />} label={t('cabinet.projects.offline')} />
+      </MenuGroup>
+
+      <MenuGroup title={t('cabinet.menu.applications')}>
+        <MenuRow href="/business/apply" icon={<Building2 className="w-5 h-5" />} label={t('layout.navbar.businessApply')} />
+        <MenuRow href="/organizations/apply" icon={<Building2 className="w-5 h-5" />} label={t('layout.navbar.organizationApply')} />
+        <MenuRow href="/blocked" icon={<Ban className="w-5 h-5" />} label={t('layout.navbar.blockedUsers')} />
       </MenuGroup>
 
       {c?.isBusiness && (
