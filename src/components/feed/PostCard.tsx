@@ -2,7 +2,7 @@
 
 import { memo, useState } from 'react';
 import Link from 'next/link';
-import { BadgeCheck, Heart, MessageCircle, Bookmark, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
+import { BadgeCheck, ThumbsUp, MessageCircle, Bookmark, Share2, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { BlockButton } from './BlockButton';
@@ -59,6 +59,15 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
     } finally {
       setSaveBusy(false);
     }
+  };
+
+  const sharePost = async () => {
+    const url = `${window.location.origin}/feed/${post.id}`;
+    try {
+      if (navigator.share) { await navigator.share({ title: author.name, url }); return; }
+      await navigator.clipboard.writeText(url);
+      toast.success(t('feed.post.linkCopied'));
+    } catch { /* користувач скасував */ }
   };
 
   const toggleLike = async () => {
@@ -146,7 +155,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
   const gridClass = imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
 
   return (
-    <article className="bg-white rounded-2xl shadow-sm border border-neutral-200/70">
+    <article className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
       {/* Автор */}
       <header className="flex items-center gap-3 px-4 pt-4">
         <Link href={`/profile/${author.id}`} className="shrink-0">
@@ -278,35 +287,62 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
         </div>
       )}
 
+      {/* Лічильники */}
+      {(post.likesCount > 0 || post.commentsCount > 0) && (
+        <div className="flex items-center justify-between px-4 pt-3 text-[13px] text-neutral-500">
+          <span className="inline-flex items-center gap-1.5">
+            {post.likesCount > 0 && (
+              <>
+                <span className="h-[18px] w-[18px] rounded-full bg-primary-500 text-white flex items-center justify-center"><ThumbsUp className="w-[11px] h-[11px] fill-current" /></span>
+                {post.likesCount}
+              </>
+            )}
+          </span>
+          {post.commentsCount > 0 && (
+            <button type="button" onClick={() => setShowComments((v) => !v)} className="hover:underline">
+              {t('feed.post.commentsLabel', { count: post.commentsCount })}
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Дії */}
-      <div className="flex items-center gap-1 px-2 py-1.5 mt-1">
+      <div className="mx-4 mt-2 border-t border-neutral-200 grid grid-cols-[1fr_1fr_1fr_auto] gap-1 py-1">
         <button
           type="button"
           onClick={toggleLike}
           disabled={!canInteract}
           aria-pressed={viewer.liked}
           aria-label={viewer.liked ? t('feed.post.unlike') : t('feed.post.like')}
-          className={cn('inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition active:scale-95 disabled:opacity-60', viewer.liked ? 'text-red-500' : 'text-neutral-600 hover:bg-neutral-100')}
+          className={cn('inline-flex items-center justify-center gap-2 py-2 rounded-md text-[14px] font-semibold transition hover:bg-neutral-100 active:scale-95 disabled:opacity-60', viewer.liked ? 'text-primary-600' : 'text-neutral-600')}
         >
-          <Heart className={cn('w-5 h-5', viewer.liked && 'fill-current')} />
-          <span>{post.likesCount}</span>
+          <ThumbsUp className={cn('w-5 h-5', viewer.liked && 'fill-current')} />
+          <span className="truncate">{t('feed.post.likeAction')}</span>
         </button>
         <button
           type="button"
           onClick={() => setShowComments((v) => !v)}
           aria-expanded={showComments}
           aria-label={t('feed.post.comments')}
-          className={cn('inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition active:scale-95', showComments ? 'text-accent-600' : 'text-neutral-600 hover:bg-neutral-100')}
+          className={cn('inline-flex items-center justify-center gap-2 py-2 rounded-md text-[14px] font-semibold transition hover:bg-neutral-100 active:scale-95', showComments ? 'text-primary-600' : 'text-neutral-600')}
         >
           <MessageCircle className="w-5 h-5" />
-          <span>{post.commentsCount}</span>
+          <span className="truncate">{t('feed.post.commentAction')}</span>
+        </button>
+        <button
+          type="button"
+          onClick={sharePost}
+          className="inline-flex items-center justify-center gap-2 py-2 rounded-md text-[14px] font-semibold text-neutral-600 transition hover:bg-neutral-100 active:scale-95"
+        >
+          <Share2 className="w-5 h-5" />
+          <span className="truncate">{t('feed.post.shareAction')}</span>
         </button>
         <button
           type="button"
           onClick={toggleSave}
           aria-pressed={!!viewer.saved}
           aria-label={viewer.saved ? t('feed.post.unsave') : t('feed.post.save')}
-          className={cn('ml-auto inline-flex items-center px-3 py-2 rounded-full transition active:scale-95', viewer.saved ? 'text-primary-700' : 'text-neutral-600 hover:bg-neutral-100')}
+          className={cn('inline-flex items-center justify-center px-3 py-2 rounded-md transition hover:bg-neutral-100 active:scale-95', viewer.saved ? 'text-primary-600' : 'text-neutral-600')}
         >
           <Bookmark className={cn('w-5 h-5', viewer.saved && 'fill-current')} />
         </button>

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ImagePlus, Loader2, X } from 'lucide-react';
+import { ImagePlus, Loader2, Store, X } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
@@ -31,7 +31,7 @@ export function PostComposer({ canPost, user, onPosted }: Props) {
 
   if (!canPost) {
     return (
-      <div className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-4 flex items-center justify-between gap-3">
+      <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-4 flex items-center justify-between gap-3">
         <p className="text-sm text-neutral-600">{t('feed.composer.viewerNotice')}</p>
         <Link href="/auth/register" className="shrink-0 rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-2">
           {t('feed.composer.viewerAction')}
@@ -86,12 +86,13 @@ export function PostComposer({ canPost, user, onPosted }: Props) {
   const canSubmit = !publishing && uploading === 0 && (text.trim().length > 0 || images.length > 0);
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-4">
+    <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 sm:p-4">
+      <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => pickFiles(e.target.files)} />
       <div className="flex gap-3">
-        <UserAvatar src={user?.avatarUrl} alt={name} fallbackName={name || '?'} className="w-11 h-11 rounded-full shrink-0" />
+        <UserAvatar src={user?.avatarUrl} alt={name} fallbackName={name || '?'} className="w-10 h-10 rounded-full shrink-0" />
         {!open ? (
-          <button type="button" onClick={() => setOpen(true)} className="flex-1 text-left rounded-full bg-neutral-50 hover:bg-neutral-100 px-4 text-neutral-500 text-[15px]">
-            {t('feed.composer.prompt')}
+          <button type="button" onClick={() => setOpen(true)} className="flex-1 min-w-0 text-left rounded-full bg-neutral-100 hover:bg-neutral-200 px-4 py-2.5 text-neutral-500 text-[15px] truncate transition-colors">
+            {user?.firstName ? t('feed.composer.promptNamed', { name: user.firstName }) : t('feed.composer.prompt')}
           </button>
         ) : (
           <div className="flex-1 min-w-0">
@@ -110,6 +111,17 @@ export function PostComposer({ canPost, user, onPosted }: Props) {
           </div>
         )}
       </div>
+
+      {!open && (
+        <div className="mt-3 pt-2 border-t border-neutral-200 grid grid-cols-2 gap-1">
+          <button type="button" onClick={() => { setOpen(true); setTimeout(() => fileRef.current?.click(), 0); }} className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
+            <ImagePlus className="w-5 h-5 text-green-600" /> {t('feed.composer.photo')}
+          </button>
+          <Link href="/projects" className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
+            <Store className="w-5 h-5 text-primary-600" /> {t('feed.composer.listing')}
+          </Link>
+        </div>
+      )}
 
       {open && (
         <>
@@ -135,7 +147,6 @@ export function PostComposer({ canPost, user, onPosted }: Props) {
 
           <div className="mt-3 flex items-center justify-between gap-2">
             <div>
-              <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => pickFiles(e.target.files)} />
               <button type="button" onClick={() => fileRef.current?.click()} disabled={images.length + uploading >= MAX_IMAGES}
                 className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-accent-600 hover:bg-accent-50 disabled:opacity-40">
                 <ImagePlus className="w-5 h-5" /> {t('feed.composer.addPhoto')}

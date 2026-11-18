@@ -11,13 +11,14 @@ import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 import { PostCard } from './PostCard';
 import { Recommendations } from './Recommendations';
+import { FeedSidebar } from './FeedSidebar';
 import { PostComposer } from './PostComposer';
 
 type Scope = 'all' | 'following';
 
 function PostSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200/70 p-4 space-y-3" aria-hidden>
+    <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-4 space-y-3" aria-hidden>
       <div className="flex items-center gap-3">
         <div className="w-11 h-11 rounded-full bg-neutral-100 animate-pulse" />
         <div className="space-y-2 flex-1">
@@ -27,7 +28,7 @@ function PostSkeleton() {
       </div>
       <div className="h-3 rounded bg-neutral-100 animate-pulse" />
       <div className="h-3 w-4/5 rounded bg-neutral-100 animate-pulse" />
-      <div className="h-48 rounded-xl bg-neutral-100 animate-pulse" />
+      <div className="h-48 rounded-lg bg-neutral-100 animate-pulse" />
     </div>
   );
 }
@@ -148,11 +149,20 @@ export function FeedPage() {
 
   if (!ready) return null;
 
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   const isViewer = user?.accountType === 'viewer';
   const canInteract = !isViewer;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-100">
       {/* Індикатор pull-to-refresh */}
       <div
         className="flex items-center justify-center text-xs text-neutral-500 overflow-hidden transition-[height] duration-150"
@@ -167,18 +177,20 @@ export function FeedPage() {
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-xl px-3 sm:px-4 pt-4 pb-28 md:pb-10 space-y-4">
+      <div className="mx-auto w-full max-w-[1180px] px-2 sm:px-4 pt-3 sm:pt-4 pb-28 md:pb-10 lg:grid lg:grid-cols-[250px_minmax(0,1fr)_300px] lg:gap-6 xl:grid-cols-[280px_minmax(0,680px)_320px] xl:justify-center">
+        <FeedSidebar user={user} />
+        <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>
 
         <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />
 
-        <Link href="/video" className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-primary-100 to-white border border-primary-200 px-4 py-3">
+        <Link href="/video" className="flex items-center justify-between rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-3">
           <span className="inline-flex items-center gap-2 font-semibold text-neutral-900"><Clapperboard className="w-5 h-5 text-primary-700" /> {t('projects.video.chip')}</span>
           <span className="rounded-full bg-primary-500 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">{t('projects.soon')}</span>
         </Link>
 
         {/* Вкладки */}
-        <div role="tablist" className="grid grid-cols-2 rounded-full bg-white border border-neutral-200/70 p-1 shadow-sm">
+        <div role="tablist" className="grid grid-cols-2 rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] overflow-hidden">
           {(['all', 'following'] as Scope[]).map((s) => (
             <button
               key={s}
@@ -186,7 +198,7 @@ export function FeedPage() {
               type="button"
               aria-selected={scope === s}
               onClick={() => { if (scope !== s) changeScope(s); }}
-              className={cn('rounded-full py-2 text-sm font-semibold transition', scope === s ? 'bg-primary-500 text-white shadow' : 'text-neutral-600 hover:bg-neutral-50')}
+              className={cn('py-3 text-[15px] font-semibold border-b-[3px] transition-colors', scope === s ? 'text-primary-600 border-primary-500' : 'text-neutral-500 border-transparent hover:bg-neutral-100')}
             >
               {s === 'all' ? t('feed.tabs.forYou') : t('feed.tabs.following')}
             </button>
@@ -201,7 +213,7 @@ export function FeedPage() {
         )}
 
         {!loading && error && posts.length === 0 && (
-          <div className="bg-white rounded-2xl border border-red-100 p-6 text-center space-y-3">
+          <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-6 text-center space-y-3">
             <p className="text-sm text-red-600">{error}</p>
             <button type="button" onClick={() => reload(scope)} className="rounded-full bg-primary-500 text-white text-sm font-semibold px-5 py-2">
               {t('feed.retry')}
@@ -234,7 +246,7 @@ export function FeedPage() {
             onDeleted={removePost}
             onBlocked={removeByAuthor}
           />
-          {scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
+          {!isDesktop && scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
           </Fragment>
         ))}
 
@@ -250,6 +262,13 @@ export function FeedPage() {
         )}
         {!loading && !cursor && !error && posts.length > 0 && (
           <p className="text-center text-xs text-neutral-400 py-4">{t('feed.end')}</p>
+        )}
+        </div>
+
+        {isDesktop && (
+          <aside className="sticky top-20 self-start space-y-3">
+            <Recommendations vertical canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />
+          </aside>
         )}
       </div>
     </div>

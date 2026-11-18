@@ -10,11 +10,36 @@ import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 
 interface Rec { id: number; name: string; avatarUrl: string | null; city: string | null; subtitle: string | null; isVerified: boolean }
 
-function Row({ title, items, followed, busyId, onFollow, followLabel, followedLabel }: {
-  title: string; items: Rec[]; followed: Set<number>; busyId: number | null;
+function Row({ title, items, followed, busyId, onFollow, followLabel, followedLabel, vertical }: {
+  vertical?: boolean; title: string; items: Rec[]; followed: Set<number>; busyId: number | null;
   onFollow: (id: number) => void; followLabel: string; followedLabel: string;
 }) {
   if (items.length === 0) return null;
+  if (vertical) {
+    return (
+      <div className="space-y-1">
+        <h3 className="text-[17px] font-semibold text-neutral-700 px-1 pb-1">{title}</h3>
+        <ul>
+          {items.map((r) => (
+            <li key={r.id} className="flex items-center gap-3 rounded-lg px-1 py-2 hover:bg-neutral-100">
+              <Link href={`/profile/${r.id}`} className="flex items-center gap-3 min-w-0 flex-1">
+                <UserAvatar src={r.avatarUrl} alt={r.name} fallbackName={r.name} className="w-10 h-10 rounded-full shrink-0" />
+                <span className="min-w-0">
+                  <span className="flex items-center gap-1 text-[15px] font-semibold text-neutral-900"><span className="truncate">{r.name}</span>{r.isVerified && <BadgeCheck className="w-3.5 h-3.5 text-accent-500 shrink-0" />}</span>
+                  <span className="block text-xs text-neutral-500 truncate">{[r.city, r.subtitle].filter(Boolean).join(' · ')}</span>
+                </span>
+              </Link>
+              <button type="button" disabled={followed.has(r.id) || busyId === r.id} onClick={() => onFollow(r.id)}
+                className="shrink-0 inline-flex items-center gap-1 rounded-md bg-primary-50 hover:bg-primary-100 disabled:bg-neutral-100 disabled:text-neutral-500 text-primary-700 text-xs font-semibold px-3 py-1.5">
+                {busyId === r.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : followed.has(r.id) ? <Check className="w-3.5 h-3.5" /> : <UserPlus className="w-3.5 h-3.5" />}
+                {followed.has(r.id) ? followedLabel : followLabel}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-semibold text-neutral-900">{title}</h3>
@@ -38,7 +63,7 @@ function Row({ title, items, followed, busyId, onFollow, followLabel, followedLa
   );
 }
 
-export function Recommendations({ canFollow, onFollowed }: { canFollow: boolean; onFollowed?: (userId: number) => void }) {
+export function Recommendations({ canFollow, onFollowed, vertical = false }: { canFollow: boolean; onFollowed?: (userId: number) => void; vertical?: boolean }) {
   const { t } = useI18n();
   const toast = useToast();
   const [data, setData] = useState<{ people: Rec[]; business: Rec[] } | null>(null);
@@ -75,9 +100,9 @@ export function Recommendations({ canFollow, onFollowed }: { canFollow: boolean;
   };
 
   if (!data || (data.people.length === 0 && data.business.length === 0)) return null;
-  const common = { followed, busyId, onFollow: follow, followLabel: t('feed.recommendations.follow'), followedLabel: t('feed.recommendations.followed') };
+  const common = { vertical, followed, busyId, onFollow: follow, followLabel: t('feed.recommendations.follow'), followedLabel: t('feed.recommendations.followed') };
   return (
-    <section className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-4 space-y-4" aria-label={t('feed.recommendations.title')}>
+    <section className={vertical ? 'bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 space-y-3' : 'bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-4 space-y-4'} aria-label={t('feed.recommendations.title')}>
       <Row title={t('feed.recommendations.people')} items={data.people} {...common} />
       <Row title={t('feed.recommendations.business')} items={data.business} {...common} />
     </section>

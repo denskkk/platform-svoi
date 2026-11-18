@@ -17,7 +17,10 @@
     "uploadFailed": "Could not upload the photo",
     "charsLeft": "Characters left: {count}",
     "viewerNotice": "Create a full profile to post and comment.",
-    "viewerAction": "Create a profile"
+    "viewerAction": "Create a profile",
+    "promptNamed": "What's on your mind, {name}?",
+    "listing": "Listing",
+    "photo": "Photo"
   },
   "post": {
     "follow": "Follow",
@@ -44,7 +47,12 @@
     "blockConfirm": "Block this user? You will no longer see their posts and they will not see yours.",
     "unsave": "Remove from saved",
     "savedToast": "Saved",
-    "unsavedToast": "Removed from saved"
+    "unsavedToast": "Removed from saved",
+    "likeAction": "Like",
+    "commentAction": "Comment",
+    "shareAction": "Share",
+    "commentsLabel": "Comments: {count}",
+    "linkCopied": "Link copied"
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -130,12 +138,25 @@
     "people": "People you may know",
     "business": "Recommended businesses",
     "follow": "Follow",
-    "followed": "Following"
+    "followed": "Following",
+    "sectionPeople": "People you may know",
+    "seeAll": "All"
   },
   "saved": {
     "title": "Saved posts",
     "empty": "Posts you save will appear here",
     "back": "Back to feed",
     "link": "Saved posts"
+  },
+  "sidebar": {
+    "profile": "My profile",
+    "feed": "Feed",
+    "projects": "Projects",
+    "search": "Search",
+    "saved": "Saved",
+    "listings": "My listings",
+    "chat": "Messages",
+    "business": "Business application",
+    "menu": "Menu"
   }
 }
