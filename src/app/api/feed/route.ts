@@ -8,6 +8,7 @@
  * Відповідь: { posts, nextCursor }  (nextCursor === null — це кінець стрічки)
  */
 
+import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
       ? Math.min(requested, FEED_LIMITS.maxPageSize)
       : FEED_LIMITS.pageSize;
 
-    const blocked = await getBlockedIds(userId);
+    // Приховані: заблоковані та автори приватних акаунтів, на яких я не підписаний
+    const blocked = [...(await getBlockedIds(userId)), ...(await getPrivateAuthorIdsHiddenFrom(userId))];
     const where: Prisma.PostWhereInput = { isHidden: false, author: { isActive: true } };
     if (cursor) where.id = { lt: cursor };
     if (params.get('videos') === '1') where.video = { is: { status: 'ready' } };

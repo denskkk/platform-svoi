@@ -4,6 +4,7 @@
  * DELETE /api/posts/:id/comments?commentId=ID                — видалити (автор коментаря, автор допису, адмін)
  */
 
+import { isAllowedByOwner } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
@@ -100,6 +101,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
 
+    if (!(await isAllowedByOwner(post.authorId, userId, 'comments'))) {
+      return NextResponse.json({ error: t('api.feed.commentsRestricted') }, { status: 403 });
+    }
     if (await isBlockedBetween(userId, post.authorId)) {
       return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
     }

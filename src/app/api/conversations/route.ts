@@ -6,6 +6,7 @@
  * Создать новый диалог или получить существующий
  */
 
+import { isAllowedByOwner, businessAcceptsMessages } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
@@ -210,6 +211,11 @@ export async function POST(request: NextRequest) {
         { error: t('api.chat.userInactive') },
         { status: 400 }
       );
+    }
+
+    // Налаштування отримувача: хто може писати та чи приймає бізнес повідомлення від клієнтів
+    if (!(await isAllowedByOwner(otherUserId, userId, 'messages')) || !(await businessAcceptsMessages(otherUserId))) {
+      return NextResponse.json({ error: t('api.chat.messagesRestricted') }, { status: 403 });
     }
 
     // Проверяем, существует ли уже диалог

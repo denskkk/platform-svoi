@@ -3,6 +3,7 @@
  * Реєстрація нового користувача
  */
 
+import { newRefCode, normalizeRefCode } from '@/lib/invites';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
       avatarUrl,
       avatarBase64,
       socialLinks,
+      ref,
     } = body;
     // Email зберігаємо у нижньому регістрі без пробілів: мобільні клавіатури самі міняють регістр
     const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
@@ -151,6 +153,14 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Хто запросив: реферальний код із посилання/QR (невідомий код тихо ігноруємо)
+  let referredById: number | null = null;
+  const refCodeIn = normalizeRefCode(ref);
+  if (refCodeIn) {
+    const inviter = await prisma.user.findUnique({ where: { refCode: refCodeIn }, select: { id: true } }).catch(() => null);
+    referredById = inviter?.id ?? null;
+  }
+
   // Створення користувача з усіма полями
   const now = new Date();
 
@@ -168,6 +178,8 @@ export async function POST(request: NextRequest) {
           avatarUrl: finalAvatarUrl || null,
           socialLinks: socialLinks ? socialLinks : null,
           passwordHash,
+          referredById,
+          refCode: newRefCode(),
           isVerified: false,
           educationLevel: educationLevel || null,
           educationDetails: educationDetails || null,

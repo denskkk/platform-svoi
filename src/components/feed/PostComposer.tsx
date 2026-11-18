@@ -27,6 +27,20 @@ export function PostComposer({ canPost, user, onPosted }: Props) {
   const [uploading, setUploading] = useState(0);
   const [publishing, setPublishing] = useState(false);
   const videoRef = useRef<HTMLInputElement>(null);
+  // Кнопка «+» у нижньому меню: відкрити форму або одразу вибір фото/відео
+  useEffect(() => {
+    const onCompose = (e: Event) => {
+      const kind = (e as CustomEvent<string>).detail;
+      setOpen(true);
+      if (kind === 'photo') fileRef.current?.click();
+      if (kind === 'video') videoRef.current?.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    window.addEventListener('svoi:compose', onCompose);
+    const kind = new URLSearchParams(window.location.search).get('create');
+    if (kind === 'post') setOpen(true);
+    return () => window.removeEventListener('svoi:compose', onCompose);
+  }, []);
   const [video, setVideo] = useState<{ id: number | null; status: 'uploading' | 'processing' | 'ready' | 'failed'; posterUrl?: string | null }>();
 
   useEffect(() => {

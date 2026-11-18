@@ -5,6 +5,7 @@
  * type=all — по 5 результатів на групу; конкретний type — до 20.
  */
 
+import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
@@ -42,6 +43,7 @@ export async function GET(request: NextRequest) {
     const take = type === 'all' ? 5 : 20;
     const blocked = await getBlockedIds(userId);
     const excluded = [...blocked, userId];
+    const privateHidden = await getPrivateAuthorIdsHiddenFrom(userId);
     const contains = (field: string) => ({ [field]: { contains: q, mode: 'insensitive' as const } });
 
     const wantPeople = (type === 'all' || type === 'people') && !project;
@@ -105,7 +107,7 @@ export async function GET(request: NextRequest) {
         : [],
       wantPosts
         ? prisma.post.findMany({
-            where: { isHidden: false, author: { isActive: true }, authorId: { notIn: excluded }, content: { contains: q, mode: 'insensitive' } },
+            where: { isHidden: false, author: { isActive: true }, authorId: { notIn: [...excluded, ...privateHidden] }, content: { contains: q, mode: 'insensitive' } },
             orderBy: { id: 'desc' },
             take,
             select: { id: true, content: true, createdAt: true, author: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } } } },

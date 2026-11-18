@@ -6,6 +6,7 @@ import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
 import { isBlockedBetween } from '@/lib/blocks';
+import { isActiveParticipant, COMPLETED_DEAL_STATUSES } from '@/lib/invites';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,16 +23,28 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: t('api.common.userNotFound') }, { status: 404 });
     }
 
-    const [posts, followers, following, mine] = await Promise.all([
+    const [posts, followers, following, mine, likesAgg, invited, dealsRef, dealsBiz] = await Promise.all([
       prisma.post.count({ where: { authorId: userId, isHidden: false } }),
       prisma.follow.count({ where: { followingId: userId } }),
       prisma.follow.count({ where: { followerId: userId } }),
       userId === viewerId
         ? Promise.resolve(null)
         : prisma.follow.findUnique({ where: { followerId_followingId: { followerId: viewerId, followingId: userId } }, select: { id: true } }),
+      prisma.post.aggregate({ where: { authorId: userId, isHidden: false }, _sum: { likesCount: true } }),
+      prisma.user.count({ where: { referredById: userId } }),
+      prisma.deal.count({ where: { referrerId: userId, status: { in: COMPLETED_DEAL_STATUSES } } }),
+      prisma.deal.count({ where: { businessUserId: userId, status: { in: COMPLETED_DEAL_STATUSES } } }),
     ]);
+    const completedDeals = dealsRef + dealsBiz;
+    const own = userId === viewerId;
 
-    return NextResponse.json({ posts, followers, following, isFollowing: !!mine });
+    // Чужі бачать лише лайки та позначку «активний учасник»; кількість запрошених і угод — тільки власник
+    return NextResponse.json({
+      posts, followers, following, isFollowing: !!mine,
+      likes: likesAgg?._sum?.likesCount ?? 0,
+      isActiveParticipant: isActiveParticipant(invited, completedDeals),
+      ...(own ? { invited, completedDeals } : {}),
+    });
   } catch (error) {
     console.error('Profile social stats error:', error);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });

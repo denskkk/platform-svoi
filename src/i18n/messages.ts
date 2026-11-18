@@ -28,6 +28,7 @@ import uk_organizations from '../../messages/uk/organizations.json'
 import uk_companies from '../../messages/uk/companies.json'
 import uk_clubs from '../../messages/uk/clubs.json'
 import uk_deals from '../../messages/uk/deals.json'
+import uk_cabinet from '../../messages/uk/cabinet.json'
 import uk_contacts from '../../messages/uk/contacts.json'
 import uk_admin from '../../messages/uk/admin.json'
 import uk_api from '../../messages/uk/api.json'
@@ -62,6 +63,7 @@ import en_organizations from '../../messages/en/organizations.json'
 import en_companies from '../../messages/en/companies.json'
 import en_clubs from '../../messages/en/clubs.json'
 import en_deals from '../../messages/en/deals.json'
+import en_cabinet from '../../messages/en/cabinet.json'
 import en_contacts from '../../messages/en/contacts.json'
 import en_admin from '../../messages/en/admin.json'
 import en_api from '../../messages/en/api.json'
@@ -100,6 +102,7 @@ const uk = {
   companies: uk_companies,
   clubs: uk_clubs,
   deals: uk_deals,
+  cabinet: uk_cabinet,
   contacts: uk_contacts,
   admin: uk_admin,
   api: uk_api,
@@ -137,6 +140,7 @@ const en = {
   companies: en_companies,
   clubs: en_clubs,
   deals: en_deals,
+  cabinet: en_cabinet,
   contacts: en_contacts,
   admin: en_admin,
   api: en_api,

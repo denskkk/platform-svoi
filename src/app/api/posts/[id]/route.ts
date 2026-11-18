@@ -4,6 +4,7 @@
  * DELETE /api/posts/:id — видалити допис (автор або адміністратор)
  */
 
+import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import { removeVideoFiles } from '@/lib/videos';
 import { prisma } from '@/lib/prisma';
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const post = postId
       ? await prisma.post.findFirst({ where: { id: postId, isHidden: false, author: { isActive: true } }, include: postInclude })
       : null;
-    if (!post || (await isBlockedBetween(userId, post.authorId))) {
+    if (!post || (await isBlockedBetween(userId, post.authorId)) || (post.authorId !== userId && (await getPrivateAuthorIdsHiddenFrom(userId)).includes(post.authorId))) {
       return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
     }
 

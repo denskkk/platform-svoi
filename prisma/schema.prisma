@@ -127,6 +127,13 @@ model User {
   bio          String?  @db.Text
   avatarUrl    String?  @map("avatar_url") @db.VarChar(255)
   coverUrl     String?  @map("cover_url") @db.VarChar(255)
+  refCode      String?  @unique @map("ref_code") @db.VarChar(16)
+  referredById Int?     @map("referred_by_id")
+  referredBy   User?    @relation("UserInvites", fields: [referredById], references: [id], onDelete: SetNull)
+  invitedUsers User[]   @relation("UserInvites")
+  profileViewsGiven    ProfileView[] @relation("ProfileViewer")
+  profileViewsReceived ProfileView[] @relation("ProfileViewed")
+  settings     UserSettings?
   
   // Транспорт
   hasCar       Boolean? @map("has_car")
@@ -1434,4 +1441,32 @@ model NotificationSetting {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notification_settings")
+}
+
+// ========================================
+// ПРОФІЛЬ: перегляди, налаштування (additive)
+// ========================================
+model ProfileView {
+  id        Int      @id @default(autoincrement()) @map("profile_view_id")
+  viewerId  Int      @map("viewer_id")
+  profileId Int      @map("profile_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  viewer  User @relation("ProfileViewer", fields: [viewerId], references: [id], onDelete: Cascade)
+  profile User @relation("ProfileViewed", fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, createdAt(sort: Desc)])
+  @@index([viewerId, profileId, createdAt])
+  @@map("profile_views")
+}
+
+// Усі налаштування (приватність, показ, таргетинг) — один JSON; ключі та межі значень перевіряє src/lib/userSettings.ts
+model UserSettings {
+  userId    Int      @id @map("user_id")
+  data      Json     @default("{}")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
 }

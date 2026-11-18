@@ -1,0 +1,229 @@
+{
+  "shell": {
+    "back": "Back",
+    "loading": "Loading…",
+    "error": "Failed to load. Please try again.",
+    "retry": "Retry",
+    "saved": "Saved",
+    "saveFailed": "Failed to save",
+    "soon": "Soon",
+    "soonToast": "This feature will arrive in the next update"
+  },
+  "create": {
+    "title": "Create",
+    "post": "Write a post",
+    "photo": "Photo",
+    "video": "Video",
+    "story": "Story",
+    "live": "Go live",
+    "liveSoon": "Live streams are coming in the next update",
+    "close": "Close"
+  },
+  "nav": {
+    "home": "Feed",
+    "reels": "Reels",
+    "create": "Create",
+    "messages": "Chat",
+    "projects": "Projects",
+    "cabinet": "Account",
+    "register": "Create profile",
+    "viewer": "Continue as viewer"
+  },
+  "menu": {
+    "title": "Menu",
+    "resources": "Resources",
+    "tools": "Personal tools",
+    "business": "Business tools",
+    "support": "Information",
+    "balance": "Balance",
+    "earn": "Earn with your own",
+    "qr": "Your QR code and link",
+    "viewers": "Who visited me",
+    "deals": "My deals and earnings",
+    "bizStats": "Business statistics",
+    "bizClients": "Referred customers",
+    "settings": "Settings and privacy",
+    "about": "About us and our idea",
+    "language": "Language",
+    "logout": "Log out",
+    "balanceHint": "Invited, deals, wallet"
+  },
+  "balance": {
+    "title": "Balance",
+    "wallet": "Wallet",
+    "walletNote": "Wallet top-ups and payouts to your account arrive in the next update. For now you can see your activity.",
+    "topUp": "Top up",
+    "invited": "People invited",
+    "deals": "Completed deals",
+    "status": "Your status",
+    "active": "Active member",
+    "inactive": "Not active yet",
+    "activeHint": "You invite people and complete deals — keep it up!",
+    "inactiveHint": "To become an active member, invite people and complete at least one deal.",
+    "giftsTitle": "Gifts for live streams",
+    "giftsNote": "Coins, flowers and prizes for streams are coming soon. Money from deals will also arrive on this balance.",
+    "gift": {
+      "coins": "Coins",
+      "flowers": "Flowers",
+      "prizes": "Prizes",
+      "hearts": "Hearts"
+    },
+    "myDeals": "My deals and earnings",
+    "invite": "Invite people"
+  },
+  "qr": {
+    "title": "Your QR code and link",
+    "scan": "Scan to join",
+    "scanHint": "A person scans the code, installs the app and lands with you.",
+    "link": "Your link",
+    "copy": "Copy",
+    "copied": "Link copied",
+    "share": "Share",
+    "download": "Download QR",
+    "invited": "People you invited: {count}",
+    "privacy": "Nobody can see the list of invited people — not you, not other users, only the number. The platform knows who came from whom to calculate rewards.",
+    "shareText": "Join “Svij dlya Svoyikh”!"
+  },
+  "viewers": {
+    "title": "Who visited me",
+    "empty": "No profile views in the last 30 days yet.",
+    "disabled": "You turned off profile viewers. Turn it on in Settings and privacy → Privacy.",
+    "note": "People who visited your profile in the last 30 days. People who turned off recording their own views are not shown.",
+    "settings": "Open settings"
+  },
+  "earn": {
+    "title": "Earn with your own",
+    "intro": "Invite people with your QR code or link, use other businesses’ services and complete deals — this gives you active member status and unlocks rewards.",
+    "s1": "Invite people with your QR code or link",
+    "s2": "Use the platform’s businesses and complete deals",
+    "s3": "Get active member status and rewards for referred customers",
+    "byProject": "How to earn in each project",
+    "byProjectHint": "Every project has its own “Earn with your own” page written for it.",
+    "open": "Open",
+    "none": "No projects yet."
+  },
+  "about": {
+    "title": "About us and our idea",
+    "items": {
+      "idea": "Our idea",
+      "plans": "Our plans and ideas for the future",
+      "safety": "Safety and privacy",
+      "contacts": "Contacts and responsible people"
+    },
+    "idea": {
+      "title": "Our idea",
+      "p1": "“Svij dlya Svoyikh” is a single platform where people, businesses and communities work together: chat, feed, video, projects and a way to earn by bringing customers.",
+      "p2": "Registration, publishing information and being in the catalog are free. Businesses pay a reward only for referred customers, under agreed terms."
+    },
+    "plans": {
+      "title": "Our plans",
+      "p1": "Taxi and other projects, live streams, wallet and gifts, events and clubs, advanced ad targeting for businesses, a family account.",
+      "p2": "Some features already work, others will arrive in future updates — we mark them “Soon”."
+    },
+    "safety": {
+      "title": "Safety and privacy",
+      "p1": "Contact details (phone, e-mail) are hidden from others by default — you decide who sees them in Settings and privacy → Contacts.",
+      "p2": "You can block a user, report a post, comment or profile, make your account private and delete your account.",
+      "docs": "Privacy policy",
+      "terms": "Terms of use"
+    },
+    "contacts": {
+      "title": "Contacts and responsible people",
+      "p1": "Contact us about safety, privacy or partnership.",
+      "contacts": "Contacts page",
+      "support": "Support center"
+    }
+  },
+  "settings": {
+    "title": "Settings and privacy",
+    "activity": "Activity",
+    "account": "Account",
+    "visibility": "Visibility",
+    "content": "Content and display",
+    "support": "Support and help",
+    "session": "Account sign-in",
+    "sections": {
+      "posts": "Manage posts",
+      "preferred": "Preferred content",
+      "notifications": "Notifications",
+      "family": "Linked family accounts",
+      "accountInfo": "Account",
+      "security": "Security and permissions",
+      "shareProfile": "Share profile",
+      "privacy": "Privacy",
+      "comments": "Comments and mentions",
+      "contacts": "Contacts and location",
+      "messages": "Incoming and sharing",
+      "promotion": "Ads and post promotion",
+      "language": "Language",
+      "business": "Business settings",
+      "supportCenter": "Support center",
+      "privacyCenter": "Privacy center",
+      "terms": "Terms and policies",
+      "switch": "Switch account",
+      "logout": "Log out"
+    },
+    "personalOnly": "Personal settings",
+    "businessOnly": "Business settings are separate from personal ones",
+    "businessHint": "These settings apply only to your business account.",
+    "fields": {
+      "privateAccount": "Private account",
+      "privateAccountHint": "Only followers see your posts",
+      "comments": "Who can comment",
+      "mentions": "Who can mention you",
+      "messages": "Who can message you",
+      "showProfileOnLinkShare": "Show profile when links are shared",
+      "showFollowing": "Who sees your following list",
+      "showLikedPosts": "Who sees your likes",
+      "allowDownloads": "Allow downloads of your videos",
+      "recordProfileViews": "Save my visits to other profiles",
+      "showProfileViewers": "Show me who visited my profile",
+      "phone": "Phone",
+      "email": "E-mail",
+      "contactsNote": "Other users never see your address or personal data. Phone and e-mail only if you allow it.",
+      "scope": "What to show first in the feed",
+      "country": "Country",
+      "region": "Region",
+      "interests": "Interests (comma-separated)",
+      "clientsCanWrite": "Customers can message me",
+      "targetGender": "Who to show my posts to",
+      "targetAge": "Audience age",
+      "targetAgeMin": "From",
+      "targetAgeMax": "To",
+      "targetCountry": "Audience country",
+      "targetRegion": "Audience region",
+      "promotePostsByDefault": "Promote new posts using the settings above",
+      "familyEnabled": "Family account"
+    },
+    "options": {
+      "everyone": "Everyone",
+      "friends": "Friends",
+      "nobody": "Nobody",
+      "me": "Only me",
+      "hidden": "Hidden",
+      "region": "My region",
+      "country": "My country",
+      "all": "Everyone",
+      "male": "Men",
+      "female": "Women"
+    },
+    "notificationsLink": "Open notification settings",
+    "accountLinks": {
+      "edit": "Edit profile",
+      "editBusiness": "Edit business profile",
+      "delete": "Delete account",
+      "blocked": "Blocked users"
+    },
+    "securityText": "Control who can find you, message you and see your data.",
+    "promotionSoon": "Paid post promotion is not available yet. You can set in advance who your posts should be tailored for.",
+    "postsLinks": {
+      "my": "My posts",
+      "saved": "Saved",
+      "listings": "My listings"
+    },
+    "familySoon": "Family account — soon. You will be able to merge your family’s accounts into one.",
+    "shareText": "My profile on “Svij dlya Svoyikh”",
+    "shareOpen": "Share profile",
+    "linkCopied": "Link copied"
+  }
+}

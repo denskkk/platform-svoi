@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, UserCheck, UserPlus } from 'lucide-react';
+import Link from 'next/link';
+import { Eye, Loader2, Star, UserCheck, UserPlus } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 
-interface Stats { posts: number; followers: number; following: number; isFollowing: boolean }
+interface Stats { posts: number; followers: number; following: number; isFollowing: boolean; likes?: number; isActiveParticipant?: boolean; invited?: number; completedDeals?: number }
 
 /** Соціальна панель профілю: лічильники та кнопка «Стежити». Для гостей не показується. */
 export function ProfileSocialBar({ userId, isOwn }: { userId: number; isOwn: boolean }) {
@@ -57,11 +58,16 @@ export function ProfileSocialBar({ userId, isOwn }: { userId: number; isOwn: boo
     { label: t('feed.profile.stats.posts'), value: stats.posts },
     { label: t('feed.profile.stats.followers'), value: stats.followers },
     { label: t('feed.profile.stats.following'), value: stats.following },
+    { label: t('feed.profile.stats.likes'), value: stats.likes ?? 0 },
+    ...(isOwn ? [
+      { label: t('feed.profile.stats.invited'), value: stats.invited ?? 0 },
+      { label: t('feed.profile.stats.deals'), value: stats.completedDeals ?? 0 },
+    ] : []),
   ];
 
   return (
     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-4">
-      <dl className="flex gap-6">
+      <dl className="flex flex-wrap gap-x-6 gap-y-3">
         {items.map((i) => (
           <div key={i.label} className="text-center">
             <dd className="text-xl font-bold text-neutral-900 leading-none">{i.value}</dd>
@@ -69,6 +75,16 @@ export function ProfileSocialBar({ userId, isOwn }: { userId: number; isOwn: boo
           </div>
         ))}
       </dl>
+      {stats.isActiveParticipant && (
+        <span title={t('feed.profile.active.hint')} className="inline-flex items-center gap-1.5 rounded-full bg-primary-100 text-primary-900 text-sm font-semibold px-3 py-1.5">
+          <Star className="w-4 h-4 fill-primary-500 text-primary-600" /> {t('feed.profile.active.label')}
+        </span>
+      )}
+      {isOwn && (
+        <Link href="/menu/viewers" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-700 hover:underline">
+          <Eye className="w-4 h-4" /> {t('feed.profile.viewers')}
+        </Link>
+      )}
       {!isOwn && canFollow && (
         <button type="button" onClick={toggle} disabled={busy}
           className={cn('inline-flex items-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition active:scale-95', stats.isFollowing ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-white hover:bg-primary-600')}>

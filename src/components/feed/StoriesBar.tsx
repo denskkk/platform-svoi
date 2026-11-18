@@ -28,6 +28,12 @@ export function StoriesBar({ me }: { me: { firstName?: string; lastName?: string
     } catch { /* стрічка без історій */ }
   }, []);
   useEffect(() => { load(); }, [load]);
+  // Кнопка «+» у нижньому меню → додати історію (вибір файлу в тому ж жесті користувача)
+  useEffect(() => {
+    const onPick = () => fileRef.current?.click();
+    window.addEventListener('svoi:story-pick', onPick);
+    return () => window.removeEventListener('svoi:story-pick', onPick);
+  }, []);
 
   const create = async (body: Record<string, unknown>) => {
     const res = await fetch('/api/stories', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(body) });

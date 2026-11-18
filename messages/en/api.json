@@ -52,7 +52,8 @@
     "emptyMessage": "Message cannot be empty",
     "messageTooLong": "Message is too long (maximum {max} characters)",
     "recipientAndTextRequired": "Specify a recipient and message text",
-    "messageSent": "Message sent!"
+    "messageSent": "Message sent!",
+    "messagesRestricted": "This user has restricted who can message them"
   },
   "admin": {
     "statsError": "Failed to load statistics",
@@ -215,7 +216,8 @@
     "blocked": "Action unavailable: one of the users is blocked",
     "blockSelf": "You cannot block yourself",
     "userBlocked": "User blocked",
-    "userUnblocked": "User unblocked"
+    "userUnblocked": "User unblocked",
+    "commentsRestricted": "The author has restricted comments on this post"
   },
   "projects": {
     "notFound": "Project not found",

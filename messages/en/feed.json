@@ -158,8 +158,16 @@
     "stats": {
       "posts": "Posts",
       "followers": "Followers",
-      "following": "Following"
-    }
+      "following": "Following",
+      "likes": "Likes",
+      "invited": "Invited",
+      "deals": "Deals"
+    },
+    "active": {
+      "label": "Active member",
+      "hint": "Invites people and completes deals"
+    },
+    "viewers": "Profile visitors"
   },
   "single": {
     "notFound": "This post was not found or has been deleted",

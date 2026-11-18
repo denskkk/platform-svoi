@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // (uploads are served from /uploads/* by nginx)
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift, LogOut } from 'lucide-react';
+import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift, LogOut, Menu } from 'lucide-react';
 import { formatRating } from '@/lib/format';
 import { logout } from '@/lib/client-auth';
 import { checkAuth, ensureToken } from '@/lib/silentFetch';
@@ -201,6 +201,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     return [];
   };
 
+  // Фіксуємо перегляд чужого профілю (раз на добу від одного глядача; сервер перевіряє налаштування)
+  const viewedId = profile?.id;
+  const viewerId = currentUser?.id;
+  useEffect(() => {
+    if (!viewedId || !viewerId || viewedId === viewerId) return;
+    fetch('/api/profile-views', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ profileId: viewedId }) }).catch(() => {});
+  }, [viewedId, viewerId]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
@@ -227,6 +235,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-neutral-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {isOwnProfile && (
+          <div className="mb-3 flex justify-end">
+            <Link href="/menu" aria-label={t('profile.view.menu')} className="inline-flex items-center gap-2 rounded-full bg-white border border-neutral-200 shadow-sm px-4 py-2 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
+              <Menu className="w-5 h-5" /> {t('profile.view.menu')}
+            </Link>
+          </div>
+        )}
         <ViewerUpgradeNotice className="mb-6" />
         {/* Обкладинка профілю */}
         {!profile?.businessInfo?.bannerUrl && (profile?.coverUrl || isOwnProfile) && (
