@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
           companyCode: companyCode || null,
           city: city || null,
           businessCategory: businessCategory || null,
-          companyType: companyType || null,
+          companyType: ['fop', 'tov', 'other'].includes(companyType) ? companyType : null,
           offerType: offerType || null,
           description: description || null,
           website: website || null,
