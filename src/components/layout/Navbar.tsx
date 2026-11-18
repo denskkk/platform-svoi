@@ -3,7 +3,7 @@
 import { StaffLink } from './StaffLink';
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, User, Menu, LogOut, MessageCircle, Newspaper, FolderKanban, Users, Wrench, Clapperboard } from 'lucide-react'
+import { Search, User, Menu, LogOut, MessageCircle, Newspaper, FolderKanban, Users, Clapperboard } from 'lucide-react'
 import { NotificationBell } from '@/components/feed/NotificationBell'
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
@@ -237,7 +237,6 @@ export function Navbar() {
                 { href: '/projects', icon: FolderKanban, label: t('layout.navbar.tabProjects') },
                 { href: '/video', icon: Clapperboard, label: t('layout.navbar.video') },
                 { href: '/catalog', icon: Users, label: t('layout.navbar.tabPeople') },
-                { href: '/services', icon: Wrench, label: t('layout.navbar.tabServices') },
               ].map(({ href, icon: Icon, label }) => {
                 const active = pathname === href || (pathname || '').startsWith(`${href}/`)
                 return (
@@ -285,18 +284,6 @@ export function Navbar() {
               {t('layout.navbar.search')}
             </Link>
             <Link 
-              href="/services" 
-              className="text-neutral-700 hover:text-primary-600 transition-colors"
-            >
-              {t('layout.navbar.services')}
-            </Link>
-            <Link 
-              href="/public-requests" 
-              className="text-neutral-700 hover:text-primary-600 transition-colors"
-            >
-              {t('layout.navbar.requests')}
-            </Link>
-            <Link 
               href={localizedPath('/about', locale)} 
               className="text-neutral-700 hover:text-primary-600 transition-colors"
             >
@@ -313,14 +300,6 @@ export function Navbar() {
           {/* Права частина */}
           <div className="flex items-center space-x-2 sm:space-x-3 xl:space-x-4 shrink-0">
             <LanguageSwitcher variant="compact" className="hidden lg:inline-flex" />
-            <Link 
-              href="/services"
-              className={`${user ? 'sm:inline-flex lg:hidden' : 'sm:inline-flex'} hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors`}
-              aria-label={t('layout.navbar.searchAria')}
-              title={t('layout.navbar.searchTitle')}
-            >
-              <Search className="w-5 h-5 text-neutral-600" />
-            </Link>
 
               {user && <NotificationBell />}
 
@@ -352,16 +331,6 @@ export function Navbar() {
             ) : user ? (
               <div className="hidden lg:flex items-center space-x-3">
                 {/* Глядачі не можуть створювати послуги */}
-                {user.accountType !== 'viewer' && (
-                  <Link href="/services/create" className="hidden xl:inline-block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
-                    {t('layout.navbar.addService')}
-                  </Link>
-                )}
-                {user.accountType !== 'viewer' && (
-                  <Link href="/requests/create" className="hidden xl:inline-block px-4 py-2 border border-primary-500 hover:bg-primary-50 text-primary-600 rounded-lg transition-colors font-medium whitespace-nowrap">
-                    {t('layout.navbar.addRequest')}
-                  </Link>
-                )}
                 <div className="relative">
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -397,44 +366,7 @@ export function Navbar() {
                       >
                         {t('layout.navbar.editProfile')}
                       </Link>
-                      {user.accountType !== 'viewer' && (
-                        <div className="xl:hidden">
-                          <Link
-                            href="/services/create"
-                            className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
-                            onClick={() => setShowProfileMenu(false)}
-                          >
-                            {t('layout.navbar.createService')}
-                          </Link>
-                          <Link
-                            href="/requests/create"
-                            className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
-                            onClick={() => setShowProfileMenu(false)}
-                          >
-                            {t('layout.navbar.createRequest')}
-                          </Link>
-                        </div>
-                      )}
                       <div className="border-t border-neutral-200 my-2"></div>
-                      <Link
-                        href="/service-requests?type=tome"
-                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <span>{t('layout.navbar.requestsToMe')}</span>
-                        {newRequestsCount > 0 && (
-                          <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold">
-                            {newRequestsCount}
-                          </span>
-                        )}
-                      </Link>
-                      <Link
-                        href="/service-requests?type=my"
-                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <span>{t('layout.navbar.myRequests')}</span>
-                      </Link>
                       <Link
                         href="/chat"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 flex items-center justify-between"
@@ -601,22 +533,6 @@ export function Navbar() {
                 <span>{t('layout.navbar.search')}</span>
               </Link>
               <Link 
-                href="/services" 
-                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="text-xl mr-3">🛠️</span>
-                <span>{t('layout.navbar.services')}</span>
-              </Link>
-              <Link 
-                href="/public-requests" 
-                className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="text-xl mr-3">📋</span>
-                <span>{t('layout.navbar.requests')}</span>
-              </Link>
-              <Link 
                 href={localizedPath('/about', locale)} 
                 className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
@@ -754,63 +670,6 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">🚫</span>
                   <span>{t('layout.navbar.blockedUsers')}</span>
-                </Link>
-              </div>
-            )}
-
-            {/* Создание контента */}
-            {user && user.accountType !== 'viewer' && (
-              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
-                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  {t('layout.mobileMenu.create')}
-                </p>
-                <Link
-                  href="/services/create"
-                  className="flex items-center px-4 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors font-medium shadow-md"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">➕</span>
-                  <span>{t('layout.mobileMenu.createService')}</span>
-                </Link>
-                <Link
-                  href="/requests/create"
-                  className="flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl transition-colors font-medium shadow-md"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">📝</span>
-                  <span>{t('layout.mobileMenu.createRequest')}</span>
-                </Link>
-              </div>
-            )}
-
-            {/* Заявки */}
-            {user && (
-              <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
-                <p className="px-4 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  {t('layout.mobileMenu.requests')}
-                </p>
-                <Link
-                  href="/service-requests?type=tome"
-                  className="flex items-center justify-between px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <div className="flex items-center">
-                    <span className="text-xl mr-3">📩</span>
-                    <span>{t('layout.mobileMenu.requestsToMe')}</span>
-                  </div>
-                  {newRequestsCount > 0 && (
-                    <span className="bg-green-600 text-white text-xs rounded-full px-2.5 py-1 font-semibold">
-                      {newRequestsCount}
-                    </span>
-                  )}
-                </Link>
-                <Link
-                  href="/service-requests?type=my"
-                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">📄</span>
-                  <span>{t('layout.mobileMenu.myRequests')}</span>
                 </Link>
               </div>
             )}

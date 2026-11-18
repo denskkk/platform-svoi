@@ -113,6 +113,15 @@ export function SocialLanding() {
           </Link>
         </div>
       </section>
+      {guest && (
+        <section className="py-16 bg-gradient-to-br from-primary-500 to-accent-500 text-white text-center">
+          <div className="max-w-2xl mx-auto px-4 space-y-4">
+            <h2 className="text-2xl sm:text-3xl font-bold">{t('home.social.finalTitle')}</h2>
+            <p className="text-white/90">{t('home.social.finalText')}</p>
+            <Link href="/auth/register" className="inline-block rounded-full bg-white text-primary-700 font-bold px-8 py-3 hover:bg-neutral-100 transition">{t('home.social.register')}</Link>
+          </div>
+        </section>
+      )}
     </>
   )
 }

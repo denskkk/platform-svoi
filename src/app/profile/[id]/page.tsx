@@ -908,21 +908,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </div>
             )}
 
-            {/* Послуги */}
+            {/* Послуги (лише наявні, без створення нових — платформа є соцмережею) */}
+            {profile.services && profile.services.length > 0 && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-neutral-900">
                   {t('profile.view.services.title')} {profile._count?.services > 0 && `(${profile._count.services})`}
                 </h2>
-                {isOwnProfile && (
-                  <Link
-                    href="/services/create"
-                    className="flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('profile.view.actions.add')}
-                  </Link>
-                )}
               </div>
 
               {profile.services && profile.services.length > 0 ? (
@@ -996,6 +988,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 </div>
               )}
             </div>
+            )}
 
             {/* Швидка навігація по розділах профілю */}
             <div role="tablist" className="flex gap-2 overflow-x-auto">
