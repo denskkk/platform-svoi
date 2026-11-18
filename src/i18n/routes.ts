@@ -56,6 +56,7 @@ export const PRIVATE_PATH_PREFIXES = [
   '/search',
   '/saved',
   '/friends',
+  '/video',
   '/business/apply',
   '/listings',
   '/profile/edit',

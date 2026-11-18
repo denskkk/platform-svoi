@@ -184,5 +184,10 @@
       "followers": "No followers yet",
       "mutual": "No mutual follows yet"
     }
+  },
+  "video": {
+    "title": "Video & stories — coming soon",
+    "description": "We're preparing short videos and 24-hour stories. For now, share photos and posts in the feed.",
+    "back": "Back to feed"
   }
 }
