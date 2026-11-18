@@ -148,8 +148,6 @@ export function FeedPage() {
     setPosts((prev) => [post, ...prev]);
   }, []);
 
-  if (!ready) return null;
-
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
@@ -158,6 +156,8 @@ export function FeedPage() {
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
   }, []);
+
+  if (!ready) return null;
 
   const isViewer = user?.accountType === 'viewer';
   const canInteract = !isViewer;
