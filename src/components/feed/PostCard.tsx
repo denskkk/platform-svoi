@@ -155,7 +155,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
   const gridClass = imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
 
   return (
-    <article className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
+    <article className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] [content-visibility:auto] [contain-intrinsic-size:auto_420px]">
       {/* Автор */}
       <header className="flex items-center gap-3 px-4 pt-4">
         <Link href={`/profile/${author.id}`} className="shrink-0">
