@@ -248,7 +248,7 @@
     "alreadyExists": "You already have an active application",
     "submitted": "Application submitted",
     "notFound": "Application not found",
-    "percentInvalid": "Percentage must be between 0 and 50"
+    "percentInvalid": "Enter a percentage between 0.5 and 50"
   },
   "partnerApplications": {
     "messageInvalid": "Describe why you want to cooperate (at least 10 characters)",

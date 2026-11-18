@@ -14,6 +14,8 @@ interface Item {
   id: number; companyName: string; activity: string; city: string; contactName: string | null;
   phone: string; website: string | null; description: string; projectSlug: string | null;
   createdAt: string; rejectReason: string | null; proposedRewardPercent: number | null;
+  country: string | null; address: string | null; workHours: string | null; socialLinks: string | null; offerings: string | null;
+  offeredRewardPercent: number | null; offeredRewardTerms: string | null;
   user: { id: number; name: string; email: string };
 }
 
@@ -115,6 +117,13 @@ export default function AdminBusinessApplicationsPage() {
               </p>
               <p className="text-sm text-neutral-700 whitespace-pre-wrap break-words">{a.description}</p>
               {a.rejectReason && <p className="text-xs text-red-600">{t('business.reason')}: {a.rejectReason}</p>}
+              {(a.country || a.address) && <p className="text-xs text-neutral-600">{[a.country, a.city, a.address].filter(Boolean).join(', ')}</p>}
+              {a.workHours && <p className="text-xs text-neutral-600">{t('business.fields.workHours')}: {a.workHours}</p>}
+              {a.socialLinks && <p className="text-xs text-neutral-600 break-words">{t('business.fields.socialLinks')}: {a.socialLinks}</p>}
+              {a.offerings && <p className="text-xs text-neutral-600 whitespace-pre-wrap break-words">{t('business.fields.offerings')}: {a.offerings}</p>}
+              {(a.offeredRewardPercent !== null || a.offeredRewardTerms) && (
+                <p className="text-xs text-amber-700">{t('business.offeredByBusiness')}: {a.offeredRewardPercent !== null ? `${a.offeredRewardPercent}%` : ''} {a.offeredRewardTerms || ''}</p>
+              )}
               {a.proposedRewardPercent !== null && <p className="text-xs text-green-700">{t('business.reward')}: {a.proposedRewardPercent}%</p>}
 
               {status === 'pending' && rejecting !== a.id && (

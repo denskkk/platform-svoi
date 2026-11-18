@@ -10,7 +10,12 @@
     "website": "Website or social page",
     "project": "Direction of interest",
     "projectNone": "Not selected",
-    "description": "About the business"
+    "description": "About the business",
+    "country": "Country",
+    "address": "Address",
+    "socialLinks": "Social networks (links)",
+    "workHours": "Working hours",
+    "offerings": "Products and services (list)"
   },
   "hints": {
     "description": "At least 20 characters: what you do and what you expect from the partnership."
@@ -54,5 +59,11 @@
     "link": "Business applications",
     "applicant": "Applicant",
     "loadMore": "Show more"
-  }
+  },
+  "rewardQuestion": "What percentage of a closed check are you ready to pay for attracting a new customer?",
+  "rewardIndividual": "Individual terms",
+  "rewardTermsPlaceholder": "Describe your terms of cooperation",
+  "rewardPreliminary": "This is a preliminary offer, not an approved commitment. The percentage is agreed with a platform representative and fixed in the contract.",
+  "freeNotice": "Business registration, publishing information and being listed in the platform catalog are free. You pay a reward only for attracted customers under the agreed terms of cooperation.",
+  "offeredByBusiness": "Business offer (not approved)"
 }

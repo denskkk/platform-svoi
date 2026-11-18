@@ -248,7 +248,7 @@
     "alreadyExists": "У вас уже є активна заявка",
     "submitted": "Заявку надіслано",
     "notFound": "Заявку не знайдено",
-    "percentInvalid": "Відсоток має бути від 0 до 50"
+    "percentInvalid": "Вкажіть відсоток від 0,5 до 50"
   },
   "partnerApplications": {
     "messageInvalid": "Опишіть, чому хочете співпрацювати (щонайменше 10 символів)",

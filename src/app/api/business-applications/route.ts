@@ -26,6 +26,13 @@ function serializeApplication(a: any) {
     status: a.status,
     proposedRewardPercent: a.proposedRewardPercent === null || a.proposedRewardPercent === undefined ? null : Number(a.proposedRewardPercent),
     rejectReason: a.rejectReason,
+    country: a.country ?? null,
+    address: a.address ?? null,
+    workHours: a.workHours ?? null,
+    socialLinks: a.socialLinks ?? null,
+    offerings: a.offerings ?? null,
+    offeredRewardPercent: a.offeredRewardPercent === null || a.offeredRewardPercent === undefined ? null : Number(a.offeredRewardPercent),
+    offeredRewardTerms: a.offeredRewardTerms ?? null,
     createdAt: a.createdAt,
   };
 }
@@ -68,6 +75,21 @@ export async function POST(request: NextRequest) {
     const contactName = str(body?.contactName, 100) || null;
     let website = str(body?.website, 255) || null;
     let projectSlug = str(body?.projectSlug, 60) || null;
+    const country = str(body?.country, 100) || null;
+    const address = str(body?.address, 255) || null;
+    const workHours = str(body?.workHours, 255) || null;
+    const socialLinks = str(body?.socialLinks, 500) || null;
+    const offerings = str(body?.offerings, 1000) || null;
+    const offeredRewardTerms = str(body?.offeredRewardTerms, 300) || null;
+    // Відсоток — лише пропозиція бізнесу: число 0.5–50 або порожньо (індивідуальні умови в тексті)
+    let offeredRewardPercent: number | null = null;
+    if (body?.offeredRewardPercent !== undefined && body?.offeredRewardPercent !== null && body?.offeredRewardPercent !== '') {
+      const n = Number(body.offeredRewardPercent);
+      if (!Number.isFinite(n) || n < 0.5 || n > 50) {
+        return NextResponse.json({ error: t('api.businessApplications.percentInvalid') }, { status: 400 });
+      }
+      offeredRewardPercent = Math.round(n * 100) / 100;
+    }
 
     if (!companyName || !activity || !city || description.length < 20) {
       return NextResponse.json({ error: t('api.businessApplications.fieldsInvalid') }, { status: 400 });
@@ -88,7 +110,7 @@ export async function POST(request: NextRequest) {
     if (active) return NextResponse.json({ error: t('api.businessApplications.alreadyExists') }, { status: 409 });
 
     const created = await prisma.businessApplication.create({
-      data: { userId, companyName, activity, city, phone, description, contactName, website, projectSlug },
+      data: { userId, companyName, activity, city, phone, description, contactName, website, projectSlug, country, address, workHours, socialLinks, offerings, offeredRewardPercent, offeredRewardTerms },
     });
     return NextResponse.json({ application: serializeApplication(created), message: t('api.businessApplications.submitted') }, { status: 201 });
   } catch (error) {

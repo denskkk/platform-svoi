@@ -14,7 +14,8 @@ interface Application {
 }
 interface ProjectOption { slug: string; nameUk: string; nameEn: string }
 
-const EMPTY = { companyName: '', activity: '', city: '', contactName: '', phone: '', website: '', projectSlug: '', description: '' };
+const EMPTY = { companyName: '', activity: '', country: '', city: '', address: '', contactName: '', phone: '', website: '', socialLinks: '', workHours: '', projectSlug: '', description: '', offerings: '', rewardChoice: '', offeredRewardTerms: '' };
+const REWARD_CHOICES = ['3', '5', '10', '15'];
 const STATUS_STYLE: Record<string, string> = {
   pending: 'bg-primary-50 text-primary-900',
   approved: 'bg-green-50 text-green-800',
@@ -66,7 +67,7 @@ export default function BusinessApplyPage() {
     if (sending) return;
     setSending(true);
     try {
-      const res = await fetch('/api/business-applications', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(form) });
+      const res = await fetch('/api/business-applications', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ ...form, offeredRewardPercent: REWARD_CHOICES.includes(form.rewardChoice) ? Number(form.rewardChoice) : null, offeredRewardTerms: form.rewardChoice === 'individual' ? form.offeredRewardTerms : '' }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { toast.error(data.error || t('business.failed')); return; }
       toast.success(t('business.success'));
@@ -124,10 +125,14 @@ export default function BusinessApplyPage() {
           <form onSubmit={submit} className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-4 space-y-3">
             {field('companyName', t('business.fields.companyName'), { required: true, maxLength: 150 })}
             {field('activity', t('business.fields.activity'), { required: true, maxLength: 150 })}
+            {field('country', t('business.fields.country'), { maxLength: 100 })}
             {field('city', t('business.fields.city'), { required: true, maxLength: 100 })}
+            {field('address', t('business.fields.address'), { maxLength: 255 })}
             {field('contactName', t('business.fields.contactName'), { maxLength: 100 })}
             {field('phone', t('business.fields.phone'), { required: true, type: 'tel', inputMode: 'tel', maxLength: 30 })}
             {field('website', t('business.fields.website'), { maxLength: 255, inputMode: 'url' })}
+            {field('socialLinks', t('business.fields.socialLinks'), { maxLength: 500 })}
+            {field('workHours', t('business.fields.workHours'), { maxLength: 255 })}
             <label className="block space-y-1">
               <span className="text-sm font-medium text-neutral-700">{t('business.fields.project')}</span>
               <select className={inputCls} value={form.projectSlug} onChange={set('projectSlug')}>
@@ -140,6 +145,26 @@ export default function BusinessApplyPage() {
               <textarea className={inputCls} rows={5} required minLength={20} maxLength={3000} value={form.description} onChange={set('description')} />
               <span className="text-xs text-neutral-400">{t('business.hints.description')}</span>
             </label>
+            <label className="block space-y-1">
+              <span className="text-sm font-medium text-neutral-700">{t('business.fields.offerings')}</span>
+              <textarea className={inputCls} rows={3} maxLength={1000} value={form.offerings} onChange={set('offerings')} />
+            </label>
+            <fieldset className="rounded-xl bg-primary-50/60 p-3 space-y-2">
+              <legend className="text-sm font-semibold text-neutral-800 px-1">{t('business.rewardQuestion')}</legend>
+              <div className="flex flex-wrap gap-2">
+                {[...REWARD_CHOICES, 'individual'].map((c) => (
+                  <button key={c} type="button" onClick={() => setForm((f) => ({ ...f, rewardChoice: f.rewardChoice === c ? '' : c }))} aria-pressed={form.rewardChoice === c}
+                    className={cn('rounded-full px-4 py-1.5 text-sm font-semibold border transition', form.rewardChoice === c ? 'bg-primary-500 text-white border-primary-500' : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50')}>
+                    {c === 'individual' ? t('business.rewardIndividual') : `${c}%`}
+                  </button>
+                ))}
+              </div>
+              {form.rewardChoice === 'individual' && (
+                <textarea className={inputCls} rows={2} maxLength={300} placeholder={t('business.rewardTermsPlaceholder')} value={form.offeredRewardTerms} onChange={set('offeredRewardTerms')} />
+              )}
+              <p className="text-xs text-neutral-600">{t('business.rewardPreliminary')}</p>
+              <p className="text-xs text-neutral-600">{t('business.freeNotice')}</p>
+            </fieldset>
             <button type="submit" disabled={sending} className="w-full rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 disabled:opacity-60 flex items-center justify-center gap-2">
               {sending && <Loader2 className="w-4 h-4 animate-spin" />}{sending ? t('business.sending') : t('business.submit')}
             </button>
