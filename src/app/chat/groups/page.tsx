@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Loader2, Plus, Users } from 'lucide-react';
 import { MenuShell } from '@/components/cabinet/MenuShell';
 import { useI18n } from '@/i18n/client';
-import { authHeaders } from '@/lib/feedClient';
+import { authHeaders, readStoredUser } from '@/lib/feedClient';
+import { canCreateGroups } from '@/lib/groupRights';
 
 interface Chat { id: number; title: string; members: number; unread: number; last: { content: string } | null }
 
@@ -21,7 +22,7 @@ export default function GroupChatsPage() {
   }, []);
   return (
     <MenuShell title={t('cabinet.groupChats.title')} backHref="/chat">
-      <Link href="/chat/groups/new" className="flex items-center justify-center gap-2 rounded-2xl bg-primary-500 hover:bg-primary-600 text-neutral-900 font-bold py-3 shadow-md"><Plus className="w-5 h-5" />{t('cabinet.groupChats.new')}</Link>
+      {canCreateGroups(readStoredUser() ?? {}) && <Link href="/chat/groups/new" className="flex items-center justify-center gap-2 rounded-2xl bg-primary-500 hover:bg-primary-600 text-neutral-900 font-bold py-3 shadow-md"><Plus className="w-5 h-5" />{t('cabinet.groupChats.new')}</Link>}
       {state === 'loading' && <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
       {state === 'error' && <p className="text-center text-sm text-red-600">{t('cabinet.groupChats.loadFailed')}</p>}
       {state === 'ready' && chats.length === 0 && <div className="rounded-2xl bg-white border border-neutral-200 p-8 text-center text-sm text-neutral-600">{t('cabinet.groupChats.empty')}</div>}

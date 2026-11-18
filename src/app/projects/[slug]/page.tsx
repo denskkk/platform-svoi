@@ -11,6 +11,7 @@ import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
 import { findFolder, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
+import { SuggestBox } from '@/components/projects/SuggestBox';
 import { useI18n } from '@/i18n/client';
 
 interface Project {
@@ -178,6 +179,7 @@ export default function ProjectPage() {
         {state === 'ready' && project && !(project.slug === 'taxi' || (project.status === 'active' && (hasListings(project.slug) || project.slug === 'clubs'))) && (
           <ComingSoon icon={project.icon} title={name} description={description} backHref="/projects" backLabel={t('projects.back')} />
         )}
+        {state === 'ready' && project && loggedIn && <SuggestBox projectSlug={project.slug} />}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { CLUB_CATEGORIES } from '@/lib/clubs';
 import { jsonHeaders, readStoredUser } from '@/lib/feedClient';
+import { canCreateGroups } from '@/lib/groupRights';
 
 const inputCls = 'w-full rounded-xl border border-neutral-300 bg-white px-3 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400';
 
@@ -20,7 +21,7 @@ export default function NewClubPage() {
   useEffect(() => {
     const me = readStoredUser();
     if (!me) router.replace('/auth/login?returnUrl=/clubs/new');
-    else if (me.accountType === 'viewer') router.replace('/clubs');
+    else if (!canCreateGroups(me)) router.replace('/clubs');
   }, [router]);
 
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));

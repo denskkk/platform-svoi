@@ -328,5 +328,14 @@
     "loadFailed": "Failed to load the chat",
     "owner": "owner",
     "tab": "Groups"
+  },
+  "suggest": {
+    "button": "Suggestion or complaint",
+    "suggestion": "Suggestion",
+    "complaint": "Complaint",
+    "placeholder": "Tell us which section to add, or what is wrong",
+    "send": "Send",
+    "cancel": "Cancel",
+    "sent": "Thank you! We will review your message"
   }
 }

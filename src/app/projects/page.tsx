@@ -85,7 +85,7 @@ export default function ProjectsPage() {
                   <Link
                     href={`/projects/${p.slug}`}
                     className={`relative flex h-full flex-col justify-between overflow-hidden rounded-2xl p-4 text-white shadow-md hover:shadow-xl transition active:scale-[0.98] ${featured ? 'min-h-[9rem]' : 'min-h-[10.5rem]'}`}
-                    style={projectWallpaper(p.slug)}
+                    style={p.bannerUrl ? { backgroundImage: `linear-gradient(to top, rgba(10,31,68,.75), rgba(10,31,68,.15)), url(${p.bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : projectWallpaper(p.slug)}
                   >
                     {p.status === 'coming_soon' && (
                       <span className="absolute right-3 top-3 rounded-full bg-black/35 backdrop-blur text-[10px] font-bold uppercase tracking-wide px-2 py-0.5" style={{ color: th.accent }}>{t('projects.soon')}</span>

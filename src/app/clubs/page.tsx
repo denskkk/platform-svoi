@@ -10,6 +10,7 @@ import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CLUB_CATEGORIES } from '@/lib/clubs';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
+import { canCreateGroups } from '@/lib/groupRights';
 
 interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean }
 
@@ -31,7 +32,7 @@ export default function ClubsPage() {
   useEffect(() => {
     const me = readStoredUser();
     if (!me) { router.replace('/auth/login?returnUrl=/clubs'); return; }
-    setCanCreate(me.accountType !== 'viewer');
+    setCanCreate(canCreateGroups(me));
   }, [router]);
 
   useEffect(() => {

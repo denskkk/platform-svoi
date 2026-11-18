@@ -111,5 +111,22 @@
     "confirmUnverify": "Remove the \"Verified\" status from {name}?",
     "loadError": "Failed to load users",
     "updateError": "Failed to update status"
+  },
+  "suggestions": {
+    "title": "Suggestions and complaints",
+    "back": "Back to admin",
+    "empty": "Nothing here",
+    "loadFailed": "Action failed",
+    "done": "Done",
+    "reject": "Reject",
+    "status": {
+      "new": "New",
+      "done": "Done",
+      "rejected": "Rejected"
+    },
+    "kind": {
+      "suggestion": "Suggestion",
+      "complaint": "Complaint"
+    }
   }
 }

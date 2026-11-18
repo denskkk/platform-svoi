@@ -9,7 +9,7 @@
  */
 
 import { getClubAccess } from '@/lib/clubAccess';
-import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
+import { getPrivateAuthorIdsHiddenFrom, getSettings } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
@@ -61,8 +61,21 @@ export async function GET(request: NextRequest) {
     } else if (scope === 'following') {
       const follows = await prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } });
       where.authorId = { in: [userId, ...follows.map((f: any) => f.followingId).filter((id: any) => !blocked.includes(id))] };
-    } else if (blocked.length > 0) {
-      where.authorId = { notIn: blocked };
+    } else {
+      if (blocked.length > 0) where.authorId = { notIn: blocked };
+      // «Де дивитись»: якщо людина вказала в налаштуваннях область/країну, у «Для вас» першими йдуть автори звідти,
+      // а також ті, на кого вона підписана, і вона сама. Якщо не вказала — стрічка загальна.
+      if (!clubParam) {
+        const pref = (await getSettings(userId)).feed;
+        const place = pref.scope === 'country' ? pref.country : pref.scope === 'region' ? pref.region : '';
+        if (place) {
+          const follows = await prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } });
+          const field = pref.scope === 'country' ? 'country' : 'region';
+          const near: any[] = [{ author: { [field]: { contains: place, mode: 'insensitive' } } }];
+          if (pref.scope === 'region') near.push({ author: { city: { contains: place, mode: 'insensitive' } } });
+          (where as any).AND = [{ OR: [...near, { authorId: { in: [userId, ...follows.map((f: any) => f.followingId)] } }] }];
+        }
+      }
     }
 
     const rows = await prisma.post.findMany({

@@ -10,6 +10,7 @@ import { getApiT } from '@/i18n/server';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getBlockedIds } from '@/lib/blocks';
 import { parseId } from '@/lib/feed';
+import { canCreateGroups } from '@/lib/groupRights';
 import { CLUB_CATEGORIES, CLUB_LIMITS, CLUB_JOIN_MODES, CLUB_POST_MODES, CLUB_VISIBILITIES, serializeClub } from '@/lib/clubs';
 
 export const dynamic = 'force-dynamic';
@@ -58,6 +59,7 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuthWithPermission(request, 'CREATE_POST');
     if (auth.error) return auth.error;
     const userId = Number(auth.user.userId);
+    if (!canCreateGroups(auth.user)) return NextResponse.json({ error: t('api.clubs.businessOnly') }, { status: 403 });
 
     if (!checkRateLimit(`club:create:${userId}`, { interval: 24 * 60 * 60 * 1000, maxRequests: 5 }).allowed) {
       return NextResponse.json({ error: t('api.common.tooManyRequests') }, { status: 429 });
