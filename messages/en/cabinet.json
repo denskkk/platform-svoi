@@ -358,5 +358,21 @@
     "password": "Password of that account",
     "link": "Link",
     "linked": "Accounts linked"
+  },
+  "feedMenu": {
+    "open": "Open menu",
+    "close": "Close menu",
+    "full": "Full account menu"
+  },
+  "reels": {
+    "forYou": "For you",
+    "following": "Following",
+    "comments": "Comments",
+    "follow": "Follow",
+    "save": "Save",
+    "share": "Share",
+    "emptyFollowing": "No videos from people you follow yet",
+    "emptyFollowingHint": "Follow creators or browse recommendations.",
+    "seeAll": "See \"For you\""
   }
 }

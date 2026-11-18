@@ -1,5 +1,5 @@
 /**
- * GET  /api/stories — активні історії (24 год) власні та тих, на кого підписаний користувач.
+ * GET  /api/stories — активні історії (24 год) власні, підписок та інших людей (крім заблокованих і закритих акаунтів).
  *      Відповідь: { groups: [{ author, hasUnseen, stories: [{ id, mediaType, mediaUrl, posterUrl, caption, createdAt, seen, viewsCount? }] }] }
  * POST /api/stories { imageUrl } | { videoId } + caption? — створити історію (фото з /api/upload type=posts або готове відео).
  */
@@ -10,6 +10,7 @@ import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { getBlockedIds } from '@/lib/blocks';
+import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
 import { authorSelect, isOwnPostImage } from '@/lib/feed';
 import { purgeExpiredStories, STORY_CAPTION_MAX, STORY_TTL_MS } from '@/lib/stories';
 
@@ -23,13 +24,16 @@ export async function GET(request: NextRequest) {
     const userId = Number(auth.user.userId);
     purgeExpiredStories();
 
-    const [follows, blocked] = await Promise.all([
+    // Історії всіх (як у TikTok/Instagram): власні, підписки та інші люди; заблоковані й закриті акаунти (без підписки) приховані
+    const [follows, blocked, privateHidden] = await Promise.all([
       prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
       getBlockedIds(userId),
+      getPrivateAuthorIdsHiddenFrom(userId),
     ]);
-    const authorIds = [userId, ...follows.map((f: any) => f.followingId).filter((id: number) => !blocked.includes(id))];
+    const followed = new Set<number>(follows.map((f: any) => f.followingId));
+    const hidden = [...blocked, ...privateHidden].filter((id: number) => id !== userId);
     const rows = await prisma.story.findMany({
-      where: { ownerId: { in: authorIds }, expiresAt: { gt: new Date() }, owner: { isActive: true } },
+      where: { expiresAt: { gt: new Date() }, owner: { isActive: true }, ...(hidden.length ? { ownerId: { notIn: hidden } } : {}) },
       orderBy: { id: 'asc' },
       take: 300,
       include: { owner: { select: authorSelect }, views: { where: { userId }, select: { id: true } } },
@@ -40,15 +44,18 @@ export async function GET(request: NextRequest) {
       const o = s.owner;
       let g = map.get(o.id);
       if (!g) {
-        g = { author: { id: o.id, name: o.businessInfo?.companyName || `${o.firstName} ${o.lastName}`.trim(), avatarUrl: o.businessInfo?.logoUrl || o.avatarUrl, isVerified: o.isVerified, isOwn: o.id === userId }, hasUnseen: false, stories: [] };
+        g = { followed: followed.has(o.id), author: { id: o.id, name: o.businessInfo?.companyName || `${o.firstName} ${o.lastName}`.trim(), avatarUrl: o.businessInfo?.logoUrl || o.avatarUrl, isVerified: o.isVerified, isOwn: o.id === userId }, hasUnseen: false, stories: [] };
         map.set(o.id, g);
       }
       const seen = s.ownerId === userId || s.views.length > 0;
       if (!seen) g.hasUnseen = true;
       g.stories.push({ id: s.id, mediaType: s.mediaType, mediaUrl: s.mediaUrl, posterUrl: s.posterUrl, caption: s.caption, createdAt: s.createdAt, seen, viewsCount: s.ownerId === userId ? s.viewsCount : undefined });
     }
-    // власні — першими, далі ті, де є непереглянуті
-    const groups = Array.from(map.values()).sort((a, b) => Number(b.author.isOwn) - Number(a.author.isOwn) || Number(b.hasUnseen) - Number(a.hasUnseen));
+    // власні — першими, далі непереглянуті від тих, на кого підписані, потім інші непереглянуті, потім переглянуті
+    const groups = Array.from(map.values())
+      .sort((a, b) => Number(b.author.isOwn) - Number(a.author.isOwn) || Number(b.hasUnseen) - Number(a.hasUnseen) || Number(b.followed) - Number(a.followed))
+      .slice(0, 40)
+      .map(({ followed: _f, ...g }: any) => g);
     return NextResponse.json({ groups });
   } catch (error) {
     console.error('Stories list error:', error);

@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 import { PostCard } from './PostCard';
 import { Recommendations } from './Recommendations';
-import { FeedSidebar } from './FeedSidebar';
+import { FeedMenuDrawer, FeedSidebar } from './FeedSidebar';
 import { StoriesBar } from './StoriesBar';
 import { PostComposer } from './PostComposer';
 
@@ -183,9 +183,12 @@ export function FeedPage() {
         <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>
 
-        <Link href="/search?type=people" className="flex items-center gap-3 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-2.5 text-neutral-500 hover:bg-neutral-50">
-          <Search className="w-5 h-5 shrink-0" /> <span className="text-[15px] truncate">{t('cabinet.feedSearch')}</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <FeedMenuDrawer user={user} />
+          <Link href="/search?type=people" className="flex-1 min-w-0 flex items-center gap-3 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-2.5 text-neutral-500 hover:bg-neutral-50">
+            <Search className="w-5 h-5 shrink-0" /> <span className="text-[15px] truncate">{t('cabinet.feedSearch')}</span>
+          </Link>
+        </div>
 
         {canInteract && <StoriesBar me={user} />}
         <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />
