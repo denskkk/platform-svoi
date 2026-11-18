@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Send, Trash2, X } from 'lucide-react';
+import { ReportButton } from '@/components/ui/ReportButton';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
@@ -151,6 +152,9 @@ export function PostComments({ postId, canComment, onCountChange }: Props) {
             <button type="button" onClick={() => { setReplyTo(c); }} className="hover:underline">{t('feed.comments.reply')}</button>
           )}
           <span className="font-normal">{timeAgo(c.createdAt, locale, t('feed.post.justNow'))}</span>
+          {!c.isOwn && canComment && c.author.id ? (
+            <ReportButton reportedUserId={c.author.id} contentType="comment" contentId={c.id} label={t('feed.comments.report')} className="font-normal hover:underline" />
+          ) : null}
           {c.isOwn && (
             <button type="button" onClick={() => remove(c)} className="inline-flex items-center gap-1 hover:text-red-600" aria-label={t('feed.comments.delete')}>
               <Trash2 className="w-3 h-3" />

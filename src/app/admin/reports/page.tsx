@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Flag } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
+import { parseReportRef } from '@/lib/reportRef';
 
 interface ReportItem {
   id: number;
@@ -70,6 +71,24 @@ export default function AdminReportsPage() {
     }
     load();
   }, [load, router]);
+
+  const act = async (reportId: number, action: string) => {
+    if (!window.confirm(t('admin.reports.confirmAction'))) return;
+    try {
+      const res = await fetch('/api/admin/reports/action', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportId, action }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('admin.reports.updateError'));
+      toast.success(t('admin.reports.actionDone'));
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
 
   const setStatus = async (id: number, status: string) => {
     try {
@@ -147,6 +166,28 @@ export default function AdminReportsPage() {
                 </div>
 
                 <p className="text-neutral-800 whitespace-pre-line mb-4">{r.reason}</p>
+
+                {(() => {
+                  const ref = parseReportRef(r.reason);
+                  const btn = 'px-3 py-1.5 text-sm rounded-lg bg-red-100 text-red-800 hover:bg-red-200';
+                  return (
+                    <div className="flex gap-2 flex-wrap mb-3">
+                      {ref?.type === 'post' && (
+                        <>
+                          <Link href={`/feed/${ref.id}`} className="px-3 py-1.5 text-sm rounded-lg bg-neutral-100 hover:bg-neutral-200">{t('admin.reports.actions.openPost')}</Link>
+                          <button onClick={() => act(r.id, 'hide_post')} className={btn}>{t('admin.reports.actions.hidePost')}</button>
+                          <button onClick={() => act(r.id, 'unhide_post')} className="px-3 py-1.5 text-sm rounded-lg bg-neutral-100 hover:bg-neutral-200">{t('admin.reports.actions.unhidePost')}</button>
+                        </>
+                      )}
+                      {ref?.type === 'comment' && <button onClick={() => act(r.id, 'delete_comment')} className={btn}>{t('admin.reports.actions.deleteComment')}</button>}
+                      {r.reportedUser.isActive ? (
+                        <button onClick={() => act(r.id, 'suspend_user')} className={btn}>{t('admin.reports.actions.suspendUser')}</button>
+                      ) : (
+                        <button onClick={() => act(r.id, 'restore_user')} className="px-3 py-1.5 text-sm rounded-lg bg-green-100 text-green-800 hover:bg-green-200">{t('admin.reports.actions.restoreUser')}</button>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="flex gap-2 flex-wrap">
                   {r.status !== 'in_review' && (

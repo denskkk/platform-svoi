@@ -75,8 +75,16 @@
     "actions": {
       "takeInReview": "Take for review",
       "resolve": "Resolved",
-      "reject": "Reject"
-    }
+      "reject": "Reject",
+      "openPost": "Open post",
+      "hidePost": "Hide post",
+      "unhidePost": "Restore post",
+      "deleteComment": "Delete comment",
+      "suspendUser": "Suspend user",
+      "restoreUser": "Unsuspend user"
+    },
+    "confirmAction": "Confirm the action? The report will be closed.",
+    "actionDone": "Action done"
   },
   "users": {
     "title": "User management",

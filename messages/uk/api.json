@@ -62,7 +62,10 @@
     "verifiedMustBeBoolean": "Параметр verified повинен бути boolean",
     "verifiedGranted": "Користувач {firstName} {lastName} отримав статус «Перевірений»",
     "verifiedRevoked": "Статус «Перевірений» знято з користувача {firstName} {lastName}",
-    "statusUpdateError": "Помилка оновлення статусу"
+    "statusUpdateError": "Помилка оновлення статусу",
+    "reports": {
+      "cannotSuspendStaff": "Не можна заблокувати адміністратора, модератора або себе"
+    }
   },
   "auth": {
     "tooManyAttempts": "Забагато спроб. Спробуйте пізніше.",

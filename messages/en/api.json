@@ -62,7 +62,10 @@
     "verifiedMustBeBoolean": "The \"verified\" parameter must be a boolean",
     "verifiedGranted": "User {firstName} {lastName} has received the \"Verified\" status",
     "verifiedRevoked": "The \"Verified\" status has been removed from user {firstName} {lastName}",
-    "statusUpdateError": "Failed to update status"
+    "statusUpdateError": "Failed to update status",
+    "reports": {
+      "cannotSuspendStaff": "You cannot suspend an admin, staff member or yourself"
+    }
   },
   "auth": {
     "tooManyAttempts": "Too many attempts. Please try again later.",

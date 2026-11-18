@@ -79,7 +79,8 @@
     "replyingTo": "Відповідь для {name}",
     "cancelReply": "Скасувати відповідь",
     "showReplies": "Відповіді: {count}",
-    "hideReplies": "Сховати відповіді"
+    "hideReplies": "Сховати відповіді",
+    "report": "Поскаржитись"
   },
   "empty": {
     "forYou": {
