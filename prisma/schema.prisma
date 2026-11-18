@@ -245,6 +245,7 @@ model User {
   postCommentLikes     PostCommentLike[]
   organizationApplications OrganizationApplication[]
   clubsOwned           Club[]
+  postVideos           PostVideo[]
   referralProgram      ReferralProgram?  @relation("ProgramBusiness")
   dealsAsBusiness      Deal[]  @relation("DealBusiness")
   dealsAsReferrer      Deal[]  @relation("DealReferrer")
@@ -903,6 +904,7 @@ model Post {
   images       PostImage[]
   likes        PostLike[]
   comments     PostComment[]
+  video     PostVideo?
   savedBy      SavedPost[]
 
   @@index([authorId, createdAt(sort: Desc)])
@@ -921,6 +923,30 @@ model PostImage {
 
   @@index([postId, position])
   @@map("post_images")
+}
+
+// Відео до допису. Спочатку завантажується окремо (postId = null), після обробки прикріплюється до допису.
+// status: queued | processing | ready | failed
+model PostVideo {
+  id          Int      @id @default(autoincrement()) @map("post_video_id")
+  ownerId     Int      @map("owner_id")
+  postId      Int?     @unique @map("post_id")
+  status      String   @default("queued") @db.VarChar(20)
+  rawName     String?  @map("raw_name") @db.VarChar(80)
+  url         String?  @db.VarChar(255)
+  posterUrl   String?  @map("poster_url") @db.VarChar(255)
+  durationSec Int?     @map("duration_sec")
+  sizeBytes   Int?     @map("size_bytes")
+  error       String?  @db.VarChar(120)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  owner User  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  post  Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([ownerId, createdAt])
+  @@map("post_videos")
 }
 
 model PostLike {

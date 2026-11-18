@@ -29,6 +29,7 @@ export const authorSelect = {
 export const postInclude = {
   author: { select: authorSelect },
   images: { orderBy: { position: 'asc' as const }, select: { id: true, url: true } },
+  video: { select: { id: true, status: true, url: true, posterUrl: true, durationSec: true } },
 } as const;
 
 type PostRow = {
@@ -50,6 +51,7 @@ type PostRow = {
     businessInfo: { companyName: string | null; logoUrl: string | null } | null;
   };
   images: { id: number; url: string }[];
+  video?: { id: number; status: string; url: string | null; posterUrl: string | null; durationSec: number | null } | null;
 };
 
 export function serializePost(post: PostRow, viewer: { liked: Set<number>; following: Set<number>; saved?: Set<number>; userId: number }) {
@@ -62,6 +64,9 @@ export function serializePost(post: PostRow, viewer: { liked: Set<number>; follo
     createdAt: post.createdAt.toISOString(),
     edited: post.updatedAt.getTime() - post.createdAt.getTime() > 60_000,
     images: post.images,
+    video: post.video && post.video.status === 'ready' && post.video.url
+      ? { id: post.video.id, url: post.video.url, posterUrl: post.video.posterUrl, durationSec: post.video.durationSec }
+      : null,
     author: {
       id: author.id,
       name: author.businessInfo?.companyName || `${author.firstName} ${author.lastName}`.trim(),

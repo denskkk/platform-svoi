@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { removeVideoFiles } from '@/lib/videos';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
@@ -80,7 +81,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const post = await prisma.post.findUnique({
       where: { id: postId },
-      select: { authorId: true, images: { select: { url: true } } },
+      select: { authorId: true, images: { select: { url: true } }, video: { select: { rawName: true, url: true, posterUrl: true } } },
     });
     if (!post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
 
@@ -91,6 +92,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     await prisma.post.delete({ where: { id: postId } });
     await removePostImageFiles(post.images.map((i: any) => i.url));
+    if (post.video) await removeVideoFiles(post.video);
     return NextResponse.json({ success: true, message: t('api.feed.postDeleted') });
   } catch (error) {
     console.error('Delete post error:', error);

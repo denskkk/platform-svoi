@@ -281,5 +281,12 @@
     "badState": "This action is not available for the current deal status",
     "reasonRequired": "Enter a reason (at least 5 characters)",
     "contractRequired": "Enter the contract number"
+  },
+  "videos": {
+    "tooMany": "Too many video uploads. Try again later",
+    "badType": "Unsupported video format (MP4, MOV or WebM)",
+    "tooLarge": "Video is too large — maximum {max} MB",
+    "notFound": "Video not found",
+    "notReady": "The video is still processing or unavailable"
   }
 }

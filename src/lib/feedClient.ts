@@ -33,6 +33,7 @@ export interface FeedPost {
   createdAt: string;
   edited?: boolean;
   images: { id: number; url: string }[];
+  video?: { id: number; url: string; posterUrl: string | null; durationSec: number | null } | null;
   author: FeedAuthor;
   viewer: { liked: boolean; isOwn: boolean; following: boolean; saved?: boolean };
 }

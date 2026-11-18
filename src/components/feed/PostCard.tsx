@@ -121,7 +121,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
 
   const saveEdit = async () => {
     const content = draft.trim();
-    if (saving || (!content && post.images.length === 0)) return;
+    if (saving || (!content && post.images.length === 0 && !post.video)) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/posts/${post.id}`, { method: 'PATCH', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content }) });
@@ -250,7 +250,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
           />
           <div className="flex justify-end gap-2">
             <button type="button" onClick={() => setEditing(false)} className="rounded-full px-4 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100">{t('feed.composer.cancel')}</button>
-            <button type="button" onClick={saveEdit} disabled={saving || (!draft.trim() && post.images.length === 0)} className="rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-1.5 disabled:opacity-40">
+            <button type="button" onClick={saveEdit} disabled={saving || (!draft.trim() && post.images.length === 0 && !post.video)} className="rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-1.5 disabled:opacity-40">
               {saving ? t('feed.post.saving') : t('feed.post.save')}
             </button>
           </div>
@@ -267,6 +267,11 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
       )}
 
       {/* Фото */}
+      {post.video && (
+        <div className="mt-3 bg-black">
+          <video src={post.video.url} poster={post.video.posterUrl || undefined} controls playsInline preload="none" className="w-full max-h-[80vh] mx-auto" />
+        </div>
+      )}
       {imgs.length > 0 && (
         <div className={cn('grid gap-0.5 mt-3 overflow-hidden', gridClass)}>
           {imgs.slice(0, 4).map((img, i) => (

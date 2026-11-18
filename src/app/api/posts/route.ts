@@ -28,7 +28,14 @@ export async function POST(request: NextRequest) {
     const content = typeof body?.content === 'string' ? body.content.trim() : '';
     const images: unknown[] = Array.isArray(body?.images) ? body.images : [];
 
-    if (!content && images.length === 0) {
+    const videoId = body?.videoId ? Number(body.videoId) : null;
+    let video: { id: number } | null = null;
+    if (videoId) {
+      video = await prisma.postVideo.findFirst({ where: { id: videoId, ownerId: userId, postId: null, status: 'ready' }, select: { id: true } });
+      if (!video) return NextResponse.json({ error: t('api.videos.notReady') }, { status: 400 });
+    }
+
+    if (!content && images.length === 0 && !video) {
       return NextResponse.json({ error: t('api.feed.emptyPost') }, { status: 400 });
     }
     if (content.length > FEED_LIMITS.postMaxLength) {
@@ -49,6 +56,10 @@ export async function POST(request: NextRequest) {
       },
       include: postInclude,
     });
+    if (video) {
+      await prisma.postVideo.update({ where: { id: video.id }, data: { postId: post.id } });
+      post.video = await prisma.postVideo.findUnique({ where: { id: video.id }, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true } });
+    }
 
     const state = await loadViewerState(userId, [post.id], [userId]);
     return NextResponse.json(

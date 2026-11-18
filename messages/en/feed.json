@@ -20,7 +20,14 @@
     "viewerAction": "Create a profile",
     "promptNamed": "What's on your mind, {name}?",
     "listing": "Listing",
-    "photo": "Photo"
+    "photo": "Photo",
+    "addVideo": "Video",
+    "videoProcessing": "Processing video…",
+    "videoFailed": "Could not process the video",
+    "videoUploading": "Uploading video…",
+    "removeVideo": "Remove video",
+    "videoTooLarge": "Video is too large — maximum 50 MB",
+    "videoLimits": "up to 60 s, up to 50 MB"
   },
   "post": {
     "follow": "Follow",
@@ -198,8 +205,16 @@
     }
   },
   "video": {
-    "title": "Video & stories — coming soon",
+    "title": "Video",
     "description": "We're preparing short videos and 24-hour stories. For now, share photos and posts in the feed.",
-    "back": "Back to feed"
+    "back": "Back to feed",
+    "subtitle": "Short community videos",
+    "empty": "No videos yet",
+    "emptyHint": "Add the first video from a feed post.",
+    "add": "Add video",
+    "unmute": "Unmute",
+    "mute": "Mute",
+    "open": "Open post",
+    "loadMore": "Load more"
   }
 }

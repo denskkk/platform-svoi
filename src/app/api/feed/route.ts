@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
     const blocked = await getBlockedIds(userId);
     const where: Prisma.PostWhereInput = { isHidden: false, author: { isActive: true } };
     if (cursor) where.id = { lt: cursor };
+    if (params.get('videos') === '1') where.video = { is: { status: 'ready' } };
     const authorId = parseId(params.get('authorId'));
     if (params.get('saved') === '1') {
       const rows = await prisma.savedPost.findMany({ where: { userId }, select: { postId: true }, orderBy: { id: 'desc' }, take: 1000 });
