@@ -484,6 +484,13 @@ export function Navbar() {
                         {t('layout.navbar.clients')}
                       </Link>
                       <Link
+                        href="/business/stats"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.stats')}
+                      </Link>
+                      <Link
                         href="/friends"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
@@ -715,6 +722,14 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">🤝</span>
                   <span>{t('layout.navbar.clients')}</span>
+                </Link>
+                <Link
+                  href="/business/stats"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">📊</span>
+                  <span>{t('layout.navbar.stats')}</span>
                 </Link>
                 <Link
                   href="/friends"

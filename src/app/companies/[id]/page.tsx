@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, Bookmark, BookmarkCheck, Clock, Globe, Loader2, MapPin, MessageCircle, Navigation, Phone, Share2, Star } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Bookmark, BookmarkCheck, Clock, Globe, Loader2, MapPin, MessageCircle, Navigation, Phone, QrCode as QrCodeIcon, Share2, Star } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
@@ -155,6 +155,7 @@ export default function CompanyPage() {
                 </button>
               )}
               <button type="button" onClick={share} className={cn(btn, 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200')}><Share2 className="w-4 h-4" />{t('companies.share')}</button>
+              <Link href={`/companies/${c.id}/qr`} className={cn(btn, 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200')}><QrCodeIcon className="w-4 h-4" />{t('companies.qr.button')}</Link>
             </div>
           </div>
         </div>

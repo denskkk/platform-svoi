@@ -30,5 +30,12 @@
     "priceRange": "Prices",
     "mission": "Mission",
     "contactName": "Contact person"
+  },
+  "qr": {
+    "button": "QR code",
+    "back": "Back to company",
+    "hint": "Scan to open the company page. Print it for tables, a shop window or business cards.",
+    "download": "Download SVG",
+    "print": "Print"
   }
 }
