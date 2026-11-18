@@ -1050,6 +1050,7 @@ model Listing {
   owner         User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   images        ListingImage[]
   saves         SavedListing[]
+  clicks        OutboundClick[]
 
   @@index([projectSlug, status, createdAt(sort: Desc)])
   @@index([ownerId, createdAt(sort: Desc)])
@@ -1057,6 +1058,21 @@ model Listing {
   @@index([city])
   @@index([price])
   @@map("listings")
+}
+
+// Перехід із вітрини магазину на зовнішній сайт (облік джерела та користувача)
+model OutboundClick {
+  id        Int      @id @default(autoincrement()) @map("outbound_click_id")
+  listingId Int      @map("listing_id")
+  userId    Int?     @map("user_id")
+  source    String   @default("storefront") @db.VarChar(30)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, createdAt])
+  @@index([userId])
+  @@map("outbound_clicks")
 }
 
 model ListingImage {

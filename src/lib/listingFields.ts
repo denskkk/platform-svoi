@@ -5,7 +5,7 @@
  * Модуль безпечний для імпорту і на клієнті, і на сервері (без залежностей).
  */
 
-export type FieldType = 'text' | 'number' | 'select';
+export type FieldType = 'text' | 'number' | 'select' | 'url' | 'date';
 
 export interface ListingField {
   key: string;
@@ -69,6 +69,21 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'specialty', type: 'text', required: true, maxLength: 100, filter: 'text' },
     { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+  ],
+  shops: [
+    { key: 'shopUrl', type: 'url', required: true, maxLength: 255 },
+    { key: 'shopCategory', type: 'text', maxLength: 80, filter: 'text' },
+    { key: 'popularProduct', type: 'text', maxLength: 120 },
+    { key: 'benefits', type: 'text', maxLength: 200 },
+    { key: 'partnerTerms', type: 'text', maxLength: 150 },
+  ],
+  events: [
+    { key: 'eventKind', type: 'select', required: true, options: ['event', 'conference', 'exhibition', 'meetup', 'training', 'sport_event', 'culture'], filter: 'select' },
+    { key: 'eventDate', type: 'date', required: true },
+    { key: 'eventTime', type: 'text', maxLength: 20 },
+    { key: 'place', type: 'text', maxLength: 150 },
+    { key: 'organizer', type: 'text', maxLength: 120 },
+    { key: 'registrationUrl', type: 'url', maxLength: 255 },
   ],
   jobs: [
     { key: 'jobKind', type: 'select', required: true, options: ['vacancy', 'resume', 'partner_search', 'cooperation'], filter: 'select' },

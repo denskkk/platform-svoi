@@ -138,7 +138,7 @@ export function ListingForm({ slug, initial }: Props) {
                 </select>
               ) : (
                 <input
-                  type={f.type === 'number' ? 'number' : 'text'}
+                  type={f.type === 'number' ? 'number' : f.type === 'url' ? 'url' : f.type === 'date' ? 'date' : 'text'}
                   inputMode={f.type === 'number' ? 'decimal' : undefined}
                   step={f.type === 'number' ? 'any' : undefined}
                   min={f.min}

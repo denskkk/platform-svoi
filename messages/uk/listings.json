@@ -52,7 +52,8 @@
     "roomsShort": "кімн.",
     "areaUnit": "м²",
     "loginRequired": "Увійдіть, щоб переглядати оголошення",
-    "login": "Увійти"
+    "login": "Увійти",
+    "goToShop": "Перейти до магазину"
   },
   "form": {
     "titleNew": "Нове оголошення",
@@ -169,6 +170,21 @@
       "jobKind": "Тип",
       "employment": "Зайнятість",
       "company": "Компанія"
+    },
+    "shops": {
+      "shopUrl": "Посилання на сайт магазину",
+      "shopCategory": "Категорія товарів",
+      "popularProduct": "Популярний товар",
+      "benefits": "Переваги",
+      "partnerTerms": "Партнерські умови"
+    },
+    "events": {
+      "eventKind": "Тип події",
+      "eventDate": "Дата",
+      "eventTime": "Час",
+      "place": "Місце",
+      "organizer": "Організатор",
+      "registrationUrl": "Посилання на реєстрацію"
     }
   },
   "options": {
@@ -267,6 +283,15 @@
       "part": "Часткова",
       "remote": "Віддалено",
       "project": "Проєктна"
+    },
+    "eventKind": {
+      "event": "Захід",
+      "conference": "Конференція",
+      "exhibition": "Виставка",
+      "meetup": "Зустріч",
+      "training": "Навчання",
+      "sport_event": "Спортивний захід",
+      "culture": "Культурна подія"
     }
   },
   "notFound": "Оголошення не знайдено"

@@ -96,6 +96,17 @@ function checkField(field: ListingField, raw: unknown): string | number | null {
   if (field.type === 'select') {
     return typeof raw === 'string' && field.options?.includes(raw) ? raw : null;
   }
+  if (field.type === 'date') {
+    const v = typeof raw === 'string' ? raw.trim() : '';
+    const d = /^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(`${v}T00:00:00Z`) : null;
+    return d && !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v ? v : null;
+  }
+  if (field.type === 'url') {
+    let v = cleanText(raw, field.maxLength ?? 255);
+    if (!v) return null;
+    if (!/^https?:\/\//i.test(v)) v = `https://${v}`;
+    return /^https?:\/\/[^\s]+\.[^\s]+$/i.test(v) && v.length <= 255 ? v : null;
+  }
   return cleanText(raw, field.maxLength ?? 100);
 }
 

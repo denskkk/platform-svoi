@@ -52,7 +52,8 @@
     "roomsShort": "rooms",
     "areaUnit": "m²",
     "loginRequired": "Sign in to browse listings",
-    "login": "Sign in"
+    "login": "Sign in",
+    "goToShop": "Go to the store"
   },
   "form": {
     "titleNew": "New listing",
@@ -169,6 +170,21 @@
       "jobKind": "Type",
       "employment": "Employment",
       "company": "Company"
+    },
+    "shops": {
+      "shopUrl": "Store website link",
+      "shopCategory": "Product category",
+      "popularProduct": "Popular product",
+      "benefits": "Benefits",
+      "partnerTerms": "Partner terms"
+    },
+    "events": {
+      "eventKind": "Event type",
+      "eventDate": "Date",
+      "eventTime": "Time",
+      "place": "Place",
+      "organizer": "Organizer",
+      "registrationUrl": "Registration link"
     }
   },
   "options": {
@@ -267,6 +283,15 @@
       "part": "Part-time",
       "remote": "Remote",
       "project": "Project-based"
+    },
+    "eventKind": {
+      "event": "Event",
+      "conference": "Conference",
+      "exhibition": "Exhibition",
+      "meetup": "Meetup",
+      "training": "Training",
+      "sport_event": "Sports event",
+      "culture": "Cultural event"
     }
   },
   "notFound": "Listing not found"

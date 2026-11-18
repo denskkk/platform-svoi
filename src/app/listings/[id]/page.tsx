@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, Eye, Heart, Loader2, MapPin, MessageCircle, Phone, Share2 } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Eye, Heart, Loader2, MapPin, MessageCircle, Phone, Share2, ExternalLink } from 'lucide-react';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
@@ -148,6 +148,12 @@ export default function ListingPage() {
                   </button>
                 </div>
               </div>
+
+              {listing.projectSlug === 'shops' && listing.data?.shopUrl && (
+                <a href={`/api/go/${listing.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3.5 text-base">
+                  <ExternalLink className="w-5 h-5" /> {t('listings.common.goToShop')}
+                </a>
+              )}
 
               {detailRows(listing.projectSlug, listing.data, t).length > 0 && (
                 <section>
