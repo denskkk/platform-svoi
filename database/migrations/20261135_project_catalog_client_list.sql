@@ -1,6 +1,5 @@
 -- Перелік проєктів від замовника (18.11). Існуючі проєкти перейменовуються і впорядковуються,
 -- нових немає у БД — додаються зі статусом coming_soon (статус існуючих НЕ змінюється).
--- Інші наявні проєкти (sport, events, services, other) лишаються після списку.
 INSERT INTO projects (slug, icon, color, name_uk, name_en, description_uk, description_en, status, sort_order) VALUES
   ('antiques', '🏺', '#92400e', 'Антикварна лавка для своїх', 'Antiques shop for your own', 'Антикваріат і колекційні речі від своїх.', 'Antiques and collectibles from your own people.', 'coming_soon', 1),
   ('dating', '💞', '#be185d', 'Знайомства зі своїми', 'Dating with your own', 'Знайомства в колі своїх.', 'Meet people within your community.', 'coming_soon', 2),
@@ -31,4 +30,5 @@ ON CONFLICT (slug) DO UPDATE SET
   name_uk = EXCLUDED.name_uk, name_en = EXCLUDED.name_en,
   description_uk = EXCLUDED.description_uk, description_en = EXCLUDED.description_en,
   sort_order = EXCLUDED.sort_order;
-UPDATE projects SET sort_order = 100 + sort_order WHERE slug IN ('sport','events','services','other') AND sort_order < 100;
+-- Лише проєкти зі списку замовника: решта (категорії) ховається, не видаляється (повернути можна в /admin/projects).
+UPDATE projects SET status = 'hidden', sort_order = 100 + sort_order WHERE slug IN ('sport','events','services','other');

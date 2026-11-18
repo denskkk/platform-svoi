@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Globe2, Handshake, Search, Store } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { projectTheme, projectWallpaper } from '@/lib/projectThemes';
 
@@ -102,24 +102,6 @@ export default function ProjectsPage() {
             })}
           </ul>
         )}
-
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          <Link href="/companies" className="rounded-2xl bg-white border border-neutral-200/70 shadow-sm p-4 hover:shadow-md transition">
-            <Store className="w-7 h-7 text-space-500" />
-            <p className="mt-2 font-bold text-neutral-900">{t('cabinet.projects.offline')}</p>
-            <p className="text-xs text-neutral-500 mt-0.5">{t('cabinet.projects.offlineHint')}</p>
-          </Link>
-          <Link href="/search?type=business" className="rounded-2xl bg-white border border-neutral-200/70 shadow-sm p-4 hover:shadow-md transition">
-            <Globe2 className="w-7 h-7 text-space-500" />
-            <p className="mt-2 font-bold text-neutral-900">{t('cabinet.projects.online')}</p>
-            <p className="text-xs text-neutral-500 mt-0.5">{t('cabinet.projects.onlineHint')}</p>
-          </Link>
-        </div>
-
-        <Link href="/menu/earn" className="flex items-center gap-3 rounded-2xl bg-primary-500 hover:bg-primary-600 text-neutral-900 p-4 shadow-md transition">
-          <Handshake className="w-7 h-7 shrink-0" />
-          <span><span className="block font-bold">{t('cabinet.projects.earnTile')}</span><span className="block text-xs text-neutral-800/80">{t('cabinet.projects.earnHint')}</span></span>
-        </Link>
       </div>
     </div>
   );
