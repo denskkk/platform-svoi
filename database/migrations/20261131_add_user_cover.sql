@@ -1,0 +1,2 @@
+-- Обкладинка профілю (additive).
+ALTER TABLE users ADD COLUMN IF NOT EXISTS cover_url VARCHAR(255);

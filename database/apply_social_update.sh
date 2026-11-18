@@ -25,7 +25,8 @@ for f in \
   20261127_earn_page_media_steps.sql \
   20261128_business_media_geo.sql \
   20261129_add_notification_settings.sql \
-  20261130_add_reposts_reactions.sql; do
+  20261130_add_reposts_reactions.sql \
+  20261131_add_user_cover.sql; do
   echo ">> $f"
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
 done

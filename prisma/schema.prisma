@@ -126,6 +126,7 @@ model User {
   childrenAges Json?   @map("children_ages") @default("[]") // вік дітей для підбору садка/школи
   bio          String?  @db.Text
   avatarUrl    String?  @map("avatar_url") @db.VarChar(255)
+  coverUrl     String?  @map("cover_url") @db.VarChar(255)
   
   // Транспорт
   hasCar       Boolean? @map("has_car")

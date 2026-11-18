@@ -91,6 +91,7 @@ export async function GET(
         email: true,
         phone: true,
         avatarUrl: true,
+        coverUrl: true,
         city: true,
         region: true,
         housingType: true,

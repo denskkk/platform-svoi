@@ -13,7 +13,8 @@
   "video": {
     "title": "Video and stories",
     "description": "Short vertical videos and stories are coming soon to Sviy dlya Svoikh.",
-    "chip": "Video"
+    "chip": "Video",
+    "open": "Open"
   },
   "admin": {
     "title": "Projects (directions)",

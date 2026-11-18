@@ -188,7 +188,7 @@ export function FeedPage() {
 
         <Link href="/video" className="flex items-center justify-between rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-3">
           <span className="inline-flex items-center gap-2 font-semibold text-neutral-900"><Clapperboard className="w-5 h-5 text-primary-700" /> {t('projects.video.chip')}</span>
-          <span className="rounded-full bg-primary-500 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">{t('projects.soon')}</span>
+          <span className="text-sm font-semibold text-primary-700">{t('projects.video.open')}</span>
         </Link>
 
         {/* Вкладки */}

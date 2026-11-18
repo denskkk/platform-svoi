@@ -228,6 +228,34 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-neutral-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ViewerUpgradeNotice className="mb-6" />
+        {/* Обкладинка профілю */}
+        {!profile?.businessInfo?.bannerUrl && (profile?.coverUrl || isOwnProfile) && (
+          <div className="mb-6 relative rounded-2xl overflow-hidden shadow-md bg-gradient-to-r from-primary-100 to-accent-100 h-40 md:h-56">
+            {profile?.coverUrl && <ServiceImage src={profile.coverUrl} alt="" className="w-full h-full object-cover" />}
+            {isOwnProfile && (
+              <label className="absolute bottom-3 right-3 cursor-pointer rounded-full bg-white/90 hover:bg-white text-neutral-800 text-sm font-semibold px-4 py-2 shadow">
+                <input type="file" accept="image/*" hidden onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try {
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    fd.append('type', 'banners');
+                    const up = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers: authHeaders(), body: fd });
+                    const ud = await up.json().catch(() => ({}));
+                    if (!up.ok || !ud.url) throw new Error(ud.error);
+                    const res = await fetch(`/api/profile/${profile.id}`, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ coverUrl: ud.url }) });
+                    if (!res.ok) throw new Error();
+                    setProfile((p: any) => ({ ...p, coverUrl: ud.url }));
+                  } catch (err: any) {
+                    toast.error(err?.message || t('profile.view.cover.failed'));
+                  }
+                }} />
+                {t('profile.view.cover.change')}
+              </label>
+            )}
+          </div>
+        )}
         {/* Банер компанії (для бізнес акаунтів) */}
         {profile?.businessInfo?.bannerUrl && (
           <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
@@ -969,10 +997,20 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               )}
             </div>
 
+            {/* Швидка навігація по розділах профілю */}
+            <div role="tablist" className="flex gap-2 overflow-x-auto">
+              <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="shrink-0 rounded-full bg-white border border-neutral-200 px-4 py-1.5 text-sm font-semibold text-neutral-700 hover:border-primary-300">{t('profile.view.tabs.about')}</button>
+              <button type="button" onClick={() => document.getElementById('profile-posts')?.scrollIntoView({ behavior: 'smooth' })} className="shrink-0 rounded-full bg-white border border-neutral-200 px-4 py-1.5 text-sm font-semibold text-neutral-700 hover:border-primary-300">{t('profile.view.tabs.posts')}</button>
+              {profile.reviewsReceived && profile.reviewsReceived.length > 0 && (
+                <button type="button" onClick={() => document.getElementById('profile-reviews')?.scrollIntoView({ behavior: 'smooth' })} className="shrink-0 rounded-full bg-white border border-neutral-200 px-4 py-1.5 text-sm font-semibold text-neutral-700 hover:border-primary-300">{t('profile.view.tabs.reviews')}</button>
+              )}
+            </div>
+
             {/* Дописи зі стрічки */}
-            {profile?.id && <ProfilePosts authorId={Number(profile.id)} />}
+            <div id="profile-posts">{profile?.id && <ProfilePosts authorId={Number(profile.id)} />}</div>
 
             {/* Відгуки */}
+            <div id="profile-reviews" />
             {profile.reviewsReceived && profile.reviewsReceived.length > 0 && (
               <div className="bg-white rounded-2xl shadow-md p-6">
                 <h2 className="text-2xl font-bold text-neutral-900 mb-6">
