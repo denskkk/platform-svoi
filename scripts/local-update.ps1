@@ -1,6 +1,7 @@
-# Локальне оновлення для тесту (Windows PowerShell). Запуск з кореня проєкту:
+# Local update for testing (Windows PowerShell). Run from the project root:
 #   powershell -ExecutionPolicy Bypass -File scripts\local-update.ps1
-# Параметри за потреби: -DbUser postgres -DbName svoi -DbHost localhost -DbPort 5432
+# Optional: -DbUser postgres -DbName svoi -DbHost localhost -DbPort 5432
+# NOTE: this file is ASCII only on purpose (Windows PowerShell 5 breaks on UTF-8 without BOM).
 param(
   [string]$DbUser = "postgres",
   [string]$DbName = "svoi",
@@ -9,23 +10,18 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $psql = "C:\Program Files\PostgreSQL\18\bin\psql.exe"
-if (-not (Test-Path $psql)) { throw "Не знайдено psql: $psql" }
+if (-not (Test-Path $psql)) { throw "psql not found: $psql" }
 
-Write-Host "1/6 Код з гілки feature/social-feed" -ForegroundColor Cyan
-git fetch origin
-git checkout feature/social-feed
-git pull origin feature/social-feed
-
-Write-Host "2/6 Залежності" -ForegroundColor Cyan
+Write-Host "1/5 Dependencies" -ForegroundColor Cyan
 npm ci
 
-Write-Host "3/6 Таблиці з prisma/schema.prisma (додає нові, нічого не видаляє)" -ForegroundColor Cyan
+Write-Host "2/5 Tables from prisma/schema.prisma (adds new ones, removes nothing)" -ForegroundColor Cyan
 npx prisma db push
 npx prisma generate
 
-Write-Host "4/6 SQL-міграції з даними (проєкти, налаштування)" -ForegroundColor Cyan
+Write-Host "3/5 SQL migrations with data (projects, settings)" -ForegroundColor Cyan
 if (-not $env:PGPASSWORD) {
-  $sec = Read-Host "Пароль користувача $DbUser бази PostgreSQL" -AsSecureString
+  $sec = Read-Host "Password of PostgreSQL user $DbUser" -AsSecureString
   $env:PGPASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
 }
 $files = @(
@@ -42,10 +38,10 @@ $files = @(
 foreach ($f in $files) {
   Write-Host "  -> $f"
   & $psql -U $DbUser -h $DbHost -p $DbPort -d $DbName -v ON_ERROR_STOP=1 -q -f "database\migrations\$f"
-  if ($LASTEXITCODE -ne 0) { Write-Host "  ПОМИЛКА у $f (скопіюйте текст вище)" -ForegroundColor Red }
+  if ($LASTEXITCODE -ne 0) { Write-Host "  ERROR in $f (copy the text above and send it)" -ForegroundColor Red }
 }
 
-Write-Host "5/6 Перевірка збірки (ловить помилки типів)" -ForegroundColor Cyan
+Write-Host "4/5 Build (catches type errors)" -ForegroundColor Cyan
 npm run build
 
-Write-Host "6/6 Готово. Запуск: npm run start  ->  http://localhost:3000" -ForegroundColor Green
+Write-Host "5/5 Done. Start: npm run start  ->  http://localhost:3000" -ForegroundColor Green
