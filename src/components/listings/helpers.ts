@@ -41,6 +41,14 @@ export function specSummary(slug: string, data: Record<string, string | number>,
     if (get('propertyType')) parts.push(t(`listings.options.propertyType.${get('propertyType')}`));
     if (get('rooms') !== undefined) parts.push(`${get('rooms')} ${t('listings.common.roomsShort')}`);
     if (get('area')) parts.push(`${get('area')} ${t('listings.common.areaUnit')}`);
+  } else {
+    // Інші напрямки: перші заповнені поля з конфігурації
+    for (const f of fieldsFor(slug)) {
+      const v = get(f.key);
+      if (v === undefined || v === '') continue;
+      parts.push(f.type === 'select' ? t(`listings.options.${f.key}.${v}`) : f.type === 'number' ? `${t(`listings.fields.${slug}.${f.key}`)}: ${v}` : String(v));
+      if (parts.length >= 3) break;
+    }
   }
   return parts;
 }

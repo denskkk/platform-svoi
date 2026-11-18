@@ -2,19 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Newspaper, Search, MessageCircle, User, UserPlus, Eye, Heart } from 'lucide-react'
+import { LayoutGrid, Home, Search, Clapperboard, User, UserPlus, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
-import { checkAuth, silentFetch } from '@/lib/silentFetch'
+import { checkAuth } from '@/lib/silentFetch'
 import { useI18n } from '@/i18n/client'
 import { localizedPath, splitLocalePrefix } from '@/i18n/routes'
 
 const navItems = [
-  { href: '/feed', icon: Newspaper, labelKey: 'layout.mobileNav.feed' },
+  { href: '/feed', icon: Home, labelKey: 'layout.mobileNav.home' },
+  { href: '/video', icon: Clapperboard, labelKey: 'layout.mobileNav.video' },
   { href: '/projects', icon: LayoutGrid, labelKey: 'layout.mobileNav.projects' },
-  { href: '/catalog', icon: Search, labelKey: 'layout.mobileNav.search' },
-  { href: '/chat', icon: MessageCircle, labelKey: 'layout.mobileNav.messages' },
+  { href: '/search', icon: Search, labelKey: 'layout.mobileNav.search' },
   { href: '/profile', icon: User, labelKey: 'layout.mobileNav.profile' },
 ]
 
@@ -24,7 +24,6 @@ export function MobileNav() {
   const pathname = splitLocalePrefix(rawPathname || '/').path
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [unread, setUnread] = useState(0)
 
   useEffect(() => {
     const readLocal = () => {
@@ -57,31 +56,9 @@ export function MobileNav() {
     return () => window.removeEventListener('auth:changed', onAuthChanged)
   }, [])
 
-  // Лічильник непрочитаних повідомлень для значка на вкладці чату
-  useEffect(() => {
-    if (!user || user.accountType === 'viewer') { setUnread(0); return }
-    let cancelled = false
-    const refresh = async () => {
-      if (document.visibilityState !== 'visible') return
-      try {
-        const res = await silentFetch('/api/conversations/unread-count', { credentials: 'include' })
-        if (!res.ok) return
-        const data = await res.json()
-        if (!cancelled) setUnread(Number(data.unreadCount) || 0)
-      } catch { /* ignore */ }
-    }
-    refresh()
-    const timer = setInterval(refresh, 60_000)
-    document.addEventListener('visibilitychange', refresh)
-    return () => { cancelled = true; clearInterval(timer); document.removeEventListener('visibilitychange', refresh) }
-  }, [user])
-
   // Поки йде перевірка — показуємо звичну навігацію, аби уникнути стрибків
   const isAuthed = !!user
-  // Глядачі не можуть писати повідомлення — замість чату показуємо "Обране"
-  const items = user?.accountType === 'viewer'
-    ? navItems.map((item) => (item.href === '/chat' ? { href: '/favorites', icon: Heart, labelKey: 'layout.mobileNav.favorites' } : item))
-    : navItems
+  const items = navItems
 
   if (loading) {
     return (
@@ -144,11 +121,6 @@ export function MobileNav() {
             >
               <span className="relative">
                 <Icon className={cn('w-6 h-6', isActive && 'stroke-[2.5]')} />
-                {item.href === '/chat' && unread > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] leading-none rounded-full bg-red-500 text-white border-2 border-white">
-                    {unread > 99 ? '99+' : unread}
-                  </span>
-                )}
               </span>
               <span className="text-[11px] min-[360px]:text-xs font-medium truncate max-w-full">{t(item.labelKey)}</span>
             </Link>

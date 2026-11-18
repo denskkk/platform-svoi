@@ -41,6 +41,40 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'area', type: 'number', required: true, min: 1, max: 1_000_000, filter: 'range' },
     { key: 'address', type: 'text', maxLength: 150 },
   ],
+  health: [
+    { key: 'healthKind', type: 'select', required: true, options: ['doctor', 'clinic', 'medical_center', 'online', 'dietitian', 'nutrition', 'rehab', 'other'], filter: 'select' },
+    { key: 'medSpecialty', type: 'select', options: ['gynecologist', 'cardiologist', 'dentist', 'therapist', 'surgeon', 'other_med'], filter: 'select' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+    { key: 'workplace', type: 'text', maxLength: 120 },
+    { key: 'consultFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+  ],
+  sport: [
+    { key: 'sportKind', type: 'select', required: true, options: ['fitness', 'dance', 'martial_arts', 'yoga', 'swimming', 'team_sports', 'personal', 'online_training', 'other'], filter: 'select' },
+    { key: 'trainingFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+  ],
+  trade: [
+    { key: 'tradeKind', type: 'select', required: true, options: ['manufacturer', 'supplier', 'goods', 'export', 'import', 'logistics', 'partner_search', 'wholesale'], filter: 'select' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'minOrder', type: 'text', maxLength: 80 },
+    { key: 'deliveryTerms', type: 'text', maxLength: 150 },
+  ],
+  china: [
+    { key: 'chinaKind', type: 'select', required: true, options: ['manufacturer', 'supplier', 'goods', 'logistics', 'wholesale'], filter: 'select' },
+    { key: 'manufacturer', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'minOrder', type: 'text', maxLength: 80 },
+    { key: 'deliveryTerms', type: 'text', maxLength: 150 },
+  ],
+  services: [
+    { key: 'specialty', type: 'text', required: true, maxLength: 100, filter: 'text' },
+    { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+  ],
+  jobs: [
+    { key: 'jobKind', type: 'select', required: true, options: ['vacancy', 'resume', 'partner_search', 'cooperation'], filter: 'select' },
+    { key: 'employment', type: 'select', options: ['full', 'part', 'remote', 'project'], filter: 'select' },
+    { key: 'company', type: 'text', maxLength: 120 },
+  ],
 };
 
 export const CURRENCIES = ['UAH', 'USD', 'EUR'] as const;

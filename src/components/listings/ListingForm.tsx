@@ -119,6 +119,7 @@ export function ListingForm({ slug, initial }: Props) {
 
   return (
     <form onSubmit={submit} className="bg-white rounded-3xl border border-neutral-200/70 shadow-sm p-4 sm:p-6 space-y-4">
+      {slug === 'health' && <p className="rounded-xl bg-amber-50 text-amber-900 text-sm p-3">{t('listings.form.healthNotice')}</p>}
       <label className="block">
         {label(t('listings.form.title'), true)}
         <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={LISTING_LIMITS.titleMax} required className={inputCls('title')} />

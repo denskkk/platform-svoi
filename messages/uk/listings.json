@@ -76,7 +76,8 @@
     "successTitle": "Оголошення надіслано на модерацію",
     "successText": "Ми повідомимо вас, коли його перевірять.",
     "toMyListings": "Мої оголошення",
-    "toProject": "До каталогу"
+    "toProject": "До каталогу",
+    "healthNotice": "Оголошення в розділі «Здоров’я» проходять перевірку. Не публікуйте гарантій лікування чи небезпечних порад; медичні спеціалісти можуть підтвердити кваліфікацію документами."
   },
   "status": {
     "pending": "На модерації",
@@ -134,6 +135,40 @@
       "rooms": "Кількість кімнат",
       "area": "Площа, м²",
       "address": "Адреса або район"
+    },
+    "health": {
+      "healthKind": "Тип",
+      "medSpecialty": "Медична спеціальність",
+      "experience": "Досвід, років",
+      "workplace": "Місце роботи",
+      "consultFormat": "Формат консультації"
+    },
+    "sport": {
+      "sportKind": "Напрямок",
+      "trainingFormat": "Формат",
+      "experience": "Досвід, років"
+    },
+    "trade": {
+      "tradeKind": "Тип пропозиції",
+      "country": "Країна",
+      "minOrder": "Мінімальна партія",
+      "deliveryTerms": "Умови поставки"
+    },
+    "china": {
+      "chinaKind": "Тип пропозиції",
+      "manufacturer": "Виробник",
+      "minOrder": "Мінімальна партія",
+      "deliveryTerms": "Умови поставки"
+    },
+    "services": {
+      "specialty": "Спеціалізація",
+      "serviceFormat": "Формат",
+      "experience": "Досвід, років"
+    },
+    "jobs": {
+      "jobKind": "Тип",
+      "employment": "Зайнятість",
+      "company": "Компанія"
     }
   },
   "options": {
@@ -159,6 +194,79 @@
     "dealType": {
       "sale": "Продаж",
       "rent": "Оренда"
+    },
+    "healthKind": {
+      "doctor": "Лікар",
+      "clinic": "Клініка",
+      "medical_center": "Медичний центр",
+      "online": "Онлайн-консультація",
+      "dietitian": "Дієтолог",
+      "nutrition": "Спеціаліст з харчування",
+      "rehab": "Реабілітація",
+      "other": "Інше"
+    },
+    "medSpecialty": {
+      "gynecologist": "Гінеколог",
+      "cardiologist": "Кардіолог",
+      "dentist": "Стоматолог",
+      "therapist": "Терапевт",
+      "surgeon": "Хірург",
+      "other_med": "Інша спеціальність"
+    },
+    "consultFormat": {
+      "online": "Онлайн",
+      "offline": "Офлайн",
+      "both": "Онлайн і офлайн"
+    },
+    "trainingFormat": {
+      "online": "Онлайн",
+      "offline": "Офлайн",
+      "both": "Онлайн і офлайн"
+    },
+    "serviceFormat": {
+      "online": "Онлайн",
+      "offline": "Офлайн",
+      "both": "Онлайн і офлайн"
+    },
+    "sportKind": {
+      "fitness": "Фітнес",
+      "dance": "Танці",
+      "martial_arts": "Єдиноборства",
+      "yoga": "Йога",
+      "swimming": "Плавання",
+      "team_sports": "Командні види спорту",
+      "personal": "Персональні тренування",
+      "online_training": "Онлайн-тренування",
+      "other": "Інше"
+    },
+    "tradeKind": {
+      "manufacturer": "Виробник",
+      "supplier": "Постачальник",
+      "goods": "Товари",
+      "export": "Експорт",
+      "import": "Імпорт",
+      "logistics": "Логістика",
+      "partner_search": "Пошук партнерів",
+      "wholesale": "Оптова пропозиція"
+    },
+    "chinaKind": {
+      "manufacturer": "Виробник",
+      "supplier": "Постачальник",
+      "goods": "Товари",
+      "logistics": "Логістика",
+      "wholesale": "Оптова пропозиція"
+    },
+    "jobKind": {
+      "vacancy": "Вакансія",
+      "resume": "Резюме",
+      "partner_search": "Пошук партнера",
+      "cooperation": "Співпраця"
+    },
+    "employment": {
+      "full": "Повна зайнятість",
+      "part": "Часткова",
+      "remote": "Віддалено",
+      "project": "Проєктна"
     }
   },
   "notFound": "Оголошення не знайдено"

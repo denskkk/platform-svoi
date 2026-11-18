@@ -76,7 +76,8 @@
     "successTitle": "Listing submitted for moderation",
     "successText": "We will notify you when it has been reviewed.",
     "toMyListings": "My listings",
-    "toProject": "Back to the catalogue"
+    "toProject": "Back to the catalogue",
+    "healthNotice": "Listings in the Health section are reviewed. Do not publish treatment guarantees or unsafe advice; medical specialists may be asked to confirm qualifications with documents."
   },
   "status": {
     "pending": "On moderation",
@@ -134,6 +135,40 @@
       "rooms": "Rooms",
       "area": "Area, m²",
       "address": "Address or district"
+    },
+    "health": {
+      "healthKind": "Type",
+      "medSpecialty": "Medical specialty",
+      "experience": "Experience, years",
+      "workplace": "Place of work",
+      "consultFormat": "Consultation format"
+    },
+    "sport": {
+      "sportKind": "Discipline",
+      "trainingFormat": "Format",
+      "experience": "Experience, years"
+    },
+    "trade": {
+      "tradeKind": "Offer type",
+      "country": "Country",
+      "minOrder": "Minimum order",
+      "deliveryTerms": "Delivery terms"
+    },
+    "china": {
+      "chinaKind": "Offer type",
+      "manufacturer": "Manufacturer",
+      "minOrder": "Minimum order",
+      "deliveryTerms": "Delivery terms"
+    },
+    "services": {
+      "specialty": "Specialty",
+      "serviceFormat": "Format",
+      "experience": "Experience, years"
+    },
+    "jobs": {
+      "jobKind": "Type",
+      "employment": "Employment",
+      "company": "Company"
     }
   },
   "options": {
@@ -159,6 +194,79 @@
     "dealType": {
       "sale": "Sale",
       "rent": "Rent"
+    },
+    "healthKind": {
+      "doctor": "Doctor",
+      "clinic": "Clinic",
+      "medical_center": "Medical center",
+      "online": "Online consultation",
+      "dietitian": "Dietitian",
+      "nutrition": "Nutrition specialist",
+      "rehab": "Rehabilitation",
+      "other": "Other"
+    },
+    "medSpecialty": {
+      "gynecologist": "Gynecologist",
+      "cardiologist": "Cardiologist",
+      "dentist": "Dentist",
+      "therapist": "Therapist",
+      "surgeon": "Surgeon",
+      "other_med": "Other specialty"
+    },
+    "consultFormat": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Online and offline"
+    },
+    "trainingFormat": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Online and offline"
+    },
+    "serviceFormat": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Online and offline"
+    },
+    "sportKind": {
+      "fitness": "Fitness",
+      "dance": "Dance",
+      "martial_arts": "Martial arts",
+      "yoga": "Yoga",
+      "swimming": "Swimming",
+      "team_sports": "Team sports",
+      "personal": "Personal training",
+      "online_training": "Online training",
+      "other": "Other"
+    },
+    "tradeKind": {
+      "manufacturer": "Manufacturer",
+      "supplier": "Supplier",
+      "goods": "Goods",
+      "export": "Export",
+      "import": "Import",
+      "logistics": "Logistics",
+      "partner_search": "Partner search",
+      "wholesale": "Wholesale offer"
+    },
+    "chinaKind": {
+      "manufacturer": "Manufacturer",
+      "supplier": "Supplier",
+      "goods": "Goods",
+      "logistics": "Logistics",
+      "wholesale": "Wholesale offer"
+    },
+    "jobKind": {
+      "vacancy": "Vacancy",
+      "resume": "Resume",
+      "partner_search": "Partner search",
+      "cooperation": "Cooperation"
+    },
+    "employment": {
+      "full": "Full-time",
+      "part": "Part-time",
+      "remote": "Remote",
+      "project": "Project-based"
     }
   },
   "notFound": "Listing not found"
