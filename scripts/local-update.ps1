@@ -12,8 +12,9 @@ $ErrorActionPreference = "Stop"
 $psql = "C:\Program Files\PostgreSQL\18\bin\psql.exe"
 if (-not (Test-Path $psql)) { throw "psql not found: $psql" }
 
-Write-Host "1/5 Dependencies" -ForegroundColor Cyan
-npm ci
+Write-Host "1/5 Dependencies (npm install keeps node_modules; npm ci deletes it and OneDrive locks files)" -ForegroundColor Cyan
+npm install --no-audit --no-fund
+if ($LASTEXITCODE -ne 0) { Write-Host "npm install FAILED (close editors/dev server, pause OneDrive) - send the error" -ForegroundColor Red; exit 1 }
 
 Write-Host "2/5 Tables from prisma/schema.prisma (adds new ones, removes nothing)" -ForegroundColor Cyan
 npx prisma db push
