@@ -1,18 +1,16 @@
 import { HomeRedirect } from '@/components/features/home/HomeRedirect'
-import { HeroSection } from '@/components/features/home/HeroSection'
+import { SocialLanding } from '@/components/features/home/SocialLanding'
 import { CategoriesSection } from '@/components/features/home/CategoriesSection'
 import { PopularProfiles } from '@/components/features/home/PopularProfiles'
-import { ValuesSection } from '@/components/features/home/ValuesSection'
 import { CTASection } from '@/components/features/home/CTASection'
 
 export default function Home() {
   return (
     <div className="ukrainian-pattern">
       <HomeRedirect />
-      <HeroSection />
+      <SocialLanding />
       <CategoriesSection />
       <PopularProfiles />
-      <ValuesSection />
       <CTASection />
     </div>
   )

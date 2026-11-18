@@ -216,5 +216,20 @@
     "mute": "Mute",
     "open": "Open post",
     "loadMore": "Load more"
+  },
+  "stories": {
+    "title": "Stories",
+    "you": "You",
+    "add": "Add story",
+    "mine": "My stories",
+    "uploading": "Uploading…",
+    "processing": "Processing video…",
+    "added": "Story added for 24 hours",
+    "deleted": "Story deleted",
+    "deleteFailed": "Could not delete the story",
+    "delete": "Delete story",
+    "close": "Close",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

@@ -9,6 +9,23 @@
     "all": "All",
     "people": "People",
     "business": "Businesses",
-    "listings": "Listings"
+    "listings": "Listings",
+    "clubs": "Clubs"
+  },
+  "cityPlaceholder": "City",
+  "directionLabel": "Direction",
+  "allDirections": "All directions",
+  "members": "{count} members",
+  "directions": {
+    "cars": "Cars",
+    "real-estate": "Real estate",
+    "health": "Health",
+    "sport": "Sport",
+    "services": "Services",
+    "jobs": "Jobs",
+    "shops": "Shops",
+    "events": "Events",
+    "trade": "International trade",
+    "china": "China"
   }
 }

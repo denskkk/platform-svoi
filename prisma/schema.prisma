@@ -246,6 +246,8 @@ model User {
   organizationApplications OrganizationApplication[]
   clubsOwned           Club[]
   postVideos           PostVideo[]
+  stories              Story[]
+  storyViews           StoryView[]
   referralProgram      ReferralProgram?  @relation("ProgramBusiness")
   dealsAsBusiness      Deal[]  @relation("DealBusiness")
   dealsAsReferrer      Deal[]  @relation("DealReferrer")
@@ -943,6 +945,7 @@ model PostVideo {
 
   owner User  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   post  Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  story Story?
 
   @@index([status, createdAt])
   @@index([ownerId, createdAt])
@@ -1366,4 +1369,39 @@ model SavedPost {
   @@unique([userId, postId])
   @@index([userId, createdAt(sort: Desc)])
   @@map("saved_posts")
+}
+
+// Історії: живуть 24 години (expiresAt), потім прибираються разом із файлами.
+model Story {
+  id         Int      @id @default(autoincrement()) @map("story_id")
+  ownerId    Int      @map("owner_id")
+  mediaType  String   @map("media_type") @db.VarChar(10) // image | video
+  mediaUrl   String   @map("media_url") @db.VarChar(255)
+  posterUrl  String?  @map("poster_url") @db.VarChar(255)
+  videoId    Int?     @unique @map("video_id")
+  caption    String?  @db.VarChar(200)
+  viewsCount Int      @default(0) @map("views_count")
+  createdAt  DateTime @default(now()) @map("created_at")
+  expiresAt  DateTime @map("expires_at")
+
+  owner User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  video PostVideo? @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  views StoryView[]
+
+  @@index([ownerId, expiresAt])
+  @@index([expiresAt])
+  @@map("stories")
+}
+
+model StoryView {
+  id        Int      @id @default(autoincrement()) @map("story_view_id")
+  storyId   Int      @map("story_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
+  @@map("story_views")
 }

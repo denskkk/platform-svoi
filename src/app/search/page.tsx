@@ -12,10 +12,12 @@ import { cn } from '@/lib/utils';
 import { authHeaders, readStoredUser } from '@/lib/feedClient';
 
 interface Person { id: number; name: string; avatarUrl: string | null; city: string | null; profession?: string | null; businessType?: string | null; isVerified: boolean }
-interface Results { people: Person[]; business: Person[]; listings: ListingCardData[] }
-type Tab = 'all' | 'people' | 'business' | 'listings';
+interface ClubHit { id: number; name: string; avatarUrl: string | null; city: string | null; category: string; membersCount: number }
+interface Results { people: Person[]; business: Person[]; listings: ListingCardData[]; clubs: ClubHit[] }
+type Tab = 'all' | 'people' | 'business' | 'listings' | 'clubs';
 
-const EMPTY: Results = { people: [], business: [], listings: [] };
+const EMPTY: Results = { people: [], business: [], listings: [], clubs: [] };
+const DIRECTION_SLUGS = ['cars', 'real-estate', 'health', 'sport', 'services', 'jobs', 'shops', 'events', 'trade', 'china'];
 
 function PersonRow({ p, href, sub }: { p: Person; href: string; sub: string | null }) {
   return (
@@ -42,26 +44,31 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [city, setCity] = useState('');
+  const [project, setProject] = useState('');
   const reqId = useRef(0);
 
   useEffect(() => {
     if (!readStoredUser()) { router.replace('/auth/login?returnUrl=/search'); return; }
     const initial = new URLSearchParams(window.location.search).get('q');
     if (initial) setQ(initial.slice(0, 80));
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get('city')) setCity((sp.get('city') as string).slice(0, 60));
+    if (sp.get('project')) setProject((sp.get('project') as string).slice(0, 60));
   }, [router]);
 
   useEffect(() => {
     const text = q.trim();
-    if (text.length < 2) { setResults(EMPTY); setSearched(false); setLoading(false); setError(false); return; }
+    if (text.length < 2 && !city.trim() && !project) { setResults(EMPTY); setSearched(false); setLoading(false); setError(false); return; }
     const id = ++reqId.current;
     setLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/search?${new URLSearchParams({ q: text, type: tab })}`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
+        const res = await fetch(`/api/search?${new URLSearchParams({ q: text, type: tab, city: city.trim(), project })}`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
         if (!res.ok) throw new Error();
         const data = await res.json();
         if (id !== reqId.current) return;
-        setResults({ people: data.people, business: data.business, listings: data.listings });
+        setResults({ people: data.people, business: data.business, listings: data.listings, clubs: data.clubs || [] });
         setError(false);
         setSearched(true);
       } catch {
@@ -71,10 +78,11 @@ export default function SearchPage() {
       }
     }, 350);
     return () => clearTimeout(timer);
-  }, [q, tab]);
+  }, [q, tab, city, project]);
 
-  const total = results.people.length + results.business.length + results.listings.length;
-  const tabs: Tab[] = ['all', 'people', 'business', 'listings'];
+  const total = results.people.length + results.business.length + results.listings.length + results.clubs.length;
+  const tabs: Tab[] = ['all', 'people', 'business', 'listings', 'clubs'];
+  const hasQuery = q.trim().length >= 2 || city.trim().length > 0 || !!project;
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -100,6 +108,16 @@ export default function SearchPage() {
           )}
         </div>
 
+        <div className="grid grid-cols-2 gap-2">
+          <input value={city} onChange={(e) => setCity(e.target.value)} maxLength={60} placeholder={t('search.cityPlaceholder')} aria-label={t('search.cityPlaceholder')}
+            className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[16px] md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+          <select value={project} onChange={(e) => setProject(e.target.value)} aria-label={t('search.directionLabel')}
+            className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[16px] md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400">
+            <option value="">{t('search.allDirections')}</option>
+            {DIRECTION_SLUGS.map((slug) => <option key={slug} value={slug}>{t(`search.directions.${slug}`)}</option>)}
+          </select>
+        </div>
+
         <div role="tablist" className="flex gap-2 overflow-x-auto pb-1">
           {tabs.map((k) => (
             <button key={k} role="tab" type="button" aria-selected={tab === k} onClick={() => setTab(k)}
@@ -109,7 +127,7 @@ export default function SearchPage() {
           ))}
         </div>
 
-        {q.trim().length < 2 && <p className="text-center text-sm text-neutral-500 py-10">{t('search.hint')}</p>}
+        {!hasQuery && <p className="text-center text-sm text-neutral-500 py-10">{t('search.hint')}</p>}
         {loading && <div className="flex justify-center py-6"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
         {error && !loading && <p className="text-center text-sm text-red-600 py-6">{t('search.failed')}</p>}
         {searched && !loading && !error && total === 0 && <p className="text-center text-neutral-600 py-10">{t('search.empty')}</p>}
@@ -124,6 +142,14 @@ export default function SearchPage() {
           <section className="space-y-2">
             <h2 className="font-semibold text-neutral-900">{t('search.tabs.business')}</h2>
             <ul className="space-y-2">{results.business.map((p) => <PersonRow key={p.id} p={p} href={`/companies/${p.id}`} sub={p.businessType ?? null} />)}</ul>
+          </section>
+        )}
+        {!error && results.clubs.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="font-semibold text-neutral-900">{t('search.tabs.clubs')}</h2>
+            <ul className="space-y-2">{results.clubs.map((c) => (
+              <PersonRow key={c.id} p={{ id: c.id, name: c.name, avatarUrl: c.avatarUrl, city: c.city, isVerified: false }} href={`/clubs/${c.id}`} sub={t('search.members', { count: c.membersCount })} />
+            ))}</ul>
           </section>
         )}
         {!error && results.listings.length > 0 && (

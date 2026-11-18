@@ -20,7 +20,8 @@ for f in \
   20261122_add_outbound_clicks.sql \
   20261123_add_clubs.sql \
   20261124_add_referrals_deals.sql \
-  20261125_add_post_videos.sql; do
+  20261125_add_post_videos.sql \
+  20261126_add_stories.sql; do
   echo ">> $f"
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
 done

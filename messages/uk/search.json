@@ -9,6 +9,23 @@
     "all": "Усе",
     "people": "Люди",
     "business": "Бізнеси",
-    "listings": "Оголошення"
+    "listings": "Оголошення",
+    "clubs": "Клуби"
+  },
+  "cityPlaceholder": "Місто",
+  "directionLabel": "Напрям",
+  "allDirections": "Усі напрями",
+  "members": "{count} учасників",
+  "directions": {
+    "cars": "Авто",
+    "real-estate": "Нерухомість",
+    "health": "Здоров’я",
+    "sport": "Спорт",
+    "services": "Послуги",
+    "jobs": "Вакансії",
+    "shops": "Магазини",
+    "events": "Події",
+    "trade": "Міжнародна торгівля",
+    "china": "Китай"
   }
 }

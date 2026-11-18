@@ -288,5 +288,10 @@
     "tooLarge": "Video is too large — maximum {max} MB",
     "notFound": "Video not found",
     "notReady": "The video is still processing or unavailable"
+  },
+  "stories": {
+    "tooMany": "Too many stories today",
+    "mediaRequired": "Add a photo or a video",
+    "notFound": "Story not found"
   }
 }

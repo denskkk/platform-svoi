@@ -1,5 +1,5 @@
 /**
- * GET /api/search?q=<text>&type=all|people|business|listings
+ * GET /api/search?q=<text>&type=all|people|business|listings|clubs&city=<місто>&project=<slug напряму>
  * Єдиний пошук по людях, бізнесах і оголошеннях. Лише для авторизованих.
  * Повертає тільки публічні поля; заблоковані (в обидва боки) та неактивні акаунти не показуються.
  * type=all — по 5 результатів на групу; конкретний type — до 20.
@@ -15,7 +15,7 @@ import { listingInclude, loadSavedIds, publicWhere, serializeListing } from '@/l
 
 export const dynamic = 'force-dynamic';
 
-const TYPES = ['all', 'people', 'business', 'listings'] as const;
+const TYPES = ['all', 'people', 'business', 'listings', 'clubs'] as const;
 type SearchType = (typeof TYPES)[number];
 
 export async function GET(request: NextRequest) {
@@ -32,18 +32,24 @@ export async function GET(request: NextRequest) {
     const q = (params.get('q') || '').trim().slice(0, 80);
     const rawType = params.get('type') || 'all';
     const type: SearchType = (TYPES as readonly string[]).includes(rawType) ? (rawType as SearchType) : 'all';
-    if (q.length < 2) return NextResponse.json({ q, people: [], business: [], listings: [] });
+    const city = (params.get('city') || '').trim().slice(0, 60);
+    const project = /^[a-z0-9-]{1,60}$/.test(params.get('project') || '') ? (params.get('project') as string) : '';
+    // Без тексту пошук можливий, якщо задано фільтр (місто або напрям)
+    if (q.length < 2 && !city && !project) return NextResponse.json({ q, people: [], business: [], listings: [], clubs: [] });
+    const textOr = (fields: string[]) => (q.length >= 2 ? { OR: fields.map(contains) } : {});
+    const cityIs = (field = 'city') => (city ? { [field]: { contains: city, mode: 'insensitive' as const } } : {});
 
     const take = type === 'all' ? 5 : 20;
     const blocked = await getBlockedIds(userId);
     const excluded = [...blocked, userId];
     const contains = (field: string) => ({ [field]: { contains: q, mode: 'insensitive' as const } });
 
-    const wantPeople = type === 'all' || type === 'people';
-    const wantBusiness = type === 'all' || type === 'business';
-    const wantListings = type === 'all' || type === 'listings';
+    const wantPeople = (type === 'all' || type === 'people') && !project;
+    const wantBusiness = (type === 'all' || type === 'business') && !project;
+    const wantListings = type === 'all' || type === 'listings' || !!project;
+    const wantClubs = (type === 'all' || type === 'clubs') && !project;
 
-    const [people, business, listings] = await Promise.all([
+    const [people, business, listings, clubs] = await Promise.all([
       wantPeople
         ? prisma.user.findMany({
             where: {
@@ -51,7 +57,8 @@ export async function GET(request: NextRequest) {
               id: { notIn: excluded },
               accountType: { not: 'business' },
               role: { in: ['user', 'business'] },
-              OR: [contains('firstName'), contains('lastName'), contains('city'), contains('profession')],
+              ...textOr(['firstName', 'lastName', 'city', 'profession']),
+              ...cityIs(),
             },
             select: { id: true, firstName: true, lastName: true, avatarUrl: true, city: true, profession: true, isVerified: true },
             orderBy: [{ isVerified: 'desc' }, { id: 'desc' }],
@@ -62,7 +69,8 @@ export async function GET(request: NextRequest) {
         ? prisma.businessInfo.findMany({
             where: {
               user: { isActive: true, id: { notIn: excluded } },
-              OR: [contains('companyName'), contains('businessType'), contains('businessCategory'), contains('description'), contains('city')],
+              ...textOr(['companyName', 'businessType', 'businessCategory', 'description', 'city']),
+              ...cityIs(),
             },
             select: {
               userId: true, companyName: true, logoUrl: true, city: true, businessType: true,
@@ -77,11 +85,21 @@ export async function GET(request: NextRequest) {
             where: {
               ...publicWhere(null),
               ownerId: { notIn: excluded },
-              OR: [contains('title'), contains('description'), contains('city')],
+              ...(project ? { projectSlug: project } : {}),
+              ...textOr(['title', 'description', 'city']),
+              ...cityIs(),
             },
             orderBy: { id: 'desc' },
             take,
             include: listingInclude,
+          })
+        : [],
+      wantClubs
+        ? prisma.club.findMany({
+            where: { isHidden: false, ...textOr(['name', 'description', 'category']), ...cityIs() },
+            orderBy: [{ membersCount: 'desc' }, { id: 'desc' }],
+            take,
+            select: { id: true, name: true, city: true, category: true, membersCount: true, imageUrl: true },
           })
         : [],
     ]);
@@ -90,6 +108,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       q,
+      clubs: clubs.map((c: any) => ({ id: c.id, name: c.name, avatarUrl: c.imageUrl, city: c.city, category: c.category, membersCount: c.membersCount })),
       people: people.map((u: any) => ({
         id: u.id, name: `${u.firstName} ${u.lastName}`.trim(), avatarUrl: u.avatarUrl, city: u.city, profession: u.profession, isVerified: u.isVerified,
       })),

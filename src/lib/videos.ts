@@ -98,7 +98,7 @@ export function kickVideoWorker(): void {
         await processOne(next);
       }
       // прибирання: непідключені до допису відео старші за добу
-      const stale = await prisma.postVideo.findMany({ where: { postId: null, createdAt: { lt: new Date(Date.now() - 24 * 60 * 60_000) } }, select: { id: true, rawName: true, url: true, posterUrl: true }, take: 50 });
+      const stale = await prisma.postVideo.findMany({ where: { postId: null, story: null, createdAt: { lt: new Date(Date.now() - 24 * 60 * 60_000) } }, select: { id: true, rawName: true, url: true, posterUrl: true }, take: 50 });
       for (const v of stale) {
         await removeVideoFiles(v);
         await prisma.postVideo.delete({ where: { id: v.id } }).catch(() => undefined);

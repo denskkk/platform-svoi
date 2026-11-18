@@ -12,6 +12,7 @@ import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 import { PostCard } from './PostCard';
 import { Recommendations } from './Recommendations';
 import { FeedSidebar } from './FeedSidebar';
+import { StoriesBar } from './StoriesBar';
 import { PostComposer } from './PostComposer';
 
 type Scope = 'all' | 'following';
@@ -182,6 +183,7 @@ export function FeedPage() {
         <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>
 
+        {canInteract && <StoriesBar me={user} />}
         <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />
 
         <Link href="/video" className="flex items-center justify-between rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-3">
