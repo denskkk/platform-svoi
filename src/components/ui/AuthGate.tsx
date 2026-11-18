@@ -77,6 +77,8 @@ export function RedirectIfAuthed() {
 
   useEffect(() => {
     let cancelled = false;
+    // Створення бізнес-акаунта доступне й залогіненій людині (особистий + бізнес), тому тут не виганяємо
+    if (window.location.pathname.includes('/auth/register/business')) return;
     const redirectIfAuthenticated = async () => {
       const result = await checkAuth();
       if (result.status !== 'authed' || cancelled) return;

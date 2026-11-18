@@ -57,7 +57,7 @@ export default function VideoPage() {
     return (
       <div className="min-h-[70vh] bg-neutral-100 flex items-center justify-center px-4">
         <EmptyState icon={Clapperboard} title={t('feed.video.empty')} description={t('feed.video.emptyHint')}
-          actionLabel={t('feed.video.add')} actionHref="/feed" />
+          actionLabel={t('feed.video.add')} actionHref="/feed?create=post" />
       </div>
     );
   }

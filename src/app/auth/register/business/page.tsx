@@ -190,6 +190,9 @@ function BusinessRegistrationForm() {
     }
 
     setLoading(true);
+    // Якщо людина вже була залогінена — після створення бізнесу зв'яжемо акаунти, щоб перемикатися між ними
+    let prevToken: string | null = null;
+    try { prevToken = localStorage.getItem("token"); } catch { /* немає доступу до сховища */ }
 
     try {
       // Спочатку завантажимо зображення, якщо вони є
@@ -305,6 +308,16 @@ function BusinessRegistrationForm() {
       }
       if (data.token) {
         localStorage.setItem("token", data.token);
+      }
+
+      if (prevToken) {
+        try {
+          await fetch("/api/me/linked-accounts", {
+            method: "POST", credentials: "omit",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${prevToken}` },
+            body: JSON.stringify({ email: formData.email, password: formData.password }),
+          });
+        } catch { /* зв'язати можна пізніше в Меню → Мої акаунти */ }
       }
 
       // Перенаправити на профіль
