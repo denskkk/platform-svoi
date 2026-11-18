@@ -9,7 +9,7 @@ import { ToastProvider } from '@/components/ui/Toast'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
 import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister'
 import { I18nProvider } from '@/i18n/client'
-import { getMessages } from '@/i18n/messages'
+import { getClientMessages } from '@/i18n/messages'
 import { getLocale } from '@/i18n/server'
 import { buildMetadata } from '@/i18n/metadata'
 import { SafeAreaInit } from '@/components/ui/SafeAreaInit'
@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const locale = getLocale()
-  const messages = getMessages(locale)
+  const messages = getClientMessages(locale)
 
   return (
     <html lang={locale}>

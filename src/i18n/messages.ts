@@ -132,3 +132,13 @@ const dictionaries: Record<Locale, Messages> = { uk, en }
 export function getMessages(locale: Locale): Messages {
   return dictionaries[locale]
 }
+
+// Для браузера: без серверних повідомлень API (api.*) — вони не потрібні клієнту й зменшують кожну сторінку
+const clientDictionaries: Record<Locale, Messages> = {
+  uk: Object.fromEntries(Object.entries(uk).filter(([k]) => k !== 'api')) as unknown as Messages,
+  en: Object.fromEntries(Object.entries(en).filter(([k]) => k !== 'api')) as unknown as Messages,
+}
+
+export function getClientMessages(locale: Locale): Messages {
+  return clientDictionaries[locale]
+}

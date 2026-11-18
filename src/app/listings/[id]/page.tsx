@@ -94,7 +94,7 @@ export default function ListingPage() {
         </button>
 
         {state === 'loading' && <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
-        {state === 'missing' && <div className="bg-white rounded-2xl border border-neutral-200 p-6 text-center text-neutral-600">{t('api.listings.notFound')}</div>}
+        {state === 'missing' && <div className="bg-white rounded-2xl border border-neutral-200 p-6 text-center text-neutral-600">{t('listings.notFound')}</div>}
         {state === 'error' && <div className="bg-white rounded-2xl border border-red-100 p-6 text-center text-sm text-red-600">{t('listings.common.loadFailed')}</div>}
 
         {state === 'ready' && listing && (

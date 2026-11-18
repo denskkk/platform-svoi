@@ -160,5 +160,6 @@
       "sale": "Sale",
       "rent": "Rent"
     }
-  }
+  },
+  "notFound": "Listing not found"
 }
