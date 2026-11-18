@@ -307,5 +307,26 @@
       "done": "Done"
     },
     "issueFromProfile": "Issue an invoice"
+  },
+  "groupChats": {
+    "title": "Group chats",
+    "new": "New group chat",
+    "empty": "No group chats yet",
+    "name": "Chat name",
+    "add": "Add members",
+    "search": "Find a person",
+    "members": "members",
+    "create": "Create chat",
+    "createFailed": "Failed to create the chat",
+    "write": "Message…",
+    "send": "Send",
+    "leave": "Leave chat",
+    "remove": "Remove",
+    "membersTitle": "Members",
+    "back": "Back to chats",
+    "noMessages": "No messages yet. Be the first to write!",
+    "loadFailed": "Failed to load the chat",
+    "owner": "owner",
+    "tab": "Groups"
   }
 }

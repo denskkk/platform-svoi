@@ -134,6 +134,9 @@ model User {
   profileViewsGiven    ProfileView[] @relation("ProfileViewer")
   profileViewsReceived ProfileView[] @relation("ProfileViewed")
   settings     UserSettings?
+  groupChatsOwned  GroupChat[] @relation("GroupChatOwner")
+  groupChatMemberships GroupChatMember[]
+  groupMessages    GroupMessage[]
   invoicesIssued   Invoice[] @relation("InvoiceIssuer")
   invoicesReceived Invoice[] @relation("InvoicePayer")
   
@@ -1505,4 +1508,50 @@ model Invoice {
   @@index([issuerId, status, id(sort: Desc)])
   @@index([payerId, status, id(sort: Desc)])
   @@map("invoices")
+}
+
+// ========================================
+// ГРУПОВІ ЧАТИ (команди тренерів тощо). Окремо від особистих розмов, additive.
+// ========================================
+model GroupChat {
+  id        Int      @id @default(autoincrement()) @map("group_chat_id")
+  ownerId   Int      @map("owner_id")
+  title     String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  lastMessageAt DateTime? @map("last_message_at")
+
+  owner    User              @relation("GroupChatOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members  GroupChatMember[]
+  messages GroupMessage[]
+
+  @@index([lastMessageAt])
+  @@map("group_chats")
+}
+
+model GroupChatMember {
+  groupChatId Int      @map("group_chat_id")
+  userId      Int      @map("user_id")
+  lastReadAt  DateTime @default(now()) @map("last_read_at")
+  joinedAt    DateTime @default(now()) @map("joined_at")
+
+  group GroupChat @relation(fields: [groupChatId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupChatId, userId])
+  @@index([userId])
+  @@map("group_chat_members")
+}
+
+model GroupMessage {
+  id          Int      @id @default(autoincrement()) @map("group_message_id")
+  groupChatId Int      @map("group_chat_id")
+  senderId    Int      @map("sender_id")
+  content     String   @db.VarChar(2000)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  group  GroupChat @relation(fields: [groupChatId], references: [id], onDelete: Cascade)
+  sender User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([groupChatId, id(sort: Desc)])
+  @@map("group_messages")
 }

@@ -1,0 +1,115 @@
+'use client';
+
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Loader2, Send } from 'lucide-react';
+import { MenuShell } from '@/components/cabinet/MenuShell';
+import { UserAvatar } from '@/components/ui/UserAvatar';
+import { useToast } from '@/components/ui/Toast';
+import { useI18n } from '@/i18n/client';
+import { authHeaders, jsonHeaders } from '@/lib/feedClient';
+import { cn } from '@/lib/utils';
+
+interface Msg { id: number; content: string; createdAt: string; mine: boolean; sender: { id: number; name: string; avatarUrl: string | null } }
+interface Member { id: number; name: string; avatarUrl: string | null }
+
+export default function GroupChatPage() {
+  const { t } = useI18n();
+  const toast = useToast();
+  const router = useRouter();
+  const id = Number(useParams().id);
+  const [title, setTitle] = useState('');
+  const [isOwner, setIsOwner] = useState(false);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [showMembers, setShowMembers] = useState(false);
+  const bottom = useRef<HTMLDivElement>(null);
+  const lastId = useRef(0);
+
+  const load = useCallback(async (initial: boolean) => {
+    try {
+      const qs = !initial && lastId.current ? `?after=${lastId.current}` : '';
+      const res = await fetch(`/api/group-chats/${id}/messages${qs}`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
+      if (!res.ok) throw new Error();
+      const d = await res.json();
+      if (initial) { setTitle(d.group.title); setIsOwner(d.group.isOwner); setMembers(d.members || []); setMsgs(d.messages); setState('ready'); }
+      else if (d.messages.length) setMsgs((p) => [...p, ...d.messages.filter((m: Msg) => !p.some((x) => x.id === m.id))]);
+      if (d.messages.length) lastId.current = d.messages[d.messages.length - 1].id;
+    } catch { if (initial) setState('error'); }
+  }, [id]);
+
+  useEffect(() => { load(true); }, [load]);
+  // Нові повідомлення — опитування раз на 5 с, лише поки вкладка видима
+  useEffect(() => {
+    const h = setInterval(() => { if (document.visibilityState === 'visible') load(false); }, 5000);
+    return () => clearInterval(h);
+  }, [load]);
+  useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [msgs.length]);
+
+  const send = async (e: FormEvent) => {
+    e.preventDefault();
+    const v = text.trim();
+    if (!v || sending) return;
+    setSending(true);
+    try {
+      const res = await fetch(`/api/group-chats/${id}/messages`, { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content: v }) });
+      if (!res.ok) throw new Error();
+      setText('');
+      await load(false);
+    } catch { toast.error(t('feed.toast.actionFailed')); } finally { setSending(false); }
+  };
+
+  const leaveOrRemove = async (userId?: number) => {
+    try {
+      const res = await fetch(`/api/group-chats/${id}/members`, { method: 'DELETE', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(userId ? { userId } : {}) });
+      if (!res.ok) throw new Error();
+      if (userId) setMembers((m) => m.filter((x) => x.id !== userId)); else router.push('/chat/groups');
+    } catch { toast.error(t('feed.toast.actionFailed')); }
+  };
+
+  return (
+    <MenuShell title={title || t('cabinet.groupChats.title')} backHref="/chat/groups">
+      {state === 'loading' && <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
+      {state === 'error' && <p className="text-center text-sm text-red-600">{t('cabinet.groupChats.loadFailed')}</p>}
+      {state === 'ready' && (
+        <>
+          <div className="flex items-center justify-between text-sm">
+            <button type="button" onClick={() => setShowMembers((v) => !v)} className="font-semibold text-space-600">{members.length} {t('cabinet.groupChats.members')}</button>
+            {!isOwner && <button type="button" onClick={() => leaveOrRemove()} className="text-red-600 font-semibold">{t('cabinet.groupChats.leave')}</button>}
+          </div>
+          {showMembers && (
+            <ul className="rounded-2xl bg-white border border-neutral-200 divide-y divide-neutral-100">
+              {members.map((m) => (
+                <li key={m.id} className="flex items-center gap-2.5 px-3 py-2">
+                  <UserAvatar src={m.avatarUrl} alt={m.name} fallbackName={m.name} className="w-8 h-8 rounded-full" />
+                  <span className="flex-1 truncate text-sm font-medium">{m.name}</span>
+                  {isOwner && <button type="button" onClick={() => leaveOrRemove(m.id)} className="text-xs text-red-600 font-semibold">{t('cabinet.groupChats.remove')}</button>}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="space-y-2 min-h-[40vh]">
+            {msgs.length === 0 && <p className="text-center text-sm text-neutral-500 py-8">{t('cabinet.groupChats.noMessages')}</p>}
+            {msgs.map((m) => (
+              <div key={m.id} className={cn('flex gap-2', m.mine && 'justify-end')}>
+                {!m.mine && <UserAvatar src={m.sender.avatarUrl} alt={m.sender.name} fallbackName={m.sender.name} className="w-8 h-8 rounded-full shrink-0" />}
+                <div className={cn('max-w-[80%] rounded-2xl px-3 py-2 text-sm break-words', m.mine ? 'bg-primary-500 text-neutral-900' : 'bg-white border border-neutral-200')}>
+                  {!m.mine && <p className="text-xs font-semibold text-space-600">{m.sender.name}</p>}
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                </div>
+              </div>
+            ))}
+            <div ref={bottom} />
+          </div>
+          <form onSubmit={send} className="sticky bottom-[calc(4.5rem+var(--safe-area-inset-bottom,0px))] md:bottom-4 flex gap-2 bg-neutral-50 pt-2">
+            <input value={text} onChange={(e) => setText(e.target.value)} maxLength={2000} placeholder={t('cabinet.groupChats.write')} className="min-w-0 flex-1 rounded-full border border-neutral-300 bg-white px-4 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+            <button type="submit" disabled={sending || !text.trim()} aria-label={t('cabinet.groupChats.send')} className="rounded-full bg-primary-500 w-11 h-11 flex items-center justify-center disabled:opacity-50"><Send className="w-5 h-5" /></button>
+          </form>
+        </>
+      )}
+    </MenuShell>
+  );
+}

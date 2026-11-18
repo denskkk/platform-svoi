@@ -313,7 +313,8 @@ function ChatPageContent() {
             <Link href={localizedPath('/feed', locale)} className="text-neutral-600 hover:text-neutral-900" aria-label={t('chat.back')}>
               <ArrowLeft className="w-6 h-6" />
             </Link>
-            <h1 className="text-2xl font-bold text-neutral-900">{t('chat.title')}</h1>
+            <h1 className="text-2xl font-bold text-neutral-900 flex-1">{t('chat.title')}</h1>
+            <Link href={localizedPath('/chat/groups', locale)} className="rounded-full bg-primary-500 hover:bg-primary-600 text-neutral-900 text-sm font-bold px-4 py-1.5">{t('cabinet.groupChats.tab')}</Link>
           </div>
         </div>
 

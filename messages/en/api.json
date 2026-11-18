@@ -307,5 +307,11 @@
     "invalid": "Invalid invoice data",
     "notFound": "Invoice not found",
     "badTransition": "This action is not possible now"
+  },
+  "groupChats": {
+    "invalid": "Invalid chat data",
+    "notFound": "Chat not found",
+    "notOwner": "Only the chat owner can do this",
+    "ownerCannotLeave": "The owner cannot leave their own chat"
   }
 }
