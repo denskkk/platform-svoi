@@ -3,10 +3,10 @@
 import { StaffLink } from './StaffLink';
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, User, Menu, LogOut, MessageCircle } from 'lucide-react'
+import { Search, User, Menu, LogOut, MessageCircle, Newspaper, FolderKanban, Users, Wrench, Clapperboard } from 'lucide-react'
 import { NotificationBell } from '@/components/feed/NotificationBell'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
 import { UserOrCompanyAvatar } from '@/components/ui/UserOrCompanyAvatar'
 import { checkAuth, silentFetch } from '@/lib/silentFetch'
@@ -17,7 +17,9 @@ import { localizedPath } from '@/i18n/routes'
 
 export function Navbar() {
   const router = useRouter()
+  const pathname = usePathname()
   const { t, locale } = useI18n()
+  const [searchText, setSearchText] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -207,8 +209,55 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop меню */}
-          <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 whitespace-nowrap text-sm xl:text-base">
+          {/* Пошук (як у Facebook) — для авторизованих на десктопі */}
+          {user && (
+            <form
+              role="search"
+              onSubmit={(e) => { e.preventDefault(); const q = searchText.trim(); router.push(q ? `/search?q=${encodeURIComponent(q)}` : '/search') }}
+              className="hidden lg:flex items-center relative w-56 xl:w-72 shrink-0"
+            >
+              <Search className="absolute left-3 w-4 h-4 text-neutral-500 pointer-events-none" />
+              <input
+                type="search"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder={t('layout.navbar.searchPlaceholder')}
+                aria-label={t('layout.navbar.searchAria')}
+                maxLength={80}
+                className="w-full rounded-full bg-neutral-100 pl-9 pr-3 py-2 text-[15px] placeholder:text-neutral-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-300"
+              />
+            </form>
+          )}
+
+          {/* Центральні вкладки (як у Facebook) — для авторизованих на десктопі */}
+          {user && (
+            <div className="hidden lg:flex flex-1 justify-center items-stretch h-full gap-1 xl:gap-2">
+              {[
+                { href: '/feed', icon: Newspaper, label: t('layout.navbar.tabFeed') },
+                { href: '/projects', icon: FolderKanban, label: t('layout.navbar.tabProjects') },
+                { href: '/video', icon: Clapperboard, label: t('layout.navbar.video') },
+                { href: '/catalog', icon: Users, label: t('layout.navbar.tabPeople') },
+                { href: '/services', icon: Wrench, label: t('layout.navbar.tabServices') },
+              ].map(({ href, icon: Icon, label }) => {
+                const active = pathname === href || (pathname || '').startsWith(`${href}/`)
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-label={label}
+                    title={label}
+                    aria-current={active ? 'page' : undefined}
+                    className={`relative flex items-center justify-center w-16 xl:w-24 border-b-[3px] transition-colors ${active ? 'border-primary-500 text-primary-600' : 'border-transparent text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700'}`}
+                  >
+                    <Icon className="w-6 h-6" />
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Desktop меню (гості) */}
+          {!user && <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 whitespace-nowrap text-sm xl:text-base">
             {user && (
               <Link
                 href="/feed"
@@ -259,14 +308,14 @@ export function Navbar() {
             >
               {t('layout.navbar.contacts')}
             </Link>
-          </div>
+          </div>}
 
           {/* Права частина */}
           <div className="flex items-center space-x-2 sm:space-x-3 xl:space-x-4 shrink-0">
             <LanguageSwitcher variant="compact" className="hidden lg:inline-flex" />
             <Link 
               href="/services"
-              className="hidden sm:inline-flex p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+              className={`${user ? 'sm:inline-flex lg:hidden' : 'sm:inline-flex'} hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors`}
               aria-label={t('layout.navbar.searchAria')}
               title={t('layout.navbar.searchTitle')}
             >
@@ -279,10 +328,10 @@ export function Navbar() {
               {user && (
                 <Link
                   href="/chat"
-                  className="relative lg:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                  className="relative w-10 h-10 flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors"
                   aria-label={t('layout.navbar.messagesAria')}
                 >
-                  <MessageCircle className="w-5 h-5 text-neutral-600" />
+                  <MessageCircle className="w-5 h-5 text-neutral-700" />
                   {unreadCount > 0 && (
                     <span
                       className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] leading-none rounded-full bg-primary-600 text-white border-2 border-white"

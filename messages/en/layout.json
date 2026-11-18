@@ -37,7 +37,13 @@
     "savedListings": "Saved listings",
     "businessApply": "Business application",
     "search": "Search",
-    "savedPosts": "Saved posts"
+    "savedPosts": "Saved posts",
+    "searchPlaceholder": "Search people, businesses, listings",
+    "video": "Video",
+    "tabFeed": "Feed",
+    "tabProjects": "Projects",
+    "tabPeople": "People",
+    "tabServices": "Services"
   },
   "mobileMenu": {
     "navigation": "Navigation",

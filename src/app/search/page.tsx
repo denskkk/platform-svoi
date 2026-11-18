@@ -45,7 +45,9 @@ export default function SearchPage() {
   const reqId = useRef(0);
 
   useEffect(() => {
-    if (!readStoredUser()) router.replace('/auth/login?returnUrl=/search');
+    if (!readStoredUser()) { router.replace('/auth/login?returnUrl=/search'); return; }
+    const initial = new URLSearchParams(window.location.search).get('q');
+    if (initial) setQ(initial.slice(0, 80));
   }, [router]);
 
   useEffect(() => {

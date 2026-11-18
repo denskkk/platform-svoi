@@ -37,7 +37,13 @@
     "savedListings": "Збережені оголошення",
     "businessApply": "Заявка бізнесу",
     "search": "Пошук",
-    "savedPosts": "Збережені дописи"
+    "savedPosts": "Збережені дописи",
+    "searchPlaceholder": "Пошук людей, бізнесів, оголошень",
+    "video": "Відео",
+    "tabFeed": "Стрічка",
+    "tabProjects": "Проєкти",
+    "tabPeople": "Люди",
+    "tabServices": "Послуги"
   },
   "mobileMenu": {
     "navigation": "Навігація",
