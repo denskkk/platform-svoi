@@ -353,3 +353,15 @@ body {
   opacity: 1;
   transform: translateX(-50%) translateY(-4px);
 }
+
+/* Адаптивність і акуратність */
+html, body { overflow-x: clip; }
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+/* Горизонтальні стрічки (історії, вкладки) без помітного скролбара */
+[role="tablist"] { scrollbar-width: none; }
+[role="tablist"]::-webkit-scrollbar { display: none; }
+/* Поля вводу не збільшуються автоматично в iOS Safari */
+@media (max-width: 767px) { input, select, textarea { font-size: 16px; } }
+/* Плавне підсвічування при натисканні на мобільних */
+@media (hover: none) { a, button { -webkit-tap-highlight-color: transparent; } }

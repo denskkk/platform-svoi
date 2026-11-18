@@ -25,7 +25,7 @@ export function FeedSidebar({ user }: Props) {
     { href: '/friends', icon: Users, label: t('feed.sidebar.friends'), color: 'text-blue-600' },
     { href: '/saved', icon: Bookmark, label: t('feed.sidebar.saved'), color: 'text-purple-600' },
     { href: '/my-listings', icon: Store, label: t('feed.sidebar.listings'), color: 'text-orange-600' },
-    { href: '/business/apply', icon: Building2, label: t('feed.sidebar.business'), color: 'text-blue-600' },
+    { href: '/business/stats', icon: Building2, label: t('feed.sidebar.company'), color: 'text-blue-600' },
   ];
 
   return (

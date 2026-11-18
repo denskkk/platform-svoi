@@ -64,7 +64,7 @@ export default function VideoPage() {
 
   return (
     <div className="bg-black">
-      <div className="mx-auto max-w-md h-[calc(100dvh-8rem)] md:h-[calc(100dvh-5rem)] overflow-y-scroll snap-y snap-mandatory scrollbar-none">
+      <div className="mx-auto max-w-md h-[calc(100dvh-9.5rem)] md:h-[calc(100dvh-4rem)] overflow-y-scroll snap-y snap-mandatory scrollbar-none">
         {posts.map((p, i) => (
           <ShortItem key={p.id} post={p} muted={muted} onToggleMute={() => setMuted((m) => !m)} onLike={() => toggleLike(p.id)}
             nearEnd={!done && i >= posts.length - 3} onNearEnd={() => cursor && load(cursor)} />

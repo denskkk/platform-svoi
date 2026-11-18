@@ -25,7 +25,6 @@ export function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [isLoading, setIsLoading] = useState(false) // Изменено с true на false
   const [unreadCount, setUnreadCount] = useState(0)
-  const [newRequestsCount, setNewRequestsCount] = useState(0)
   // navbar no longer opens the request modal directly; create page handles request flow
 
   useEffect(() => {
@@ -64,19 +63,6 @@ export function Navbar() {
             if (unreadRes.ok) {
               const unreadData = await unreadRes.json()
               setUnreadCount(unreadData.unreadCount || 0)
-            }
-          } catch {
-            // ignore
-          }
-          
-          // Загрузка новых заявок
-          try {
-            const requestsRes = await silentFetch('/api/service-requests/new-count', {
-              credentials: 'include',
-            })
-            if (requestsRes.ok) {
-              const requestsData = await requestsRes.json()
-              setNewRequestsCount(requestsData.count || 0)
             }
           } catch {
             // ignore
@@ -147,22 +133,11 @@ export function Navbar() {
           setUnreadCount(data.unreadCount || 0)
         }
       } catch {}
-      
-      // Також оновлюємо кількість нових заявок
-      try {
-        const requestsRes = await fetch('/api/service-requests/new-count', {
-          credentials: 'include',
-        })
-        if (requestsRes.ok) {
-          const requestsData = await requestsRes.json()
-          setNewRequestsCount(requestsData.count || 0)
-        }
-      } catch {}
     }
     // start polling only when user is logged in
     if (user) {
       fetchUnread()
-      timer = setInterval(fetchUnread, 10000) // every 10s
+      timer = setInterval(fetchUnread, 25000) // раз на 25 с (стільки користувачів — менше навантаження)
       const onFocus = () => fetchUnread()
       window.addEventListener('focus', onFocus)
       document.addEventListener('visibilitychange', onFocus)
@@ -387,13 +362,6 @@ export function Navbar() {
                         {t('layout.navbar.favorites')}
                       </Link>
                       <Link
-                        href="/business/apply"
-                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        {t('layout.navbar.businessApply')}
-                      </Link>
-                      <Link
                         href="/organizations/apply"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
@@ -409,18 +377,11 @@ export function Navbar() {
                         {t('layout.navbar.earnings')}
                       </Link>
                       <Link
-                        href="/business/clients"
-                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        {t('layout.navbar.clients')}
-                      </Link>
-                      <Link
                         href="/business/stats"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        {t('layout.navbar.stats')}
+                        {t('layout.navbar.company')}
                       </Link>
                       <Link
                         href="/friends"
@@ -599,14 +560,6 @@ export function Navbar() {
                   <span>{t('layout.navbar.favorites')}</span>
                 </Link>
                 <Link
-                  href="/business/apply"
-                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">🏢</span>
-                  <span>{t('layout.navbar.businessApply')}</span>
-                </Link>
-                <Link
                   href="/organizations/apply"
                   className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
                   onClick={() => setIsMenuOpen(false)}
@@ -632,20 +585,12 @@ export function Navbar() {
                   <span>{t('layout.navbar.earnings')}</span>
                 </Link>
                 <Link
-                  href="/business/clients"
-                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">🤝</span>
-                  <span>{t('layout.navbar.clients')}</span>
-                </Link>
-                <Link
                   href="/business/stats"
                   className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-xl mr-3">📊</span>
-                  <span>{t('layout.navbar.stats')}</span>
+                  <span>{t('layout.navbar.company')}</span>
                 </Link>
                 <Link
                   href="/friends"
