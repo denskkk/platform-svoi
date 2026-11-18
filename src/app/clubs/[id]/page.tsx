@@ -57,7 +57,7 @@ export default function ClubPage() {
     if (busy) return;
     setBusy(true);
     try {
-      const res = await fetch(`/api/clubs/${club.id}/join`, { method: club.joined ? 'DELETE' : 'POST', credentials: 'include', headers: jsonHeaders() });
+      const res = await fetch(`/api/clubs/${club.id}/join`, { method: club.joined || club.membership === 'pending' ? 'DELETE' : 'POST', credentials: 'include', headers: jsonHeaders() });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
       if (data.pending) toast.success(t('clubs.requested'));

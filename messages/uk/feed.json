@@ -151,7 +151,12 @@
       "requests": "Запити на послуги"
     },
     "clubJoinRequest": "{name} хоче вступити до вашої спільноти",
-    "clubJoinApproved": "Вашу заявку на вступ схвалено"
+    "clubJoinApproved": "Вашу заявку на вступ схвалено",
+    "invoiceNew": "Вам виставлено рахунок",
+    "invoicePaid": "Рахунок підтверджено як сплачений",
+    "invoiceCancelled": "Рахунок скасовано",
+    "invoicePayerMarked": "Платник відмітив, що сплатив рахунок",
+    "invoiceUpdated": "Статус рахунку змінено"
   },
   "profile": {
     "title": "Дописи",

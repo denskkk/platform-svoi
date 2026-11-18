@@ -196,7 +196,8 @@ async function main() {
   await Promise.all(ls);
 
   // ---- Клуби ----
-  const mkClub = async (owner, name, description, category, city, joinMode, postMode, visibility, memberUsers, imgSeed) => {
+  const mkClub = async (owner, name, description, category, city, joinMode, postMode, visibility, allMembers, imgSeed) => {
+    const memberUsers = allMembers.filter((m) => m.id !== owner.id);
     const club = await prisma.club.create({ data: { ownerId: owner.id, name, description, category, city, joinMode, postMode, visibility, imageUrl: pic(imgSeed, 900, 500), membersCount: memberUsers.length + 1 } });
     await prisma.clubMember.create({ data: { clubId: club.id, userId: owner.id, status: 'active', canWrite: true } });
     await prisma.clubMember.createMany({ data: memberUsers.map((m, i) => ({ clubId: club.id, userId: m.id, status: 'active', canWrite: i % 3 === 0 })), skipDuplicates: true });

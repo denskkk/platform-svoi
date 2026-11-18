@@ -12,7 +12,7 @@ import { CLUB_CATEGORIES } from '@/lib/clubs';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 import { canCreateGroups } from '@/lib/groupRights';
 
-interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean }
+interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean; membership?: 'active' | 'pending' | null; joinMode?: string }
 
 export default function ClubsPage() {
   const router = useRouter();
@@ -64,15 +64,14 @@ export default function ClubsPage() {
   useEffect(() => { setLoading(true); load(null); }, [load]);
 
   const toggle = async (c: Club) => {
-    const next = !c.joined;
-    const set = (v: boolean, delta: number) => setItems((l) => l.map((x) => (x.id === c.id ? { ...x, joined: v, membersCount: Math.max(0, x.membersCount + delta) } : x)));
-    set(next, next ? 1 : -1);
+    const leaving = c.joined || c.membership === 'pending';
     try {
-      const res = await fetch(`/api/clubs/${c.id}/join`, { method: next ? 'POST' : 'DELETE', credentials: 'include', headers: jsonHeaders() });
+      const res = await fetch(`/api/clubs/${c.id}/join`, { method: leaving ? 'DELETE' : 'POST', credentials: 'include', headers: jsonHeaders() });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
+      setItems((l) => l.map((x) => (x.id === c.id ? { ...x, joined: !!data.joined, membership: data.pending ? 'pending' : data.joined ? 'active' : null, membersCount: typeof data.membersCount === 'number' ? data.membersCount : x.membersCount } : x)));
+      if (data.pending) toast.success(t('clubs.requested'));
     } catch (e: any) {
-      set(!next, next ? -1 : 1);
       toast.error(e?.message || t('feed.toast.actionFailed'));
     }
   };
@@ -123,8 +122,8 @@ export default function ClubsPage() {
                   <p className="text-sm text-neutral-600 line-clamp-2 mt-1">{c.description}</p>
                 </Link>
                 {!c.isOwner && (
-                  <button type="button" onClick={() => toggle(c)} className={cn('shrink-0 rounded-lg px-3.5 py-2 text-sm font-semibold transition active:scale-95', c.joined ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-white hover:bg-primary-600')}>
-                    {c.joined ? t('clubs.leave') : t('clubs.join')}
+                  <button type="button" onClick={() => toggle(c)} className={cn('shrink-0 rounded-lg px-3.5 py-2 text-sm font-semibold transition active:scale-95', c.joined || c.membership === 'pending' ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-neutral-900 hover:bg-primary-600')}>
+                    {c.joined ? t('clubs.leave') : c.membership === 'pending' ? t('clubs.cancelRequest') : c.joinMode === 'approval' ? t('clubs.joinRequest') : t('clubs.join')}
                   </button>
                 )}
               </li>

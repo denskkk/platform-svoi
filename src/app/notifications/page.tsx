@@ -115,6 +115,8 @@ export default function NotificationsPage() {
     if (n.type === 'post_like') return t('feed.notifications.postLike', { name: who });
     if (n.type === 'post_comment') return t('feed.notifications.postComment', { name: who });
     if (n.type === 'new_follower') return t('feed.notifications.newFollower', { name: who });
+    if (n.type === 'invoice_new') return t('feed.notifications.invoiceNew');
+    if (n.type.startsWith('invoice_')) return t(`feed.notifications.${n.type === 'invoice_paid' ? 'invoicePaid' : n.type === 'invoice_cancelled' ? 'invoiceCancelled' : n.type === 'invoice_payer_marked' ? 'invoicePayerMarked' : 'invoiceUpdated'}`);
     if (n.type === 'club_join_request') return t('feed.notifications.clubJoinRequest', { name: who });
     if (n.type === 'club_join_approved') return t('feed.notifications.clubJoinApproved');
     if (n.type === 'listing_approved') return t('feed.notifications.listingApproved');

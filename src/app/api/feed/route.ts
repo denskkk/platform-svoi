@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       if (blocked.length > 0) where.authorId = { notIn: blocked };
       // «Де дивитись»: якщо людина вказала в налаштуваннях область/країну, у «Для вас» першими йдуть автори звідти,
       // а також ті, на кого вона підписана, і вона сама. Якщо не вказала — стрічка загальна.
-      if (!clubParam) {
+      if (!clubParam && params.get('videos') !== '1') {
         const pref = (await getSettings(userId)).feed;
         const place = pref.scope === 'country' ? pref.country : pref.scope === 'region' ? pref.region : '';
         if (place) {

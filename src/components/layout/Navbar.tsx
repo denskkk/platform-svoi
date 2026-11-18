@@ -410,6 +410,34 @@ export function Navbar() {
                         {t('layout.navbar.myListings')}
                       </Link>
                       <Link
+                        href="/menu"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('cabinet.menu.title')}
+                      </Link>
+                      <Link
+                        href="/clubs"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('clubs.title')}
+                      </Link>
+                      <Link
+                        href="/chat/groups"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('cabinet.groupChats.title')}
+                      </Link>
+                      <Link
+                        href="/invoices"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('cabinet.invoices.title')}
+                      </Link>
+                      <Link
                         href="/blocked"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}

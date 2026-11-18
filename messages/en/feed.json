@@ -151,7 +151,12 @@
       "requests": "Service requests"
     },
     "clubJoinRequest": "{name} wants to join your community",
-    "clubJoinApproved": "Your join request was approved"
+    "clubJoinApproved": "Your join request was approved",
+    "invoiceNew": "You have been issued an invoice",
+    "invoicePaid": "Invoice confirmed as paid",
+    "invoiceCancelled": "Invoice cancelled",
+    "invoicePayerMarked": "The payer marked the invoice as paid",
+    "invoiceUpdated": "Invoice status changed"
   },
   "profile": {
     "title": "Posts",
