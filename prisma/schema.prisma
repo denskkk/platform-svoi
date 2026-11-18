@@ -911,6 +911,8 @@ model Post {
   commentsCount Int     @default(0) @map("comments_count")
   isHidden     Boolean  @default(false) @map("is_hidden") // прихований модерацією
   repostOfId   Int?     @map("repost_of_id")
+  clubId       Int?     @map("club_id")
+  club         Club?    @relation("ClubPosts", fields: [clubId], references: [id], onDelete: Cascade)
   repostsCount Int      @default(0) @map("reposts_count")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -926,6 +928,7 @@ model Post {
 
   @@index([authorId, createdAt(sort: Desc)])
   @@index([createdAt(sort: Desc), id(sort: Desc)])
+  @@index([clubId, id(sort: Desc)])
   @@map("posts")
 }
 
@@ -1249,10 +1252,14 @@ model Club {
   imageUrl     String?  @map("image_url") @db.VarChar(255)
   membersCount Int      @default(1) @map("members_count")
   isHidden     Boolean  @default(false) @map("is_hidden")
+  joinMode     String   @default("open") @map("join_mode") @db.VarChar(12)      // open | approval
+  postMode     String   @default("owner") @map("post_mode") @db.VarChar(12)     // owner | members
+  visibility   String   @default("public") @map("visibility") @db.VarChar(12)   // public | members
   createdAt    DateTime @default(now()) @map("created_at")
 
   owner   User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   members ClubMember[]
+  posts   Post[]       @relation("ClubPosts")
 
   @@index([isHidden, createdAt(sort: Desc)])
   @@index([category])
@@ -1264,6 +1271,8 @@ model ClubMember {
   id        Int      @id @default(autoincrement()) @map("club_member_id")
   clubId    Int      @map("club_id")
   userId    Int      @map("user_id")
+  status    String   @default("active") @db.VarChar(12) // active | pending
+  canWrite  Boolean  @default(false) @map("can_write")
   createdAt DateTime @default(now()) @map("created_at")
 
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)

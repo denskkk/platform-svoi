@@ -11,12 +11,12 @@ import { ListingCardData } from './helpers';
 
 type Filters = Record<string, string>;
 
-export function ProjectCatalog({ slug }: { slug: string }) {
+export function ProjectCatalog({ slug, initialFilters }: { slug: string; initialFilters?: Filters }) {
   const { t } = useI18n();
   const fields = fieldsFor(slug).filter((f) => f.filter);
   const [user, setUser] = useState<ReturnType<typeof readStoredUser>>(null);
-  const [draft, setDraft] = useState<Filters>({});
-  const [applied, setApplied] = useState<Filters>({});
+  const [draft, setDraft] = useState<Filters>(initialFilters ?? {});
+  const [applied, setApplied] = useState<Filters>(initialFilters ?? {});
   const [showFilters, setShowFilters] = useState(false);
   const [items, setItems] = useState<ListingCardData[]>([]);
   const [cursor, setCursor] = useState<number | null>(null);
@@ -87,7 +87,7 @@ export function ProjectCatalog({ slug }: { slug: string }) {
 
   const set = (k: string, v: string) => setDraft((d) => ({ ...d, [k]: v }));
   const apply = (e?: React.FormEvent) => { e?.preventDefault(); setApplied({ ...draft }); };
-  const reset = () => { setDraft({}); setApplied({}); };
+  const reset = () => { setDraft(initialFilters ?? {}); setApplied(initialFilters ?? {}); };
   const onSavedChange = useCallback((id: number, saved: boolean) => setItems((prev) => prev.map((l) => (l.id === id ? { ...l, saved } : l))), []);
 
   const inputCls = 'w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400';

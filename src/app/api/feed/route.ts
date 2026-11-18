@@ -8,6 +8,7 @@
  * Відповідь: { posts, nextCursor }  (nextCursor === null — це кінець стрічки)
  */
 
+import { getClubAccess } from '@/lib/clubAccess';
 import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
@@ -37,6 +38,16 @@ export async function GET(request: NextRequest) {
     // Приховані: заблоковані та автори приватних акаунтів, на яких я не підписаний
     const blocked = [...(await getBlockedIds(userId)), ...(await getPrivateAuthorIdsHiddenFrom(userId))];
     const where: Prisma.PostWhereInput = { isHidden: false, author: { isActive: true } };
+    // Дописи спільнот живуть лише на дошці своєї спільноти й не потрапляють у загальну стрічку
+    const clubParam = parseId(params.get('clubId'));
+    if (clubParam) {
+      const access = await getClubAccess(clubParam, userId);
+      if (!access) return NextResponse.json({ posts: [], nextCursor: null });
+      if (!access.canSee) return NextResponse.json({ error: t('api.clubs.membersOnly') }, { status: 403 });
+      (where as any).clubId = clubParam;
+    } else {
+      (where as any).clubId = null;
+    }
     if (cursor) where.id = { lt: cursor };
     if (params.get('videos') === '1') where.video = { is: { status: 'ready' } };
     const authorId = parseId(params.get('authorId'));

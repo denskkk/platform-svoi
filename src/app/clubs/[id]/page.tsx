@@ -6,12 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, MapPin, Trash2, Users } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
+import { ClubBoard } from '@/components/clubs/ClubBoard';
+import { ClubManage } from '@/components/clubs/ClubManage';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 
-interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean; ownerId?: number }
+interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean; ownerId?: number; membership?: 'active' | 'pending' | null; joinMode?: string; postMode?: string; visibility?: string; canPost?: boolean; canSeeBoard?: boolean }
 interface Member { id: number; name: string; avatarUrl: string | null }
 
 export default function ClubPage() {
@@ -58,6 +60,7 @@ export default function ClubPage() {
       const res = await fetch(`/api/clubs/${club.id}/join`, { method: club.joined ? 'DELETE' : 'POST', credentials: 'include', headers: jsonHeaders() });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
+      if (data.pending) toast.success(t('clubs.requested'));
       await load();
     } catch (e: any) {
       toast.error(e?.message || t('feed.toast.actionFailed'));
@@ -89,15 +92,23 @@ export default function ClubPage() {
           <p className="text-neutral-800 whitespace-pre-wrap break-words">{club.description}</p>
           <div className="flex flex-wrap gap-2">
             {!club.isOwner && (
-              <button type="button" onClick={toggle} disabled={busy} className={cn('rounded-lg px-5 py-2.5 text-sm font-semibold transition active:scale-95', club.joined ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-white hover:bg-primary-600')}>
-                {club.joined ? t('clubs.leave') : t('clubs.join')}
+              <button type="button" onClick={toggle} disabled={busy} className={cn('rounded-lg px-5 py-2.5 text-sm font-semibold transition active:scale-95', club.joined || club.membership === 'pending' ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-neutral-900 hover:bg-primary-600')}>
+                {club.joined ? t('clubs.leave') : club.membership === 'pending' ? t('clubs.cancelRequest') : club.joinMode === 'approval' ? t('clubs.joinRequest') : t('clubs.join')}
               </button>
             )}
             {club.isOwner && <button type="button" onClick={remove} className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 px-4 py-2.5 text-sm font-semibold"><Trash2 className="w-4 h-4" />{t('clubs.delete')}</button>}
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl shadow-sm p-5">
+        {club.isOwner && <ClubManage clubId={club.id} onChanged={load} />}
+
+        {club.canSeeBoard ? (
+          <ClubBoard clubId={club.id} canPost={!!club.canPost} canComment={club.joined} />
+        ) : (
+          <div className="bg-white rounded-2xl shadow-sm p-5 text-center text-sm text-neutral-600">{t('clubs.closedBoard')}</div>
+        )}
+
+        {club.canSeeBoard && <section className="bg-white rounded-2xl shadow-sm p-5">
           <h2 className="font-semibold text-neutral-900 mb-3">{t('clubs.membersTitle')}</h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {members.map((m) => (
@@ -106,7 +117,7 @@ export default function ClubPage() {
               </Link></li>
             ))}
           </ul>
-        </section>
+        </section>}
 
         {!club.isOwner && club.ownerId && <div className="text-center"><ReportButton reportedUserId={club.ownerId ?? 0} contentType="user" label={t('clubs.report')} /></div>}
       </div>

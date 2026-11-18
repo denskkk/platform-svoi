@@ -4,6 +4,7 @@
  * DELETE /api/posts/:id/comments?commentId=ID                — видалити (автор коментаря, автор допису, адмін)
  */
 
+import { getClubAccess } from '@/lib/clubAccess';
 import { isAllowedByOwner } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -97,9 +98,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     const postId = parseId(params.id);
     const post = postId
-      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true } })
+      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true, clubId: true } })
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    if (post.clubId) {
+      const access = await getClubAccess(post.clubId, userId);
+      if (!access?.active) return NextResponse.json({ error: t('api.clubs.membersOnly') }, { status: 403 });
+    }
 
     if (!(await isAllowedByOwner(post.authorId, userId, 'comments'))) {
       return NextResponse.json({ error: t('api.feed.commentsRestricted') }, { status: 403 });

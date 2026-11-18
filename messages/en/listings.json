@@ -128,26 +128,31 @@
       "mileage": "Mileage, km",
       "fuel": "Engine type",
       "engineVolume": "Engine volume, l",
-      "transmission": "Transmission"
+      "transmission": "Transmission",
+      "adKind": "Ad type",
+      "sellerType": "Seller"
     },
     "real-estate": {
       "propertyType": "Property type",
       "dealType": "Deal type",
       "rooms": "Rooms",
       "area": "Area, m²",
-      "address": "Address or district"
+      "address": "Address or district",
+      "adKind": "Ad type"
     },
     "health": {
       "healthKind": "Type",
       "medSpecialty": "Medical specialty",
       "experience": "Experience, years",
       "workplace": "Place of work",
-      "consultFormat": "Consultation format"
+      "consultFormat": "Consultation format",
+      "adKind": "Ad type"
     },
     "sport": {
       "sportKind": "Discipline",
       "trainingFormat": "Format",
-      "experience": "Experience, years"
+      "experience": "Experience, years",
+      "adKind": "Ad type"
     },
     "trade": {
       "tradeKind": "Offer type",
@@ -292,6 +297,14 @@
       "training": "Training",
       "sport_event": "Sports event",
       "culture": "Cultural event"
+    },
+    "adKind": {
+      "offer": "Offering",
+      "request": "Looking for"
+    },
+    "sellerType": {
+      "private": "Owner",
+      "dealer": "Dealership"
     }
   },
   "notFound": "Listing not found"

@@ -26,6 +26,8 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 export const LISTING_FIELDS: Record<string, ListingField[]> = {
   cars: [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'sellerType', type: 'select', options: ['private', 'dealer'], filter: 'select' },
     { key: 'make', type: 'text', required: true, maxLength: 40, filter: 'text' },
     { key: 'model', type: 'text', required: true, maxLength: 60, filter: 'text' },
     { key: 'year', type: 'number', required: true, min: 1950, max: CURRENT_YEAR + 1, filter: 'range' },
@@ -35,6 +37,7 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'transmission', type: 'select', options: ['manual', 'automatic', 'robot', 'variator'], filter: 'select' },
   ],
   'real-estate': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'propertyType', type: 'select', required: true, options: ['apartment', 'house', 'commercial', 'land'], filter: 'select' },
     { key: 'dealType', type: 'select', required: true, options: ['sale', 'rent'], filter: 'select' },
     { key: 'rooms', type: 'number', min: 0, max: 50, filter: 'range' },
@@ -42,6 +45,7 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'address', type: 'text', maxLength: 150 },
   ],
   health: [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'healthKind', type: 'select', required: true, options: ['doctor', 'clinic', 'medical_center', 'online', 'dietitian', 'nutrition', 'rehab', 'other'], filter: 'select' },
     { key: 'medSpecialty', type: 'select', options: ['gynecologist', 'cardiologist', 'dentist', 'therapist', 'surgeon', 'other_med'], filter: 'select' },
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
@@ -49,6 +53,7 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'consultFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
   ],
   sport: [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'sportKind', type: 'select', required: true, options: ['fitness', 'dance', 'martial_arts', 'yoga', 'swimming', 'team_sports', 'personal', 'online_training', 'other'], filter: 'select' },
     { key: 'trainingFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },

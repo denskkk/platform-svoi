@@ -27,7 +27,8 @@ for f in \
   20261129_add_notification_settings.sql \
   20261130_add_reposts_reactions.sql \
   20261131_add_user_cover.sql \
-  20261132_invites_views_settings.sql; do
+  20261132_invites_views_settings.sql \
+  20261133_club_communities.sql; do
   echo ">> $f"
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
 done

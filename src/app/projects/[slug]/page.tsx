@@ -9,6 +9,7 @@ import { projectWallpaper } from '@/lib/projectThemes';
 import { ComingSoon } from '@/components/projects/ComingSoon';
 import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
+import { findFolder, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
 import { useI18n } from '@/i18n/client';
 
@@ -29,6 +30,19 @@ export default function ProjectPage() {
   const toast = useToast();
   const [project, setProject] = useState<Project | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  // Папка проєкту живе в адресі (?folder=a або a.b), щоб працювала кнопка «назад»
+  const [folderPath, setFolderPath] = useState<string | null>(null);
+  useEffect(() => {
+    const read = () => setFolderPath(new URLSearchParams(window.location.search).get('folder'));
+    read();
+    window.addEventListener('popstate', read);
+    return () => window.removeEventListener('popstate', read);
+  }, []);
+  const openFolder = (path: string | null) => {
+    setFolderPath(path);
+    window.history.pushState(null, '', path ? `?folder=${path}` : window.location.pathname);
+    window.scrollTo({ top: 0 });
+  };
   const [state, setState] = useState<'loading' | 'ready' | 'missing' | 'error'>('loading');
 
   useEffect(() => { setLoggedIn(!!readStoredUser()); }, []);
@@ -79,7 +93,45 @@ export default function ProjectPage() {
               💼 {t('projects.earn.button')}
             </Link>
             {loggedIn ? (
-              <ProjectCatalog slug={project.slug} />
+              (() => {
+                const folders = foldersFor(project.slug);
+                const found = findFolder(project.slug, folderPath);
+                // Є папки, але жодну ще не обрано (або обрана має підпапки) → показуємо плитки папок
+                const list = found ? found.folder.children : folders;
+                if (folders.length > 0 && (!found || (found.folder.children && found.folder.children.length > 0))) {
+                  return (
+                    <div className="space-y-3">
+                      {found && (
+                        <button type="button" onClick={() => openFolder(found.parent ? found.parent.key : null)} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">
+                          <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')}
+                        </button>
+                      )}
+                      <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {(list || []).map((f) => (
+                          <li key={f.key}>
+                            <button type="button" onClick={() => openFolder(found ? `${found.folder.key}.${f.key}` : f.key)}
+                              className="w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center">
+                              <span className="text-4xl" aria-hidden>{f.icon}</span>
+                              <span className="text-sm font-bold text-neutral-900 leading-snug">{t(f.labelKey)}</span>
+                              {f.children && <span aria-hidden className="text-neutral-400 text-xs">›</span>}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-3">
+                    {found && (
+                      <button type="button" onClick={() => openFolder(found.parent ? found.parent.key : null)} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">
+                        <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
+                      </button>
+                    )}
+                    <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} />
+                  </div>
+                );
+              })()
             ) : (
               <div className="bg-white rounded-2xl border border-neutral-200 p-6 text-center space-y-3">
                 <p className="text-neutral-700">{t('listings.common.loginRequired')}</p>

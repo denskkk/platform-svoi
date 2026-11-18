@@ -128,26 +128,31 @@
       "mileage": "Пробіг, км",
       "fuel": "Тип двигуна",
       "engineVolume": "Об’єм двигуна, л",
-      "transmission": "Коробка передач"
+      "transmission": "Коробка передач",
+      "adKind": "Тип оголошення",
+      "sellerType": "Продавець"
     },
     "real-estate": {
       "propertyType": "Тип об’єкта",
       "dealType": "Тип угоди",
       "rooms": "Кількість кімнат",
       "area": "Площа, м²",
-      "address": "Адреса або район"
+      "address": "Адреса або район",
+      "adKind": "Тип оголошення"
     },
     "health": {
       "healthKind": "Тип",
       "medSpecialty": "Медична спеціальність",
       "experience": "Досвід, років",
       "workplace": "Місце роботи",
-      "consultFormat": "Формат консультації"
+      "consultFormat": "Формат консультації",
+      "adKind": "Тип оголошення"
     },
     "sport": {
       "sportKind": "Напрямок",
       "trainingFormat": "Формат",
-      "experience": "Досвід, років"
+      "experience": "Досвід, років",
+      "adKind": "Тип оголошення"
     },
     "trade": {
       "tradeKind": "Тип пропозиції",
@@ -292,6 +297,14 @@
       "training": "Навчання",
       "sport_event": "Спортивний захід",
       "culture": "Культурна подія"
+    },
+    "adKind": {
+      "offer": "Пропоную",
+      "request": "Шукаю"
+    },
+    "sellerType": {
+      "private": "Власник",
+      "dealer": "Автосалон"
     }
   },
   "notFound": "Оголошення не знайдено"

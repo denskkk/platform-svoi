@@ -23,23 +23,35 @@ async function setMembership(request: NextRequest, idParam: string, join: boolea
       return NextResponse.json({ error: t('api.feed.tooManyActions') }, { status: 429 });
     }
     const id = parseId(idParam);
-    const club = id ? await prisma.club.findFirst({ where: { id, isHidden: false }, select: { id: true, ownerId: true } }) : null;
+    const club = id ? await prisma.club.findFirst({ where: { id, isHidden: false }, select: { id: true, ownerId: true, joinMode: true, name: true } }) : null;
     if (!id || !club) return NextResponse.json({ error: t('api.clubs.notFound') }, { status: 404 });
     if (join && (await isBlockedBetween(userId, club.ownerId))) return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
     if (!join && club.ownerId === userId) return NextResponse.json({ error: t('api.clubs.ownerCannotLeave') }, { status: 400 });
 
+    let pending = false;
     const membersCount = await prisma.$transaction(async (tx: any) => {
       if (join) {
-        const created = await tx.clubMember.createMany({ data: [{ clubId: id, userId }], skipDuplicates: true });
-        if (created.count > 0) await tx.club.update({ where: { id }, data: { membersCount: { increment: 1 } } });
+        const needsApproval = club.joinMode === 'approval' && club.ownerId !== userId;
+        const existing = await tx.clubMember.findUnique({ where: { clubId_userId: { clubId: id, userId } }, select: { status: true } });
+        if (!existing) {
+          await tx.clubMember.create({ data: { clubId: id, userId, status: needsApproval ? 'pending' : 'active' } });
+          if (!needsApproval) await tx.club.update({ where: { id }, data: { membersCount: { increment: 1 } } });
+        }
+        pending = (existing?.status ?? (needsApproval ? 'pending' : 'active')) === 'pending';
       } else {
-        const removed = await tx.clubMember.deleteMany({ where: { clubId: id, userId } });
+        const removed = await tx.clubMember.deleteMany({ where: { clubId: id, userId, status: 'active' } });
         if (removed.count > 0) await tx.club.update({ where: { id }, data: { membersCount: { decrement: 1 } } });
+        else await tx.clubMember.deleteMany({ where: { clubId: id, userId, status: 'pending' } }); // скасувати заявку
       }
       const fresh = await tx.club.findUnique({ where: { id }, select: { membersCount: true } });
       return Math.max(0, fresh?.membersCount ?? 0);
     });
-    return NextResponse.json({ success: true, joined: join, membersCount });
+    if (join && pending) {
+      try {
+        await prisma.notification.create({ data: { userId: club.ownerId, type: 'club_join_request', title: 'Нова заявка на вступ', message: club.name.slice(0, 150), relatedUserId: userId, relatedEntityType: 'club', relatedEntityId: id } }); // i18n-ignore
+      } catch { /* сповіщення необов'язкове */ }
+    }
+    return NextResponse.json({ success: true, joined: join && !pending, pending: join && pending, membersCount });
   } catch (error) {
     console.error('Club membership error:', error);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });

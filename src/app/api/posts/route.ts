@@ -3,6 +3,7 @@
  *  Фото попередньо завантажуються через /api/upload (type=posts).
  */
 
+import { getClubAccess } from '@/lib/clubAccess';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
@@ -35,6 +36,16 @@ export async function POST(request: NextRequest) {
       if (!video) return NextResponse.json({ error: t('api.videos.notReady') }, { status: 400 });
     }
 
+    // Допис на дошці спільноти: писати може власник або учасник із правом писати
+    let clubId: number | null = null;
+    if (body?.clubId) {
+      const cid = Number(body.clubId);
+      const access = Number.isInteger(cid) && cid > 0 ? await getClubAccess(cid, userId) : null;
+      if (!access) return NextResponse.json({ error: t('api.clubs.notFound') }, { status: 404 });
+      if (!access.canPost) return NextResponse.json({ error: t('api.clubs.cannotPost') }, { status: 403 });
+      clubId = cid;
+    }
+
     if (!content && images.length === 0 && !video) {
       return NextResponse.json({ error: t('api.feed.emptyPost') }, { status: 400 });
     }
@@ -51,6 +62,7 @@ export async function POST(request: NextRequest) {
     const post = await prisma.post.create({
       data: {
         authorId: userId,
+        clubId,
         content,
         images: { create: (images as string[]).map((url, position) => ({ url, position })) },
       },

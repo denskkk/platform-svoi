@@ -12,12 +12,14 @@ const MAX_IMAGES = 6;
 const MAX_LENGTH = 2000;
 
 interface Props {
+  /** Якщо задано — допис іде на дошку спільноти */
+  clubId?: number;
   canPost: boolean;
   user: { firstName?: string; lastName?: string; avatarUrl?: string | null } | null;
   onPosted: (post: FeedPost) => void;
 }
 
-export function PostComposer({ canPost, user, onPosted }: Props) {
+export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
   const { t } = useI18n();
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -127,7 +129,7 @@ export function PostComposer({ canPost, user, onPosted }: Props) {
     if (publishing || uploading > 0 || (video && video.status !== 'ready' && video.status !== 'failed') || (!text.trim() && images.length === 0 && video?.status !== 'ready')) return;
     setPublishing(true);
     try {
-      const res = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content: text.trim(), images, videoId: video?.status === 'ready' ? video.id : undefined }) });
+      const res = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content: text.trim(), images, clubId, videoId: video?.status === 'ready' ? video.id : undefined }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
       onPosted(data.post);

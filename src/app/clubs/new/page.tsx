@@ -14,7 +14,7 @@ export default function NewClubPage() {
   const router = useRouter();
   const { t } = useI18n();
   const toast = useToast();
-  const [form, setForm] = useState({ name: '', description: '', category: 'other', city: '' });
+  const [form, setForm] = useState({ name: '', description: '', category: 'other', city: '', joinMode: 'open', postMode: 'owner', visibility: 'public' });
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
@@ -54,6 +54,12 @@ export default function NewClubPage() {
             <input className={inputCls} value={form.city} onChange={set('city')} maxLength={100} /></label>
           <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('clubs.fields.description')}</span>
             <textarea className={inputCls} rows={5} value={form.description} onChange={set('description')} required minLength={10} maxLength={3000} /></label>
+          <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('clubs.modes.joinMode')}</span>
+            <select className={inputCls} value={form.joinMode} onChange={set('joinMode')}><option value="open">{t('clubs.modes.open')}</option><option value="approval">{t('clubs.modes.approval')}</option></select></label>
+          <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('clubs.modes.postMode')}</span>
+            <select className={inputCls} value={form.postMode} onChange={set('postMode')}><option value="owner">{t('clubs.modes.owner')}</option><option value="members">{t('clubs.modes.members')}</option></select></label>
+          <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('clubs.modes.visibility')}</span>
+            <select className={inputCls} value={form.visibility} onChange={set('visibility')}><option value="public">{t('clubs.modes.public')}</option><option value="members">{t('clubs.modes.visMembers')}</option></select></label>
           <button type="submit" disabled={sending} className="w-full rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 disabled:opacity-60 flex items-center justify-center gap-2">
             {sending && <Loader2 className="w-4 h-4 animate-spin" />}{t('clubs.createSubmit')}
           </button>

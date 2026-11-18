@@ -37,5 +37,37 @@
     "travel": "Travel",
     "professional": "Professional communities",
     "other": "Other interests"
+  },
+  "joinRequest": "Request to join",
+  "requested": "Request sent — wait for the decision",
+  "cancelRequest": "Cancel request",
+  "board": "Board",
+  "boardEmpty": "No posts on the board yet.",
+  "closedBoard": "The board is closed: join the community to see posts.",
+  "readOnly": "You can watch and comment. Only the owner or members with write access can post.",
+  "modes": {
+    "joinMode": "Joining",
+    "open": "Open",
+    "approval": "By request (owner approves)",
+    "postMode": "Who posts on the board",
+    "owner": "Owner only (and those allowed)",
+    "members": "All members",
+    "visibility": "Board visibility",
+    "public": "Everyone sees the board",
+    "visMembers": "Members only"
+  },
+  "manage": {
+    "title": "Manage members",
+    "requests": "Join requests",
+    "noRequests": "No new requests",
+    "approve": "Accept",
+    "reject": "Decline",
+    "members": "Members",
+    "allowWrite": "Allow posting",
+    "denyWrite": "Read only",
+    "remove": "Remove",
+    "closed": "Closed",
+    "requestsCount": "Requests: {count}",
+    "done": "Done"
   }
 }

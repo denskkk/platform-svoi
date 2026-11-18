@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 
 export const MUTABLE_GROUPS: Record<string, string[]> = {
-  social: ['post_like', 'post_comment', 'new_follower'],
+  social: ['post_like', 'post_comment', 'new_follower', 'club_join_request', 'club_join_approved'],
   messages: ['new_message'],
   deals: ['deal_new', 'deal_confirmed', 'deal_accrued', 'deal_paid_out', 'deal_rejected', 'deal_disputed'],
   reviews: ['new_review'],

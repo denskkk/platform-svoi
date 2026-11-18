@@ -26,16 +26,19 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
     const [members, mine] = await Promise.all([
       prisma.clubMember.findMany({
-        where: { clubId: club.id, user: { isActive: true } },
+        where: { clubId: club.id, status: 'active', user: { isActive: true } },
         orderBy: { id: 'asc' },
         take: 30,
         select: { user: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } } } },
       }),
-      prisma.clubMember.findUnique({ where: { clubId_userId: { clubId: club.id, userId } }, select: { id: true } }),
+      prisma.clubMember.findUnique({ where: { clubId_userId: { clubId: club.id, userId } }, select: { id: true, status: true, canWrite: true } }),
     ]);
+    const view = serializeClub(club, mine?.status === 'active', userId, mine);
+    // У закритій спільноті список учасників бачать лише учасники
+    const showMembers = view.canSeeBoard;
     return NextResponse.json({
-      club: { ...serializeClub(club, !!mine, userId), ownerId: club.ownerId },
-      members: members.map((m: any) => ({
+      club: { ...view, ownerId: club.ownerId },
+      members: !showMembers ? [] : members.map((m: any) => ({
         id: m.user.id,
         name: m.user.businessInfo?.companyName || `${m.user.firstName} ${m.user.lastName}`.trim(),
         avatarUrl: m.user.businessInfo?.logoUrl || m.user.avatarUrl,

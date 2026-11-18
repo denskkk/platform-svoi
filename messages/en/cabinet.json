@@ -248,5 +248,30 @@
       "applyHint": "Become a platform driver",
       "soon": "This feature is being finished — it will work in the next update."
     }
+  },
+  "folders": {
+    "cars": {
+      "all": "Buy a car",
+      "dealers": "Dealerships",
+      "private": "From owners",
+      "wanted": "Looking for a car"
+    },
+    "real-estate": {
+      "buy": "Buy",
+      "rent": "Rent",
+      "wanted": "Looking for (buy / rent)"
+    },
+    "health": {
+      "allDoctors": "All doctors",
+      "wanted": "Need a consultation"
+    },
+    "sport": {
+      "wanted": "Looking for a coach"
+    }
+  },
+  "foldersUi": {
+    "back": "All folders",
+    "pick": "Choose a folder",
+    "post": "Post a listing"
   }
 }

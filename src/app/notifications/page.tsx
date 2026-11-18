@@ -101,6 +101,7 @@ export default function NotificationsPage() {
   const hrefFor = (n: Item): string | null => {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'club' && n.relatedEntityId) return `/clubs/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'business_application') return '/business/apply';
     if (n.relatedEntityType === 'deal') return n.type === 'deal_new' ? '/business/clients' : '/earnings';
     if (n.relatedEntityType === 'partner_application') return '/projects';
@@ -113,6 +114,8 @@ export default function NotificationsPage() {
     if (n.type === 'post_like') return t('feed.notifications.postLike', { name: who });
     if (n.type === 'post_comment') return t('feed.notifications.postComment', { name: who });
     if (n.type === 'new_follower') return t('feed.notifications.newFollower', { name: who });
+    if (n.type === 'club_join_request') return t('feed.notifications.clubJoinRequest', { name: who });
+    if (n.type === 'club_join_approved') return t('feed.notifications.clubJoinApproved');
     if (n.type === 'listing_approved') return t('feed.notifications.listingApproved');
     if (n.type === 'listing_rejected') return t('feed.notifications.listingRejected');
     if (n.type === 'business_approved') return t('feed.notifications.businessApproved');

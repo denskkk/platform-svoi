@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
         : [],
       wantPosts
         ? prisma.post.findMany({
-            where: { isHidden: false, author: { isActive: true }, authorId: { notIn: [...excluded, ...privateHidden] }, content: { contains: q, mode: 'insensitive' } },
+            where: { isHidden: false, clubId: null, author: { isActive: true }, authorId: { notIn: [...excluded, ...privateHidden] }, content: { contains: q, mode: 'insensitive' } },
             orderBy: { id: 'desc' },
             take,
             select: { id: true, content: true, createdAt: true, author: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } } } },

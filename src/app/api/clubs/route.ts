@@ -10,7 +10,7 @@ import { getApiT } from '@/i18n/server';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getBlockedIds } from '@/lib/blocks';
 import { parseId } from '@/lib/feed';
-import { CLUB_CATEGORIES, CLUB_LIMITS, serializeClub } from '@/lib/clubs';
+import { CLUB_CATEGORIES, CLUB_LIMITS, CLUB_JOIN_MODES, CLUB_POST_MODES, CLUB_VISIBILITIES, serializeClub } from '@/lib/clubs';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,18 +34,18 @@ export async function GET(request: NextRequest) {
     if (q) and.push({ OR: [{ name: { contains: q, mode: 'insensitive' } }, { description: { contains: q, mode: 'insensitive' } }] });
     if (city) and.push({ city: { contains: city, mode: 'insensitive' } });
     if ((CLUB_CATEGORIES as readonly string[]).includes(category)) and.push({ category });
-    if (mine) and.push({ members: { some: { userId } } });
+    if (mine) and.push({ members: { some: { userId, status: 'active' } } });
     if (cursor) and.push({ id: { lt: cursor } });
 
     const rows = await prisma.club.findMany({ where: { AND: and }, orderBy: { id: 'desc' }, take: CLUB_LIMITS.pageSize + 1 });
     const hasMore = rows.length > CLUB_LIMITS.pageSize;
     const page = hasMore ? rows.slice(0, CLUB_LIMITS.pageSize) : rows;
     const memberships = page.length
-      ? await prisma.clubMember.findMany({ where: { userId, clubId: { in: page.map((c: any) => c.id) } }, select: { clubId: true } })
+      ? await prisma.clubMember.findMany({ where: { userId, clubId: { in: page.map((c: any) => c.id) } }, select: { clubId: true, status: true, canWrite: true } })
       : [];
-    const joined = new Set<number>(memberships.map((m: any) => m.clubId));
+    const byClub = new Map<number, any>(memberships.map((m: any) => [m.clubId, m]));
 
-    return NextResponse.json({ clubs: page.map((c: any) => serializeClub(c, joined.has(c.id), userId)), nextCursor: hasMore ? page[page.length - 1].id : null });
+    return NextResponse.json({ clubs: page.map((c: any) => serializeClub(c, byClub.get(c.id)?.status === 'active', userId, byClub.get(c.id))), nextCursor: hasMore ? page[page.length - 1].id : null });
   } catch (error) {
     console.error('Clubs list error:', error);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
@@ -70,15 +70,18 @@ export async function POST(request: NextRequest) {
     if (!name || name.length > CLUB_LIMITS.nameMax || description.length < 10 || description.length > CLUB_LIMITS.descriptionMax || !(CLUB_CATEGORIES as readonly string[]).includes(category)) {
       return NextResponse.json({ error: t('api.clubs.fieldsInvalid') }, { status: 400 });
     }
+    const joinMode = (CLUB_JOIN_MODES as readonly string[]).includes(body?.joinMode) ? body.joinMode : 'open';
+    const postMode = (CLUB_POST_MODES as readonly string[]).includes(body?.postMode) ? body.postMode : 'owner';
+    const visibility = (CLUB_VISIBILITIES as readonly string[]).includes(body?.visibility) ? body.visibility : 'public';
     const owned = await prisma.club.count({ where: { ownerId: userId } });
     if (owned >= CLUB_LIMITS.maxOwnedPerUser) return NextResponse.json({ error: t('api.clubs.tooMany') }, { status: 400 });
 
     const club = await prisma.$transaction(async (tx: any) => {
-      const created = await tx.club.create({ data: { ownerId: userId, name, description, category, city } });
-      await tx.clubMember.create({ data: { clubId: created.id, userId } });
+      const created = await tx.club.create({ data: { ownerId: userId, name, description, category, city, joinMode, postMode, visibility } });
+      await tx.clubMember.create({ data: { clubId: created.id, userId, status: 'active', canWrite: true } });
       return created;
     });
-    return NextResponse.json({ club: serializeClub(club, true, userId) }, { status: 201 });
+    return NextResponse.json({ club: serializeClub(club, true, userId, { status: 'active', canWrite: true }) }, { status: 201 });
   } catch (error) {
     console.error('Create club error:', error);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
