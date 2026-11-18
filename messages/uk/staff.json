@@ -18,7 +18,8 @@
   "roles": {
     "moderator": "Модератор",
     "business_manager": "Менеджер бізнесу",
-    "support": "Підтримка"
+    "support": "Підтримка",
+    "administrator": "Адміністратор"
   },
   "manage": {
     "title": "Ролі персоналу",
@@ -37,7 +38,8 @@
     "perms": {
       "moderator": "Оголошення, скарги",
       "business_manager": "Заявки бізнесу, партнерство, тексти",
-      "support": "Скарги"
+      "support": "Скарги",
+      "administrator": "Усі розділи, крім призначення ролей"
     }
   }
 }

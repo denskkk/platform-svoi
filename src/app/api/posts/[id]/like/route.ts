@@ -15,6 +15,8 @@ import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
+const REACTIONS = ['like', 'love', 'laugh', 'wow', 'sad'];
+
 async function setLike(request: NextRequest, idParam: string, like: boolean) {
   const t = getApiT(request);
   try {
@@ -35,10 +37,13 @@ async function setLike(request: NextRequest, idParam: string, like: boolean) {
       return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
     }
 
+    const body = like ? await request.json().catch(() => ({})) : {};
+    const reaction = typeof body?.reaction === 'string' && REACTIONS.includes(body.reaction) ? body.reaction : 'like';
     let newLike = false;
     const likesCount = await prisma.$transaction(async (tx: any) => {
       if (like) {
-        const created = await tx.postLike.createMany({ data: [{ postId, userId }], skipDuplicates: true });
+        const created = await tx.postLike.createMany({ data: [{ postId, userId, reaction }], skipDuplicates: true });
+        if (created.count === 0) await tx.postLike.updateMany({ where: { postId, userId }, data: { reaction } }); // змінили реакцію
         if (created.count > 0) {
           newLike = true;
           await tx.post.update({ where: { id: postId }, data: { likesCount: { increment: 1 } } });
@@ -53,7 +58,7 @@ async function setLike(request: NextRequest, idParam: string, like: boolean) {
 
     if (newLike) await notifyFeed({ type: 'post_like', recipientId: post.authorId, actorId: userId, postId });
 
-    return NextResponse.json({ success: true, liked: like, likesCount });
+    return NextResponse.json({ success: true, liked: like, likesCount, reaction: like ? reaction : null });
   } catch (error) {
     console.error('Post like error:', error);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });

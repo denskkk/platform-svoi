@@ -18,7 +18,8 @@
   "roles": {
     "moderator": "Moderator",
     "business_manager": "Business manager",
-    "support": "Support"
+    "support": "Support",
+    "administrator": "Administrator"
   },
   "manage": {
     "title": "Staff roles",
@@ -37,7 +38,8 @@
     "perms": {
       "moderator": "Listings, reports",
       "business_manager": "Business applications, partnership, texts",
-      "support": "Reports"
+      "support": "Reports",
+      "administrator": "All sections except assigning roles"
     }
   }
 }

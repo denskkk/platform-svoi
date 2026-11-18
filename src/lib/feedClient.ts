@@ -34,8 +34,11 @@ export interface FeedPost {
   edited?: boolean;
   images: { id: number; url: string }[];
   video?: { id: number; url: string; posterUrl: string | null; durationSec: number | null } | null;
+  repostsCount?: number;
+  repostOf?: { id: number; content: string; images: { id: number; url: string }[]; video?: { id: number; url: string; posterUrl: string | null } | null; author: { id: number; name: string; avatarUrl: string | null; isVerified: boolean } } | null;
+  repostUnavailable?: boolean;
   author: FeedAuthor;
-  viewer: { liked: boolean; isOwn: boolean; following: boolean; saved?: boolean };
+  viewer: { liked: boolean; reaction?: string | null; isOwn: boolean; following: boolean; saved?: boolean };
 }
 
 export interface FeedComment {

@@ -59,7 +59,12 @@
     "commentAction": "Comment",
     "shareAction": "Share",
     "commentsLabel": "Comments: {count}",
-    "linkCopied": "Link copied"
+    "linkCopied": "Link copied",
+    "reposted": "Reposted to your feed",
+    "repost": "Share to your feed",
+    "repostPlaceholder": "Add a comment (optional)",
+    "copyLink": "Copy link",
+    "repostUnavailable": "The original post is unavailable"
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -240,5 +245,12 @@
     "close": "Close",
     "prev": "Previous",
     "next": "Next"
+  },
+  "reactions": {
+    "like": "Like",
+    "love": "Love",
+    "laugh": "Haha",
+    "wow": "Wow",
+    "sad": "Sad"
   }
 }

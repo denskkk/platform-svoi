@@ -5,7 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 
-export const ADMIN_ROLES = ['moderator', 'business_manager', 'support'] as const;
+export const ADMIN_ROLES = ['administrator', 'moderator', 'business_manager', 'support'] as const;
 export type AdminRoleName = (typeof ADMIN_ROLES)[number];
 
 export type AdminPermission =
@@ -19,6 +19,8 @@ export type AdminPermission =
 export const ALL_PERMISSIONS: AdminPermission[] = ['listings.moderate', 'business.review', 'partners.review', 'content.edit', 'reports.handle', 'deals.manage'];
 
 export const ROLE_PERMISSIONS: Record<AdminRoleName, AdminPermission[]> = {
+  // Адміністратор: усі робочі розділи, але без призначення ролей (це лише Super Admin = User.isAdmin)
+  administrator: ALL_PERMISSIONS,
   moderator: ['listings.moderate', 'reports.handle'],
   business_manager: ['business.review', 'partners.review', 'content.edit', 'deals.manage'],
   support: ['reports.handle'],
