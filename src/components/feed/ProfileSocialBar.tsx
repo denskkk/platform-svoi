@@ -86,6 +86,9 @@ export function ProfileSocialBar({ userId, isOwn }: { userId: number; isOwn: boo
         </Link>
       )}
       {!isOwn && canFollow && (
+        <Link href={`/invoices/new?to=${userId}`} className="inline-flex items-center rounded-lg bg-neutral-100 hover:bg-neutral-200 px-4 py-2.5 text-sm font-semibold text-neutral-800">{t('cabinet.invoices.issueFromProfile')}</Link>
+      )}
+      {!isOwn && canFollow && (
         <button type="button" onClick={toggle} disabled={busy}
           className={cn('inline-flex items-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition active:scale-95', stats.isFollowing ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-white hover:bg-primary-600')}>
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : stats.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}

@@ -47,7 +47,8 @@
     "about": "About us and our idea",
     "language": "Language",
     "logout": "Log out",
-    "balanceHint": "Invited, deals, wallet"
+    "balanceHint": "Invited, deals, wallet",
+    "invoices": "Invoices"
   },
   "balance": {
     "title": "Balance",
@@ -273,5 +274,38 @@
     "back": "All folders",
     "pick": "Choose a folder",
     "post": "Post a listing"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "received": "Issued to me",
+    "issued": "Issued by me",
+    "new": "Issue an invoice",
+    "empty": "No invoices yet",
+    "amount": "Amount",
+    "currency": "Currency",
+    "description": "For what (service, training, consultation…)",
+    "due": "Pay by",
+    "recipient": "To",
+    "recipientSearch": "Find a person or business",
+    "noResults": "Nothing found",
+    "create": "Issue invoice",
+    "created": "Invoice issued",
+    "failed": "Failed to issue the invoice",
+    "note": "The platform keeps invoices and statuses. The payment itself happens between you (transfer, cash, your payment service).",
+    "from": "From",
+    "to": "To",
+    "status": {
+      "issued": "Awaiting payment",
+      "payer_marked": "Payer marked as paid",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    },
+    "actions": {
+      "iPaid": "I paid",
+      "confirm": "Confirm payment",
+      "cancel": "Cancel",
+      "done": "Done"
+    },
+    "issueFromProfile": "Issue an invoice"
   }
 }

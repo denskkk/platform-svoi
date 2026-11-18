@@ -101,6 +101,7 @@ export default function NotificationsPage() {
   const hrefFor = (n: Item): string | null => {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'invoice') return '/invoices';
     if (n.relatedEntityType === 'club' && n.relatedEntityId) return `/clubs/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'business_application') return '/business/apply';
     if (n.relatedEntityType === 'deal') return n.type === 'deal_new' ? '/business/clients' : '/earnings';

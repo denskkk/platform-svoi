@@ -28,7 +28,8 @@ for f in \
   20261130_add_reposts_reactions.sql \
   20261131_add_user_cover.sql \
   20261132_invites_views_settings.sql \
-  20261133_club_communities.sql; do
+  20261133_club_communities.sql \
+  20261134_add_invoices.sql; do
   echo ">> $f"
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
 done

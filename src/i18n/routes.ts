@@ -63,6 +63,7 @@ export const PRIVATE_PATH_PREFIXES = [
   '/clubs',
   '/earnings',
   '/menu',
+  '/invoices',
   '/business/clients',
   '/business/stats',
   '/listings',

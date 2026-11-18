@@ -302,5 +302,10 @@
     "tooMany": "Too many stories today",
     "mediaRequired": "Add a photo or a video",
     "notFound": "Story not found"
+  },
+  "invoices": {
+    "invalid": "Invalid invoice data",
+    "notFound": "Invoice not found",
+    "badTransition": "This action is not possible now"
   }
 }

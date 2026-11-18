@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart3, Banknote, Eye, Handshake, Info, QrCode, Settings, Users, Wallet, LogOut } from 'lucide-react';
+import { BarChart3, Banknote, Receipt, Eye, Handshake, Info, QrCode, Settings, Users, Wallet, LogOut } from 'lucide-react';
 import { MenuGroup, MenuRow, MenuShell } from '@/components/cabinet/MenuShell';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/i18n/client';
@@ -38,6 +38,7 @@ export default function MenuPage() {
         <MenuRow href="/menu/earn" icon={<Handshake className="w-5 h-5" />} label={t('cabinet.menu.earn')} />
         <MenuRow href="/menu/qr" icon={<QrCode className="w-5 h-5" />} label={t('cabinet.menu.qr')} />
         <MenuRow href="/menu/viewers" icon={<Eye className="w-5 h-5" />} label={t('cabinet.menu.viewers')} />
+        <MenuRow href="/invoices" icon={<Receipt className="w-5 h-5" />} label={t('cabinet.menu.invoices')} />
         <MenuRow href="/earnings" icon={<Banknote className="w-5 h-5" />} label={t('cabinet.menu.deals')} />
       </MenuGroup>
 
