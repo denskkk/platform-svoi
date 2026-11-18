@@ -24,6 +24,7 @@ if (-not $env:PGPASSWORD) {
   $sec = Read-Host "Password of PostgreSQL user $DbUser" -AsSecureString
   $env:PGPASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
 }
+$env:PGCLIENTENCODING = "UTF8"   # migrations are UTF-8 (Ukrainian text)
 $files = @(
   "20261121_activate_listing_projects.sql",
   "20261132_invites_views_settings.sql",
@@ -43,5 +44,6 @@ foreach ($f in $files) {
 
 Write-Host "4/5 Build (catches type errors)" -ForegroundColor Cyan
 npm run build
+if ($LASTEXITCODE -ne 0) { Write-Host "BUILD FAILED - copy the error text above and send it" -ForegroundColor Red; exit 1 }
 
 Write-Host "5/5 Done. Start: npm run start  ->  http://localhost:3000" -ForegroundColor Green

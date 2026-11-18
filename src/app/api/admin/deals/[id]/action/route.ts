@@ -29,7 +29,7 @@ async function handler(request: NextRequest, idParam: string) {
     const action = body?.action;
     const note = typeof body?.note === 'string' ? body.note.trim().slice(0, 500) : '';
     const now = new Date();
-    let res: { count: number } | null = null;
+    let res: any = null;
     let status = '';
 
     if (action === 'accrue') {
