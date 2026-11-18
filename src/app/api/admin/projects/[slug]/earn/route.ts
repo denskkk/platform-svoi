@@ -13,7 +13,7 @@ import { logAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
-const LIMITS = { titleUk: 150, titleEn: 150, bodyUk: 8000, bodyEn: 8000 } as const;
+const LIMITS = { titleUk: 150, titleEn: 150, bodyUk: 8000, bodyEn: 8000, stepsUk: 4000, stepsEn: 4000, examplesUk: 4000, examplesEn: 4000 } as const;
 
 async function handler(request: NextRequest, slug: string) {
   const t = getApiT(request);
@@ -24,7 +24,7 @@ async function handler(request: NextRequest, slug: string) {
 
     if (request.method === 'GET') {
       const page = await prisma.projectEarnPage.findUnique({ where: { projectSlug: slug } });
-      return NextResponse.json({ page: page ?? { titleUk: '', titleEn: '', bodyUk: '', bodyEn: '' } });
+      return NextResponse.json({ page: page ?? { titleUk: '', titleEn: '', bodyUk: '', bodyEn: '', videoUrl: '', stepsUk: '', stepsEn: '', examplesUk: '', examplesEn: '' } });
     }
 
     const body = await request.json().catch(() => ({}));
@@ -34,6 +34,9 @@ async function handler(request: NextRequest, slug: string) {
       if (typeof v !== 'string') return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
       data[key] = v.trim().slice(0, max);
     }
+    const videoUrl = typeof body?.videoUrl === 'string' ? body.videoUrl.trim().slice(0, 300) : '';
+    if (videoUrl && !/^(https:\/\/[^\s]+|\/uploads\/videos\/v\d+\.mp4)$/i.test(videoUrl)) return NextResponse.json({ error: t('api.projects.videoUrlInvalid') }, { status: 400 });
+    data.videoUrl = videoUrl;
     const page = await prisma.projectEarnPage.upsert({
       where: { projectSlug: slug },
       create: { projectSlug: slug, ...data, updatedById: adminId },

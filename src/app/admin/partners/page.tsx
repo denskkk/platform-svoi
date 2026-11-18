@@ -12,7 +12,7 @@ import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 type Status = 'pending' | 'approved' | 'rejected';
 interface Item { id: number; projectSlug: string; phone: string; message: string; createdAt: string; rejectReason: string | null; user: { id: number; name: string; email: string } }
 interface ProjectRow { slug: string; nameUk: string; nameEn: string }
-const EMPTY = { titleUk: '', titleEn: '', bodyUk: '', bodyEn: '' };
+const EMPTY = { titleUk: '', titleEn: '', bodyUk: '', bodyEn: '', videoUrl: '', stepsUk: '', stepsEn: '', examplesUk: '', examplesEn: '' };
 const inputCls = 'w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400';
 
 export default function AdminPartnersPage() {
@@ -88,7 +88,7 @@ export default function AdminPartnersPage() {
         const res = await fetch(`/api/admin/projects/${slug}/earn`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
         if (!res.ok) throw new Error();
         const { page } = await res.json();
-        if (!cancelled) setForm({ titleUk: page.titleUk, titleEn: page.titleEn, bodyUk: page.bodyUk, bodyEn: page.bodyEn });
+        if (!cancelled) setForm({ ...EMPTY, ...page });
       } catch {
         if (!cancelled) toast.error(t('projects.partnerAdmin.failed'));
       } finally {
@@ -213,7 +213,12 @@ export default function AdminPartnersPage() {
                 <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.bodyUk')}</span><textarea className={inputCls} rows={6} maxLength={8000} value={form.bodyUk} onChange={setF('bodyUk')} /></label>
                 <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.titleEn')}</span><input className={inputCls} maxLength={150} value={form.titleEn} onChange={setF('titleEn')} /></label>
                 <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.bodyEn')}</span><textarea className={inputCls} rows={6} maxLength={8000} value={form.bodyEn} onChange={setF('bodyEn')} /></label>
-                <p className="text-xs text-neutral-400">{t('projects.partnerAdmin.bodyHint')}</p>
+                <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.videoUrl')}</span><input className={inputCls} maxLength={300} placeholder="https://www.youtube.com/watch?v=…" value={form.videoUrl} onChange={setF('videoUrl')} /><span className="text-xs text-neutral-400">{t('projects.partnerAdmin.videoHint')}</span></label>
+                <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.stepsUk')}</span><textarea className={inputCls} rows={4} maxLength={4000} value={form.stepsUk} onChange={setF('stepsUk')} /></label>
+                <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.stepsEn')}</span><textarea className={inputCls} rows={4} maxLength={4000} value={form.stepsEn} onChange={setF('stepsEn')} /></label>
+                <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.examplesUk')}</span><textarea className={inputCls} rows={4} maxLength={4000} value={form.examplesUk} onChange={setF('examplesUk')} /></label>
+                <label className="block space-y-1"><span className="text-sm font-medium text-neutral-700">{t('projects.partnerAdmin.examplesEn')}</span><textarea className={inputCls} rows={4} maxLength={4000} value={form.examplesEn} onChange={setF('examplesEn')} /></label>
+                <p className="text-xs text-neutral-400">{t('projects.partnerAdmin.bodyHint')} {t('projects.partnerAdmin.linesHint')}</p>
                 <button type="button" onClick={save} disabled={saving || !slug} className="rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-8 py-2.5 disabled:opacity-60">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('projects.partnerAdmin.save')}
                 </button>

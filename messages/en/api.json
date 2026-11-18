@@ -215,7 +215,8 @@
     "userUnblocked": "User unblocked"
   },
   "projects": {
-    "notFound": "Project not found"
+    "notFound": "Project not found",
+    "videoUrlInvalid": "Invalid video link (https required)"
   },
   "listings": {
     "projectInvalid": "This direction is not available for listings",

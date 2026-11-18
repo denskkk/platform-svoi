@@ -48,6 +48,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         city: c.city,
         region: c.region,
         address: c.address || c.serviceLocation,
+        latitude: c.latitude === null || c.latitude === undefined ? null : Number(c.latitude),
+        longitude: c.longitude === null || c.longitude === undefined ? null : Number(c.longitude),
         phone: c.phone,
         email: c.email,
         website: c.website,

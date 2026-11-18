@@ -215,7 +215,8 @@
     "userUnblocked": "Користувача розблоковано"
   },
   "projects": {
-    "notFound": "Проєкт не знайдено"
+    "notFound": "Проєкт не знайдено",
+    "videoUrlInvalid": "Некоректне посилання на відео (потрібен https)"
   },
   "listings": {
     "projectInvalid": "Напрямок недоступний для оголошень",

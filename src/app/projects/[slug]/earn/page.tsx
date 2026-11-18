@@ -7,10 +7,11 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { parseVideoUrl } from '@/lib/embed';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 
 interface EarnData {
-  page: { titleUk: string; titleEn: string; bodyUk: string; bodyEn: string } | null;
+  page: { titleUk: string; titleEn: string; bodyUk: string; bodyEn: string; videoUrl?: string; stepsUk?: string; stepsEn?: string; examplesUk?: string; examplesEn?: string } | null;
   application: { id: number; status: 'pending' | 'approved' | 'rejected'; rejectReason: string | null } | null;
 }
 
@@ -67,6 +68,10 @@ export default function EarnPage() {
 
   const title = (locale === 'uk' ? data?.page?.titleUk : data?.page?.titleEn) || data?.page?.titleUk || t('projects.earn.title');
   const body = (locale === 'uk' ? data?.page?.bodyUk : data?.page?.bodyEn) || data?.page?.bodyUk || t('projects.earn.defaultBody');
+  const lines = (v?: string) => (v || '').split('\n').map((x) => x.trim()).filter(Boolean);
+  const steps = lines((locale === 'uk' ? data?.page?.stepsUk : data?.page?.stepsEn) || data?.page?.stepsUk);
+  const examples = lines((locale === 'uk' ? data?.page?.examplesUk : data?.page?.examplesEn) || data?.page?.examplesUk);
+  const embed = parseVideoUrl(data?.page?.videoUrl || '');
   const app = data?.application;
   const formVisible = !app || (app.status === 'rejected' && reapply);
 
@@ -87,6 +92,32 @@ export default function EarnPage() {
               <h1 className="text-xl font-bold text-neutral-900">{title}</h1>
               <p className="text-[15px] leading-relaxed text-neutral-800 whitespace-pre-wrap break-words">{body}</p>
             </article>
+
+            {embed && (
+              <div className="rounded-2xl overflow-hidden bg-black aspect-video">
+                {embed.kind === 'iframe' && <iframe src={embed.src} title={title} className="w-full h-full" allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen loading="lazy" referrerPolicy="no-referrer" />}
+                {embed.kind === 'video' && <video src={embed.src} controls playsInline preload="metadata" className="w-full h-full" />}
+                {embed.kind === 'link' && <a href={embed.src} target="_blank" rel="noopener noreferrer" className="w-full h-full flex items-center justify-center text-white underline">{t('projects.earn.watchVideo')}</a>}
+              </div>
+            )}
+
+            {steps.length > 0 && (
+              <section className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-5 space-y-3">
+                <h2 className="font-semibold text-neutral-900">{t('projects.earn.stepsTitle')}</h2>
+                <ol className="space-y-2">
+                  {steps.map((x, i) => (
+                    <li key={i} className="flex gap-3"><span className="shrink-0 w-7 h-7 rounded-full bg-primary-500 text-white text-sm font-bold flex items-center justify-center">{i + 1}</span><span className="text-[15px] text-neutral-800 pt-0.5">{x}</span></li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {examples.length > 0 && (
+              <section className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-5 space-y-3">
+                <h2 className="font-semibold text-neutral-900">{t('projects.earn.examplesTitle')}</h2>
+                <ul className="space-y-2 list-disc pl-5 text-[15px] text-neutral-800">{examples.map((x, i) => <li key={i}>{x}</li>)}</ul>
+              </section>
+            )}
 
             {app && (
               <section className={cn('rounded-2xl p-4 space-y-1 border border-neutral-200/70', STATUS_STYLE[app.status])}>

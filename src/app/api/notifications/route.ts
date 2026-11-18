@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
+import { mutedTypes } from '@/lib/notificationSettings';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,9 @@ export async function GET(request: NextRequest) {
     const userId = Number(auth.user.userId);
 
     const params = new URL(request.url).searchParams;
-    const unreadCount = await prisma.notification.count({ where: { userId, isRead: false } });
+    const muted = await mutedTypes(userId);
+    const typeFilter = muted.length ? { type: { notIn: muted } } : {};
+    const unreadCount = await prisma.notification.count({ where: { userId, isRead: false, ...typeFilter } });
     if (params.get('countOnly')) return NextResponse.json({ unreadCount });
 
     const cursor = parseId(params.get('cursor'));
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
     const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 50) : 20;
 
     const rows = await prisma.notification.findMany({
-      where: { userId, ...(cursor ? { id: { lt: cursor } } : {}) },
+      where: { userId, ...typeFilter, ...(cursor ? { id: { lt: cursor } } : {}) },
       orderBy: { id: 'desc' },
       take: limit + 1,
     });

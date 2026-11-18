@@ -12,7 +12,7 @@ import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 
 interface Company {
   id: number; name: string; logoUrl: string | null; bannerUrl: string | null; category: string | null; description: string | null; mission: string | null;
-  servicesList: string | null; priceRange: string | null; workHours: string | null; city: string | null; region: string | null; address: string | null;
+  servicesList: string | null; priceRange: string | null; workHours: string | null; city: string | null; region: string | null; address: string | null; latitude?: number | null; longitude?: number | null;
   phone: string | null; email: string | null; website: string | null; telegram: string | null; viber: string | null; contactName: string | null;
   socialLinks: Record<string, string>; gallery: string[]; videoUrl: string | null; yearFounded: number | null;
   isVerified: boolean; rating: number; reviewsCount: number; isOwn: boolean; isFavorite: boolean; referralPercent: number | null;
@@ -65,8 +65,10 @@ export default function CompanyPage() {
   }
 
   const place = [c.address, c.city].filter(Boolean).join(', ');
-  const routeUrl = place ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place)}` : null;
-  const mapUrl = place ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place)}` : null;
+  const pin = c.latitude != null && c.longitude != null ? `${c.latitude},${c.longitude}` : null;
+  const dest = pin || place;
+  const routeUrl = dest ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}` : null;
+  const mapUrl = dest ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dest)}` : null;
 
   const toggleFav = async () => {
     if (favBusy) return;

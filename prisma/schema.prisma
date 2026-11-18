@@ -247,6 +247,7 @@ model User {
   clubsOwned           Club[]
   postVideos           PostVideo[]
   stories              Story[]
+  notificationSetting  NotificationSetting?
   storyViews           StoryView[]
   referralProgram      ReferralProgram?  @relation("ProgramBusiness")
   dealsAsBusiness      Deal[]  @relation("DealBusiness")
@@ -407,6 +408,8 @@ model BusinessInfo {
   
   // Візуальні матеріали компанії
   bannerUrl     String? @map("banner_url") @db.VarChar(255) // Банер компанії
+  latitude      Decimal? @db.Decimal(9, 6) // Мітка на карті
+  longitude     Decimal? @db.Decimal(9, 6)
   
   // Преміум функції (тільки для business_premium)
   offerToCustomers Boolean @default(false) @map("offer_to_customers") // Пропонувати споживачам
@@ -1175,6 +1178,10 @@ model BusinessApplication {
   // Пропозиція самого бізнесу (не зобов’язання; затверджений відсоток — proposedRewardPercent)
   offeredRewardPercent  Decimal?  @map("offered_reward_percent") @db.Decimal(5, 2)
   offeredRewardTerms    String?   @map("offered_reward_terms") @db.VarChar(300)
+  logoUrl               String?   @map("logo_url") @db.VarChar(255)
+  bannerUrl             String?   @map("banner_url") @db.VarChar(255)
+  latitude              Decimal?  @db.Decimal(9, 6)
+  longitude             Decimal?  @db.Decimal(9, 6)
   rejectReason          String?   @map("reject_reason") @db.VarChar(500)
   moderatedAt           DateTime? @map("moderated_at")
   moderatedById         Int?      @map("moderated_by_id")
@@ -1316,6 +1323,11 @@ model ProjectEarnPage {
   titleEn     String   @default("") @map("title_en") @db.VarChar(150)
   bodyUk      String   @default("") @map("body_uk") @db.Text
   bodyEn      String   @default("") @map("body_en") @db.Text
+  videoUrl    String   @default("") @map("video_url") @db.VarChar(300)
+  stepsUk     String   @default("") @map("steps_uk") @db.Text // по одному кроку на рядок
+  stepsEn     String   @default("") @map("steps_en") @db.Text
+  examplesUk  String   @default("") @map("examples_uk") @db.Text // по одному прикладу на рядок
+  examplesEn  String   @default("") @map("examples_en") @db.Text
   updatedById Int?     @map("updated_by_id")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -1404,4 +1416,16 @@ model StoryView {
 
   @@unique([storyId, userId])
   @@map("story_views")
+}
+
+// Які групи сповіщень користувач вимкнув (системні та модераційні вимкнути не можна).
+model NotificationSetting {
+  id          Int      @id @default(autoincrement()) @map("notification_setting_id")
+  userId      Int      @unique @map("user_id")
+  mutedGroups String   @default("") @map("muted_groups") @db.VarChar(200) // через кому: social,messages,deals,reviews,requests
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
 }

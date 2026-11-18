@@ -33,6 +33,10 @@ function serializeApplication(a: any) {
     offerings: a.offerings ?? null,
     offeredRewardPercent: a.offeredRewardPercent === null || a.offeredRewardPercent === undefined ? null : Number(a.offeredRewardPercent),
     offeredRewardTerms: a.offeredRewardTerms ?? null,
+    logoUrl: a.logoUrl ?? null,
+    bannerUrl: a.bannerUrl ?? null,
+    latitude: a.latitude === null || a.latitude === undefined ? null : Number(a.latitude),
+    longitude: a.longitude === null || a.longitude === undefined ? null : Number(a.longitude),
     createdAt: a.createdAt,
   };
 }
@@ -103,6 +107,14 @@ export async function POST(request: NextRequest) {
     }
     if (projectSlug && !(await getProject(projectSlug))) projectSlug = null;
 
+    const own = (v: unknown, dir: string) => (typeof v === 'string' && new RegExp(`^/uploads/${dir}/[A-Za-z0-9._-]+\\.(webp|jpg|png)$`).test(v) ? v : null);
+    const logoUrl = own(body?.logoUrl, 'logos');
+    const bannerUrl = own(body?.bannerUrl, 'banners');
+    const coord = (v: unknown, lim: number) => { const n = typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN; return Number.isFinite(n) && Math.abs(n) <= lim ? Math.round(n * 1e6) / 1e6 : null; };
+    let latitude = coord(body?.latitude, 90);
+    let longitude = coord(body?.longitude, 180);
+    if (latitude === null || longitude === null) { latitude = null; longitude = null; }
+
     const active = await prisma.businessApplication.findFirst({
       where: { userId, status: { in: ['pending', 'approved'] } },
       select: { id: true },
@@ -110,7 +122,7 @@ export async function POST(request: NextRequest) {
     if (active) return NextResponse.json({ error: t('api.businessApplications.alreadyExists') }, { status: 409 });
 
     const created = await prisma.businessApplication.create({
-      data: { userId, companyName, activity, city, phone, description, contactName, website, projectSlug, country, address, workHours, socialLinks, offerings, offeredRewardPercent, offeredRewardTerms },
+      data: { userId, companyName, activity, city, phone, description, contactName, website, projectSlug, country, address, workHours, socialLinks, offerings, offeredRewardPercent, offeredRewardTerms, logoUrl, bannerUrl, latitude, longitude },
     });
     return NextResponse.json({ application: serializeApplication(created), message: t('api.businessApplications.submitted') }, { status: 201 });
   } catch (error) {

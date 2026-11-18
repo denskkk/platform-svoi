@@ -65,5 +65,18 @@
   "rewardTermsPlaceholder": "Describe your terms of cooperation",
   "rewardPreliminary": "This is a preliminary offer, not an approved commitment. The percentage is agreed with a platform representative and fixed in the contract.",
   "freeNotice": "Business registration, publishing information and being listed in the platform catalog are free. You pay a reward only for attracted customers under the agreed terms of cooperation.",
-  "offeredByBusiness": "Business offer (not approved)"
+  "offeredByBusiness": "Business offer (not approved)",
+  "media": {
+    "logo": "Logo",
+    "banner": "Banner",
+    "choose": "Choose a photo",
+    "uploadFailed": "Could not upload the image",
+    "noGeo": "Geolocation is not available on this device",
+    "geoDenied": "Could not detect your location",
+    "pin": "Map pin (optional)",
+    "lat": "Latitude",
+    "lng": "Longitude",
+    "useMyLocation": "Use my current location",
+    "pinHint": "Used for directions to you. You can paste coordinates from a map."
+  }
 }

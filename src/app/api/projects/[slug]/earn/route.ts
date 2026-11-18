@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     const project = await getProject(params.slug);
     if (!project || project.status === 'hidden') return NextResponse.json({ error: t('api.projects.notFound') }, { status: 404 });
 
-    let page: { titleUk: string; titleEn: string; bodyUk: string; bodyEn: string } | null = null;
+    let page: { titleUk: string; titleEn: string; bodyUk: string; bodyEn: string; videoUrl: string; stepsUk: string; stepsEn: string; examplesUk: string; examplesEn: string } | null = null;
     try {
       page = await prisma.projectEarnPage.findUnique({ where: { projectSlug: params.slug } });
     } catch {
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     return NextResponse.json({
       project: { slug: project.slug, status: project.status },
-      page: page ? { titleUk: page.titleUk, titleEn: page.titleEn, bodyUk: page.bodyUk, bodyEn: page.bodyEn } : null,
+      page: page ? { titleUk: page.titleUk, titleEn: page.titleEn, bodyUk: page.bodyUk, bodyEn: page.bodyEn, videoUrl: page.videoUrl, stepsUk: page.stepsUk, stepsEn: page.stepsEn, examplesUk: page.examplesUk, examplesEn: page.examplesEn } : null,
       application,
     });
   } catch (error) {

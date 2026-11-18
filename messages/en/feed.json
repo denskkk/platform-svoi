@@ -134,7 +134,16 @@
     "dealAccrued": "A reward was accrued to you",
     "dealPaidOut": "The reward was paid out",
     "dealRejected": "The deal was rejected",
-    "dealDisputed": "A dispute was opened for the deal"
+    "dealDisputed": "A dispute was opened for the deal",
+    "settings": "Notification settings",
+    "settingsHint": "Notices about approved applications and listings are always delivered.",
+    "groups": {
+      "social": "Likes, comments and followers",
+      "messages": "New messages",
+      "deals": "Deals and rewards",
+      "reviews": "Reviews",
+      "requests": "Service requests"
+    }
   },
   "profile": {
     "title": "Posts",

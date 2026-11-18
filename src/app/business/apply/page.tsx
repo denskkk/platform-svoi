@@ -14,7 +14,7 @@ interface Application {
 }
 interface ProjectOption { slug: string; nameUk: string; nameEn: string }
 
-const EMPTY = { companyName: '', activity: '', country: '', city: '', address: '', contactName: '', phone: '', website: '', socialLinks: '', workHours: '', projectSlug: '', description: '', offerings: '', rewardChoice: '', offeredRewardTerms: '' };
+const EMPTY = { companyName: '', activity: '', country: '', city: '', address: '', contactName: '', phone: '', website: '', socialLinks: '', workHours: '', projectSlug: '', description: '', offerings: '', rewardChoice: '', offeredRewardTerms: '', logoUrl: '', bannerUrl: '', latitude: '', longitude: '' };
 const REWARD_CHOICES = ['3', '5', '10', '15'];
 const STATUS_STYLE: Record<string, string> = {
   pending: 'bg-primary-50 text-primary-900',
@@ -60,6 +60,32 @@ export default function BusinessApplyPage() {
   const blocked = latest && (latest.status === 'pending' || latest.status === 'approved');
   const formVisible = !blocked && (apps.length === 0 || showForm);
 
+  const [uploading, setUploading] = useState<'logo' | 'banner' | null>(null);
+  const upload = async (kind: 'logo' | 'banner', file: File | undefined) => {
+    if (!file) return;
+    setUploading(kind);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('type', kind === 'logo' ? 'logos' : 'banners');
+      const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers: authHeaders(), body: fd });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.url) throw new Error(d.error);
+      setForm((f) => ({ ...f, [kind === 'logo' ? 'logoUrl' : 'bannerUrl']: d.url }));
+    } catch (e: any) {
+      toast.error(e?.message || t('business.media.uploadFailed'));
+    } finally {
+      setUploading(null);
+    }
+  };
+  const locate = () => {
+    if (!navigator.geolocation) { toast.error(t('business.media.noGeo')); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setForm((f) => ({ ...f, latitude: pos.coords.latitude.toFixed(6), longitude: pos.coords.longitude.toFixed(6) })),
+      () => toast.error(t('business.media.geoDenied')),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
   const set = (k: keyof typeof EMPTY) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const submit = async (e: FormEvent) => {
@@ -145,6 +171,32 @@ export default function BusinessApplyPage() {
               <textarea className={inputCls} rows={5} required minLength={20} maxLength={3000} value={form.description} onChange={set('description')} />
               <span className="text-xs text-neutral-400">{t('business.hints.description')}</span>
             </label>
+            <div className="grid grid-cols-2 gap-3">
+              {(['logo', 'banner'] as const).map((kind) => {
+                const url = kind === 'logo' ? form.logoUrl : form.bannerUrl;
+                return (
+                  <div key={kind} className="space-y-1">
+                    <span className="text-sm font-medium text-neutral-700">{t(`business.media.${kind}`)}</span>
+                    <label className="block cursor-pointer rounded-xl border border-dashed border-neutral-300 bg-neutral-50 h-24 overflow-hidden flex items-center justify-center text-sm text-neutral-500">
+                      <input type="file" accept="image/*" hidden onChange={(e) => upload(kind, e.target.files?.[0])} />
+                      {uploading === kind ? <Loader2 className="w-5 h-5 animate-spin" /> : url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                      ) : t('business.media.choose')}
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm font-medium text-neutral-700">{t('business.media.pin')}</span>
+              <div className="flex gap-2">
+                <input className={inputCls} inputMode="decimal" placeholder={t('business.media.lat')} value={form.latitude} onChange={set('latitude')} />
+                <input className={inputCls} inputMode="decimal" placeholder={t('business.media.lng')} value={form.longitude} onChange={set('longitude')} />
+              </div>
+              <button type="button" onClick={locate} className="text-sm font-semibold text-primary-700 hover:underline">{t('business.media.useMyLocation')}</button>
+              <p className="text-xs text-neutral-400">{t('business.media.pinHint')}</p>
+            </div>
             <label className="block space-y-1">
               <span className="text-sm font-medium text-neutral-700">{t('business.fields.offerings')}</span>
               <textarea className={inputCls} rows={3} maxLength={1000} value={form.offerings} onChange={set('offerings')} />

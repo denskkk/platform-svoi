@@ -55,7 +55,10 @@
     "approvedHint": "Your application is approved. A manager will contact you.",
     "pendingHint": "Your application is under review.",
     "loadFailed": "Could not load the page",
-    "back": "Back to direction"
+    "back": "Back to direction",
+    "watchVideo": "Watch the video",
+    "stepsTitle": "How it works",
+    "examplesTitle": "Examples"
   },
   "partnerAdmin": {
     "title": "Partnership",
@@ -85,6 +88,13 @@
     "bodyEn": "Text (English)",
     "bodyHint": "Plain text. If empty, the default text is shown.",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "videoUrl": "Video (YouTube, Vimeo or https mp4 link)",
+    "videoHint": "Optional. https links only.",
+    "stepsUk": "Steps (Ukrainian) — one per line",
+    "stepsEn": "Steps (English) — one per line",
+    "examplesUk": "Examples (Ukrainian) — one per line",
+    "examplesEn": "Examples (English) — one per line",
+    "linesHint": "Steps and examples: one item per line."
   }
 }
