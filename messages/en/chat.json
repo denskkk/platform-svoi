@@ -18,5 +18,6 @@
     "loadMessages": "Failed to load messages",
     "sendMessage": "Failed to send message",
     "connection": "Failed to connect to the server"
-  }
+  },
+  "back": "Back"
 }
