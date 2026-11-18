@@ -262,5 +262,11 @@
     "contactRequired": "Provide a phone or an email",
     "emailInvalid": "Invalid email address",
     "notFound": "Application not found"
+  },
+  "clubs": {
+    "fieldsInvalid": "Check the name, category and description (at least 10 characters)",
+    "tooMany": "You reached the limit of owned clubs",
+    "notFound": "Club not found",
+    "ownerCannotLeave": "The owner cannot leave the club — only delete it"
   }
 }

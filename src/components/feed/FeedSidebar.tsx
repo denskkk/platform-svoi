@@ -20,6 +20,7 @@ export function FeedSidebar({ user }: Props) {
     { href: '/search', icon: Search, label: t('feed.sidebar.search'), color: 'text-neutral-600' },
     { href: '/chat', icon: MessageCircle, label: t('feed.sidebar.chat'), color: 'text-green-600' },
     { href: '/companies', icon: Building2, label: t('feed.sidebar.companies'), color: 'text-indigo-600' },
+    { href: '/clubs', icon: Users, label: t('feed.sidebar.clubs'), color: 'text-cyan-600' },
     { href: '/friends', icon: Users, label: t('feed.sidebar.friends'), color: 'text-blue-600' },
     { href: '/saved', icon: Bookmark, label: t('feed.sidebar.saved'), color: 'text-purple-600' },
     { href: '/my-listings', icon: Store, label: t('feed.sidebar.listings'), color: 'text-orange-600' },

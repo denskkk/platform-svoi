@@ -244,6 +244,8 @@ model User {
   savedPosts           SavedPost[]
   postCommentLikes     PostCommentLike[]
   organizationApplications OrganizationApplication[]
+  clubsOwned           Club[]
+  clubMemberships      ClubMember[]
   blocksReceived     UserBlock[]   @relation("Blocked")
   
   @@index([email])
@@ -1181,6 +1183,42 @@ model OrganizationApplication {
   @@index([userId])
   @@index([status, createdAt])
   @@map("organization_applications")
+}
+
+// Клуби та спільноти за інтересами
+model Club {
+  id           Int      @id @default(autoincrement()) @map("club_id")
+  ownerId      Int      @map("owner_id")
+  name         String   @db.VarChar(120)
+  description  String   @db.Text
+  category     String   @db.VarChar(40)
+  city         String?  @db.VarChar(100)
+  imageUrl     String?  @map("image_url") @db.VarChar(255)
+  membersCount Int      @default(1) @map("members_count")
+  isHidden     Boolean  @default(false) @map("is_hidden")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  owner   User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members ClubMember[]
+
+  @@index([isHidden, createdAt(sort: Desc)])
+  @@index([category])
+  @@index([city])
+  @@map("clubs")
+}
+
+model ClubMember {
+  id        Int      @id @default(autoincrement()) @map("club_member_id")
+  clubId    Int      @map("club_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, userId])
+  @@index([userId])
+  @@map("club_members")
 }
 
 model ProjectEarnPage {

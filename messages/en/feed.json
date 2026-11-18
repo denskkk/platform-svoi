@@ -173,7 +173,8 @@
     "business": "Business application",
     "menu": "Menu",
     "friends": "Friends",
-    "companies": "Companies"
+    "companies": "Companies",
+    "clubs": "Clubs"
   },
   "friends": {
     "title": "Friends",

@@ -1,0 +1,41 @@
+{
+  "title": "Clubs & communities",
+  "create": "Create a club",
+  "createTitle": "New club",
+  "createSubmit": "Create club",
+  "searchPlaceholder": "Search clubs",
+  "allCategories": "All",
+  "loadFailed": "Could not load",
+  "failed": "Could not create the club",
+  "empty": "No clubs yet",
+  "emptyHint": "Create the first interest club.",
+  "loadMore": "Load more",
+  "join": "Join",
+  "leave": "Leave",
+  "members": "{count} members",
+  "membersTitle": "Members",
+  "notFound": "Club not found",
+  "backToList": "Back to clubs",
+  "delete": "Delete club",
+  "deleteConfirm": "Delete the club with all its members?",
+  "report": "Report",
+  "scope": {
+    "all": "All clubs",
+    "mine": "My clubs"
+  },
+  "fields": {
+    "name": "Club name",
+    "category": "Category",
+    "city": "City",
+    "description": "Description"
+  },
+  "categories": {
+    "fishing": "Fishing",
+    "auto": "Car enthusiasts",
+    "business": "Entrepreneurs",
+    "sport": "Sports",
+    "travel": "Travel",
+    "professional": "Professional communities",
+    "other": "Other interests"
+  }
+}

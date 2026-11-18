@@ -85,7 +85,15 @@ export default function ProjectPage() {
             )}
           </>
         )}
-        {state === 'ready' && project && !(project.status === 'active' && hasListings(project.slug)) && (
+        {state === 'ready' && project && project.status === 'active' && project.slug === 'clubs' && (
+          <header className="bg-white rounded-3xl border border-neutral-200/70 shadow-sm p-5 space-y-3 text-center">
+            <span className="text-4xl" aria-hidden>{project.icon}</span>
+            <h1 className="text-xl font-bold text-neutral-900">{name}</h1>
+            {description && <p className="text-sm text-neutral-600">{description}</p>}
+            <Link href="/clubs" className="inline-block rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-2.5">{t('clubs.title')}</Link>
+          </header>
+        )}
+        {state === 'ready' && project && !(project.status === 'active' && (hasListings(project.slug) || project.slug === 'clubs')) && (
           <ComingSoon icon={project.icon} title={name} description={description} backHref="/projects" backLabel={t('projects.back')} />
         )}
       </div>
