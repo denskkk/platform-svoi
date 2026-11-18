@@ -470,6 +470,20 @@ export function Navbar() {
                       </Link>
                       <StaffLink className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100" onClick={() => setShowProfileMenu(false)} />
                       <Link
+                        href="/earnings"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.earnings')}
+                      </Link>
+                      <Link
+                        href="/business/clients"
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        {t('layout.navbar.clients')}
+                      </Link>
+                      <Link
                         href="/friends"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
@@ -685,6 +699,22 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">🔖</span>
                   <span>{t('layout.navbar.savedPosts')}</span>
+                </Link>
+                <Link
+                  href="/earnings"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">💰</span>
+                  <span>{t('layout.navbar.earnings')}</span>
+                </Link>
+                <Link
+                  href="/business/clients"
+                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xl mr-3">🤝</span>
+                  <span>{t('layout.navbar.clients')}</span>
                 </Link>
                 <Link
                   href="/friends"

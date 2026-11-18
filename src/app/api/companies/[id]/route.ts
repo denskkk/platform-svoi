@@ -30,6 +30,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const fav = id === viewerId
       ? null
       : await prisma.favorite.findUnique({ where: { userId_targetUserId: { userId: viewerId, targetUserId: id } }, select: { id: true } });
+    const program = await prisma.referralProgram.findFirst({ where: { businessUserId: id, status: 'active' }, select: { percent: true } });
     const links = c.socialLinks && typeof c.socialLinks === 'object' ? (c.socialLinks as Record<string, unknown>) : {};
 
     return NextResponse.json({
@@ -60,6 +61,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         isVerified: c.user.isVerified,
         rating: Number(c.user.avgRating) || 0,
         reviewsCount: c.user.totalReviews || 0,
+        referralPercent: program ? Number(program.percent) : null,
         isOwn: id === viewerId,
         isFavorite: !!fav,
       },

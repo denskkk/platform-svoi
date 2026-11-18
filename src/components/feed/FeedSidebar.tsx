@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bookmark, Building2, FolderKanban, MessageCircle, Newspaper, Search, Store, Users } from 'lucide-react';
+import { Bookmark, Building2, FolderKanban, MessageCircle, Newspaper, Search, Store, Users, Wallet } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,7 @@ export function FeedSidebar({ user }: Props) {
     { href: '/search', icon: Search, label: t('feed.sidebar.search'), color: 'text-neutral-600' },
     { href: '/chat', icon: MessageCircle, label: t('feed.sidebar.chat'), color: 'text-green-600' },
     { href: '/companies', icon: Building2, label: t('feed.sidebar.companies'), color: 'text-indigo-600' },
+    { href: '/earnings', icon: Wallet, label: t('feed.sidebar.earnings'), color: 'text-emerald-600' },
     { href: '/clubs', icon: Users, label: t('feed.sidebar.clubs'), color: 'text-cyan-600' },
     { href: '/friends', icon: Users, label: t('feed.sidebar.friends'), color: 'text-blue-600' },
     { href: '/saved', icon: Bookmark, label: t('feed.sidebar.saved'), color: 'text-purple-600' },

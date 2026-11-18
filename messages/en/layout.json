@@ -45,7 +45,9 @@
     "tabPeople": "People",
     "tabServices": "Services",
     "friends": "Friends",
-    "organizationApply": "Organization application"
+    "organizationApply": "Organization application",
+    "earnings": "My earnings",
+    "clients": "Attracted clients"
   },
   "mobileMenu": {
     "navigation": "Navigation",

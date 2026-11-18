@@ -121,7 +121,13 @@
     "partnerApproved": "Вашу заявку на партнерство схвалено",
     "partnerRejected": "Вашу заявку на партнерство відхилено",
     "organizationApproved": "Вашу заявку організації схвалено",
-    "organizationRejected": "Вашу заявку організації відхилено"
+    "organizationRejected": "Вашу заявку організації відхилено",
+    "dealNew": "Нова заявка клієнта через партнера",
+    "dealConfirmed": "Вашу угоду підтверджено",
+    "dealAccrued": "Вам нараховано винагороду",
+    "dealPaidOut": "Винагороду виплачено",
+    "dealRejected": "Угоду відхилено",
+    "dealDisputed": "За угодою відкрито спір"
   },
   "profile": {
     "title": "Дописи",
@@ -174,7 +180,9 @@
     "menu": "Меню",
     "friends": "Друзі",
     "companies": "Компанії",
-    "clubs": "Клуби"
+    "clubs": "Клуби",
+    "earnings": "Мій заробіток",
+    "clients": "Залучені клієнти"
   },
   "friends": {
     "title": "Друзі",

@@ -268,5 +268,18 @@
     "tooMany": "You reached the limit of owned clubs",
     "notFound": "Club not found",
     "ownerCannotLeave": "The owner cannot leave the club — only delete it"
+  },
+  "deals": {
+    "companyNotFound": "Company not found",
+    "selfDeal": "You cannot create a deal with your own company",
+    "noProgram": "The company has no active partner program",
+    "invalidReferrer": "Invalid referral link",
+    "customerRequired": "Enter the client name and contact",
+    "duplicate": "This client is already registered with the company",
+    "notFound": "Deal not found",
+    "amountInvalid": "Enter a valid check amount",
+    "badState": "This action is not available for the current deal status",
+    "reasonRequired": "Enter a reason (at least 5 characters)",
+    "contractRequired": "Enter the contract number"
   }
 }

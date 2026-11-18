@@ -245,6 +245,10 @@ model User {
   postCommentLikes     PostCommentLike[]
   organizationApplications OrganizationApplication[]
   clubsOwned           Club[]
+  referralProgram      ReferralProgram?  @relation("ProgramBusiness")
+  dealsAsBusiness      Deal[]  @relation("DealBusiness")
+  dealsAsReferrer      Deal[]  @relation("DealReferrer")
+  dealsAsCustomer      Deal[]  @relation("DealCustomer")
   clubMemberships      ClubMember[]
   blocksReceived     UserBlock[]   @relation("Blocked")
   
@@ -1219,6 +1223,61 @@ model ClubMember {
   @@unique([clubId, userId])
   @@index([userId])
   @@map("club_members")
+}
+
+// ========================================
+// РЕФЕРАЛЬНА СИСТЕМА (облік; гроші системою не рухаються — виплату адміністратор відмічає вручну)
+// ========================================
+// Програма компанії: погоджений відсоток (після договору). Активується адміністратором.
+model ReferralProgram {
+  id             Int      @id @default(autoincrement()) @map("referral_program_id")
+  businessUserId Int      @unique @map("business_user_id")
+  percent        Decimal  @db.Decimal(5, 2)
+  status         String   @default("active") @db.VarChar(20)
+  contractRef    String?  @map("contract_ref") @db.VarChar(100)
+  activatedById  Int?     @map("activated_by_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  business User @relation("ProgramBusiness", fields: [businessUserId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@map("referral_programs")
+}
+
+// Угода: лід від рефера → звернення клієнта → підтвердження бізнесом (сума чека) → нарахування → виплата.
+// status: lead_created | customer_applied | confirmed | accrued | paid_out | rejected | disputed
+model Deal {
+  id                  Int       @id @default(autoincrement()) @map("deal_id")
+  businessUserId      Int       @map("business_user_id")
+  referrerId          Int       @map("referrer_id")
+  customerId          Int?      @map("customer_id")
+  customerName        String?   @map("customer_name") @db.VarChar(120)
+  customerContact     String?   @map("customer_contact") @db.VarChar(100)
+  note                String?   @db.VarChar(300)
+  source              String    @default("lead") @db.VarChar(10)
+  status              String    @default("lead_created") @db.VarChar(20)
+  percent             Decimal   @db.Decimal(5, 2)
+  amount              Decimal?  @db.Decimal(14, 2)
+  commission          Decimal?  @db.Decimal(14, 2)
+  currency            String    @default("UAH") @db.VarChar(3)
+  statusBeforeDispute String?   @map("status_before_dispute") @db.VarChar(20)
+  disputeReason       String?   @map("dispute_reason") @db.VarChar(500)
+  confirmedAt         DateTime? @map("confirmed_at")
+  accruedAt           DateTime? @map("accrued_at")
+  paidOutAt           DateTime? @map("paid_out_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  business User  @relation("DealBusiness", fields: [businessUserId], references: [id], onDelete: Cascade)
+  referrer User  @relation("DealReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  customer User? @relation("DealCustomer", fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([businessUserId, status])
+  @@index([referrerId, status])
+  @@index([customerId])
+  @@index([status, createdAt])
+  @@map("deals")
 }
 
 model ProjectEarnPage {

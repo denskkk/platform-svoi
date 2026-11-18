@@ -121,7 +121,13 @@
     "partnerApproved": "Your partnership application was approved",
     "partnerRejected": "Your partnership application was rejected",
     "organizationApproved": "Your organization application was approved",
-    "organizationRejected": "Your organization application was rejected"
+    "organizationRejected": "Your organization application was rejected",
+    "dealNew": "New client request via a partner",
+    "dealConfirmed": "Your deal was confirmed",
+    "dealAccrued": "A reward was accrued to you",
+    "dealPaidOut": "The reward was paid out",
+    "dealRejected": "The deal was rejected",
+    "dealDisputed": "A dispute was opened for the deal"
   },
   "profile": {
     "title": "Posts",
@@ -174,7 +180,9 @@
     "menu": "Menu",
     "friends": "Friends",
     "companies": "Companies",
-    "clubs": "Clubs"
+    "clubs": "Clubs",
+    "earnings": "My earnings",
+    "clients": "Attracted clients"
   },
   "friends": {
     "title": "Friends",

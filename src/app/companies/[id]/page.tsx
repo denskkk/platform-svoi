@@ -15,7 +15,7 @@ interface Company {
   servicesList: string | null; priceRange: string | null; workHours: string | null; city: string | null; region: string | null; address: string | null;
   phone: string | null; email: string | null; website: string | null; telegram: string | null; viber: string | null; contactName: string | null;
   socialLinks: Record<string, string>; gallery: string[]; videoUrl: string | null; yearFounded: number | null;
-  isVerified: boolean; rating: number; reviewsCount: number; isOwn: boolean; isFavorite: boolean;
+  isVerified: boolean; rating: number; reviewsCount: number; isOwn: boolean; isFavorite: boolean; referralPercent: number | null;
 }
 
 const btn = 'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition active:scale-95';
@@ -28,9 +28,16 @@ export default function CompanyPage() {
   const [c, setC] = useState<Company | null>(null);
   const [state, setState] = useState<'loading' | 'ok' | 'missing' | 'error'>('loading');
   const [favBusy, setFavBusy] = useState(false);
+  const [refId, setRefId] = useState<number | null>(null);
+  const [leadOpen, setLeadOpen] = useState(false);
+  const [lead, setLead] = useState({ customerName: '', customerContact: '', note: '' });
+  const [dealBusy, setDealBusy] = useState(false);
+  const [applied, setApplied] = useState(false);
 
   useEffect(() => {
     if (!readStoredUser()) { router.replace(`/auth/login?returnUrl=/companies/${params.id}`); return; }
+    const ref = Number(new URLSearchParams(window.location.search).get('ref'));
+    if (Number.isInteger(ref) && ref > 0) setRefId(ref);
     let cancelled = false;
     (async () => {
       try {
@@ -89,6 +96,26 @@ export default function CompanyPage() {
     } catch { /* користувач закрив діалог */ }
   };
 
+  const me = readStoredUser();
+  const copyRefLink = async () => {
+    if (!me) return;
+    const url = `${window.location.origin}/companies/${c.id}?ref=${me.id}`;
+    try { await navigator.clipboard.writeText(url); toast.success(t('deals.linkCopied')); } catch { toast.info(url); }
+  };
+  const sendDeal = async (body: Record<string, unknown>) => {
+    if (dealBusy) return;
+    setDealBusy(true);
+    try {
+      const res = await fetch('/api/deals', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ businessId: c.id, ...body }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error);
+      toast.success(t('deals.sent'));
+      setLeadOpen(false); setLead({ customerName: '', customerContact: '', note: '' }); setApplied(true);
+    } catch (e: any) {
+      toast.error(e?.message || t('feed.toast.actionFailed'));
+    } finally { setDealBusy(false); }
+  };
+
   const rows: { label: string; value: string | null }[] = [
     { label: t('companies.fields.services'), value: c.servicesList },
     { label: t('companies.fields.priceRange'), value: c.priceRange },
@@ -131,6 +158,32 @@ export default function CompanyPage() {
         </div>
 
         <div className="px-3 sm:px-0 mt-3 space-y-3">
+          {c.referralPercent !== null && !c.isOwn && me && (
+            <section className="bg-white rounded-2xl shadow-sm p-4 space-y-3 border border-accent-200">
+              <h2 className="font-semibold text-neutral-900">{t('deals.program.title', { percent: c.referralPercent })}</h2>
+              <p className="text-sm text-neutral-600">{t('deals.program.note')}</p>
+              {refId && refId !== me.id && !applied && (
+                <div className="rounded-xl bg-primary-50 p-3 space-y-2">
+                  <p className="text-sm text-primary-900">{t('deals.program.referredHint')}</p>
+                  <button type="button" disabled={dealBusy} onClick={() => sendDeal({ mode: 'link', referrerId: refId })} className="rounded-lg bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-2 disabled:opacity-60">{t('deals.program.iCame')}</button>
+                </div>
+              )}
+              {applied && <p className="text-sm text-green-700 font-medium">{t('deals.sent')}</p>}
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={copyRefLink} className={cn(btn, 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200')}>{t('deals.program.copyLink')}</button>
+                {me.accountType !== 'viewer' && <button type="button" onClick={() => setLeadOpen((v) => !v)} className={cn(btn, 'bg-accent-500 text-white hover:bg-accent-600')}>{t('deals.program.passClient')}</button>}
+              </div>
+              {leadOpen && (
+                <form onSubmit={(e) => { e.preventDefault(); sendDeal({ mode: 'lead', ...lead }); }} className="space-y-2">
+                  <input value={lead.customerName} onChange={(e) => setLead({ ...lead, customerName: e.target.value })} required maxLength={120} placeholder={t('deals.program.clientName')} className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-base md:text-sm" />
+                  <input value={lead.customerContact} onChange={(e) => setLead({ ...lead, customerContact: e.target.value })} required minLength={5} maxLength={100} placeholder={t('deals.program.clientContact')} className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-base md:text-sm" />
+                  <textarea value={lead.note} onChange={(e) => setLead({ ...lead, note: e.target.value })} maxLength={300} rows={2} placeholder={t('deals.program.note2')} className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-base md:text-sm" />
+                  <button type="submit" disabled={dealBusy} className="rounded-lg bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-5 py-2 disabled:opacity-60">{t('deals.program.send')}</button>
+                </form>
+              )}
+            </section>
+          )}
+
           {c.description && (
             <section className="bg-white rounded-2xl shadow-sm p-4">
               <h2 className="font-semibold text-neutral-900 mb-1">{t('companies.about')}</h2>

@@ -79,6 +79,7 @@ export default function NotificationsPage() {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'business_application') return '/business/apply';
+    if (n.relatedEntityType === 'deal') return n.type === 'deal_new' ? '/business/clients' : '/earnings';
     if (n.relatedEntityType === 'partner_application') return '/projects';
     if (n.type === 'new_follower' && n.actor) return `/profile/${n.actor.id}`;
     return null;
@@ -95,6 +96,12 @@ export default function NotificationsPage() {
     if (n.type === 'business_rejected') return t('feed.notifications.businessRejected');
     if (n.type === 'organization_approved') return t('feed.notifications.organizationApproved');
     if (n.type === 'organization_rejected') return t('feed.notifications.organizationRejected');
+    if (n.type === 'deal_new') return t('feed.notifications.dealNew');
+    if (n.type === 'deal_confirmed') return t('feed.notifications.dealConfirmed');
+    if (n.type === 'deal_accrued') return t('feed.notifications.dealAccrued');
+    if (n.type === 'deal_paid_out') return t('feed.notifications.dealPaidOut');
+    if (n.type === 'deal_rejected') return t('feed.notifications.dealRejected');
+    if (n.type === 'deal_disputed') return t('feed.notifications.dealDisputed');
     if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
     if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
     return n.title;

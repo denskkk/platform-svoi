@@ -13,13 +13,14 @@ export type AdminPermission =
   | 'business.review'
   | 'partners.review'
   | 'content.edit'
-  | 'reports.handle';
+  | 'reports.handle'
+  | 'deals.manage';
 
-export const ALL_PERMISSIONS: AdminPermission[] = ['listings.moderate', 'business.review', 'partners.review', 'content.edit', 'reports.handle'];
+export const ALL_PERMISSIONS: AdminPermission[] = ['listings.moderate', 'business.review', 'partners.review', 'content.edit', 'reports.handle', 'deals.manage'];
 
 export const ROLE_PERMISSIONS: Record<AdminRoleName, AdminPermission[]> = {
   moderator: ['listings.moderate', 'reports.handle'],
-  business_manager: ['business.review', 'partners.review', 'content.edit'],
+  business_manager: ['business.review', 'partners.review', 'content.edit', 'deals.manage'],
   support: ['reports.handle'],
 };
 

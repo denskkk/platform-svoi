@@ -13,6 +13,7 @@ const SECTIONS = [
   { key: 'listings', href: '/admin/listings', icon: '📋', perms: ['listings.moderate'] },
   { key: 'business', href: '/admin/business-applications', icon: '🏢', perms: ['business.review'] },
   { key: 'organizations', href: '/admin/organization-applications', icon: '🎗️', perms: ['business.review'] },
+  { key: 'deals', href: '/admin/deals', icon: '💸', perms: ['deals.manage'] },
   { key: 'partners', href: '/admin/partners', icon: '🤝', perms: ['partners.review', 'content.edit'] },
   { key: 'reports', href: '/admin/reports', icon: '🚩', perms: ['reports.handle'] },
 ];

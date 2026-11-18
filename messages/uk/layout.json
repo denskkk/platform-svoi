@@ -45,7 +45,9 @@
     "tabPeople": "Люди",
     "tabServices": "Послуги",
     "friends": "Друзі",
-    "organizationApply": "Заявка організації"
+    "organizationApply": "Заявка організації",
+    "earnings": "Мій заробіток",
+    "clients": "Залучені клієнти"
   },
   "mobileMenu": {
     "navigation": "Навігація",
