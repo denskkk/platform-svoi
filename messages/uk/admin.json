@@ -126,7 +126,11 @@
     },
     "kind": {
       "suggestion": "Пропозиція",
-      "complaint": "Скарга"
+      "complaint": "Скарга",
+      "product": "Товар",
+      "specialist": "Спеціаліст",
+      "market": "Ринок збуту",
+      "taxi": "Таксі"
     }
   }
 }

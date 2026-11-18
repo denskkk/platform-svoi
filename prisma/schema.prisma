@@ -136,6 +136,7 @@ model User {
   settings     UserSettings?
   linkedAccounts   LinkedAccount[] @relation("LinkedOwner")
   linkedTo         LinkedAccount[] @relation("LinkedTarget")
+  taxiRequests TaxiRequest[]
   projectSuggestions ProjectSuggestion[]
   groupChatsOwned  GroupChat[] @relation("GroupChatOwner")
   groupChatMemberships GroupChatMember[]
@@ -1587,4 +1588,24 @@ model LinkedAccount {
 
   @@id([userId, linkedUserId])
   @@map("linked_accounts")
+}
+
+// Таксі: замовлення та підписка на місто («у вашому місті ще не працює»)
+model TaxiRequest {
+  id          Int      @id @default(autoincrement()) @map("request_id")
+  userId      Int      @map("user_id")
+  kind        String   @db.VarChar(12)
+  city        String   @db.VarChar(120)
+  fromAddress String?  @map("from_address") @db.VarChar(255)
+  toAddress   String?  @map("to_address") @db.VarChar(255)
+  lat         Float?
+  lng         Float?
+  driverPref  String   @default("any") @map("driver_pref") @db.VarChar(16)
+  status      String   @default("new") @db.VarChar(16)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([city, status])
+  @@map("taxi_requests")
 }

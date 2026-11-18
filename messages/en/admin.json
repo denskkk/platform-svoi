@@ -126,7 +126,11 @@
     },
     "kind": {
       "suggestion": "Suggestion",
-      "complaint": "Complaint"
+      "complaint": "Complaint",
+      "product": "Product",
+      "specialist": "Specialist",
+      "market": "Sales market",
+      "taxi": "Taxi"
     }
   }
 }

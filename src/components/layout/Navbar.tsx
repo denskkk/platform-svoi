@@ -403,13 +403,6 @@ export function Navbar() {
                         {t('layout.navbar.savedPosts')}
                       </Link>
                       <Link
-                        href="/my-listings"
-                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        {t('layout.navbar.myListings')}
-                      </Link>
-                      <Link
                         href="/menu"
                         className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100"
                         onClick={() => setShowProfileMenu(false)}
@@ -632,14 +625,6 @@ export function Navbar() {
                 >
                   <span className="text-xl mr-3">👥</span>
                   <span>{t('layout.navbar.friends')}</span>
-                </Link>
-                <Link
-                  href="/my-listings"
-                  className="flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-xl transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span className="text-xl mr-3">📋</span>
-                  <span>{t('layout.navbar.myListings')}</span>
                 </Link>
                 <Link
                   href="/blocked"

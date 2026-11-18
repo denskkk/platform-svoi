@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Bookmark, Building2, FolderKanban, MessageCircle, Newspaper, Search, Store, Users, Wallet } from 'lucide-react';
+import { Bookmark, Building2, FolderKanban, MessageCircle, Newspaper, Search, Users, Wallet } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -24,7 +24,6 @@ function useItems() {
     { href: '/clubs', icon: Users, label: t('feed.sidebar.clubs'), color: 'text-cyan-600' },
     { href: '/friends', icon: Users, label: t('feed.sidebar.friends'), color: 'text-blue-600' },
     { href: '/saved', icon: Bookmark, label: t('feed.sidebar.saved'), color: 'text-purple-600' },
-    { href: '/my-listings', icon: Store, label: t('feed.sidebar.listings'), color: 'text-orange-600' },
     { href: '/business/stats', icon: Building2, label: t('feed.sidebar.company'), color: 'text-blue-600' },
   ];
 }

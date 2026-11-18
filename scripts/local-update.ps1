@@ -35,7 +35,8 @@ $files = @(
   "20261136_activate_project_boards.sql",
   "20261137_group_chats.sql",
   "20261138_project_suggestions.sql",
-  "20261139_linked_accounts.sql"
+  "20261139_linked_accounts.sql",
+  "20261140_taxi_requests.sql"
 )
 foreach ($f in $files) {
   Write-Host "  -> $f"

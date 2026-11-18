@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart3, Banknote, Bookmark, Building2, ClipboardList, Clapperboard, Heart, Inbox, Receipt, Eye, Handshake, Info, MessagesSquare, QrCode, Settings, Store, Tags, UserCircle, UserPlus, Users, UsersRound, Wallet, Wrench, Ban, LogOut, Pencil } from 'lucide-react';
+import { BarChart3, Banknote, Bookmark, Building2, ClipboardList, Clapperboard, Heart, Inbox, Receipt, Eye, Handshake, Info, MessagesSquare, QrCode, Settings, Store, UserCircle, UserPlus, Users, UsersRound, Wallet, Wrench, Ban, LogOut, Pencil } from 'lucide-react';
 import { MenuGroup, MenuRow, MenuShell } from '@/components/cabinet/MenuShell';
 import { AccountSwitcher } from '@/components/cabinet/AccountSwitcher';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
@@ -51,11 +51,10 @@ export default function MenuPage() {
         {me && <MenuRow href={`/profile/${me.id}`} icon={<UserCircle className="w-5 h-5" />} label={t('layout.navbar.myProfile')} />}
         <MenuRow href="/profile/edit" icon={<Pencil className="w-5 h-5" />} label={t('layout.navbar.editProfile')} />
         <MenuRow href="/friends" icon={<UserPlus className="w-5 h-5" />} label={t('layout.navbar.friends')} />
-        <MenuRow href="/clubs" icon={<UsersRound className="w-5 h-5" />} label={t('clubs.title')} />
+        <MenuRow href="/clubs" icon={<UsersRound className="w-5 h-5" />} label={t('cabinet.menu.interestClubs')} />
         <MenuRow href="/chat/groups" icon={<MessagesSquare className="w-5 h-5" />} label={t('cabinet.groupChats.title')} />
         <MenuRow href="/saved" icon={<Bookmark className="w-5 h-5" />} label={t('cabinet.menu.saved')} />
         <MenuRow href="/favorites" icon={<Heart className="w-5 h-5" />} label={t('layout.navbar.favorites')} />
-        <MenuRow href="/my-listings" icon={<Tags className="w-5 h-5" />} label={t('layout.navbar.myListings')} />
         <MenuRow href="/video" icon={<Clapperboard className="w-5 h-5" />} label={t('layout.navbar.video')} />
       </MenuGroup>
 

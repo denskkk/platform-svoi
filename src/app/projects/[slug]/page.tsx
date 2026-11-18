@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Loader2, MapPin, Car, UserPlus } from 'lucide-react';
+import { ArrowLeft, Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { projectWallpaper } from '@/lib/projectThemes';
 import { ComingSoon } from '@/components/projects/ComingSoon';
@@ -11,6 +11,7 @@ import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
 import { findFolder, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
+import { TaxiOrder } from '@/components/projects/TaxiOrder';
 import { SuggestBox } from '@/components/projects/SuggestBox';
 import { useI18n } from '@/i18n/client';
 
@@ -158,21 +159,10 @@ export default function ProjectPage() {
                 {description && <p className="text-sm text-white/80 mt-0.5">{description}</p>}
               </div>
             </header>
-            <button type="button" onClick={() => toast.info(t('cabinet.projects.taxi.soon'))} className="w-full rounded-2xl bg-primary-500 hover:bg-primary-600 text-neutral-900 shadow-lg p-5 flex items-center gap-4 text-left active:scale-[0.99] transition">
-              <Car className="w-9 h-9 shrink-0" />
-              <span><span className="block text-xl font-extrabold">{t('cabinet.projects.taxi.order')}</span><span className="block text-sm text-neutral-800/80">{t('cabinet.projects.taxi.orderHint')}</span></span>
-            </button>
-            <button type="button" onClick={() => toast.info(t('cabinet.projects.taxi.soon'))} className="w-full relative overflow-hidden rounded-2xl bg-space-700 text-white shadow-lg h-40 text-left active:scale-[0.99] transition" aria-label={t('cabinet.projects.taxi.map')}>
-              <span aria-hidden className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-              <MapPin aria-hidden className="absolute right-8 top-8 w-10 h-10 text-primary-400 drop-shadow" />
-              <span className="absolute left-4 bottom-4"><span className="block font-bold text-lg">{t('cabinet.projects.taxi.map')}</span><span className="block text-xs text-white/75">{t('cabinet.projects.taxi.mapHint')}</span></span>
-            </button>
+            <TaxiOrder />
             <Link href={`/projects/${project.slug}/earn`} className="flex items-center gap-4 rounded-2xl bg-white shadow-md p-4 hover:shadow-lg transition">
               <UserPlus className="w-7 h-7 shrink-0 text-space-500" />
               <span><span className="block font-bold text-neutral-900">{t('cabinet.projects.taxi.apply')}</span><span className="block text-xs text-neutral-500">{t('cabinet.projects.taxi.applyHint')}</span></span>
-            </Link>
-            <Link href={`/projects/${project.slug}/earn`} className="block rounded-2xl bg-primary-500 hover:bg-primary-600 text-neutral-900 font-bold text-center py-3 shadow-md">
-              💼 {t('projects.earn.button')}
             </Link>
           </div>
         )}

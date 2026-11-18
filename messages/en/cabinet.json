@@ -54,7 +54,8 @@
     "applications": "Applications and safety",
     "saved": "Saved posts and listings",
     "requestsToMe": "Requests to me",
-    "myRequests": "My requests"
+    "myRequests": "My requests",
+    "interestClubs": "Interest clubs"
   },
   "balance": {
     "title": "Balance",
@@ -374,5 +375,45 @@
     "emptyFollowing": "No videos from people you follow yet",
     "emptyFollowingHint": "Follow creators or browse recommendations.",
     "seeAll": "See \"For you\""
+  },
+  "tiles": {
+    "shop": "Online shop",
+    "product": "Suggest a product",
+    "specialist": "Become or find a specialist",
+    "earn": "How to earn",
+    "market": "Sales market",
+    "suggestion": "Suggestion",
+    "complaint": "Complaint",
+    "soon": "Soon",
+    "soonToast": "The online shop is in development — coming in the next update.",
+    "hint": {
+      "product": "Which product or service should be added here?",
+      "specialist": "Who do you want to become (doctor, trainer, master…) or find?",
+      "market": "What you produce or grow, volumes, where you want to sell",
+      "suggestion": "Which section to add",
+      "complaint": "What is wrong?"
+    }
+  },
+  "taxi": {
+    "city": "City",
+    "from": "From (address)",
+    "to": "To (address)",
+    "useLocation": "My location",
+    "myLocation": "My location",
+    "noGeo": "Could not detect location. Enter the address manually.",
+    "mapHint": "Tap the location button to see yourself on the map",
+    "driver": "Which driver",
+    "pref": {
+      "any": "Any",
+      "ukrainian": "Ukrainian driver",
+      "slavic": "Slavic-speaking",
+      "local": "Local"
+    },
+    "submit": "Request a taxi",
+    "notYet": "Taxi is not available in {city} yet",
+    "notYetHint": "We saved your request and will notify you when taxi launches in your city. Invite drivers you know — it speeds up the launch!",
+    "sent": "Request sent in {city}",
+    "sentHint": "Drivers will see your request.",
+    "again": "New request"
   }
 }
