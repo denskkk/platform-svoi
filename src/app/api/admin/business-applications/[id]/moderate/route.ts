@@ -35,7 +35,7 @@ async function handler(request: NextRequest, idParam: string) {
       percent = Math.round(percent * 100) / 100;
     }
 
-    const row = id ? await prisma.businessApplication.findUnique({ where: { id }, select: { userId: true } }) : null;
+    const row = id ? await prisma.businessApplication.findUnique({ where: { id } }) : null;
     if (!id || !row) return NextResponse.json({ error: t('api.businessApplications.notFound') }, { status: 404 });
 
     const approve = action === 'approve';
@@ -46,6 +46,33 @@ async function handler(request: NextRequest, idParam: string) {
         : { status: 'rejected', rejectReason: reason, proposedRewardPercent: null, moderatedAt: new Date(), moderatedById: adminId },
     });
     if (updated.count === 0) return NextResponse.json({ error: t('api.listings.alreadyModerated') }, { status: 409 });
+
+    // Схвалена компанія з’являється в каталозі: створюємо картку бізнесу з даних заявки (існуючу не перезаписуємо)
+    if (approve) {
+      try {
+        const existing = await prisma.businessInfo.findUnique({ where: { userId: row.userId }, select: { id: true } });
+        if (!existing) {
+          await prisma.businessInfo.create({
+            data: {
+              userId: row.userId,
+              companyName: row.companyName,
+              businessType: row.activity,
+              city: row.city,
+              address: row.address,
+              workHours: row.workHours,
+              description: row.description,
+              servicesList: row.offerings,
+              phone: row.phone,
+              website: row.website,
+              representativeName: row.contactName,
+              socialLinks: row.socialLinks ? { other: row.socialLinks } : {},
+            },
+          });
+        }
+      } catch (e) {
+        console.error('Create business info from application error:', e);
+      }
+    }
 
     await logAudit({
       actorId: adminId,

@@ -172,7 +172,8 @@
     "chat": "Messages",
     "business": "Business application",
     "menu": "Menu",
-    "friends": "Friends"
+    "friends": "Friends",
+    "companies": "Companies"
   },
   "friends": {
     "title": "Friends",

@@ -59,6 +59,7 @@ export const PRIVATE_PATH_PREFIXES = [
   '/video',
   '/business/apply',
   '/organizations',
+  '/companies',
   '/listings',
   '/profile/edit',
   '/profile/edit-business',

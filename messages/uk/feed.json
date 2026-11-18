@@ -172,7 +172,8 @@
     "chat": "Повідомлення",
     "business": "Заявка бізнесу",
     "menu": "Меню",
-    "friends": "Друзі"
+    "friends": "Друзі",
+    "companies": "Компанії"
   },
   "friends": {
     "title": "Друзі",

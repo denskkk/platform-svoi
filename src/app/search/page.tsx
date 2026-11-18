@@ -123,7 +123,7 @@ export default function SearchPage() {
         {!error && results.business.length > 0 && (
           <section className="space-y-2">
             <h2 className="font-semibold text-neutral-900">{t('search.tabs.business')}</h2>
-            <ul className="space-y-2">{results.business.map((p) => <PersonRow key={p.id} p={p} href={`/profile/${p.id}`} sub={p.businessType ?? null} />)}</ul>
+            <ul className="space-y-2">{results.business.map((p) => <PersonRow key={p.id} p={p} href={`/companies/${p.id}`} sub={p.businessType ?? null} />)}</ul>
           </section>
         )}
         {!error && results.listings.length > 0 && (
