@@ -12,19 +12,21 @@ import { parseId } from '@/lib/feed';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const back = new URL('/projects/shops', request.url);
+  // Відносні перенаправлення: за reverse-proxy request.url може містити внутрішній хост
+  const rel = (to: string) => new NextResponse(null, { status: 302, headers: { Location: to } });
+  const back = '/projects/shops';
   try {
     const auth = await requireAuth(request);
-    if (auth.error) return NextResponse.redirect(new URL(`/auth/login?returnUrl=/listings/${encodeURIComponent(params.id)}`, request.url));
+    if (auth.error) return rel(`/auth/login?returnUrl=/listings/${encodeURIComponent(params.id)}`);
     const userId = Number(auth.user.userId);
-    if (!checkRateLimit(`go:${userId}`, { interval: 60 * 1000, maxRequests: 60 }).allowed) return NextResponse.redirect(back);
+    if (!checkRateLimit(`go:${userId}`, { interval: 60 * 1000, maxRequests: 60 }).allowed) return rel(back);
 
     const id = parseId(params.id);
     const listing = id
       ? await prisma.listing.findFirst({ where: { id, projectSlug: 'shops', status: 'approved' }, select: { id: true, data: true } })
       : null;
     const url = listing && typeof (listing.data as any)?.shopUrl === 'string' ? ((listing.data as any).shopUrl as string) : '';
-    if (!listing || !/^https?:\/\/[^\s]+$/i.test(url)) return NextResponse.redirect(back);
+    if (!listing || !/^https?:\/\/[^\s]+$/i.test(url)) return rel(back);
 
     try {
       await prisma.outboundClick.create({ data: { listingId: listing.id, userId, source: 'storefront' } });
@@ -34,6 +36,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.redirect(url, 302);
   } catch (error) {
     console.error('Outbound redirect error:', error);
-    return NextResponse.redirect(back);
+    return rel(back);
   }
 }
