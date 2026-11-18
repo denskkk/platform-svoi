@@ -190,6 +190,61 @@
       "place": "Place",
       "organizer": "Organizer",
       "registrationUrl": "Registration link"
+    },
+    "antiques": {
+      "adKind": "Type",
+      "era": "Era / period",
+      "condition": "Condition"
+    },
+    "mystic": {
+      "adKind": "Type",
+      "practice": "Practice / direction",
+      "serviceFormat": "Format"
+    },
+    "rebuild": {
+      "adKind": "Type",
+      "direction": "Direction",
+      "region": "Region"
+    },
+    "cooperatives": {
+      "adKind": "Type",
+      "sphere": "Field"
+    },
+    "grants": {
+      "adKind": "Type",
+      "grantAmount": "Amount",
+      "deadline": "Apply by",
+      "grantUrl": "Link"
+    },
+    "turnkey": {
+      "adKind": "Type",
+      "businessKind": "Business type",
+      "investment": "Investment"
+    },
+    "apps": {
+      "adKind": "Type",
+      "platform": "Platform",
+      "appUrl": "Link"
+    },
+    "translator": {
+      "adKind": "Type",
+      "languages": "Languages",
+      "serviceFormat": "Format",
+      "experience": "Experience, years"
+    },
+    "invest": {
+      "investKind": "Type",
+      "amountNeeded": "Amount needed",
+      "stage": "Stage"
+    },
+    "travel": {
+      "adKind": "Type",
+      "destination": "Destination",
+      "tripDate": "Trip date"
+    },
+    "pets": {
+      "adKind": "Type",
+      "petCategory": "Product category"
     }
   },
   "options": {
@@ -305,6 +360,16 @@
     "sellerType": {
       "private": "Owner",
       "dealer": "Dealership"
+    },
+    "platform": {
+      "android": "Android",
+      "ios": "iOS",
+      "web": "Web",
+      "other": "Other"
+    },
+    "investKind": {
+      "project": "Seeking an investor (project)",
+      "investor": "I'm an investor"
     }
   },
   "notFound": "Listing not found"

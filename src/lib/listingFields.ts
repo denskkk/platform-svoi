@@ -90,6 +90,61 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'organizer', type: 'text', maxLength: 120 },
     { key: 'registrationUrl', type: 'url', maxLength: 255 },
   ],
+  'antiques': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'era', type: 'text', maxLength: 80, filter: 'text' },
+    { key: 'condition', type: 'text', maxLength: 80 },
+  ],
+  'mystic': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'practice', type: 'text', required: true, maxLength: 100, filter: 'text' },
+    { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+  ],
+  'rebuild': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'direction', type: 'text', required: true, maxLength: 100, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 100, filter: 'text' },
+  ],
+  'cooperatives': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'sphere', type: 'text', required: true, maxLength: 100, filter: 'text' },
+  ],
+  'grants': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'grantAmount', type: 'text', maxLength: 80 },
+    { key: 'deadline', type: 'date' },
+    { key: 'grantUrl', type: 'url', maxLength: 255 },
+  ],
+  'turnkey': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'businessKind', type: 'text', required: true, maxLength: 100, filter: 'text' },
+    { key: 'investment', type: 'text', maxLength: 80 },
+  ],
+  'apps': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'platform', type: 'select', required: true, options: ['android', 'ios', 'web', 'other'], filter: 'select' },
+    { key: 'appUrl', type: 'url', maxLength: 255 },
+  ],
+  'translator': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'languages', type: 'text', required: true, maxLength: 120, filter: 'text' },
+    { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+  ],
+  'invest': [
+    { key: 'investKind', type: 'select', required: true, options: ['project', 'investor'], filter: 'select' },
+    { key: 'amountNeeded', type: 'text', maxLength: 80 },
+    { key: 'stage', type: 'text', maxLength: 100 },
+  ],
+  'travel': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'destination', type: 'text', required: true, maxLength: 120, filter: 'text' },
+    { key: 'tripDate', type: 'date' },
+  ],
+  'pets': [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+    { key: 'petCategory', type: 'text', required: true, maxLength: 100, filter: 'text' },
+  ],
   jobs: [
     { key: 'jobKind', type: 'select', required: true, options: ['vacancy', 'resume', 'partner_search', 'cooperation'], filter: 'select' },
     { key: 'employment', type: 'select', options: ['full', 'part', 'remote', 'project'], filter: 'select' },

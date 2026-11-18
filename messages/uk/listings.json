@@ -190,6 +190,61 @@
       "place": "Місце",
       "organizer": "Організатор",
       "registrationUrl": "Посилання на реєстрацію"
+    },
+    "antiques": {
+      "adKind": "Тип",
+      "era": "Епоха / період",
+      "condition": "Стан"
+    },
+    "mystic": {
+      "adKind": "Тип",
+      "practice": "Практика / напрям",
+      "serviceFormat": "Формат"
+    },
+    "rebuild": {
+      "adKind": "Тип",
+      "direction": "Напрям",
+      "region": "Регіон"
+    },
+    "cooperatives": {
+      "adKind": "Тип",
+      "sphere": "Сфера"
+    },
+    "grants": {
+      "adKind": "Тип",
+      "grantAmount": "Сума",
+      "deadline": "Подати до",
+      "grantUrl": "Посилання"
+    },
+    "turnkey": {
+      "adKind": "Тип",
+      "businessKind": "Вид бізнесу",
+      "investment": "Інвестиції"
+    },
+    "apps": {
+      "adKind": "Тип",
+      "platform": "Платформа",
+      "appUrl": "Посилання"
+    },
+    "translator": {
+      "adKind": "Тип",
+      "languages": "Мови",
+      "serviceFormat": "Формат",
+      "experience": "Досвід, років"
+    },
+    "invest": {
+      "investKind": "Тип",
+      "amountNeeded": "Потрібна сума",
+      "stage": "Стадія"
+    },
+    "travel": {
+      "adKind": "Тип",
+      "destination": "Напрямок",
+      "tripDate": "Дата поїздки"
+    },
+    "pets": {
+      "adKind": "Тип",
+      "petCategory": "Категорія товару"
     }
   },
   "options": {
@@ -305,6 +360,16 @@
     "sellerType": {
       "private": "Власник",
       "dealer": "Автосалон"
+    },
+    "platform": {
+      "android": "Android",
+      "ios": "iOS",
+      "web": "Веб",
+      "other": "Інше"
+    },
+    "investKind": {
+      "project": "Шукаю інвестора (проєкт)",
+      "investor": "Я інвестор"
     }
   },
   "notFound": "Оголошення не знайдено"
