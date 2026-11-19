@@ -1,5 +1,6 @@
 'use client';
 
+import { performLogout } from '@/lib/client-auth';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -88,20 +89,7 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      localStorage.removeItem('user');
-      router.push('/auth/login');
-    } catch (error) {
-      console.error('Помилка виходу:', error);
-      // Все одно перенаправити на сторінку входу
-      localStorage.removeItem('user');
-      router.push('/auth/login');
-    }
+    await performLogout('/auth/login');
   };
 
   if (!currentUser?.isAdmin) {

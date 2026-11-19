@@ -1,5 +1,6 @@
 'use client';
 
+import { performLogout } from '@/lib/client-auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart3, Banknote, Bookmark, Building2, ClipboardList, Clapperboard, Heart, Inbox, Receipt, Eye, Handshake, Info, MessagesSquare, QrCode, Settings, Store, UserCircle, UserPlus, Users, UsersRound, Wallet, Wrench, Ban, LogOut, Pencil } from 'lucide-react';
@@ -25,9 +26,7 @@ export default function MenuPage() {
   }, []);
 
   const logout = async () => {
-    try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch { /* вихід локально */ }
-    try { localStorage.removeItem('token'); localStorage.removeItem('user'); window.dispatchEvent(new Event('auth:changed')); } catch { /* noop */ }
-    router.push('/');
+    await performLogout('/');
   };
 
   return (

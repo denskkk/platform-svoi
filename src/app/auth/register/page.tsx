@@ -63,7 +63,12 @@ export default function RegisterPage() {
       saveUser(data.user);
       if (data.token) saveToken(data.token);
       window.dispatchEvent(new Event('auth:changed'));
-      router.push('/feed');
+      let next = '/feed';
+      try {
+        const back = new URLSearchParams(window.location.search).get('returnUrl');
+        if (back && back.startsWith('/') && !back.startsWith('//') && !back.startsWith('/auth/')) next = back;
+      } catch { /* лишаємо /feed */ }
+      router.push(next);
     } catch (err: any) {
       setError(err?.message || t('auth.register.simple.errors.failed'));
     } finally {

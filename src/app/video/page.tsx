@@ -12,6 +12,7 @@ import { ReportButton } from '@/components/ui/ReportButton';
 import { useI18n } from '@/i18n/client';
 import { FeedPost, authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 import { cn } from '@/lib/utils';
+import { useGuestGate } from '@/components/ui/GuestGate';
 
 type Tab = 'all' | 'following';
 
@@ -20,6 +21,8 @@ export default function VideoPage() {
   const { t } = useI18n();
   const toast = useToast();
   const me = readStoredUser();
+  const gate = useGuestGate(!me);
+  const guestPages = useRef(0);
   const [tab, setTab] = useState<Tab>('all');
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [cursor, setCursor] = useState<number | null>(null);
@@ -36,7 +39,9 @@ export default function VideoPage() {
     try {
       const qs = new URLSearchParams({ videos: '1', limit: '8', scope });
       if (next) qs.set('cursor', String(next));
-      const res = await fetch(`/api/feed?${qs}`, { credentials: 'include', headers: authHeaders() });
+      // Гість бачить публічні рілси (без входу), з обмеженням глибини
+      if (!readStoredUser()) { guestPages.current = next ? guestPages.current + 1 : 0; qs.set('page', String(guestPages.current)); }
+      const res = await fetch(readStoredUser() ? `/api/feed?${qs}` : `/api/feed/public?${qs}`, { credentials: 'include', headers: authHeaders() });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
       setPosts((prev) => (next ? [...prev, ...(data.posts as FeedPost[]).filter((p) => !prev.some((x) => x.id === p.id))] : data.posts));
@@ -56,7 +61,8 @@ export default function VideoPage() {
 
   const like = useCallback(async (id: number, force?: boolean) => {
     const post = posts.find((p) => p.id === id);
-    if (!post || !me) return;
+    if (!me) { gate.show(); return; }
+    if (!post) return;
     const liked = force ?? !post.viewer.liked;
     if (liked === post.viewer.liked) return;
     patch(id, (p) => ({ likesCount: p.likesCount + (liked ? 1 : -1), viewer: { ...p.viewer, liked } }));
@@ -66,7 +72,7 @@ export default function VideoPage() {
     } catch {
       patch(id, (p) => ({ likesCount: post.likesCount, viewer: { ...p.viewer, liked: post.viewer.liked } }));
     }
-  }, [posts, me, patch]);
+  }, [posts, me, patch, gate]);
 
   const follow = useCallback(async (post: FeedPost) => {
     if (!me || post.viewer.isOwn || post.viewer.following) return;
@@ -118,11 +124,12 @@ export default function VideoPage() {
   const empty = !loading && posts.length === 0;
 
   return (
-    <div className="fixed inset-x-0 top-0 bottom-[calc(4rem+var(--safe-area-inset-bottom,0px))] z-40 bg-black md:relative md:inset-auto md:z-auto md:h-[calc(100dvh-4rem)]">
+    <div onClickCapture={gate.onClickCapture} className="fixed inset-x-0 top-0 bottom-[calc(4rem+var(--safe-area-inset-bottom,0px))] z-40 bg-black md:relative md:inset-auto md:z-auto md:h-[calc(100dvh-4rem)]">
+      {gate.modal}
       {/* Вкладки зверху */}
-      <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-6 pt-[calc(0.75rem+var(--safe-area-inset-top,0px))] pb-3 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
+      <div data-guest-ok className="absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-6 pt-[calc(0.75rem+var(--safe-area-inset-top,0px))] pb-3 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
         {(['following', 'all'] as Tab[]).map((k) => (
-          <button key={k} type="button" onClick={() => setTab(k)} aria-pressed={tab === k}
+          <button key={k} type="button" onClick={() => { if (!me && k === 'following') { gate.show(); return; } setTab(k); }} aria-pressed={tab === k}
             className={cn('pointer-events-auto text-[17px] font-bold drop-shadow transition', tab === k ? 'text-white border-b-2 border-white pb-0.5' : 'text-white/60')}>
             {k === 'all' ? t('cabinet.reels.forYou') : t('cabinet.reels.following')}
           </button>
@@ -247,7 +254,7 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
   if (!post.video) return null;
   const { author } = post;
   const num = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K` : String(n));
-  const showFollow = signedIn && !post.viewer.isOwn && !post.viewer.following;
+  const showFollow = !post.viewer.isOwn && !post.viewer.following;
 
   return (
     <div ref={ref} className="relative h-full snap-start snap-always bg-black overflow-hidden select-none">
@@ -275,12 +282,12 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
         <button type="button" onClick={onComments} aria-label={t('cabinet.reels.comments')} className="flex flex-col items-center gap-0.5 drop-shadow">
           <MessageCircle className="w-9 h-9" /><span className="text-xs font-semibold">{num(post.commentsCount)}</span>
         </button>
-        {signedIn && (
+        {(
           <button type="button" onClick={() => onSave(post)} aria-label={t('cabinet.reels.save')} aria-pressed={!!post.viewer.saved} className="flex flex-col items-center gap-0.5 drop-shadow">
             <Bookmark className={cn('w-8 h-8', post.viewer.saved ? 'fill-yellow-400 text-yellow-400' : '')} />
           </button>
         )}
-        <button type="button" onClick={() => onShare(post)} aria-label={t('cabinet.reels.share')} className="flex flex-col items-center gap-0.5 drop-shadow">
+        <button type="button" data-guest-ok onClick={() => onShare(post)} aria-label={t('cabinet.reels.share')} className="flex flex-col items-center gap-0.5 drop-shadow">
           <Share2 className="w-8 h-8" />
         </button>
         {signedIn && !post.viewer.isOwn && (

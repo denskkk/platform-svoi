@@ -14,6 +14,7 @@ import { Recommendations } from './Recommendations';
 import { FeedMenuDrawer, FeedSidebar } from './FeedSidebar';
 import { StoriesBar } from './StoriesBar';
 import { PostComposer } from './PostComposer';
+import { GuestBanner, useGuestGate } from '@/components/ui/GuestGate';
 
 type Scope = 'all' | 'following';
 
@@ -50,18 +51,25 @@ export function FeedPage() {
   const requestId = useRef(0);
 
   useEffect(() => {
-    const stored = readStoredUser();
-    if (!stored) {
-      router.replace('/auth/login?returnUrl=/feed');
-      return;
-    }
-    setUser(stored);
+    // Без входу показуємо публічну стрічку (режим гостя): дивитись можна, будь-яка дія веде на вхід/реєстрацію
+    setUser(readStoredUser());
     setReady(true);
   }, [router]);
+  const isGuest = ready && !user;
+  const gate = useGuestGate(isGuest);
+  const pageCount = useRef(0);
 
   const fetchPage = useCallback(async (after: number | null, currentScope: Scope) => {
     const qs = new URLSearchParams({ scope: currentScope });
     if (after) qs.set('cursor', String(after));
+    if (!user) {
+      pageCount.current = after ? pageCount.current + 1 : 0;
+      qs.set('page', String(pageCount.current));
+      const g = await fetch(`/api/feed/public?${qs}`, { cache: 'no-store' });
+      const gd = await g.json().catch(() => ({}));
+      if (!g.ok) throw new Error(gd.error || t('feed.errors.load'));
+      return gd as { posts: FeedPost[]; nextCursor: number | null };
+    }
     const res = await fetch(`/api/feed?${qs}`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
     if (res.status === 401) {
       router.replace('/auth/login?returnUrl=/feed');
@@ -70,7 +78,7 @@ export function FeedPage() {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || t('feed.errors.load'));
     return data as { posts: FeedPost[]; nextCursor: number | null };
-  }, [router, t]);
+  }, [router, t, user]);
 
   const reload = useCallback(async (currentScope: Scope, silent = false) => {
     const id = ++requestId.current;
@@ -163,7 +171,8 @@ export function FeedPage() {
   const canInteract = !isViewer;
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-neutral-100" onClickCapture={gate.onClickCapture}>
+      {gate.modal}
       {/* Індикатор pull-to-refresh */}
       <div
         className="flex items-center justify-center text-xs text-neutral-500 overflow-hidden transition-[height] duration-150"
@@ -183,30 +192,31 @@ export function FeedPage() {
         <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>
 
-        <div className="flex items-center gap-2">
+        <div data-guest-ok className="flex items-center gap-2">
           <FeedMenuDrawer user={user} />
           <Link href="/search?type=people" className="flex-1 min-w-0 flex items-center gap-3 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-2.5 text-neutral-500 hover:bg-neutral-50">
             <Search className="w-5 h-5 shrink-0" /> <span className="text-[15px] truncate">{t('cabinet.feedSearch')}</span>
           </Link>
         </div>
 
-        {canInteract && <StoriesBar me={user} />}
-        <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />
+        {isGuest && <GuestBanner />}
+        {canInteract && !isGuest && <StoriesBar me={user} />}
+        {!isGuest && <PostComposer canPost={canInteract} user={user} onPosted={onPosted} />}
 
-        <Link href="/video" className="flex items-center justify-between rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-3">
+        <Link href="/video" data-guest-ok className="flex items-center justify-between rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-3">
           <span className="inline-flex items-center gap-2 font-semibold text-neutral-900"><Clapperboard className="w-5 h-5 text-primary-700" /> {t('projects.video.chip')}</span>
           <span className="text-sm font-semibold text-primary-700">{t('projects.video.open')}</span>
         </Link>
 
         {/* Вкладки */}
-        <div role="tablist" className="grid grid-cols-2 rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] overflow-hidden">
+        <div role="tablist" data-guest-ok className="grid grid-cols-2 rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] overflow-hidden">
           {(['all', 'following'] as Scope[]).map((s) => (
             <button
               key={s}
               role="tab"
               type="button"
               aria-selected={scope === s}
-              onClick={() => { if (scope !== s) changeScope(s); }}
+              onClick={() => { if (isGuest && s === 'following') { gate.show(); return; } if (scope !== s) changeScope(s); }}
               className={cn('py-3 text-[15px] font-semibold border-b-[3px] transition-colors', scope === s ? 'text-primary-600 border-primary-500' : 'text-neutral-500 border-transparent hover:bg-neutral-100')}
             >
               {s === 'all' ? t('feed.tabs.forYou') : t('feed.tabs.following')}
@@ -255,7 +265,7 @@ export function FeedPage() {
             onDeleted={removePost}
             onBlocked={removeByAuthor}
           />
-          {!isDesktop && scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
+          {!isGuest && !isDesktop && scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
           </Fragment>
         ))}
 
@@ -274,7 +284,7 @@ export function FeedPage() {
         )}
         </div>
 
-        {isDesktop && (
+        {isDesktop && !isGuest && (
           <aside className="sticky top-20 self-start space-y-3">
             <Recommendations vertical canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />
           </aside>

@@ -61,8 +61,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     setLoggingOut(true);
     try {
       await logout();
-      window.dispatchEvent(new Event('auth:changed'));
-      router.push(localizedPath('/', locale));
+      window.location.assign(localizedPath('/', locale));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('profile.view.toasts.logoutFailed'));
       setLoggingOut(false);

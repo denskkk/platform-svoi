@@ -35,7 +35,7 @@ export function FeedSidebar({ user }: Props) {
   const items = useItems().map((i, k) => ({ ...i, active: k === 0 }));
 
   return (
-    <nav aria-label={t('feed.sidebar.menu')} className="hidden lg:block sticky top-20 self-start space-y-1">
+    <nav data-guest-ok aria-label={t('feed.sidebar.menu')} className="hidden lg:block sticky top-20 self-start space-y-1">
       {user?.id && (
         <Link href={`/profile/${user.id}`} className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-neutral-200/60">
           <UserAvatar src={user.avatarUrl} alt={name} fallbackName={name || '?'} className="w-9 h-9 rounded-full" />
@@ -66,7 +66,7 @@ export function FeedMenuDrawer({ user }: Props) {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
   return (
-    <div className="lg:hidden">
+    <div data-guest-ok className="lg:hidden">
       <button type="button" onClick={() => setOpen(true)} aria-label={t('cabinet.feedMenu.open')} aria-expanded={open}
         className="h-11 w-11 shrink-0 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] flex items-center justify-center text-neutral-800">
         <Menu className="w-5 h-5" />

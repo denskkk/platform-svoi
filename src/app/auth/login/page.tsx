@@ -54,7 +54,7 @@ export default function LoginPage() {
       }
       
       // Якщо користувач адміністратор - перехід на адмін-панель
-      const redirectTo = getSafeRedirect(new URLSearchParams(window.location.search).get('redirect'), '')
+      const redirectTo = getSafeRedirect(new URLSearchParams(window.location.search).get('redirect') || new URLSearchParams(window.location.search).get('returnUrl'), '')
       if (data.user?.isAdmin) {
         router.push('/admin')
       } else if (redirectTo) {

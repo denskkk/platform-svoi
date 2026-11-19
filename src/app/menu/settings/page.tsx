@@ -1,5 +1,6 @@
 'use client';
 
+import { performLogout } from '@/lib/client-auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, Eye, FileText, Globe, Headphones, Lock, LogOut, MapPin, Megaphone, Send, Share2, Shield, User, Users, Briefcase, SlidersHorizontal, Repeat, LayoutList, AtSign } from 'lucide-react';
@@ -20,9 +21,7 @@ export default function SettingsHubPage() {
   const i = 'w-5 h-5';
 
   const logout = async () => {
-    try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch { /* вихід локально */ }
-    try { localStorage.removeItem('token'); localStorage.removeItem('user'); window.dispatchEvent(new Event('auth:changed')); } catch { /* noop */ }
-    router.push('/auth/login');
+    await performLogout('/auth/login');
   };
 
   return (

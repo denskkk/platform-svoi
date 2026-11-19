@@ -210,9 +210,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json(
-      { error: error.message || t('api.upload.error') },
-      { status: 500 }
-    );
+    // Файл не є справжнім зображенням (підроблене розширення/тип): це помилка запиту, а не збій сервера
+    if (/unsupported image format|Input buffer|corrupt|VipsJpeg|heif/i.test(String(error?.message || ''))) {
+      return NextResponse.json({ error: t('api.upload.imageTypesOnly') }, { status: 400 });
+    }
+    // Внутрішній текст помилки клієнту не віддаємо
+    return NextResponse.json({ error: t('api.upload.error') }, { status: 500 });
   }
 }

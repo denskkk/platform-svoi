@@ -32,7 +32,57 @@ function finalize(response: NextResponse, path: string) {
   return response
 }
 
+/**
+ * Загальний захист API від перевантаження (одна база, один сервер).
+ * Ліміти рахуються на IP: читання, запис і вхід/реєстрація окремо. Перевищення -> 429 з Retry-After.
+ * Без залежностей, щоб працювало в Edge-середовищі middleware. Лічильники живуть у пам'яті процесу.
+ */
+const API_LIMITS = {
+  read: { interval: 60_000, max: 600 },
+  write: { interval: 60_000, max: 120 },
+  auth: { interval: 10 * 60_000, max: 40 },
+} as const
+
+const apiHits = new Map<string, { count: number; reset: number }>()
+let lastSweep = 0
+
+function clientIp(request: NextRequest): string {
+  // X-Real-IP виставляє nginx і клієнт його не підробить; X-Forwarded-For — запасний варіант (тунель, інший проксі).
+  const real = request.headers.get('x-real-ip')?.trim()
+  if (real) return real.slice(0, 45)
+  return (request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '').slice(0, 45)
+}
+
+function rateLimitApi(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl
+  if (pathname === '/api/health') return null
+  const ip = clientIp(request)
+  if (!ip) return null // пряме локальне звернення без проксі: не обмежуємо (розробка)
+  const write = !(request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS')
+  const isAuthRoute = write && /^\/api\/auth\/(login|register|register-business|restore|refresh)/.test(pathname)
+  const bucket = isAuthRoute ? 'auth' : write ? 'write' : 'read'
+  const limit = API_LIMITS[bucket]
+  const now = Date.now()
+  if (now - lastSweep > 5 * 60_000) {
+    lastSweep = now
+    apiHits.forEach((v, k) => { if (v.reset < now) apiHits.delete(k) })
+  }
+  const key = `${bucket}:${ip}`
+  const entry = apiHits.get(key)
+  if (!entry || entry.reset < now) {
+    apiHits.set(key, { count: 1, reset: now + limit.interval })
+    return null
+  }
+  entry.count++
+  if (entry.count <= limit.max) return null
+  const retry = Math.max(1, Math.ceil((entry.reset - now) / 1000))
+  return NextResponse.json({ error: 'Too many requests', code: 'RATE_LIMITED' }, { status: 429, headers: { 'Retry-After': String(retry) } })
+}
+
 export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    return rateLimitApi(request) ?? NextResponse.next()
+  }
   const { pathname, search } = request.nextUrl
   const { locale: prefixLocale, path } = splitLocalePrefix(pathname)
   const isNavigation = request.method === 'GET' || request.method === 'HEAD'
@@ -76,5 +126,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api/|_next/|uploads/|.*\\..*).*)'],
+  matcher: ['/api/:path*', '/((?!api/|_next/|uploads/|.*\\..*).*)'],
 }

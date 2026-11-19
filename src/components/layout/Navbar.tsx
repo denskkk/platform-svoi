@@ -13,6 +13,7 @@ import { checkAuth, silentFetch } from '@/lib/silentFetch'
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 import { useI18n } from '@/i18n/client'
 import { localizedPath } from '@/i18n/routes'
+import { performLogout } from '@/lib/client-auth'
 // create page handles opening the request modal when needed
 
 export function Navbar() {
@@ -150,19 +151,10 @@ export function Navbar() {
   }, [user])
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
-    } catch {}
-    try {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-    } catch {}
     setUser(null)
     setShowProfileMenu(false)
     setIsMenuOpen(false)
-    // Повідомляємо інші вкладки/компоненти
-    try { window.dispatchEvent(new Event('auth:changed')) } catch {}
-    router.push(localizedPath('/', locale))
+    await performLogout(localizedPath('/', locale))
   }
 
   return (
