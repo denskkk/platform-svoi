@@ -32,6 +32,7 @@ async function handler(request: AuthenticatedRequest) {
         phone: true,
         avatarUrl: true,
         isVerified: true,
+        isAdmin: true,
         createdAt: true,
         businessInfo: {
           select: {
