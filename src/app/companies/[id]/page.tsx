@@ -1,5 +1,6 @@
 'use client';
 
+import { bannerFallbackStyle } from '@/lib/banner';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -128,7 +129,7 @@ export default function CompanyPage() {
     <div className="min-h-screen bg-neutral-100 pb-28 md:pb-10">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow-sm md:rounded-b-2xl overflow-hidden">
-          <div className="h-36 sm:h-52 bg-gradient-to-r from-primary-200 to-accent-200 relative">
+          <div className="h-36 sm:h-52 relative" style={bannerFallbackStyle(c.id)}>
             {c.bannerUrl && <img src={c.bannerUrl} alt="" decoding="async" className="w-full h-full object-cover" />}
             <Link href="/companies" aria-label={t('companies.backToList')} className="absolute top-3 left-3 bg-white/90 rounded-full p-2 shadow"><ArrowLeft className="w-5 h-5" /></Link>
           </div>

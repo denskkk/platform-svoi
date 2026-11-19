@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const c = id
       ? await prisma.businessInfo.findFirst({
           where: { userId: id, user: { isActive: true } },
-          include: { user: { select: { id: true, isVerified: true, avgRating: true, totalReviews: true } } },
+          include: { user: { select: { id: true, isVerified: true, avgRating: true, totalReviews: true, coverUrl: true } } },
         })
       : null;
     if (!id || !c || (id !== viewerId && (await isBlockedBetween(viewerId, id)))) {
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         id: c.userId,
         name: c.companyName,
         logoUrl: c.logoUrl,
-        bannerUrl: c.bannerUrl,
+        bannerUrl: c.bannerUrl || c.user.coverUrl || null,
         category: c.businessType || c.businessCategory || null,
         description: c.description,
         mission: c.mission,

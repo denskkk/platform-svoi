@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       take: limit + 1,
       select: {
         id: true, userId: true, companyName: true, logoUrl: true, bannerUrl: true, city: true, businessType: true, businessCategory: true, description: true,
-        user: { select: { isVerified: true, avgRating: true, totalReviews: true } },
+        user: { select: { isVerified: true, avgRating: true, totalReviews: true, coverUrl: true } },
       },
     });
     const hasMore = rows.length > limit;
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
         id: c.userId,
         name: c.companyName,
         logoUrl: c.logoUrl,
-        bannerUrl: c.bannerUrl,
+        bannerUrl: c.bannerUrl || c.user.coverUrl || null,
         city: c.city,
         category: c.businessType || c.businessCategory || null,
         description: c.description ? String(c.description).slice(0, 160) : null,
