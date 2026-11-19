@@ -270,7 +270,7 @@
       },
       "payments": {
         "title": "10. Paid features",
-        "p1": "Certain features or account types may be offered on a paid basis if they are available in your version of the Platform. Before you confirm an order, you must be shown the price, currency, what the feature includes and its duration. If a paid feature is not available, it cannot be purchased through the Platform.",
+        "p1": "Certain features or account types may be offered on a paid basis if they are available in your version of the Platform. Before you confirm an order, you must be shown the price, currency, what the feature includes and its duration. If a paid feature is not available, it cannot be purchased through the Platform. At present, the Platform is free to use, and the Platform itself does not accept, hold or transfer users’ money.",
         "p2": "A payment may be processed by a third-party payment provider; that provider’s terms also apply. Refunds, cancellations and payment-related claims are handled in accordance with the terms shown at checkout, the payment provider’s rules and applicable consumer protection law. If a payment is made directly between users, its terms are agreed by the parties themselves."
       },
       "privacy": {

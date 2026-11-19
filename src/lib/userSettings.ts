@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 
 type Audience = 'everyone' | 'friends' | 'nobody';
 const AUDIENCE: Audience[] = ['everyone', 'friends', 'nobody'];
-const SCOPES = ['region', 'country', 'all'] as const;
+const SCOPES = ['city', 'region', 'country', 'all'] as const;
 const GENDERS = ['all', 'male', 'female'] as const;
 const CONTACT = ['hidden', 'everyone'] as const;
 
@@ -25,7 +25,7 @@ export interface SettingsData {
     showProfileViewers: boolean; // чи показувати мені, хто заходив до мене
   };
   contacts: { phone: (typeof CONTACT)[number]; email: (typeof CONTACT)[number] };
-  feed: { scope: (typeof SCOPES)[number]; country: string; region: string; interests: string };
+  feed: { scope: (typeof SCOPES)[number]; country: string; region: string; city: string; interests: string };
   business: {
     clientsCanWrite: boolean;
     targetGender: (typeof GENDERS)[number];
@@ -45,7 +45,7 @@ export const DEFAULT_SETTINGS: SettingsData = {
     recordProfileViews: true, showProfileViewers: true,
   },
   contacts: { phone: 'hidden', email: 'hidden' },
-  feed: { scope: 'region', country: '', region: '', interests: '' },
+  feed: { scope: 'region', country: '', region: '', city: '', interests: '' },
   business: {
     clientsCanWrite: true, targetGender: 'all', targetAgeMin: 18, targetAgeMax: 99,
     targetCountry: '', targetRegion: '', promotePostsByDefault: false,
@@ -85,6 +85,7 @@ export function normalizeSettings(input: any, base: SettingsData = DEFAULT_SETTI
       scope: pick(f.scope, SCOPES, base.feed.scope),
       country: str(f.country, base.feed.country, 60),
       region: str(f.region, base.feed.region, 80),
+      city: str(f.city, base.feed.city, 80),
       interests: str(f.interests, base.feed.interests, 300),
     },
     business: {

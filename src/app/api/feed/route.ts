@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
       // а також ті, на кого вона підписана, і вона сама. Якщо не вказала — стрічка загальна.
       if (!clubParam && params.get('videos') !== '1') {
         const pref = (await getSettings(userId)).feed;
-        const place = pref.scope === 'country' ? pref.country : pref.scope === 'region' ? pref.region : '';
+        const place = pref.scope === 'country' ? pref.country : pref.scope === 'region' ? pref.region : pref.scope === 'city' ? pref.city : '';
         if (place) {
           const follows = await prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } });
           // У профілі немає окремого поля «країна»: збіг шукаємо в області/регіоні та місті (напр. «Польща», «Київська», «Варшава»)

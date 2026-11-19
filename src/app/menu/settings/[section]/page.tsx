@@ -40,9 +40,10 @@ const SECTIONS: Record<string, Field[]> = {
     { type: 'select', group: 'contacts', key: 'email', label: 'email', options: ['hidden', 'everyone'] },
   ],
   preferred: [
-    { type: 'select', group: 'feed', key: 'scope', label: 'scope', options: ['region', 'country', 'all'] },
+    { type: 'select', group: 'feed', key: 'scope', label: 'scope', options: ['city', 'region', 'country', 'all'] },
     { type: 'text', group: 'feed', key: 'country', label: 'country' },
     { type: 'text', group: 'feed', key: 'region', label: 'region' },
+    { type: 'text', group: 'feed', key: 'city', label: 'city' },
     { type: 'text', group: 'feed', key: 'interests', label: 'interests' },
   ],
   business: [
