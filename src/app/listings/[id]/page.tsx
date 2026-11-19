@@ -116,7 +116,7 @@ export default function ListingPage() {
                 {listing.images.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto p-3">
                     {listing.images.map((img, i) => (
-                      <button key={img.id} type="button" onClick={() => setActive(i)} className={cn('h-16 w-20 shrink-0 rounded-lg overflow-hidden border-2', i === active ? 'border-primary-500' : 'border-transparent')}>
+                      <button key={img.id} type="button" aria-label={`${i + 1} / ${listing.images.length}`} onClick={() => setActive(i)} className={cn('h-16 w-20 shrink-0 rounded-lg overflow-hidden border-2', i === active ? 'border-primary-500' : 'border-transparent')}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={img.url} alt="" loading="lazy" className="h-full w-full object-cover" />
                       </button>

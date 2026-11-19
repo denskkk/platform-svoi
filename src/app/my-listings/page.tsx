@@ -103,7 +103,7 @@ export default function MyListingsPage() {
             <ul className="space-y-3">
               {mine.map((l) => (
                 <li key={l.id} className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-3 flex gap-3">
-                  <Link href={`/listings/${l.id}`} className="h-24 w-28 shrink-0 rounded-xl bg-neutral-100 overflow-hidden">
+                  <Link href={`/listings/${l.id}`} aria-label={l.title} className="h-24 w-28 shrink-0 rounded-xl bg-neutral-100 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {l.thumb ? <img src={l.thumb} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full items-center justify-center text-2xl">📷</span>}
                   </Link>

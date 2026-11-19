@@ -219,6 +219,7 @@ function CreateReviewForm() {
                   <button
                     key={star}
                     type="button"
+                    aria-label={`${star} / 5`}
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
