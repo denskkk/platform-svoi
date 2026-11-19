@@ -83,6 +83,9 @@ async function main() {
   // Ремонт: старі демо-відео зі зламаними посиланнями замінюємо на робочі (без перестворення даних)
   const broken = await prisma.postVideo.findMany({ where: { url: { contains: 'gtv-videos-bucket' } }, select: { id: true } });
   for (const [i, v] of broken.entries()) await prisma.postVideo.update({ where: { id: v.id }, data: { url: REELS[i % REELS.length], posterUrl: null } });
+  const noBanner = await prisma.businessInfo.findMany({ where: { bannerUrl: null, user: { email: { endsWith: '@svoi.test' }, coverUrl: { not: null } } }, select: { id: true, user: { select: { coverUrl: true } } } });
+  for (const b of noBanner) await prisma.businessInfo.update({ where: { id: b.id }, data: { bannerUrl: b.user.coverUrl } });
+  if (noBanner.length) console.log(`Додано банери компаніям: ${noBanner.length}`);
   if (broken.length) console.log(`Замінено зламаних відео: ${broken.length}`);
   if (process.argv.includes('--reset')) {
     const del = await prisma.user.deleteMany({ where: { email: { endsWith: '@svoi.test' } } });
@@ -101,7 +104,7 @@ async function main() {
       data: { ...data, email, passwordHash, isActive: true, ...(business ? { role: 'business', accountType: 'business', isVerified: true } : {}) },
     });
     if (business) {
-      await prisma.businessInfo.create({ data: { userId: u.id, companyName: business.company, city: data.city, region: data.region, businessType: business.type, businessCategory: business.category, description: business.desc, logoUrl: data.avatarUrl } });
+      await prisma.businessInfo.create({ data: { userId: u.id, companyName: business.company, city: data.city, region: data.region, businessType: business.type, businessCategory: business.category, description: business.desc, logoUrl: data.avatarUrl, bannerUrl: data.coverUrl } });
     }
     return u;
   };

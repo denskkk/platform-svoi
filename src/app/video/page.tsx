@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
 import { PostComments } from '@/components/feed/PostComments';
 import { RichText } from '@/components/feed/RichText';
+import { ReportButton } from '@/components/ui/ReportButton';
 import { useI18n } from '@/i18n/client';
 import { FeedPost, authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 import { cn } from '@/lib/utils';
@@ -282,6 +283,10 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
         <button type="button" onClick={() => onShare(post)} aria-label={t('cabinet.reels.share')} className="flex flex-col items-center gap-0.5 drop-shadow">
           <Share2 className="w-8 h-8" />
         </button>
+        {signedIn && !post.viewer.isOwn && (
+          <ReportButton reportedUserId={author.id} contentType="post" contentId={post.id} label={t('feed.post.report')}
+            className="flex flex-col items-center gap-0.5 text-white/90 drop-shadow text-[11px] font-semibold" />
+        )}
       </div>
 
       {/* Підпис унизу */}

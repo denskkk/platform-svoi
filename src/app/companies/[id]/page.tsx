@@ -133,7 +133,7 @@ export default function CompanyPage() {
             <Link href="/companies" aria-label={t('companies.backToList')} className="absolute top-3 left-3 bg-white/90 rounded-full p-2 shadow"><ArrowLeft className="w-5 h-5" /></Link>
           </div>
           <div className="px-4 pb-4">
-            <div className="flex items-end gap-3 -mt-10">
+            <div className="relative z-10 flex items-end gap-3 -mt-10">
               <UserAvatar src={c.logoUrl} alt={c.name} fallbackName={c.name} className="w-24 h-24 rounded-2xl border-4 border-white bg-white shrink-0" />
             </div>
             <h1 className="mt-2 text-2xl font-bold text-neutral-900 flex items-center gap-1.5">{c.name}{c.isVerified && <BadgeCheck className="w-5 h-5 text-primary-600" />}</h1>
