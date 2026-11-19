@@ -184,6 +184,8 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
   const [paused, setPaused] = useState(false);
   const [burst, setBurst] = useState<{ x: number; y: number; k: number } | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const visibleRef = useRef(false);
+  const userPausedRef = useRef(false);
   const nearEndRef = useRef(onNearEnd);
   nearEndRef.current = onNearEnd;
 
@@ -193,16 +195,25 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
     if (!el || !video) return;
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && entry.intersectionRatio > 0.65) {
+        visibleRef.current = true;
+        userPausedRef.current = false;
         video.currentTime = 0;
         video.play().then(() => setPaused(false)).catch(() => setPaused(true));
         if (nearEnd) nearEndRef.current();
       } else {
+        visibleRef.current = false;
         video.pause();
       }
     }, { threshold: [0, 0.65, 1] });
     io.observe(el);
     return () => io.disconnect();
   }, [nearEnd]);
+
+  // Перший рілс: відео могло ще не завантажитись, коли він став видимим — запускаємо, щойно дані готові
+  const onLoaded = () => {
+    const v = vref.current;
+    if (v && visibleRef.current && v.paused && !userPausedRef.current) v.play().then(() => setPaused(false)).catch(() => setPaused(true));
+  };
 
   const onTime = () => {
     const v = vref.current, bar = barRef.current;
@@ -228,7 +239,7 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
       if (!v) return;
       if (muted) onUnmute(); // перший тап вмикає звук (браузер вимагає жест)
       else if (v.paused) { v.play().catch(() => undefined); setPaused(false); }
-      else { v.pause(); setPaused(true); }
+      else { userPausedRef.current = true; v.pause(); setPaused(true); }
     }, 300);
   };
 
@@ -239,8 +250,8 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
 
   return (
     <div ref={ref} className="relative h-full snap-start snap-always bg-black overflow-hidden select-none">
-      <video ref={vref} src={post.video.url} poster={post.video.posterUrl || undefined} loop playsInline muted={muted} preload="metadata"
-        onTimeUpdate={onTime} className="absolute inset-0 h-full w-full object-contain" />
+      <video ref={vref} src={`${post.video.url}#t=0.1`} poster={post.video.posterUrl || undefined} loop playsInline muted={muted} preload="metadata"
+        onLoadedData={onLoaded} onTimeUpdate={onTime} className="absolute inset-0 h-full w-full object-cover" />
       {/* Область тапу (пауза / подвійний тап) */}
       <div onClick={onTap} className="absolute inset-0 z-10" aria-hidden />
       {paused && <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"><span className="h-20 w-20 rounded-full bg-black/40 flex items-center justify-center"><Play className="w-10 h-10 text-white fill-white" /></span></div>}
