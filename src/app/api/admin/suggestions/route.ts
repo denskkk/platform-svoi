@@ -28,7 +28,23 @@ async function update(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const id = Number(body?.id);
   if (!Number.isInteger(id) || !STATUSES.includes(body?.status)) return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
-  await prisma.projectSuggestion.update({ where: { id }, data: { status: body.status } });
+  const row = await prisma.projectSuggestion.update({ where: { id }, data: { status: body.status }, select: { userId: true, kind: true } });
+  if (row.kind === 'unlock' && (body.status === 'done' || body.status === 'rejected')) {
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: row.userId,
+          type: body.status === 'done' ? 'unlock_done' : 'unlock_rejected',
+          title: body.status === 'done' ? 'Заявку на відкриття функції схвалено' : 'Заявку на відкриття функції поки відхилено', // i18n-ignore
+          message: '',
+          relatedEntityType: 'project_suggestion',
+          relatedEntityId: id,
+        },
+      });
+    } catch (e) {
+      console.error('Unlock notification error:', e);
+    }
+  }
   await logAudit({ actorId: adminId, action: 'suggestion.status', entityType: 'project_suggestion', entityId: id, details: { status: body.status } });
   return NextResponse.json({ success: true });
 }

@@ -133,6 +133,8 @@ export default function NotificationsPage() {
     if (n.type === 'deal_disputed') return t('feed.notifications.dealDisputed');
     if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
     if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
+    if (n.type === 'unlock_done') return t('feed.notifications.unlockDone');
+    if (n.type === 'unlock_rejected') return t('feed.notifications.unlockRejected');
     return n.title;
   };
 

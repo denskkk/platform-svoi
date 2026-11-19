@@ -78,7 +78,13 @@
       "hearts": "Hearts"
     },
     "myDeals": "My deals and earnings",
-    "invite": "Invite people"
+    "invite": "Invite people",
+    "unlockTitle": "Unlock a feature for yourself",
+    "unlockNote": "Live streams, referral payouts and other features are opened by region and case by case. Tell us what you need: we will review the request and reply within a few days.",
+    "unlockPh": "What do you want unlocked? Where do you live, how many followers or invited people do you have, how will you use it.",
+    "unlockSend": "Send request",
+    "unlockDone": "Request sent. The answer will arrive in notifications.",
+    "unlockFail": "Could not send the request"
   },
   "qr": {
     "title": "Your QR code and link",

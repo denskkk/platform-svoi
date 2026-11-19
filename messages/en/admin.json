@@ -130,7 +130,8 @@
       "product": "Product",
       "specialist": "Specialist",
       "market": "Sales market",
-      "taxi": "Taxi"
+      "taxi": "Taxi",
+      "unlock": "Feature unlock"
     }
   }
 }

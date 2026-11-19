@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
     const city = (p.get('city') || '').trim().slice(0, 100);
     const category = p.get('category') || '';
     const mine = p.get('scope') === 'mine';
+    const ownerId = parseId(p.get('owner'));
     const cursor = parseId(p.get('cursor'));
     const blocked = await getBlockedIds(userId);
 
@@ -35,6 +36,7 @@ export async function GET(request: NextRequest) {
     if (q) and.push({ OR: [{ name: { contains: q, mode: 'insensitive' } }, { description: { contains: q, mode: 'insensitive' } }] });
     if (city) and.push({ city: { contains: city, mode: 'insensitive' } });
     if ((CLUB_CATEGORIES as readonly string[]).includes(category)) and.push({ category });
+    if (ownerId) and.push({ ownerId });
     if (mine) and.push({ members: { some: { userId, status: 'active' } } });
     if (cursor) and.push({ id: { lt: cursor } });
 

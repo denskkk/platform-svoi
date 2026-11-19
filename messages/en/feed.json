@@ -156,7 +156,9 @@
     "invoicePaid": "Invoice confirmed as paid",
     "invoiceCancelled": "Invoice cancelled",
     "invoicePayerMarked": "The payer marked the invoice as paid",
-    "invoiceUpdated": "Invoice status changed"
+    "invoiceUpdated": "Invoice status changed",
+    "unlockDone": "Your feature unlock request was approved",
+    "unlockRejected": "Your feature unlock request was declined for now"
   },
   "profile": {
     "title": "Posts",

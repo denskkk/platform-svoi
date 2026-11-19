@@ -8,6 +8,36 @@ import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders } from '@/lib/feedClient';
 
+function UnlockRequest() {
+  const { t } = useI18n();
+  const toast = useToast();
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const send = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (busy || text.trim().length < 5) return;
+    setBusy(true);
+    try {
+      const r = await fetch('/api/project-suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ projectSlug: 'platform', kind: 'unlock', text }) });
+      if (!r.ok) throw new Error('fail');
+      setText('');
+      toast.success(t('cabinet.balance.unlockDone'));
+    } catch {
+      toast.error(t('cabinet.balance.unlockFail'));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <form onSubmit={send} className="rounded-2xl bg-white border border-neutral-200/70 p-4 space-y-2">
+      <h2 className="font-bold text-neutral-900">{t('cabinet.balance.unlockTitle')}</h2>
+      <p className="text-xs text-neutral-500">{t('cabinet.balance.unlockNote')}</p>
+      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} maxLength={1000} placeholder={t('cabinet.balance.unlockPh')} className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-base md:text-sm" />
+      <button type="submit" disabled={busy || text.trim().length < 5} className="rounded-xl bg-primary-500 hover:bg-primary-600 text-neutral-900 font-bold px-5 py-2 disabled:opacity-50">{t('cabinet.balance.unlockSend')}</button>
+    </form>
+  );
+}
+
 interface Cabinet { invited: number; completedDeals: number; isActiveParticipant: boolean }
 
 /** Баланс: кількість запрошених, завершені угоди, статус; гаманець і подарунки — «Скоро». */
@@ -82,6 +112,8 @@ export default function BalancePage() {
               ))}
             </div>
           </section>
+
+          <UnlockRequest />
         </>
       )}
     </MenuShell>

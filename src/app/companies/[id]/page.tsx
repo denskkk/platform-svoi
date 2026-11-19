@@ -1,5 +1,6 @@
 'use client';
 
+import { OwnerClubs } from '@/components/clubs/OwnerClubs';
 import { bannerFallbackStyle } from '@/lib/banner';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -187,6 +188,8 @@ export default function CompanyPage() {
               )}
             </section>
           )}
+
+          {me && <OwnerClubs ownerId={c.id} />}
 
           {c.description && (
             <section className="bg-white rounded-2xl shadow-sm p-4">

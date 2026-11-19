@@ -18,10 +18,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: t('api.common.tooManyRequests') }, { status: 429 });
     }
     const body = await request.json().catch(() => ({}));
-    const kind = ['suggestion', 'complaint', 'product', 'specialist', 'market'].includes(body?.kind) ? body.kind : '';
+    const kind = ['suggestion', 'complaint', 'product', 'specialist', 'market', 'unlock'].includes(body?.kind) ? body.kind : '';
     const text = typeof body?.text === 'string' ? body.text.trim() : '';
     const slug = String(body?.projectSlug || '');
-    if (!kind || text.length < 5 || text.length > 1000 || !(await getProject(slug))) {
+    if (!kind || text.length < 5 || text.length > 1000 || !(kind === 'unlock' && slug === 'platform') && !(await getProject(slug))) {
       return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
     }
     await prisma.projectSuggestion.create({ data: { userId, projectSlug: slug, kind, text } });
