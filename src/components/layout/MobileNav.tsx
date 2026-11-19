@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Home, Clapperboard, User, UserPlus, Eye, MessageCircle, Plus } from 'lucide-react'
+import { LayoutGrid, Home, Clapperboard, User, MessageCircle, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge'
@@ -87,24 +87,27 @@ export function MobileNav() {
     )
   }
 
-  // Неавторизованим показуємо дві великі дії: Реєстрація та Перегляд як глядач
+  // Гостю: три розділи для перегляду та дві явні кнопки «Увійти» і «Зареєструватись»
   if (!isAuthed) {
+    const tabs = [navItems[0], navItems[1], navItems[4]]
     return (
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-white border-t border-neutral-200 shadow-lg">
-        <div className="grid grid-cols-2 h-16">
-          <Link
-            href="/auth/register"
-            className={cn('flex flex-col items-center justify-center space-y-1 text-white bg-primary-500 hover:bg-primary-600 transition-colors')}
-          >
-            <UserPlus className="w-6 h-6" />
-            <span className="text-xs font-semibold">{t('cabinet.nav.register')}</span>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-[0_-4px_20px_rgba(10,31,68,0.35)]">
+        <div className="flex items-center h-16 px-1 gap-1">
+          {tabs.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`) || (item.href === '/feed' && pathname === '/')
+            return (
+              <Link key={item.href} href={localizedPath(item.href, locale)} className={cn('flex-1 min-w-0 flex flex-col items-center justify-center space-y-0.5', isActive ? 'text-primary-400' : 'text-white/70')}>
+                <Icon className="w-6 h-6" />
+                <span className="text-[10px] font-medium truncate max-w-full">{t(item.labelKey)}</span>
+              </Link>
+            )
+          })}
+          <Link href="/auth/login" className="shrink-0 rounded-xl border-2 border-primary-400 text-white font-bold text-sm px-3 py-2.5 text-center">
+            {t('layout.navbar.login')}
           </Link>
-          <Link
-            href="/auth/register/viewer"
-            className={cn('flex flex-col items-center justify-center space-y-1 text-neutral-700 hover:text-primary-600')}
-          >
-            <Eye className="w-6 h-6" />
-            <span className="text-xs font-medium">{t('cabinet.nav.viewer')}</span>
+          <Link href="/auth/register" className="shrink-0 rounded-xl bg-primary-500 text-neutral-900 font-extrabold text-sm px-3 py-2.5 text-center shadow-md">
+            {t('common.guest.register')}
           </Link>
         </div>
       </nav>

@@ -1,11 +1,12 @@
 import { HomeRedirect } from '@/components/features/home/HomeRedirect'
-import { SocialLanding } from '@/components/features/home/SocialLanding'
+import { FeedPage } from '@/components/feed/FeedPage'
 
+// Гість одразу бачить соціальну мережу (публічну стрічку); будь-яка дія веде на вхід чи реєстрацію.
 export default function Home() {
   return (
-    <div className="ukrainian-pattern">
+    <>
       <HomeRedirect />
-      <SocialLanding />
-    </div>
+      <FeedPage />
+    </>
   )
 }

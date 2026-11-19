@@ -171,7 +171,7 @@ export function Navbar() {
               priority
               className="w-10 h-10 rounded-full"
             />
-            <span className="font-display font-bold text-sm min-[400px]:text-base sm:text-lg leading-tight whitespace-nowrap">
+            <span className={`font-display font-bold text-sm min-[400px]:text-base sm:text-lg leading-tight whitespace-nowrap ${user ? '' : 'max-[479px]:hidden'}`}>
               {t('layout.brand.name')}
             </span>
           </Link>
@@ -444,24 +444,24 @@ export function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center space-x-2 xl:space-x-3">
+              <div className="flex items-center gap-2">
                 <Link
                   href="/auth/login"
-                  className="px-3 xl:px-4 py-2 text-neutral-700 hover:text-primary-600 transition-colors whitespace-nowrap"
+                  className="px-4 py-2 rounded-lg border-2 border-primary-500 text-neutral-900 hover:bg-primary-50 transition-colors font-semibold whitespace-nowrap"
                 >
                   {t('layout.navbar.login')}
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
+                  className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-neutral-900 rounded-lg shadow transition-colors font-bold whitespace-nowrap"
                 >
-                  {t('layout.navbar.register')}
+                  {t('common.guest.register')}
                 </Link>
               </div>
             )}
 
             <button
-              className={`${user ? 'hidden' : 'lg:hidden'} p-2 hover:bg-neutral-100 rounded-lg transition-colors`}
+              className={`${user ? 'hidden' : 'hidden sm:block lg:hidden'} p-2 hover:bg-neutral-100 rounded-lg transition-colors`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={t('layout.navbar.menuAria')}
               aria-expanded={isMenuOpen}
