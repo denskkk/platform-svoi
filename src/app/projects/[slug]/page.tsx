@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { projectWallpaper } from '@/lib/projectThemes';
 import { ComingSoon } from '@/components/projects/ComingSoon';
+import { BusinessDirectory } from '@/components/listings/BusinessDirectory';
 import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
 import { applyIdOf, findFolder, foldersFor } from '@/lib/projectFolders';
@@ -138,7 +139,9 @@ export default function ProjectPage() {
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
-                    <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />
+                    {project.slug === 'shops' && found?.folder.sectionId
+                      ? <BusinessDirectory key={folderPath} slug={project.slug} sectionId={found.folder.sectionId} />
+                      : <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />}
                   </div>
                 );
               })()

@@ -618,5 +618,13 @@
     "title": "A business account is needed",
     "text": "In this section, listings are posted by business accounts: doctors, lawyers, shops and other professionals. Create a business account, it is free, and you will be able to post a listing.",
     "cta": "Create a business account"
+  },
+  "directory": {
+    "back": "Back to cabinets",
+    "profile": "Profile",
+    "add": "Add your cabinet and goods",
+    "empty": "No business cabinets here yet",
+    "emptyHint": "Be the first: create a business account and add your goods.",
+    "count": "goods: {count}"
   }
 }

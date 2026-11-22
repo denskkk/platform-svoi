@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
         publicWhere(savedOnly || allProjects ? null : slug),
         savedOnly ? { saves: { some: { userId } } } : allProjects ? {} : buildCatalogWhere(slug as string, params),
         blocked.length ? { ownerId: { notIn: blocked } } : {},
+        parseId(params.get('ownerId')) ? { ownerId: parseId(params.get('ownerId')) as number } : {},
         cursor ? { id: { lt: cursor } } : {},
       ],
     };
