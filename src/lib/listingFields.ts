@@ -153,6 +153,9 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'petCategory', type: 'text', required: true, maxLength: 100, filter: 'text' },
   ],
+  clubs: [
+    { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
+  ],
   lawyers: [
     { key: 'consultFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },

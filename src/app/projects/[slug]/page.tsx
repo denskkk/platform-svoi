@@ -150,14 +150,6 @@ export default function ProjectPage() {
             )}
           </>
         )}
-        {state === 'ready' && project && project.status === 'active' && project.slug === 'clubs' && (
-          <header className="bg-black/30 backdrop-blur rounded-3xl border border-white/15 shadow-lg p-5 space-y-3 text-center text-white">
-            <span className="text-4xl" aria-hidden>{project.icon}</span>
-            <h1 className="text-xl font-bold">{name}</h1>
-            {description && <p className="text-sm text-white/80">{description}</p>}
-            <Link href="/clubs" className="inline-block rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-2.5">{t('clubs.title')}</Link>
-          </header>
-        )}
         {state === 'ready' && project && project.slug === 'taxi' && (
           <div className="space-y-4">
             <header className="bg-black/30 backdrop-blur rounded-3xl border border-white/15 shadow-lg p-5 flex items-center gap-4 text-white">
@@ -174,7 +166,7 @@ export default function ProjectPage() {
             </Link>
           </div>
         )}
-        {state === 'ready' && project && !(project.slug === 'taxi' || (project.status === 'active' && (hasListings(project.slug) || project.slug === 'clubs'))) && (
+        {state === 'ready' && project && !(project.slug === 'taxi' || (project.status === 'active' && hasListings(project.slug))) && (
           <ComingSoon icon={project.icon} title={name} description={description} backHref="/projects" backLabel={t('projects.back')} />
         )}
         {state === 'ready' && project && loggedIn && <SuggestBox projectSlug={project.slug} />}

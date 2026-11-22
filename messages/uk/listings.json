@@ -255,6 +255,9 @@
     "helper-hour": {
       "section": "Розділ",
       "experience": "Стаж, років"
+    },
+    "clubs": {
+      "section": "Розділ"
     }
   },
   "options": {
@@ -567,7 +570,47 @@
       "pets_animals_fish": "Акваріумні рибки",
       "pets_animals_reptiles": "Рептилії та екзотичні тварини",
       "pets_animals_farm": "Сільськогосподарські тварини",
-      "pets_animals_other": "Інші домашні улюбленці"
+      "pets_animals_other": "Інші домашні улюбленці",
+      "clubs_all": "Усі клуби",
+      "clubs_fishing": "Рибалки",
+      "clubs_fishing_list": "Клуби",
+      "clubs_fishing_shop": "Магазин клубу",
+      "clubs_hunting": "Мисливці",
+      "clubs_hunting_list": "Клуби",
+      "clubs_hunting_shop": "Магазин клубу",
+      "clubs_knitting": "В’язання",
+      "clubs_knitting_list": "Клуби",
+      "clubs_knitting_shop": "Магазин клубу",
+      "clubs_creativity": "Творчість і хобі",
+      "clubs_creativity_list": "Клуби",
+      "clubs_creativity_shop": "Магазин клубу",
+      "clubs_travel": "Подорожі",
+      "clubs_travel_list": "Клуби",
+      "clubs_travel_shop": "Магазин клубу",
+      "clubs_sport": "Спорт",
+      "clubs_sport_list": "Клуби",
+      "clubs_sport_shop": "Магазин клубу",
+      "clubs_auto": "Автомобілісти",
+      "clubs_auto_list": "Клуби",
+      "clubs_auto_shop": "Магазин клубу",
+      "clubs_business": "Підприємці",
+      "clubs_business_list": "Клуби",
+      "clubs_business_shop": "Магазин клубу",
+      "clubs_professional": "Професійні спільноти",
+      "clubs_professional_list": "Клуби",
+      "clubs_professional_shop": "Магазин клубу",
+      "clubs_bloggers": "Клуб блогерів",
+      "clubs_bloggers_list": "Клуби",
+      "clubs_bloggers_shop": "Магазин клубу",
+      "clubs_streamers": "Клуб стрімерів",
+      "clubs_streamers_list": "Клуби",
+      "clubs_streamers_shop": "Магазин клубу",
+      "clubs_gamers": "Клуб геймерів та кіберспортсменів",
+      "clubs_gamers_list": "Клуби",
+      "clubs_gamers_shop": "Магазин клубу",
+      "clubs_other": "Інші інтереси",
+      "clubs_other_list": "Клуби",
+      "clubs_other_shop": "Магазин клубу"
     }
   },
   "notFound": "Оголошення не знайдено",

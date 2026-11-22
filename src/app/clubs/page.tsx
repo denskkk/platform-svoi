@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Loader2, Plus, Search, Users } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Search, ShoppingBag, Users } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { CLUB_CATEGORIES } from '@/lib/clubs';
+import { CLUB_CATEGORIES, CLUB_ICONS } from '@/lib/clubs';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 import { canCreateGroups } from '@/lib/groupRights';
 
@@ -20,6 +20,8 @@ export default function ClubsPage() {
   const toast = useToast();
   const [scope, setScope] = useState<'all' | 'mine'>('all');
   const [category, setCategory] = useState('');
+  // Спочатку кубики категорій; після вибору кубика (або «Усі клуби») — список
+  const [browse, setBrowse] = useState(false);
   const [q, setQ] = useState('');
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<Club[]>([]);
@@ -33,6 +35,8 @@ export default function ClubsPage() {
     const me = readStoredUser();
     if (!me) { router.replace('/auth/login?returnUrl=/clubs'); return; }
     setCanCreate(canCreateGroups(me));
+    const wanted = new URLSearchParams(window.location.search).get('category') || '';
+    if ((CLUB_CATEGORIES as readonly string[]).includes(wanted)) { setCategory(wanted); setBrowse(true); }
   }, [router]);
 
   useEffect(() => {
@@ -81,7 +85,7 @@ export default function ClubsPage() {
       <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold text-neutral-900 flex items-center gap-2"><Users className="w-6 h-6 text-primary-600" />{t('clubs.title')}</h1>
-          {canCreate && <Link href="/clubs/new" className="inline-flex items-center gap-1.5 rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-2"><Plus className="w-4 h-4" />{t('clubs.create')}</Link>}
+          {canCreate && <Link href={`/clubs/new${category ? `?category=${category}` : ''}`} className="inline-flex items-center gap-1.5 rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-2"><Plus className="w-4 h-4" />{t('clubs.create')}</Link>}
         </div>
 
         <div className="relative">
@@ -90,6 +94,36 @@ export default function ClubsPage() {
             className="w-full rounded-full bg-white shadow-sm pl-9 pr-3 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-300" />
         </div>
 
+        {!browse && !query && scope === 'all' ? (
+          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <li>
+              <button type="button" onClick={() => { setCategory(''); setBrowse(true); }} className="w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center">
+                <span className="text-4xl" aria-hidden>🤝</span>
+                <span className="text-sm font-bold text-neutral-900 leading-snug">{t('clubs.browse.allClubs')}</span>
+              </button>
+            </li>
+            {CLUB_CATEGORIES.map((c) => (
+              <li key={c}>
+                <button type="button" onClick={() => { setCategory(c); setBrowse(true); }} className="w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center">
+                  <span className="text-4xl" aria-hidden>{CLUB_ICONS[c]}</span>
+                  <span className="text-sm font-bold text-neutral-900 leading-snug">{t(`clubs.categories.${c}`)}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (<>
+        <div className="flex flex-wrap gap-2">
+          {browse && (
+            <button type="button" onClick={() => { setBrowse(false); setCategory(''); setQ(''); }} className="inline-flex items-center gap-1.5 rounded-full bg-white shadow-sm text-sm font-semibold text-neutral-800 px-3.5 py-2">
+              <ArrowLeft className="w-4 h-4" />{t('clubs.browse.back')}
+            </button>
+          )}
+          {category && (
+            <Link href={`/projects/clubs?folder=${category}.shop`} className="inline-flex items-center gap-1.5 rounded-full bg-white shadow-sm text-sm font-semibold text-primary-700 px-3.5 py-2">
+              <ShoppingBag className="w-4 h-4" />{t('clubs.browse.shop')}
+            </Link>
+          )}
+        </div>
         <div role="tablist" className="flex gap-1 bg-white rounded-xl shadow-sm p-1">
           {(['all', 'mine'] as const).map((s) => (
             <button key={s} role="tab" aria-selected={scope === s} onClick={() => setScope(s)}
@@ -136,6 +170,7 @@ export default function ClubsPage() {
             {loadingMore && <Loader2 className="w-4 h-4 animate-spin" />}{t('clubs.loadMore')}
           </button>
         )}
+        </>)}
       </div>
     </div>
   );

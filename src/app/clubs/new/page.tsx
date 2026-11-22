@@ -22,6 +22,8 @@ export default function NewClubPage() {
     const me = readStoredUser();
     if (!me) router.replace('/auth/login?returnUrl=/clubs/new');
     else if (!canCreateGroups(me)) router.replace('/clubs');
+    const wanted = new URLSearchParams(window.location.search).get('category') || '';
+    if ((CLUB_CATEGORIES as readonly string[]).includes(wanted)) setForm((f) => ({ ...f, category: wanted }));
   }, [router]);
 
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));

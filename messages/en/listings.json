@@ -255,6 +255,9 @@
     "helper-hour": {
       "section": "Section",
       "experience": "Experience, years"
+    },
+    "clubs": {
+      "section": "Section"
     }
   },
   "options": {
@@ -567,7 +570,47 @@
       "pets_animals_fish": "Aquarium fish",
       "pets_animals_reptiles": "Reptiles and exotic animals",
       "pets_animals_farm": "Farm animals",
-      "pets_animals_other": "Other pets"
+      "pets_animals_other": "Other pets",
+      "clubs_all": "All clubs",
+      "clubs_fishing": "Fishing",
+      "clubs_fishing_list": "Clubs",
+      "clubs_fishing_shop": "Club shop",
+      "clubs_hunting": "Hunters",
+      "clubs_hunting_list": "Clubs",
+      "clubs_hunting_shop": "Club shop",
+      "clubs_knitting": "Knitting",
+      "clubs_knitting_list": "Clubs",
+      "clubs_knitting_shop": "Club shop",
+      "clubs_creativity": "Creativity and hobbies",
+      "clubs_creativity_list": "Clubs",
+      "clubs_creativity_shop": "Club shop",
+      "clubs_travel": "Travel",
+      "clubs_travel_list": "Clubs",
+      "clubs_travel_shop": "Club shop",
+      "clubs_sport": "Sport",
+      "clubs_sport_list": "Clubs",
+      "clubs_sport_shop": "Club shop",
+      "clubs_auto": "Car enthusiasts",
+      "clubs_auto_list": "Clubs",
+      "clubs_auto_shop": "Club shop",
+      "clubs_business": "Entrepreneurs",
+      "clubs_business_list": "Clubs",
+      "clubs_business_shop": "Club shop",
+      "clubs_professional": "Professional communities",
+      "clubs_professional_list": "Clubs",
+      "clubs_professional_shop": "Club shop",
+      "clubs_bloggers": "Bloggers club",
+      "clubs_bloggers_list": "Clubs",
+      "clubs_bloggers_shop": "Club shop",
+      "clubs_streamers": "Streamers club",
+      "clubs_streamers_list": "Clubs",
+      "clubs_streamers_shop": "Club shop",
+      "clubs_gamers": "Gamers and esports club",
+      "clubs_gamers_list": "Clubs",
+      "clubs_gamers_shop": "Club shop",
+      "clubs_other": "Other interests",
+      "clubs_other_list": "Clubs",
+      "clubs_other_shop": "Club shop"
     }
   },
   "notFound": "Listing not found",

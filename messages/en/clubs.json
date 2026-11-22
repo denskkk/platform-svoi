@@ -33,10 +33,16 @@
     "fishing": "Fishing",
     "auto": "Car enthusiasts",
     "business": "Entrepreneurs",
-    "sport": "Sports",
+    "sport": "Sport",
     "travel": "Travel",
     "professional": "Professional communities",
-    "other": "Other interests"
+    "other": "Other interests",
+    "hunting": "Hunters",
+    "knitting": "Knitting",
+    "creativity": "Creativity and hobbies",
+    "bloggers": "Bloggers club",
+    "streamers": "Streamers club",
+    "gamers": "Gamers and esports club"
   },
   "joinRequest": "Request to join",
   "requested": "Request sent — wait for the decision",
@@ -69,5 +75,10 @@
     "closed": "Closed",
     "requestsCount": "Requests: {count}",
     "done": "Done"
+  },
+  "browse": {
+    "shop": "Clubs shop",
+    "back": "All categories",
+    "allClubs": "All clubs"
   }
 }

@@ -153,6 +153,10 @@ const SPECS: Record<string, Spec[]> = {
     { key: 'club', icon: '🐾', href: '/clubs' },
     leaf('support', '❤️'),
   ],
+  clubs: [
+    { key: 'all', icon: '🤝', href: '/clubs' },
+    { key: 'fishing', icon: '🎣', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=fishing' }, leaf('shop', '🛒')] }, { key: 'hunting', icon: '🦌', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=hunting' }, leaf('shop', '🛒')] }, { key: 'knitting', icon: '🧶', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=knitting' }, leaf('shop', '🛒')] }, { key: 'creativity', icon: '🎨', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=creativity' }, leaf('shop', '🛒')] }, { key: 'travel', icon: '🧭', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=travel' }, leaf('shop', '🛒')] }, { key: 'sport', icon: '⚽', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=sport' }, leaf('shop', '🛒')] }, { key: 'auto', icon: '🚗', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=auto' }, leaf('shop', '🛒')] }, { key: 'business', icon: '💼', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=business' }, leaf('shop', '🛒')] }, { key: 'professional', icon: '🎓', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=professional' }, leaf('shop', '🛒')] }, { key: 'bloggers', icon: '📱', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=bloggers' }, leaf('shop', '🛒')] }, { key: 'streamers', icon: '🎥', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=streamers' }, leaf('shop', '🛒')] }, { key: 'gamers', icon: '🎮', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=gamers' }, leaf('shop', '🛒')] }, { key: 'other', icon: '✨', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=other' }, leaf('shop', '🛒')] },
+  ],
   trade: [
     leaf('producers', '🏭'),
     { key: 'organizers', icon: '🎪', kids: [leaf('self', '🎪'), leaf('member', '🤝')] },
