@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/Toast';
 import { projectWallpaper } from '@/lib/projectThemes';
 import { ComingSoon } from '@/components/projects/ComingSoon';
 import { ChinaActions } from '@/components/projects/ChinaActions';
+import { MovingActions } from '@/components/projects/MovingActions';
 import { BusinessDirectory } from '@/components/listings/BusinessDirectory';
 import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
@@ -140,8 +141,9 @@ export default function ProjectPage() {
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
-                    {found?.folder.kind && <KindLeaf project={project.slug} node={found.folder} />}
+                    {found?.folder.kind && <KindLeaf project={project.slug} node={found.folder} path={folderPath || ''} />}
                     {found?.folder.kind ? null : (<>
+                    {project.slug === 'real-estate' && found?.folder.sectionId === 'real_estate_home_moving' && <MovingActions />}
                     {project.slug === 'china' && found?.folder.sectionId && <ChinaActions sectionLabel={t(found.folder.labelKey)} />}
                     {found?.folder.directory && found.folder.sectionId
                       ? <BusinessDirectory key={folderPath} slug={project.slug} sectionId={found.folder.sectionId} />
@@ -184,7 +186,7 @@ export default function ProjectPage() {
         {state === 'ready' && project && !(project.slug === 'taxi' || (project.status === 'active' && hasListings(project.slug))) && (
           <ComingSoon icon={project.icon} title={name} description={description} backHref="/projects" backLabel={t('projects.back')} />
         )}
-        {state === 'ready' && project && loggedIn && <SuggestBox projectSlug={project.slug} />}
+        {state === 'ready' && project && loggedIn && !(foldersFor(project.slug).some((f) => f.key === 'info') && foldersFor(project.slug).some((f) => f.key === 'feedback')) && <SuggestBox projectSlug={project.slug} />}
       </div>
     </div>
   );

@@ -46,11 +46,25 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
   ],
   'real-estate': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
-    { key: 'propertyType', type: 'select', required: true, options: ['apartment', 'house', 'commercial', 'land'], filter: 'select' },
+    { key: 'propertyType', type: 'select', required: true, options: ['apartment', 'house', 'commercial', 'land', 'garage', 'newbuild', 'room', 'office'], filter: 'select' },
     { key: 'dealType', type: 'select', required: true, options: ['sale', 'rent'], filter: 'select' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'district', type: 'text', maxLength: 80, filter: 'text' },
     { key: 'rooms', type: 'number', min: 0, max: 50, filter: 'range' },
     { key: 'area', type: 'number', required: true, min: 1, max: 1_000_000, filter: 'range' },
     { key: 'address', type: 'text', maxLength: 150 },
+    { key: 'features', type: 'text', maxLength: 250 },
+    { key: 'rentPeriod', type: 'select', options: ['month', 'day'], filter: 'select' },
+    { key: 'rentTerm', type: 'select', options: ['short', 'medium', 'long'], filter: 'select' },
+    { key: 'rentConditions', type: 'text', maxLength: 300 },
+    { key: 'homeCategory', type: 'select', options: ['furniture', 'appliances', 'electronics', 'kitchen', 'lighting', 'tools', 'dishes', 'textile', 'other'], filter: 'select' },
+    { key: 'itemCondition', type: 'select', options: ['new', 'good', 'used', 'needs_repair'], filter: 'select' },
+    { key: 'pickupTerms', type: 'text', maxLength: 250 },
+    { key: 'moverService', type: 'select', options: ['loaders', 'disassembly', 'assembly', 'transport', 'full_move', 'removal'], filter: 'select' },
+    { key: 'hasCar', type: 'select', options: ['yes', 'no'], filter: 'select' },
+    { key: 'vehicleType', type: 'text', maxLength: 100 },
+    { key: 'capacity', type: 'text', maxLength: 60 },
+    { key: 'workers', type: 'number', min: 1, max: 500 },
   ],
   health: [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
@@ -174,15 +188,35 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
  * Проєкти з папками (projectFolders): оголошення завжди належить розділу (поле `section`, обов'язкове),
  * а решта полів стають необов'язковими й показуються лише там, де мають сенс (див. SECTION_RULES).
  */
-const RE_SECTIONS = ['real_estate_sale', 'real_estate_rent'];
+const RE_BUY = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_sale_land', 'real_estate_sale_commercial', 'real_estate_sale_garages', 'real_estate_sale_newbuilds'];
+const RE_RENT = ['real_estate_rent_apartments', 'real_estate_rent_houses', 'real_estate_rent_rooms', 'real_estate_rent_commercial', 'real_estate_rent_offices', 'real_estate_rent_garages', 'real_estate_rent_short'];
+const RE_SECTIONS = RE_BUY.concat(RE_RENT);
+const RE_HOME = ['real_estate_home_sell', 'real_estate_home_free', 'real_estate_home_moving'];
+// Розділи, де має сенс кількість кімнат (не земля, гаражі, комерція й офіси)
+const RE_ROOMS = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_sale_newbuilds', 'real_estate_rent_apartments', 'real_estate_rent_houses', 'real_estate_rent_rooms', 'real_estate_rent_short'];
 const CAR_SECTIONS = ['cars_buy', 'cars_rent'];
 const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
   'real-estate': {
-    propertyType: { sections: RE_SECTIONS, requiredIn: RE_SECTIONS },
+    // Тип об'єкта виставляється розділом (derive); обирає його сам користувач лише в короткостроковій оренді
+    propertyType: { sections: ['real_estate_rent_short'], requiredIn: ['real_estate_rent_short'] },
     dealType: { sections: RE_SECTIONS, derived: true },
-    rooms: { sections: RE_SECTIONS },
+    country: { sections: RE_SECTIONS.concat(RE_HOME) },
+    district: { sections: RE_SECTIONS.concat(RE_HOME) },
+    rooms: { sections: RE_ROOMS },
     area: { sections: RE_SECTIONS, requiredIn: RE_SECTIONS },
     address: { sections: RE_SECTIONS },
+    features: { sections: RE_SECTIONS },
+    rentPeriod: { sections: RE_RENT },
+    rentTerm: { sections: RE_RENT },
+    rentConditions: { sections: RE_RENT },
+    homeCategory: { sections: ['real_estate_home_sell', 'real_estate_home_free'] },
+    itemCondition: { sections: ['real_estate_home_sell', 'real_estate_home_free'] },
+    pickupTerms: { sections: ['real_estate_home_free'] },
+    moverService: { sections: ['real_estate_home_moving'], requiredIn: ['real_estate_home_moving'] },
+    hasCar: { sections: ['real_estate_home_moving'] },
+    vehicleType: { sections: ['real_estate_home_moving'] },
+    capacity: { sections: ['real_estate_home_moving'] },
+    workers: { sections: ['real_estate_home_moving'] },
   },
   cars: {
     make: { sections: CAR_SECTIONS, requiredIn: CAR_SECTIONS },

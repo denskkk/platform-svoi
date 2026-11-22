@@ -357,5 +357,39 @@
       "forbidden": "Administrators only",
       "applicant": "Applicant"
     }
+  },
+  "form": {
+    "country": "Country",
+    "city": "City",
+    "attach": "Attach photos",
+    "attached": "Photos attached: {count}",
+    "attachNote": "Up to 3 photos. Send documents when we contact you."
+  },
+  "realEstate": {
+    "text": {
+      "info_about": "The real estate agency brings together property, home goods and moving services in one place for Ukrainians in different countries. You can buy or rent a home, sell or give away items and find loaders and movers.",
+      "info_how": "Buy and rent property in “Buy property” and “Rent property”: choose the type, country and city, contact the owner or book a viewing. In “Everything for home” sell items or give them away for free. Need to move? Leave a request and see performers in your city.",
+      "info_news": "News, new features and platform updates will appear here."
+    },
+    "moving": {
+      "performers": "For performers",
+      "customers": "For customers",
+      "register": "Register as a performer",
+      "addServices": "Add your services",
+      "orders": {
+        "loaders": "Order loaders",
+        "disassembly": "Order furniture disassembly or assembly",
+        "transport": "Order transport",
+        "full_move": "Order a full relocation"
+      },
+      "address": "Address or district",
+      "what": "What needs to be done",
+      "when": "Date and time",
+      "photos": "Photos of furniture or items",
+      "submit": "Send request",
+      "sent": "Request sent",
+      "inCity": "Performers in {city}",
+      "noneInCity": "No performers in {city} yet. We will let you know when they appear."
+    }
   }
 }

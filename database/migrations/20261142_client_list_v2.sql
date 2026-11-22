@@ -29,9 +29,8 @@ INSERT INTO projects (slug, icon, color, name_uk, name_en, description_uk, descr
   ('apps', '📱', '#1d4ed8', 'Застосунки для своїх', 'Apps for your own', 'Застосунки від своїх.', 'Apps from your own people.', 'coming_soon', 25, NOW()),
   ('cooperatives', '🤲', '#0f766e', 'Кооперативи для своїх', 'Cooperatives for your own', 'Кооперативи та спільні ініціативи.', 'Cooperatives and joint initiatives.', 'coming_soon', 26, NOW()),
   ('rebuild', '🏗️', '#15803d', 'Відбудова України', 'Rebuilding Ukraine', 'Проєкти та участь у відбудові.', 'Projects and participation in rebuilding.', 'coming_soon', 27, NOW())
+-- Назви, описи й іконки наявних проєктів не перезаписуємо (їх змінюють в /admin/projects); оновлюється лише порядок за списком замовника.
 ON CONFLICT (slug) DO UPDATE SET
-  icon = EXCLUDED.icon, name_uk = EXCLUDED.name_uk, name_en = EXCLUDED.name_en,
-  description_uk = EXCLUDED.description_uk, description_en = EXCLUDED.description_en,
   sort_order = EXCLUDED.sort_order, updated_at = NOW();
 -- Усунуто зі списку замовника: «Банк для своїх» (не потрібен у проєктах), окремий «Клуб в’язання» (тепер клуб усередині
 -- «Клубів за інтересами»), «Платформа споживача» (немає в списку). Ховаються, не видаляються (повернути можна в /admin/projects).

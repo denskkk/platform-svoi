@@ -44,7 +44,8 @@ $files = @(
   "20261145_china_sections_remap.sql",
   "20261146_folder_images.sql",
   "20261147_taxi_request_details.sql",
-  "20261148_representations.sql"
+  "20261148_representations.sql",
+  "20261149_real_estate_sections.sql"
 )
 foreach ($f in $files) {
   Write-Host "  -> $f"

@@ -139,7 +139,21 @@
       "rooms": "Rooms",
       "area": "Area, m²",
       "address": "Address or district",
-      "adKind": "Ad type"
+      "adKind": "Ad type",
+      "country": "Country",
+      "district": "District",
+      "features": "Features and amenities",
+      "rentPeriod": "Price per",
+      "rentTerm": "Rental term",
+      "rentConditions": "Rental conditions",
+      "homeCategory": "Category",
+      "itemCondition": "Item condition",
+      "pickupTerms": "Pick-up terms",
+      "moverService": "Service",
+      "hasCar": "Own vehicle",
+      "vehicleType": "Vehicle type",
+      "capacity": "Load capacity",
+      "workers": "Number of workers"
     },
     "health": {
       "healthKind": "Type",
@@ -278,7 +292,11 @@
       "apartment": "Apartment",
       "house": "House",
       "commercial": "Commercial",
-      "land": "Land plot"
+      "land": "Land plot",
+      "garage": "Garage / parking",
+      "newbuild": "New build",
+      "room": "Room",
+      "office": "Office"
     },
     "dealType": {
       "sale": "Sale",
@@ -388,12 +406,12 @@
       "lawyers_advocates": "Lawyer listings",
       "lawyers_cabinet": "Apply and create a lawyer cabinet",
       "lawyers_team": "Teams and representations",
-      "real_estate_sale": "Buy / Sell",
-      "real_estate_rent": "Rent / Let",
+      "real_estate_sale": "Buy property",
+      "real_estate_rent": "Rent property",
       "real_estate_home": "Everything for the home",
       "real_estate_home_sell": "For sale",
-      "real_estate_home_free": "Free, pickup only",
-      "real_estate_home_moving": "Moving, assembly and disassembly, loaders",
+      "real_estate_home_free": "Free, pick-up only",
+      "real_estate_home_moving": "Loaders, furniture assemblers and movers",
       "jobs_vacancies": "Vacancies",
       "jobs_seekers": "Apply to find a job",
       "cars_buy": "Buy a car",
@@ -739,7 +757,73 @@
       "lawyers_team_join": "Join a team",
       "lawyers_team_open": "Open a representation",
       "lawyers_consult": "Legal help and consultations",
-      "lawyers_help": "Help and support"
+      "lawyers_help": "Help and support",
+      "real_estate_sale_apartments": "Apartments",
+      "real_estate_sale_houses": "Houses and cottages",
+      "real_estate_sale_land": "Land plots",
+      "real_estate_sale_commercial": "Commercial property",
+      "real_estate_sale_garages": "Garages and parking",
+      "real_estate_sale_newbuilds": "New builds",
+      "real_estate_rent_apartments": "Apartments",
+      "real_estate_rent_houses": "Houses and cottages",
+      "real_estate_rent_rooms": "Rooms",
+      "real_estate_rent_commercial": "Commercial premises",
+      "real_estate_rent_offices": "Offices",
+      "real_estate_rent_garages": "Garages and parking",
+      "real_estate_rent_short": "Short-term rent",
+      "real_estate_info": "About the project, earn with us",
+      "real_estate_info_about": "About the project",
+      "real_estate_info_how": "How the platform works",
+      "real_estate_info_earn": "Earn with us",
+      "real_estate_info_rep": "Become a project representative",
+      "real_estate_info_partner": "Partnership",
+      "real_estate_info_invite": "Invite a partner",
+      "real_estate_info_news": "News and announcements",
+      "real_estate_feedback": "Suggestions and complaints",
+      "real_estate_feedback_suggest": "Suggest a platform improvement",
+      "real_estate_feedback_complaint": "Report a listing",
+      "real_estate_feedback_dishonest": "Report a dishonest seller or landlord",
+      "real_estate_feedback_performer": "Report a problem with a performer",
+      "real_estate_feedback_review": "Leave a review of the agency or a service",
+      "real_estate_feedback_direction": "Suggest a new direction"
+    },
+    "rentPeriod": {
+      "month": "Per month",
+      "day": "Per day"
+    },
+    "rentTerm": {
+      "short": "Short-term",
+      "medium": "Medium-term",
+      "long": "Long-term"
+    },
+    "homeCategory": {
+      "furniture": "Furniture",
+      "appliances": "Home appliances",
+      "electronics": "Electronics",
+      "kitchen": "Kitchenware and dishes",
+      "lighting": "Lighting, decor, interior",
+      "tools": "Tools and renovation goods",
+      "dishes": "Dishes",
+      "textile": "Home textiles",
+      "other": "Other"
+    },
+    "itemCondition": {
+      "new": "New",
+      "good": "Good condition",
+      "used": "Used",
+      "needs_repair": "Needs repair"
+    },
+    "moverService": {
+      "loaders": "Loaders",
+      "disassembly": "Furniture disassembly",
+      "assembly": "Furniture assembly",
+      "transport": "Movers (transport)",
+      "full_move": "Full relocation",
+      "removal": "Removal of old furniture and items"
+    },
+    "hasCar": {
+      "yes": "Has own vehicle",
+      "no": "No vehicle"
     }
   },
   "notFound": "Listing not found",
@@ -755,5 +839,25 @@
     "empty": "No business cabinets here yet",
     "emptyHint": "Be the first: create a business account and add your goods.",
     "count": "goods: {count}"
+  },
+  "request": {
+    "button": {
+      "viewing": "Book a viewing",
+      "rent": "Apply to rent",
+      "pickup": "Arrange pick-up"
+    },
+    "when": {
+      "viewing": "Preferred viewing date and time",
+      "rent": "Preferred move-in date",
+      "pickup": "When you can pick it up"
+    },
+    "note": "Comment (optional)",
+    "sent": "Request sent to the owner",
+    "sentShort": "Request sent",
+    "message": {
+      "viewing": "I would like to book a viewing: {title}\n{link}\nPreferred time: {when}\nPhone: {phone}\nComment: {note}",
+      "rent": "I apply to rent: {title}\n{link}\nPreferred move-in date: {when}\nPhone: {phone}\nComment: {note}",
+      "pickup": "I would like to arrange pick-up: {title}\n{link}\nWhen I can pick it up: {when}\nPhone: {phone}\nComment: {note}"
+    }
   }
 }

@@ -86,10 +86,28 @@ const SPECS: Record<string, Spec[]> = {
     view('help', '🛟', 'form:request'),
     leaf('advocates', '📋', { business: true }),
   ],
+  // «Нерухомість» за ТЗ замовника: 5 кнопок (купити, оренда, усе для дому, інформація, пропозиції та скарги). Назву проєкту ця структура не змінює.
   'real-estate': [
-    leaf('sale', '🏠', { derive: { dealType: 'sale' } }),
-    leaf('rent', '🔑', { derive: { dealType: 'rent' } }),
+    { key: 'sale', icon: '🏠', kids: [
+      leaf('apartments', '🏢', { derive: { dealType: 'sale', propertyType: 'apartment' } }),
+      leaf('houses', '🏡', { derive: { dealType: 'sale', propertyType: 'house' } }),
+      leaf('land', '🌳', { derive: { dealType: 'sale', propertyType: 'land' } }),
+      leaf('commercial', '🏬', { derive: { dealType: 'sale', propertyType: 'commercial' } }),
+      leaf('garages', '🚗', { derive: { dealType: 'sale', propertyType: 'garage' } }),
+      leaf('newbuilds', '🏗️', { derive: { dealType: 'sale', propertyType: 'newbuild' } }),
+    ] },
+    { key: 'rent', icon: '🔑', kids: [
+      leaf('apartments', '🏢', { derive: { dealType: 'rent', propertyType: 'apartment' } }),
+      leaf('houses', '🏡', { derive: { dealType: 'rent', propertyType: 'house' } }),
+      leaf('rooms', '🛏️', { derive: { dealType: 'rent', propertyType: 'room' } }),
+      leaf('commercial', '🏬', { derive: { dealType: 'rent', propertyType: 'commercial' } }),
+      leaf('offices', '💼', { derive: { dealType: 'rent', propertyType: 'office' } }),
+      leaf('garages', '🚗', { derive: { dealType: 'rent', propertyType: 'garage' } }),
+      leaf('short', '🗓️', { derive: { dealType: 'rent', rentTerm: 'short' } }),
+    ] },
     { key: 'home', icon: '🛋️', kids: [leaf('sell', '💰'), leaf('free', '🎁'), leaf('moving', '🚚')] },
+    { key: 'info', icon: 'ℹ️', kids: [view('about', '🏠', 'info'), view('how', '⚙️', 'info'), apply('earn', '💼'), apply('rep', '🌍'), view('partner', '🤝', 'formp:request'), view('invite', '📨', 'formp:request'), view('news', '📰', 'info')] },
+    { key: 'feedback', icon: '💬', kids: [view('suggest', '💡', 'forma:suggestion'), view('complaint', '📣', 'forma:complaint'), view('dishonest', '🚫', 'forma:complaint'), view('performer', '🧰', 'forma:complaint'), view('review', '⭐', 'forma:suggestion'), view('direction', '🚀', 'forma:suggestion')] },
   ],
   jobs: [
     leaf('vacancies', '💼', { derive: { jobKind: 'vacancy' } }),

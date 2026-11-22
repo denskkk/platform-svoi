@@ -139,7 +139,21 @@
       "rooms": "Кількість кімнат",
       "area": "Площа, м²",
       "address": "Адреса або район",
-      "adKind": "Тип оголошення"
+      "adKind": "Тип оголошення",
+      "country": "Країна",
+      "district": "Район",
+      "features": "Характеристики та зручності",
+      "rentPeriod": "Ціна за",
+      "rentTerm": "Термін оренди",
+      "rentConditions": "Умови оренди",
+      "homeCategory": "Категорія",
+      "itemCondition": "Стан речі",
+      "pickupTerms": "Умови самовивозу",
+      "moverService": "Послуга",
+      "hasCar": "Власний автомобіль",
+      "vehicleType": "Тип автомобіля",
+      "capacity": "Вантажопідйомність",
+      "workers": "Кількість працівників"
     },
     "health": {
       "healthKind": "Тип",
@@ -278,7 +292,11 @@
       "apartment": "Квартира",
       "house": "Будинок",
       "commercial": "Комерційна",
-      "land": "Земельна ділянка"
+      "land": "Земельна ділянка",
+      "garage": "Гараж / паркомісце",
+      "newbuild": "Новобудова",
+      "room": "Кімната",
+      "office": "Офіс"
     },
     "dealType": {
       "sale": "Продаж",
@@ -388,12 +406,12 @@
       "lawyers_advocates": "Оголошення адвокатів",
       "lawyers_cabinet": "Подати заявку та створити кабінет адвоката",
       "lawyers_team": "Формування команд і представництв",
-      "real_estate_sale": "Купити / Продати",
-      "real_estate_rent": "Орендувати / Здати в оренду",
+      "real_estate_sale": "Купити нерухомість",
+      "real_estate_rent": "Оренда нерухомості",
       "real_estate_home": "Усе для дому",
       "real_estate_home_sell": "Продам",
-      "real_estate_home_free": "Віддам за самовивіз",
-      "real_estate_home_moving": "Перевезення, збирання-розбирання, вантажники",
+      "real_estate_home_free": "Віддам даром за самовивіз",
+      "real_estate_home_moving": "Вантажники, розбірники та перевізники",
       "jobs_vacancies": "Вакансії",
       "jobs_seekers": "Подати заявку на пошук вакансії",
       "cars_buy": "Купити авто",
@@ -739,7 +757,73 @@
       "lawyers_team_join": "Приєднатися до команди",
       "lawyers_team_open": "Відкрити представництво",
       "lawyers_consult": "Юридична допомога та консультації",
-      "lawyers_help": "Допомога та підтримка"
+      "lawyers_help": "Допомога та підтримка",
+      "real_estate_sale_apartments": "Квартири",
+      "real_estate_sale_houses": "Будинки та котеджі",
+      "real_estate_sale_land": "Земельні ділянки",
+      "real_estate_sale_commercial": "Комерційна нерухомість",
+      "real_estate_sale_garages": "Гаражі та паркомісця",
+      "real_estate_sale_newbuilds": "Новобудови",
+      "real_estate_rent_apartments": "Квартири",
+      "real_estate_rent_houses": "Будинки та котеджі",
+      "real_estate_rent_rooms": "Кімнати",
+      "real_estate_rent_commercial": "Комерційні приміщення",
+      "real_estate_rent_offices": "Офіси",
+      "real_estate_rent_garages": "Гаражі та паркомісця",
+      "real_estate_rent_short": "Оренда на короткий термін",
+      "real_estate_info": "Інформація про проєкт, заробляй зі своїми",
+      "real_estate_info_about": "Про проєкт",
+      "real_estate_info_how": "Як працює платформа",
+      "real_estate_info_earn": "Заробляй зі своїми",
+      "real_estate_info_rep": "Стати представником проєкту",
+      "real_estate_info_partner": "Партнерство",
+      "real_estate_info_invite": "Запросити партнера",
+      "real_estate_info_news": "Новини та оголошення",
+      "real_estate_feedback": "Пропозиції та скарги",
+      "real_estate_feedback_suggest": "Запропонувати покращення платформи",
+      "real_estate_feedback_complaint": "Поскаржитися на оголошення",
+      "real_estate_feedback_dishonest": "Повідомити про недобросовісного продавця або орендодавця",
+      "real_estate_feedback_performer": "Повідомити про проблему з виконавцем",
+      "real_estate_feedback_review": "Залишити відгук про агентство або послугу",
+      "real_estate_feedback_direction": "Запропонувати новий напрямок розвитку"
+    },
+    "rentPeriod": {
+      "month": "За місяць",
+      "day": "За добу"
+    },
+    "rentTerm": {
+      "short": "Короткостроково",
+      "medium": "Середній термін",
+      "long": "Довгостроково"
+    },
+    "homeCategory": {
+      "furniture": "Меблі",
+      "appliances": "Побутова техніка",
+      "electronics": "Електроніка",
+      "kitchen": "Кухонне приладдя й посуд",
+      "lighting": "Освітлення, декор, інтер’єр",
+      "tools": "Інструменти й товари для ремонту",
+      "dishes": "Посуд",
+      "textile": "Домашній текстиль",
+      "other": "Інше"
+    },
+    "itemCondition": {
+      "new": "Нова",
+      "good": "Хороший стан",
+      "used": "Була у використанні",
+      "needs_repair": "Потребує ремонту"
+    },
+    "moverService": {
+      "loaders": "Вантажники",
+      "disassembly": "Розбірники меблів",
+      "assembly": "Збирачі меблів",
+      "transport": "Перевізники",
+      "full_move": "Комплексний переїзд",
+      "removal": "Вивезення старих меблів і речей"
+    },
+    "hasCar": {
+      "yes": "Є власний автомобіль",
+      "no": "Без автомобіля"
     }
   },
   "notFound": "Оголошення не знайдено",
@@ -755,5 +839,25 @@
     "empty": "Тут ще немає бізнес-кабінетів",
     "emptyHint": "Станьте першим: створіть бізнес-акаунт і додайте свої товари.",
     "count": "товарів: {count}"
+  },
+  "request": {
+    "button": {
+      "viewing": "Записатися на перегляд",
+      "rent": "Подати заявку на оренду",
+      "pickup": "Домовитися про отримання"
+    },
+    "when": {
+      "viewing": "Бажані дата й час перегляду",
+      "rent": "Бажана дата заселення",
+      "pickup": "Коли зручно забрати"
+    },
+    "note": "Коментар (необов’язково)",
+    "sent": "Заявку надіслано власнику",
+    "sentShort": "Заявку надіслано",
+    "message": {
+      "viewing": "Хочу записатися на перегляд: {title}\n{link}\nБажаний час: {when}\nТелефон: {phone}\nКоментар: {note}",
+      "rent": "Подаю заявку на оренду: {title}\n{link}\nБажана дата заселення: {when}\nТелефон: {phone}\nКоментар: {note}",
+      "pickup": "Хочу домовитися про отримання: {title}\n{link}\nКоли зручно забрати: {when}\nТелефон: {phone}\nКоментар: {note}"
+    }
   }
 }

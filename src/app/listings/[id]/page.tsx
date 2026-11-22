@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ListingRequestButton, RequestVariant } from '@/components/listings/ListingRequestButton';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, Eye, Heart, Loader2, MapPin, MessageCircle, Phone, Share2, ExternalLink } from 'lucide-react';
 import { ReportButton } from '@/components/ui/ReportButton';
@@ -187,6 +188,14 @@ export default function ListingPage() {
                     <Link href={`/chat?with=${listing.owner.id}`} className="inline-flex items-center gap-2 rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-2.5">
                       <MessageCircle className="w-5 h-5" /> {t('listings.common.writeMessage')}
                     </Link>
+                    {(() => {
+                      const sec = String(listing.data?.section ?? '');
+                      const v: RequestVariant | null = listing.projectSlug !== 'real-estate' ? null
+                        : sec.indexOf('real_estate_sale') === 0 ? 'viewing'
+                        : sec.indexOf('real_estate_rent') === 0 ? 'rent'
+                        : sec === 'real_estate_home_free' ? 'pickup' : null;
+                      return v ? <ListingRequestButton variant={v} ownerId={listing.owner.id} listingId={listing.id} title={listing.title} /> : null;
+                    })()}
                     {listing.phone && (
                       <a href={`tel:${listing.phone.replace(/[^+0-9]/g, '')}`} className="inline-flex items-center gap-2 rounded-full bg-white border border-neutral-200 font-semibold px-5 py-2.5">
                         <Phone className="w-5 h-5" /> {listing.phone}
