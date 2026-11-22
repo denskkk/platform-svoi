@@ -1,7 +1,8 @@
 /**
  * «Папки» всередині проєкту: людина заходить у проєкт і йде по папках-«кубиках» (лікарі → кардіологи, купити / орендувати тощо).
  * Кінцева папка = розділ оголошень: оголошення потрапляє в неї через поле `section`, а каталог показує лише її (фільтр f_section).
- * Папки задаються описом нижче (без нових таблиць). Назви — в messages/<мова>/listings.json → options.section.<id>.
+ * Папки задаються описом нижче (без нових таблиць). Назви — в messages/<мова>/listings.json → options.section.<id>
+ * (стандартні папки «Інформація» й «Пропозиції та скарги» — спільні переклади projects.std.*).
  * Модуль без залежностей: безпечний і на клієнті, і на сервері.
  */
 export interface ProjectFolder {
@@ -23,8 +24,12 @@ export interface ProjectFolder {
   href?: string;
   /** Розділ показує бізнес-кабінети (магазини), а не стрічку оголошень */
   directory?: boolean;
-  /** Не каталог: спеціальний екран (форма замовлення, інформація, заявка-форма). Використовує «Таксі для своїх» */
+  /** Не каталог: спеціальний екран (форма замовлення, інформація, заявка-форма, структурна анкета fx:<id>, мої заявки mine:<види>). */
   kind?: string;
+  /** Кнопки-заявки над каталогом розділу: ідентифікатори форм з projectForms (суфікс «!» — форма відкрита одразу) */
+  acts?: string[];
+  /** Вибір «папок» з наявних оголошень перед каталогом: поля data або city (країна → область → місто, порода) */
+  drill?: string[];
 }
 
 interface Spec {
@@ -37,6 +42,12 @@ interface Spec {
   href?: string;
   directory?: boolean;
   kind?: string;
+  acts?: string[];
+  drill?: string[];
+  /** Папка-посилання на іншу папку цього ж проєкту (шлях a.b) */
+  to?: string;
+  /** Спільний ключ перекладу назви (стандартні папки) */
+  lk?: string;
 }
 
 const slugId = (slug: string) => slug.replace(/-/g, '_');
@@ -46,13 +57,18 @@ export function sectionIdOf(slug: string, path: string[]): string {
   return [slugId(slug)].concat(path).join('_');
 }
 
+/** Посилання на папку проєкту (внутрішнє): ?folder=a.b */
+export const folderLink = (slug: string, path: string) => `/projects/${slug}?folder=${path}`;
+
 function build(slug: string, specs: Spec[], parents: string[]): ProjectFolder[] {
   return specs.map((s) => {
     const path = parents.concat(s.key);
     const id = sectionIdOf(slug, path);
-    const node: ProjectFolder = { key: s.key, icon: s.icon, labelKey: `listings.options.section.${id}`, filters: {} };
+    const node: ProjectFolder = { key: s.key, icon: s.icon, labelKey: s.lk || `listings.options.section.${id}`, filters: {} };
     if (s.kids) {
       node.children = build(slug, s.kids, path);
+    } else if (s.to) {
+      node.href = folderLink(slug, s.to);
     } else if (s.href) {
       node.href = s.href;
     } else if (s.apply) {
@@ -65,6 +81,8 @@ function build(slug: string, specs: Spec[], parents: string[]): ProjectFolder[] 
       if (s.business) node.business = true;
       if (s.directory) node.directory = true;
       if (s.derive) node.derive = s.derive;
+      if (s.acts) node.acts = s.acts;
+      if (s.drill) node.drill = s.drill;
     }
     return node;
   });
@@ -73,8 +91,38 @@ function build(slug: string, specs: Spec[], parents: string[]): ProjectFolder[] 
 const leaf = (key: string, icon: string, extra?: Partial<Spec>): Spec => ({ key, icon, ...extra });
 const apply = (key: string, icon = '➕'): Spec => ({ key, icon, apply: true });
 const view = (key: string, icon: string, kind: string): Spec => ({ key, icon, kind });
+/** Структурна анкета (projectForms) */
+const fx = (key: string, icon: string, form: string, lk?: string): Spec => ({ key, icon, kind: `fx:${form}`, ...(lk ? { lk } : {}) });
+/** Посилання на інший проєкт платформи */
+const proj = (key: string, icon: string, slug: string): Spec => ({ key, icon, href: `/projects/${slug}` });
 
-/** Специфікація папок за ТЗ замовника (скріншоти та голосові). Порядок = порядок на екрані. */
+// ——— Стандартні папки, однакові в усіх проєктах за ТЗ замовника ———
+const std = (key: string, icon: string, kind = 'info'): Spec => ({ key, icon, kind, lk: `projects.std.${key}` });
+const stdFx = (key: string, icon: string, form: string): Spec => ({ key, icon, kind: `fx:${form}`, lk: `projects.std.${key}` });
+/** «Інформація про проєкт. Заробляй зі своїми» */
+const INFO = (kids: Spec[]): Spec => ({ key: 'info', icon: 'ℹ️', lk: 'projects.std.info', kids });
+/** «Пропозиції та скарги» */
+const FEEDBACK = (kids: Spec[]): Spec => ({ key: 'feedback', icon: '💬', lk: 'projects.std.feedback', kids });
+const S_ABOUT = std('about', '🏠');
+const S_HOW = std('how', '⚙️');
+const S_EARN = std('earn', '💼');
+const S_REP = std('rep', '🌍', 'repapply:open');
+const S_TEAM = std('team', '👥', 'repapply:open');
+const S_PARTNER = stdFx('partner', '🤝', 'partnerApply');
+const S_NEWS = std('news', '📰');
+const S_INVITE: Spec = { key: 'invite', icon: '📨', href: '/menu/qr', lk: 'projects.std.invite' };
+/** Звернення: пропозиція / скарга (з фото) / питання */
+const fb = (key: string, icon: string, kind: 'suggestion' | 'complaint', lk?: string): Spec => ({ key, icon, kind: `forma:${kind}`, ...(lk ? { lk } : {}) });
+const F_SUGGEST = fb('suggest', '💡', 'suggestion', 'projects.std.suggest');
+const F_REVIEW = fb('review', '⭐', 'suggestion', 'projects.std.review');
+const F_COMPLAINT = fb('complaint', '📣', 'complaint', 'projects.std.complaint');
+const F_DIRECTION = fb('direction', '🚀', 'suggestion', 'projects.std.direction');
+const F_SUPPORT: Spec = { key: 'support', icon: '🛟', kind: 'form:consult', lk: 'projects.std.support' };
+
+/** Типові кнопки каталогу спеціалістів: заявка + приєднання до команди */
+const SPEC = (key: string, icon: string, acts: string[] = ['consult', 'join'], extra?: Partial<Spec>): Spec => leaf(key, icon, { business: true, acts, ...extra });
+
+/** Специфікація папок за ТЗ замовника (скріншоти, голосові та файли структури). Порядок = порядок на екрані. */
 const SPECS: Record<string, Spec[]> = {
   // «Юристи»: 7 кнопок за ТЗ. 1 — дерево представництв (країна → область → район → громада), 2–4 — заявки з маршрутом до керівника,
   // 5 і 7 — «Інформація» та «Пропозиції й скарги» (SuggestBox), 6 — допомога. Оголошення адвокатів лишаються окремою папкою.
@@ -109,50 +157,127 @@ const SPECS: Record<string, Spec[]> = {
     { key: 'info', icon: 'ℹ️', kids: [view('about', '🏠', 'info'), view('how', '⚙️', 'info'), apply('earn', '💼'), apply('rep', '🌍'), view('partner', '🤝', 'formp:request'), view('invite', '📨', 'formp:request'), view('news', '📰', 'info')] },
     { key: 'feedback', icon: '💬', kids: [view('suggest', '💡', 'forma:suggestion'), view('complaint', '📣', 'forma:complaint'), view('dishonest', '🚫', 'forma:complaint'), view('performer', '🧰', 'forma:complaint'), view('review', '⭐', 'forma:suggestion'), view('direction', '🚀', 'forma:suggestion')] },
   ],
+
+  // «Робота для своїх»: 4 кнопки. Країни й області — справжні папки (лише ті, де є вакансії / заявки), місто, професія, зарплата — фільтри.
   jobs: [
-    leaf('vacancies', '💼', { derive: { jobKind: 'vacancy' } }),
-    leaf('seekers', '🔎', { derive: { jobKind: 'resume' } }),
+    leaf('vacancies', '💼', { derive: { jobKind: 'vacancy' }, drill: ['country', 'region'] }),
+    { key: 'apply', icon: '📝', kids: [
+      fx('request', '📝', 'jobSeeker'),
+      leaf('candidates', '🔎', { derive: { jobKind: 'resume' }, drill: ['country', 'region'] }),
+      view('mine', '🗂️', 'mine:request'),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, { key: 'inviteEmployer', icon: '🏢', href: '/menu/qr', lk: 'projects.std.inviteEmployer' }, S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('complaintVacancy', '📣', 'complaint'), fb('dishonest', '🚫', 'complaint'), fb('problem', '⚠️', 'complaint'), F_REVIEW, F_DIRECTION]),
   ],
+
+  // «Автосалон онлайн»: купити авто, оренда, інтернет-магазини (8 категорій), інформація, пропозиції та скарги
   cars: [
-    leaf('buy', '🚗'),
-    leaf('rent', '🔑'),
-    leaf('shops', '🛒', { business: true }),
+    leaf('buy', '🚗', { drill: ['country', 'region'], acts: ['carPick'] }),
+    leaf('rent', '🔑', { drill: ['country', 'region'], acts: ['carRentRequest'] }),
+    { key: 'shops', icon: '🛒', kids: [
+      leaf('newParts', '⚙️', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('usedParts', '🔩', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('accessories', '🧰', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('tires', '🛞', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('care', '🧴', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('electronics', '📹', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('tools', '🔧', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('other', '📦', { business: true, directory: true, acts: ['shopApply'] }),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('complaintAd', '📣', 'complaint'), fb('complaintRent', '🔑', 'complaint'), fb('dishonest', '🚫', 'complaint'), fb('complaintShop', '🛒', 'complaint'), fb('orderProblem', '📦', 'complaint'), F_REVIEW, F_DIRECTION]),
   ],
+
+  // «Крамниця для своїх»: 10 кнопок за ТЗ (7 товарних/сервісних напрямів, інформація, пропозиції та скарги, додати свій розділ)
   shops: [
-    { key: 'food', icon: '🥩', kids: [leaf('meat', '🥩', { business: true }), leaf('fish', '🐟', { business: true }), leaf('dairy', '🥛', { business: true }), apply('addDept', '➕')] },
-    { key: 'clothes', icon: '👗', kids: [leaf('women', '👗', { business: true }), leaf('men', '👔', { business: true }), leaf('kids', '🧒', { business: true }), leaf('shoes', '👟', { business: true }), apply('addDept', '➕')] },
-    { key: 'chemistry', icon: '🧴', kids: [leaf('household', '🧽', { business: true }), leaf('cosmetics', '💄', { business: true }), apply('addDept', '➕')] },
-    { key: 'souvenirs', icon: '🎁', kids: [leaf('handmade', '🧵', { business: true }), leaf('symbols', '🇺🇦', { business: true }), leaf('giftsets', '🎀', { business: true }), apply('addDept', '➕')] },
-    { key: 'electro', icon: '🔌', kids: [leaf('appliances', '🔌', { business: true }), leaf('lighting', '💡', { business: true }), leaf('gadgets', '📱', { business: true }), apply('addDept', '➕')] },
-    { key: 'delivery', icon: '🚚', kids: [leaf('fromUa', '🚚', { business: true }), leaf('europe', '🚛', { business: true }), leaf('request', '📮')] },
-    { key: 'abroad', icon: '🌍', kids: [leaf('stores', '🏪', { business: true }), leaf('warehouses', '🏭', { business: true })] },
+    { key: 'food', icon: '🥩', kids: [leaf('meat', '🥩', { business: true }), leaf('fish', '🐟', { business: true }), leaf('dairy', '🥛', { business: true }), leaf('vegetables', '🥕', { business: true }), leaf('grocery', '🌾', { business: true }), leaf('bakery', '🥖', { business: true }), leaf('sweets', '🍬', { business: true }), leaf('preserves', '🫙', { business: true }), leaf('drinks', '🥤', { business: true }), fx('addDept', '➕', 'addDept', 'projects.std.addDept')] },
+    { key: 'clothes', icon: '👗', kids: [leaf('women', '👗', { business: true }), leaf('men', '👔', { business: true }), leaf('kids', '🧒', { business: true }), leaf('sport', '🏃', { business: true }), leaf('jeans', '👖', { business: true }), leaf('outer', '🧥', { business: true }), leaf('tshirts', '👕', { business: true }), leaf('dresses', '👚', { business: true }), leaf('underwear', '🩲', { business: true }), leaf('shoes', '👟', { business: true }), leaf('bags', '👜', { business: true }), fx('addDept', '➕', 'addDept', 'projects.std.addDept')] },
+    { key: 'chemistry', icon: '🧴', kids: [leaf('laundry', '🧺', { business: true }), leaf('dishes', '🍽️', { business: true }), leaf('cleaning', '🧽', { business: true }), leaf('bathroom', '🚿', { business: true }), leaf('soap', '🧼', { business: true }), leaf('shampoo', '🧴', { business: true }), leaf('deodorants', '🌸', { business: true }), leaf('cosmetics', '💄', { business: true }), leaf('paper', '🧻', { business: true }), leaf('home', '🏠', { business: true }), fx('addDept', '➕', 'addDept', 'projects.std.addDept')] },
+    { key: 'souvenirs', icon: '🎁', kids: [leaf('symbols', '🇺🇦', { business: true }), leaf('themed', '🎎', { business: true }), leaf('embroidery', '👘', { business: true }), leaf('handmade', '🧵', { business: true }), leaf('ceramics', '🏺', { business: true }), leaf('giftsets', '🎀', { business: true }), leaf('magnets', '🧲', { business: true }), leaf('jewelry', '💍', { business: true }), leaf('decor', '🕯️', { business: true }), fx('addDept', '➕', 'addDept', 'projects.std.addDept')] },
+    { key: 'electro', icon: '🔌', kids: [leaf('appliances', '🔌', { business: true }), leaf('kitchen', '🍳', { business: true }), leaf('tv', '📺', { business: true }), leaf('phones', '📱', { business: true }), leaf('computers', '💻', { business: true }), leaf('lighting', '💡', { business: true }), leaf('cables', '🔗', { business: true }), leaf('sockets', '🔘', { business: true }), leaf('powertools', '🔧', { business: true }), leaf('batteries', '🔋', { business: true }), leaf('repair', '🛠️', { business: true }), fx('addDept', '➕', 'addDept', 'projects.std.addDept')] },
+    { key: 'delivery', icon: '🚚', kids: [leaf('fromUa', '🚚', { business: true, acts: ['carrierAdd'] }), leaf('europe', '🚛', { business: true, acts: ['carrierAdd'] }), leaf('request', '📮')] },
+    { key: 'abroad', icon: '🌍', kids: [
+      leaf('stores', '🏪', { business: true, drill: ['country', 'region', 'city'], acts: ['partnerStore'] }),
+      leaf('warehouses', '🏭', { business: true, drill: ['country', 'region', 'city'], acts: ['partnerStore'] }),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, S_NEWS]),
+    FEEDBACK([fb('suggest', '💡', 'suggestion', 'projects.std.suggest'), fb('complaintShop', '🛒', 'complaint'), fb('complaintGoods', '📦', 'complaint'), fb('delivery', '🚚', 'complaint'), fb('complaintCarrier', '🏭', 'complaint'), F_REVIEW, F_DIRECTION]),
+    fx('addSection', '➕', 'addSection'),
   ],
+
+  // «Здоров'я для своїх»: 9 кнопок. Онлайн-консультації, а де потрібна присутність — вибір країни й міста лише з наявних фахівців.
   health: [
-    { key: 'doctors', icon: '🩺', kids: [leaf('family', '👨‍⚕️', { business: true }), leaf('therapist', '🧑‍⚕️', { business: true }), leaf('pediatrician', '👶', { business: true }), leaf('dermatologist', '🧴', { business: true }), leaf('allergist', '🤧', { business: true }), apply('newDirection')] },
-    { key: 'nutrition', icon: '🥗', kids: [leaf('dietitian', '🥗', { business: true }), leaf('sportNutrition', '💪', { business: true }), leaf('healthyEating', '🍎', { business: true }), leaf('childNutrition', '🍼', { business: true }), apply('newDirection')] },
-    { key: 'sport', icon: '🏋️', kids: [leaf('personal', '🎯', { business: true }), leaf('fitness', '🏋️', { business: true }), leaf('yoga', '🧘', { business: true }), apply('otherSpecialists')] },
-    { key: 'psychology', icon: '🧠', kids: [leaf('psychologists', '🧠', { business: true }), leaf('psychotherapists', '🛋️', { business: true }), leaf('family', '👪', { business: true }), leaf('child', '🧸', { business: true }), leaf('teen', '🧑‍🎓', { business: true }), leaf('sexologists', '❤️', { business: true }), leaf('addiction', '🆘', { business: true }), leaf('sleep', '😴', { business: true }), leaf('stress', '🌿', { business: true }), apply('newDirection')] },
-    { key: 'recovery', icon: '🦽', kids: [leaf('masseurs', '💆', { business: true }), leaf('injury', '🩹', { business: true }), leaf('speech', '🗣️', { business: true }), apply('newDirection')] },
-    { key: 'motherChild', icon: '🤰', kids: [leaf('lactation', '🍼', { business: true }), leaf('birthPrep', '🤰', { business: true }), leaf('childMassage', '👶', { business: true }), leaf('childRehab', '🧒', { business: true }), leaf('childSpeech', '🗣️', { business: true }), apply('suggestDirection')] },
-    leaf('shops', '🛍️', { business: true }),
+    { key: 'doctors', icon: '🩺', kids: [SPEC('family', '👨‍⚕️'), SPEC('therapist', '🧑‍⚕️'), SPEC('pediatrician', '👶'), SPEC('dermatologist', '🧴'), SPEC('allergist', '🤧'), SPEC('other', '🏥'), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'nutrition', icon: '🥗', kids: [SPEC('dietitian', '🥗'), SPEC('sportNutrition', '💪'), SPEC('healthyEating', '🍎'), SPEC('childNutrition', '🍼'), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'sport', icon: '🏋️', kids: [SPEC('personal', '🎯', ['training', 'join']), SPEC('fitness', '🏋️', ['training', 'join']), SPEC('yoga', '🧘', ['training', 'join']), SPEC('other', '🤸', ['training', 'join']), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'psychology', icon: '🧠', kids: [SPEC('psychologists', '🧠'), SPEC('psychotherapists', '🛋️'), SPEC('family', '👪'), SPEC('child', '🧸'), SPEC('teen', '🧑‍🎓'), SPEC('sexologists', '❤️'), SPEC('addiction', '🆘'), SPEC('sleep', '😴'), SPEC('stress', '🌿'), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'recovery', icon: '🦽', kids: [SPEC('masseurs', '💆', ['service', 'join'], { drill: ['country', 'city'] }), SPEC('injury', '🩹', ['service', 'join'], { drill: ['country', 'city'] }), SPEC('speech', '🗣️', ['consult', 'join']), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'motherChild', icon: '🤰', kids: [SPEC('lactation', '🍼'), SPEC('birthPrep', '🤰'), SPEC('childMassage', '👶', ['service', 'join'], { drill: ['country', 'city'] }), SPEC('childRehab', '🧒', ['service', 'join'], { drill: ['country', 'city'] }), SPEC('childSpeech', '🗣️'), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'shops', icon: '🛍️', kids: [
+      leaf('sportFood', '💪', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('healthyFood', '🍎', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('sportGoods', '🏋️', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('goods', '🩹', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('mothers', '🍼', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('care', '🧼', { business: true, directory: true, acts: ['shopApply'] }),
+      fx('newCategory', '➕', 'newDirection', 'projects.std.newCategory'),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, std('becomeSpecialist', '🩺', 'fx:becomeSpecialist'), S_TEAM, S_PARTNER, S_NEWS]),
+    FEEDBACK([F_SUGGEST, F_REVIEW, F_COMPLAINT, fb('specialist', '🧑‍⚕️', 'suggestion'), F_SUPPORT]),
   ],
+
+  // «Помічник на годину»: 5 кнопок (майстри, заявка й кабінет, оренда й виконання робіт, інформація, пропозиції та скарги)
   'helper-hour': [
-    leaf('masters', '🧑‍🔧'),
-    leaf('need', '📝'),
-    leaf('rent', '🧰'),
-    apply('cabinet', '🗂️'),
-    apply('team', '👥'),
+    { key: 'masters', icon: '🧑‍🔧', kids: [
+      leaf('construction', '🧱', { acts: ['orderWork'] }), leaf('plumbing', '🚰', { acts: ['orderWork'] }), leaf('electric', '⚡', { acts: ['orderWork'] }),
+      leaf('furniture', '🪑', { acts: ['orderWork'] }), leaf('garden', '🌿', { acts: ['orderWork'] }), leaf('firewood', '🪵', { acts: ['orderWork'] }),
+      leaf('cleaning', '🧹', { acts: ['orderWork'] }), leaf('transport', '🚚', { acts: ['orderWork'] }), leaf('misc', '🛠️', { acts: ['orderWork'] }),
+    ] },
+    { key: 'cabinet', icon: '🗂️', kids: [
+      fx('apply', '📝', 'masterApply'),
+      view('create', '🛠️', 'info'),
+      { key: 'my', icon: '🧰', kids: [
+        { key: 'profile', icon: '👤', href: '/profile' }, { key: 'services', icon: '🧾', href: '/my-listings' },
+        { key: 'orders', icon: '🆕', to: 'work.job.need' }, { key: 'replies', icon: '💬', href: '/chat' },
+        { key: 'active', icon: '⏳', href: '/my-listings' }, { key: 'messages', icon: '✉️', href: '/chat' },
+        { key: 'reviews', icon: '⭐', href: '/reviews' }, { key: 'settings', icon: '⚙️', href: '/menu/settings' },
+      ] },
+      { key: 'team', icon: '👥', kids: [view('network', '🌍', 'reptree'), view('create', '🏙️', 'repapply:open'), view('join', '🤝', 'repapply:open'), { key: 'invite', icon: '📨', href: '/menu/qr' }] },
+    ] },
+    { key: 'work', icon: '🧰', kids: [
+      { key: 'rent', icon: '🔧', kids: [
+        leaf('powerTools', '🔧', { acts: ['rentRequest'] }), leaf('garden', '🌱', { acts: ['rentRequest'] }), leaf('washers', '🚿', { acts: ['rentRequest'] }), leaf('building', '🏗️', { acts: ['rentRequest'] }),
+        leaf('trailers', '🚛', { acts: ['rentRequest'] }), leaf('generators', '🔋', { acts: ['rentRequest'] }), leaf('repair', '🪛', { acts: ['rentRequest'] }), leaf('other', '📦', { acts: ['rentRequest'] }),
+      ] },
+      { key: 'job', icon: '💪', kids: [leaf('find', '🔎'), leaf('need', '📝', { acts: ['offerWork'] })] },
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, S_INVITE, S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('complaintMaster', '📣', 'complaint'), fb('rentProblem', '🧰', 'complaint'), fb('dishonest', '🚫', 'complaint'), F_REVIEW, F_DIRECTION]),
   ],
+
+  // «Перекладач»: 4 кнопки (перекладачі за мовами, переклад документів і текстів, інформація, пропозиції та скарги)
   translator: [
-    { key: 'translators', icon: '🌐', kids: [leaf('english', '🇬🇧'), leaf('other', '🌍'), apply('newLanguage')] },
-    leaf('documents', '📄'),
+    { key: 'translators', icon: '🌐', kids: [
+      leaf('english', '🇬🇧', { acts: ['translateRequest', 'join'] }), leaf('german', '🇩🇪', { acts: ['translateRequest', 'join'] }), leaf('czech', '🇨🇿', { acts: ['translateRequest', 'join'] }),
+      leaf('polish', '🇵🇱', { acts: ['translateRequest', 'join'] }), leaf('romanian', '🇷🇴', { acts: ['translateRequest', 'join'] }), leaf('hungarian', '🇭🇺', { acts: ['translateRequest', 'join'] }),
+      leaf('french', '🇫🇷', { acts: ['translateRequest', 'join'] }), leaf('spanish', '🇪🇸', { acts: ['translateRequest', 'join'] }), leaf('italian', '🇮🇹', { acts: ['translateRequest', 'join'] }),
+      leaf('ukrainian', '🇺🇦', { acts: ['translateRequest', 'join'] }), leaf('slovak', '🇸🇰', { acts: ['translateRequest', 'join'] }), leaf('other', '🌍', { acts: ['translateRequest', 'join'] }),
+      fx('newLanguage', '➕', 'newLanguage'), fx('newDirection', '🧭', 'newDirection', 'projects.std.newDirection'), fx('becomeTranslator', '🖋️', 'becomeTranslator', 'projects.std.becomeTranslator'),
+    ] },
+    { key: 'documents', icon: '📄', kids: [fx('official', '📜', 'translateOfficial'), fx('ordinary', '📄', 'translateDocs'), fx('texts', '📝', 'translateText'), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    INFO([S_ABOUT, S_HOW, S_EARN, stdFx('becomeTranslator', '🖋️', 'becomeTranslator'), S_TEAM, S_PARTNER, std('ownTeam', '🏗️', 'repapply:open'), S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newLanguage', '🌐', 'suggestion'), fb('newDirection', '🧭', 'suggestion'), F_REVIEW, F_COMPLAINT, F_SUPPORT]),
   ],
+
+  // «Business Speed — ключ для своїх» (бізнес під ключ): 5 розділів за ТЗ
   turnkey: [
-    { key: 'specialists', icon: '🧑‍💼', kids: [leaf('accounting', '🧮', { business: true }), leaf('legal', '⚖️', { business: true }), leaf('it', '💻', { business: true }), leaf('sales', '📈', { business: true }), leaf('hr', '🤝', { business: true }), leaf('logistics', '🚚', { business: true }), leaf('admin', '🗂️', { business: true }), apply('addService')] },
-    leaf('partners', '🤝'),
-    leaf('projects', '🧩'),
-    leaf('export', '🚢'),
+    { key: 'specialists', icon: '🧑‍💼', kids: [SPEC('accounting', '🧮', ['serviceRequest', 'becomeSpecialist']), SPEC('legal', '⚖️', ['serviceRequest', 'becomeSpecialist']), SPEC('it', '💻', ['serviceRequest', 'becomeSpecialist']), SPEC('sales', '📈', ['serviceRequest', 'becomeSpecialist']), SPEC('hr', '🤝', ['serviceRequest', 'becomeSpecialist']), SPEC('logistics', '🚚', ['serviceRequest', 'becomeSpecialist']), SPEC('admin', '🗂️', ['serviceRequest', 'becomeSpecialist']), fx('addService', '➕', 'newDirection', 'projects.std.newDirection')] },
+    leaf('partners', '🤝', { drill: ['country'], acts: ['partnerSearch', 'marketSearch'] }),
+    { key: 'projects', icon: '🧩', kids: [proj('jobs', '💼', 'jobs'), proj('export', '🚢', 'export-alliance'), proj('china', '📦', 'china'), proj('shops', '🛍️', 'shops'), { key: 'others', icon: '🧩', href: '/projects' }, fx('help', '🆘', 'bizHelp')] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, S_NEWS]),
+    FEEDBACK([F_SUGGEST, F_REVIEW, F_COMPLAINT, fb('partnership', '🤝', 'suggestion'), F_SUPPORT]),
   ],
+
   china: [
     { key: 'search', icon: '🔎', kids: [leaf('product', '📦'), leaf('manufacturer', '🏭'), leaf('analogs', '🔁'), leaf('compare', '⚖️'), leaf('suppliers', '🏢'), leaf('custom', '📝')] },
     { key: 'brand', icon: '🏷️', kids: [leaf('create', '🎯'), leaf('design', '🎨'), leaf('packaging', '📦'), leaf('production', '🏭'), leaf('custom', '📐'), leaf('newProduct', '💡'), leaf('samples', '🧪')] },
@@ -165,31 +290,108 @@ const SPECS: Record<string, Spec[]> = {
     { key: 'trips', icon: '✈️', kids: [leaf('expos', '🎪'), leaf('organize', '🗺️'), leaf('factories', '🏭'), leaf('partners', '🤝'), leaf('translator', '🗣️'), leaf('tours', '🧳')] },
     { key: 'consult', icon: '💬', kids: [leaf('start', '🌱'), leaf('working', '💼'), leaf('purchaseHelp', '🆘'), leaf('turnkeyCalc', '🧮'), leaf('custom', '❓'), leaf('partner', '🤝')] },
   ],
+
+  // «Інвестиційні проєкти та пошук інвесторів»: 5 розділів за ТЗ
   invest: [
-    leaf('projects', '📈', { derive: { investKind: 'project' } }),
-    leaf('investors', '💰', { derive: { investKind: 'investor' } }),
-    { key: 'specialists', icon: '🧑‍💼', kids: [leaf('analyst', '📊'), leaf('financial', '💹'), leaf('economist', '🧮'), leaf('auditor', '🔍'), leaf('marketer', '📣'), leaf('risk', '🛡️'), leaf('valuation', '🏷️'), apply('otherDirection')] },
+    leaf('projects', '📈', { derive: { investKind: 'project' }, acts: ['investApply', 'projectContact'] }),
+    leaf('investors', '💰', { derive: { investKind: 'investor' }, acts: ['investApply'] }),
+    { key: 'specialists', icon: '🧑‍💼', kids: [
+      SPEC('analyst', '📊', ['serviceRequest', 'join']), SPEC('financial', '💹', ['serviceRequest', 'join']), SPEC('economist', '🧮', ['serviceRequest', 'join']),
+      SPEC('auditor', '🔍', ['serviceRequest', 'join']), SPEC('marketer', '📣', ['serviceRequest', 'join']), SPEC('risk', '🛡️', ['serviceRequest', 'join']),
+      SPEC('valuation', '🏷️', ['serviceRequest', 'join']), SPEC('lawyers', '⚖️', ['serviceRequest', 'join']), SPEC('pm', '🗓️', ['serviceRequest', 'join']),
+      SPEC('consultants', '💼', ['serviceRequest', 'join']), SPEC('other', '🧭', ['serviceRequest', 'join']),
+      fx('newSpecialty', '➕', 'newDirection'), fx('becomeSpecialist', '🧑‍💼', 'becomeSpecialist', 'projects.std.becomeSpecialist'),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, std('howPlace', '📈'), std('howInvestor', '💰'), std('howSpecialist', '🧑‍💼'), S_PARTNER, std('ownTeam', '🏗️', 'repapply:open'), S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newCategory', '📂', 'suggestion'), fb('newSpecialty', '🧑‍💼', 'suggestion'), F_REVIEW, fb('complaintProject', '📣', 'complaint'), fb('complaintUser', '🚫', 'complaint'), F_SUPPORT]),
   ],
+
+  // «Турагентство»: 8 розділів за ТЗ
   travel: [
-    leaf('turnkey', '🧳', { business: true }),
-    leaf('join', '👥'),
-    leaf('pick', '🏖️'),
-    { key: 'hot', icon: '🔥', kids: [leaf('cancelled', '↩️', { business: true }), leaf('prepaid', '🎟️', { business: true }), leaf('urgent', '⏱️', { business: true }), leaf('promo', '🏷️', { business: true }), leaf('lastSeats', '💺', { business: true })] },
-    leaf('tickets', '🎫', { business: true }),
-    leaf('insurance', '🛡️', { business: true }),
+    leaf('turnkey', '🧳', { business: true, acts: ['tourRequest', 'consult', 'join'] }),
+    leaf('join', '👥', { acts: ['seatRequest', 'askOrganizer', 'join'] }),
+    leaf('pick', '🏖️', { acts: ['pickRest!', 'mine', 'consult', 'join'] }),
+    { key: 'hot', icon: '🔥', kids: [
+      leaf('cancelled', '↩️', { business: true, acts: ['bookTour', 'checkSeats', 'consult', 'join'] }), leaf('prepaid', '🎟️', { business: true, acts: ['bookTour', 'checkSeats', 'consult', 'join'] }),
+      leaf('urgent', '⏱️', { business: true, acts: ['bookTour', 'checkSeats', 'consult', 'join'] }), leaf('promo', '🏷️', { business: true, acts: ['bookTour', 'checkSeats', 'consult', 'join'] }),
+      leaf('lastSeats', '💺', { business: true, acts: ['bookTour', 'checkSeats', 'consult', 'join'] }),
+    ] },
+    { key: 'tickets', icon: '🎫', kids: [
+      leaf('avia', '✈️', { business: true, acts: ['ticketRequest', 'mine', 'join'] }), leaf('rail', '🚆', { business: true, acts: ['ticketRequest', 'mine', 'join'] }),
+      leaf('bus', '🚌', { business: true, acts: ['ticketRequest', 'mine', 'join'] }), leaf('other', '🚢', { business: true, acts: ['ticketRequest', 'mine', 'join'] }),
+    ] },
+    { key: 'insurance', icon: '🛡️', kids: [
+      leaf('medical', '🏥', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }), leaf('abroad', '🌍', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }),
+      leaf('family', '👪', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }), leaf('child', '🧒', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }),
+      leaf('active', '🏔️', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }), leaf('accident', '🩹', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }),
+      leaf('other', '📄', { business: true, acts: ['insuranceRequest', 'consult', 'join'] }),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, std('becomeAgent', '🧑‍✈️', 'fx:becomeAgent'), S_TEAM, std('organizer', '🚌', 'fx:becomeOrganizer'), std('partnerHotels', '🏨', 'fx:partnerApply'), std('partnerInsurance', '🛡️', 'fx:partnerApply'), S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newDestination', '🗺️', 'suggestion'), fb('newService', '🧩', 'suggestion'), fb('tripReview', '⭐', 'suggestion'), F_COMPLAINT, fb('bookingProblem', '⚠️', 'complaint'), F_SUPPORT]),
   ],
+
+  // «Онлайн-зоомагазин»: 13 розділів за ТЗ. Породи — «папки» з наявних оголошень (drill: breed).
   pets: [
-    { key: 'animals', icon: '🐶', kids: [{ key: 'dogs', icon: '🐕', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'cats', icon: '🐈', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'birds', icon: '🦜', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'rodents', icon: '🐹', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'fish', icon: '🐠', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'reptiles', icon: '🦎', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'farm', icon: '🐄', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'other', icon: '🐾', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }] },
-    leaf('shops', '🛒', { business: true, directory: true }),
-    leaf('vet', '🩺', { business: true }),
-    leaf('training', '🎓', { business: true }),
-    { key: 'grooming', icon: '✂️', kids: [leaf('shop', '🛒', { business: true }), leaf('learning', '🎓'), leaf('onsite', '🚗', { business: true })] },
-    { key: 'sitting', icon: '🏠', kids: [leaf('need', '🙏'), leaf('can', '🤲'), leaf('hotels', '🏨', { business: true }), leaf('help', '🤝'), leaf('walking', '🦮')] },
-    leaf('travel', '🧳'),
-    leaf('nutrition', '🍖'),
+    { key: 'animals', icon: '🐶', kids: [
+      { key: 'dogs', icon: '🐕', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'cats', icon: '🐈', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'birds', icon: '🦜', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'rodents', icon: '🐹', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'fish', icon: '🐠', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'reptiles', icon: '🦎', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'farm', icon: '🐄', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+      { key: 'other', icon: '🐾', kids: [leaf('list', '📋', { drill: ['breed'] }), leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] })] },
+    ] },
+    { key: 'shops', icon: '🛒', kids: [
+      leaf('foodDogs', '🐕', { business: true, directory: true, acts: ['shopApply'] }), leaf('foodCats', '🐈', { business: true, directory: true, acts: ['shopApply'] }), leaf('birds', '🦜', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('rodents', '🐹', { business: true, directory: true, acts: ['shopApply'] }), leaf('aquarium', '🐠', { business: true, directory: true, acts: ['shopApply'] }), leaf('reptiles', '🦎', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('farm', '🐄', { business: true, directory: true, acts: ['shopApply'] }), leaf('beds', '🛏️', { business: true, directory: true, acts: ['shopApply'] }), leaf('accessories', '🎾', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('leashes', '🦮', { business: true, directory: true, acts: ['shopApply'] }), leaf('hygiene', '🧼', { business: true, directory: true, acts: ['shopApply'] }), leaf('equipment', '🩺', { business: true, directory: true, acts: ['shopApply'] }),
+      fx('newCategory', '➕', 'newDirection', 'projects.std.newCategory'),
+    ] },
+    { key: 'vet', icon: '🩺', kids: [
+      SPEC('general', '🩺', ['consult', 'appointment', 'join']), SPEC('therapist', '💊', ['consult', 'appointment', 'join']), SPEC('surgeon', '🔪', ['consult', 'appointment', 'join']), SPEC('dermatologist', '🧴', ['consult', 'appointment', 'join']),
+      SPEC('cardiologist', '❤️', ['consult', 'appointment', 'join']), SPEC('dentist', '🦷', ['consult', 'appointment', 'join']), SPEC('ophthalmologist', '👁️', ['consult', 'appointment', 'join']), SPEC('neurologist', '🧠', ['consult', 'appointment', 'join']),
+      SPEC('orthopedist', '🦴', ['consult', 'appointment', 'join']), SPEC('diagnostics', '🔬', ['consult', 'appointment', 'join']), SPEC('birds', '🦜', ['consult', 'appointment', 'join']), SPEC('rodents', '🐰', ['consult', 'appointment', 'join']),
+      SPEC('exotic', '🦎', ['consult', 'appointment', 'join']), SPEC('otherVet', '🏥', ['consult', 'appointment', 'join']), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection'),
+    ] },
+    { key: 'training', icon: '🎓', kids: [
+      SPEC('dogs', '🐕', ['lesson', 'join']), SPEC('cynologists', '🦮', ['lesson', 'join']), SPEC('puppies', '🐶', ['lesson', 'join']), SPEC('behavior', '🧩', ['lesson', 'join']),
+      SPEC('obedience', '✅', ['lesson', 'join']), SPEC('sport', '🏅', ['lesson', 'join']), SPEC('service', '🛡️', ['lesson', 'join']), SPEC('otherAnimals', '🐾', ['lesson', 'join']),
+      fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection'),
+    ] },
+    { key: 'grooming', icon: '✂️', kids: [
+      leaf('shop', '🛒', { business: true, directory: true, acts: ['shopApply'] }),
+      leaf('learning', '🎓', { acts: ['consult', 'join'] }),
+      leaf('onsite', '🚗', { business: true, drill: ['country', 'city'], acts: ['groomRequest', 'shopApply', 'join'] }),
+      fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection'),
+    ] },
+    { key: 'sitting', icon: '🏠', kids: [
+      leaf('need', '🙏', { acts: ['sittingRequest'] }), leaf('can', '🤲'), leaf('hotels', '🏨', { business: true, drill: ['country', 'city'], acts: ['bookPlace'] }), leaf('help', '🤝', { acts: ['join'] }),
+    ] },
+    { key: 'walking', icon: '🦮', kids: [leaf('need', '🙏', { acts: ['walkRequest'] }), leaf('can', '🤲', { acts: ['join'] }), fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection')] },
+    { key: 'travel', icon: '🧳', kids: [
+      leaf('transport', '🚚', { business: true, drill: ['country'], acts: ['petTransport', 'carrierAdd'] }),
+      view('docs', '📄', 'info'),
+      view('rules', '📋', 'info'),
+      leaf('hotels', '🏨', { business: true, drill: ['country', 'city'] }),
+      { key: 'agency', icon: '✈️', href: '/projects/travel' },
+    ] },
+    { key: 'nutrition', icon: '🍖', kids: [
+      SPEC('dogs', '🐕', ['consult', 'join']), SPEC('cats', '🐈', ['consult', 'join']), SPEC('birds', '🦜', ['consult', 'join']), SPEC('rodents', '🐹', ['consult', 'join']), SPEC('fish', '🐠', ['consult', 'join']),
+      SPEC('reptiles', '🦎', ['consult', 'join']), SPEC('food', '🥫', ['consult', 'join']), SPEC('diet', '📋', ['consult', 'join']), SPEC('weight', '⚖️', ['consult', 'join']), SPEC('care', '🏡', ['consult', 'join']),
+      fx('newDirection', '➕', 'newDirection', 'projects.std.newDirection'),
+    ] },
     { key: 'club', icon: '🐾', href: '/clubs' },
-    leaf('support', '❤️'),
+    { key: 'support', icon: '❤️', kids: [
+      leaf('shelters', '🏠', { acts: ['volunteer'] }), leaf('strays', '🐕', { acts: ['volunteer'] }), leaf('volunteers', '🙌', { acts: ['volunteer'] }), leaf('feed', '🥫', { acts: ['volunteer'] }),
+      leaf('funds', '💛', { acts: ['volunteer'] }), leaf('victims', '🩹', { acts: ['volunteer'] }), leaf('owners', '🔎', { acts: ['volunteer'] }), leaf('rehome', '🤲', { acts: ['volunteer'] }),
+      leaf('orgs', '🏛️', { acts: ['volunteer'] }), fx('propose', '➕', 'charityPropose'),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, std('partnerShop', '🛍️', 'fx:partnerApply'), std('becomeVet', '🩺', 'fx:partnerApply'), std('becomeGroomer', '✂️', 'fx:partnerApply'), S_TEAM, std('partnerCarrier', '🚚', 'fx:partnerApply'), std('openShop', '🏪', 'fx:partnerApply'), std('ownTeam', '🏗️', 'repapply:open'), S_PARTNER, S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newAnimal', '🐾', 'suggestion'), fb('newSpecialists', '🩺', 'suggestion'), fb('newGoods', '🛒', 'suggestion'), F_REVIEW, fb('complaintAd', '📣', 'complaint'), fb('complaintShop', '🛍️', 'complaint'), fb('complaintSpecialist', '🧑‍⚕️', 'complaint'), F_SUPPORT]),
   ],
+
   // «Таксі для своїх»: 8 основних папок за ТЗ замовника. Екрани: order:* — форма замовлення, ride:* — трансфер, form:* — звернення, info — довідка, trips — мої запити
   taxi: [
     { key: 'order', icon: '🚕', kids: [view('now', '⚡', 'order:now'), view('scheduled', '🗓️', 'order:scheduled'), view('address', '📍', 'order:address'), view('class', '🚘', 'order:class'), view('wishes', '📝', 'order:wishes')] },
@@ -205,9 +407,13 @@ const SPECS: Record<string, Spec[]> = {
     { key: 'all', icon: '🤝', href: '/clubs' },
     { key: 'fishing', icon: '🎣', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=fishing' }, leaf('shop', '🛒')] }, { key: 'hunting', icon: '🦌', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=hunting' }, leaf('shop', '🛒')] }, { key: 'knitting', icon: '🧶', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=knitting' }, leaf('shop', '🛒')] }, { key: 'creativity', icon: '🎨', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=creativity' }, leaf('shop', '🛒')] }, { key: 'travel', icon: '🧭', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=travel' }, leaf('shop', '🛒')] }, { key: 'sport', icon: '⚽', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=sport' }, leaf('shop', '🛒')] }, { key: 'auto', icon: '🚗', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=auto' }, leaf('shop', '🛒')] }, { key: 'business', icon: '💼', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=business' }, leaf('shop', '🛒')] }, { key: 'professional', icon: '🎓', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=professional' }, leaf('shop', '🛒')] }, { key: 'bloggers', icon: '📱', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=bloggers' }, leaf('shop', '🛒')] }, { key: 'streamers', icon: '🎥', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=streamers' }, leaf('shop', '🛒')] }, { key: 'gamers', icon: '🎮', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=gamers' }, leaf('shop', '🛒')] }, { key: 'other', icon: '✨', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=other' }, leaf('shop', '🛒')] },
   ],
+
+  // «Міжнародні ярмарки української продукції»: 4 кнопки за ТЗ
   trade: [
-    leaf('producers', '🏭'),
-    { key: 'organizers', icon: '🎪', kids: [leaf('self', '🎪'), leaf('member', '🤝')] },
+    leaf('producers', '🏭', { acts: ['tradeProducer!'] }),
+    { key: 'organizers', icon: '🎪', kids: [leaf('self', '🎪', { acts: ['organizerSelf!'] }), leaf('member', '🤝', { acts: ['organizerMember!'] }), leaf('venue', '🏛️', { acts: ['organizerVenue!'] })] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, S_NEWS]),
+    FEEDBACK([F_SUGGEST, F_DIRECTION, F_COMPLAINT, fb('organizerProblem', '🎪', 'complaint'), fb('producerProblem', '🏭', 'complaint'), F_REVIEW, fb('other', '❓', 'suggestion')]),
   ],
 };
 
@@ -215,7 +421,7 @@ export const PROJECT_FOLDERS: Record<string, ProjectFolder[]> = (() => {
   const out: Record<string, ProjectFolder[]> = {};
   Object.keys(SPECS).forEach((slug) => { out[slug] = build(slug, SPECS[slug], []); });
   // «Крамниця»: усі відділи ведуть до бізнес-кабінетів, а не до стрічки товарів
-  const mark = (nodes: ProjectFolder[]) => nodes.forEach((n) => { if (n.sectionId) n.directory = true; if (n.children) mark(n.children); });
+  const mark = (nodes: ProjectFolder[]) => nodes.forEach((n) => { if (n.sectionId && n.business && !n.drill) n.directory = true; if (n.children) mark(n.children); });
   mark(out['shops'] || []);
   return out;
 })();
@@ -224,15 +430,20 @@ export function foldersFor(slug: string): ProjectFolder[] {
   return PROJECT_FOLDERS[slug] ?? [];
 }
 
-/** Знаходить папку за шляхом `a` або `a.b` (батьківська.дочірня). */
+/** Знаходить папку за шляхом `a`, `a.b`, `a.b.c` … (вкладеність будь-якої глибини). */
 export function findFolder(slug: string, path: string | null): { folder: ProjectFolder; parent?: ProjectFolder } | null {
   if (!path) return null;
-  const [a, b] = path.split('.');
-  const top = foldersFor(slug).find((f) => f.key === a);
-  if (!top) return null;
-  if (!b) return { folder: top };
-  const child = top.children?.find((c) => c.key === b);
-  return child ? { folder: child, parent: top } : null;
+  let nodes = foldersFor(slug);
+  let node: ProjectFolder | undefined;
+  let parent: ProjectFolder | undefined;
+  for (const key of path.split('.')) {
+    const next = nodes.find((f) => f.key === key);
+    if (!next) return null;
+    parent = node;
+    node = next;
+    nodes = next.children ?? [];
+  }
+  return node ? { folder: node, parent } : null;
 }
 
 export interface SectionLeaf {

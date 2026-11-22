@@ -391,5 +391,509 @@
       "inCity": "Performers in {city}",
       "noneInCity": "No performers in {city} yet. We will let you know when they appear."
     }
+  },
+  "std": {
+    "info": "Information",
+    "about": "About the project",
+    "how": "How it works",
+    "earn": "How to earn here",
+    "rep": "Representatives by country and city",
+    "team": "Team",
+    "partner": "For partners: cooperation",
+    "inviteEmployer": "Invite an employer",
+    "news": "Project news",
+    "feedback": "Suggestions and complaints",
+    "suggest": "Suggest an improvement",
+    "review": "Leave a review",
+    "direction": "Suggest a new direction",
+    "addDept": "Add your department: apply",
+    "newDirection": "Suggest a new direction: submit a request",
+    "newCategory": "Suggest a new category: submit a request",
+    "becomeSpecialist": "Become a specialist: apply",
+    "complaint": "Submit a complaint",
+    "support": "Contact support",
+    "invite": "Invite friends",
+    "becomeTranslator": "Become a translator: apply",
+    "ownTeam": "Create your own team",
+    "howPlace": "How to submit a project",
+    "howInvestor": "How to become an investor",
+    "howSpecialist": "How to become a project specialist",
+    "becomeAgent": "Become a travel agent: apply",
+    "organizer": "Become a tour organizer: apply",
+    "partnerHotels": "Hotels: become a partner",
+    "partnerInsurance": "Insurance companies: become a partner",
+    "partnerShop": "Shops: become a partner",
+    "becomeVet": "Vets: become a specialist",
+    "becomeGroomer": "Groomers: become a specialist",
+    "partnerCarrier": "Carriers: become a partner",
+    "openShop": "Open your shop: apply",
+    "text": {
+      "about": "Everything for our people in one place: catalog, requests and contacts. The platform is free; the system never moves money between participants — payments are agreed directly.",
+      "how": "Pick a folder, browse listings or submit a request. Performers and administrators will see it; request status is shown in “My requests”. Always clarify details and check your partner before any deal.",
+      "earn": "Become a specialist, partner or representative. Submit an application — administrators will review it and get in touch. The platform is free; earnings depend on your own agreements with clients and no income is guaranteed.",
+      "news": "Project news will appear here. Follow updates and propose topics via “Suggestions and complaints”.",
+      "howPlace": "Submit an application with the project description, required amount and contacts. After administrator review the project appears in the catalog. The platform only introduces the parties and does not guarantee funding.",
+      "howInvestor": "Create an investor profile: budget, industries and participation formats. The profile can be open or hidden. Any investment carries risk — check projects yourself; the platform gives no financial advice and guarantees no profit.",
+      "howSpecialist": "Pick your specialty and apply with your experience and contacts. After review you will receive requests from project authors."
+    }
+  },
+  "f": {
+    "consult": {
+      "title": "Get a consultation"
+    },
+    "join": {
+      "title": "Become a specialist: apply"
+    },
+    "service": {
+      "title": "Order a service"
+    },
+    "training": {
+      "title": "Sign up for training"
+    },
+    "newDirection": {
+      "title": "Suggest a new direction"
+    },
+    "partnerApply": {
+      "title": "Become a partner: apply"
+    },
+    "shopApply": {
+      "title": "Add your shop: apply"
+    },
+    "carrierAdd": {
+      "title": "Add a carrier: apply"
+    },
+    "becomeSpecialist": {
+      "title": "Become a specialist: apply"
+    },
+    "becomeAgent": {
+      "title": "Become a travel agent: apply"
+    },
+    "addSection": {
+      "title": "Suggest a new section"
+    },
+    "addDept": {
+      "title": "Add your department: apply"
+    },
+    "addPlace": {
+      "title": "Add your place"
+    },
+    "serviceRequest": {
+      "title": "Submit a service request"
+    },
+    "bizHelp": {
+      "title": "Help choosing a project"
+    },
+    "masterApply": {
+      "title": "Become a master or specialist: apply"
+    },
+    "orderWork": {
+      "title": "Order a job"
+    },
+    "offerWork": {
+      "title": "Workers needed: submit a request"
+    },
+    "rentRequest": {
+      "title": "Rent: submit a request"
+    },
+    "jobSeeker": {
+      "title": "Looking for a vacancy: submit a request"
+    },
+    "carPick": {
+      "title": "Car selection: submit a request"
+    },
+    "carRentRequest": {
+      "title": "Rent a car: submit a request"
+    },
+    "partnerStore": {
+      "title": "Add a shop or warehouse: apply"
+    },
+    "partnerSearch": {
+      "title": "Find a partner business"
+    },
+    "marketSearch": {
+      "title": "Find a sales market"
+    },
+    "investApply": {
+      "title": "Submit a request"
+    },
+    "projectContact": {
+      "title": "Contact the project author"
+    },
+    "translateRequest": {
+      "title": "Order a translation"
+    },
+    "translateOfficial": {
+      "title": "Order an official translation"
+    },
+    "translateDocs": {
+      "title": "Order document translation"
+    },
+    "translateText": {
+      "title": "Order text translation"
+    },
+    "newLanguage": {
+      "title": "Suggest a new language"
+    },
+    "becomeTranslator": {
+      "title": "Become a translator: apply"
+    },
+    "tourRequest": {
+      "title": "Submit a tour request"
+    },
+    "seatRequest": {
+      "title": "Reserve a seat"
+    },
+    "askOrganizer": {
+      "title": "Ask the organizer"
+    },
+    "bookTour": {
+      "title": "Book a tour"
+    },
+    "checkSeats": {
+      "title": "Check free seats"
+    },
+    "pickRest": {
+      "title": "Pick a holiday for me"
+    },
+    "ticketRequest": {
+      "title": "Find tickets"
+    },
+    "insuranceRequest": {
+      "title": "Request insurance quote"
+    },
+    "becomeOrganizer": {
+      "title": "Become a tour organizer: apply"
+    },
+    "lesson": {
+      "title": "Sign up for a lesson"
+    },
+    "appointment": {
+      "title": "Book an appointment"
+    },
+    "groomRequest": {
+      "title": "Order grooming"
+    },
+    "sittingRequest": {
+      "title": "Need pet sitting: submit a request"
+    },
+    "walkRequest": {
+      "title": "Walking needed: submit a request"
+    },
+    "bookPlace": {
+      "title": "Book a place"
+    },
+    "petTransport": {
+      "title": "Order animal transport"
+    },
+    "volunteer": {
+      "title": "Offer help"
+    },
+    "charityPropose": {
+      "title": "Propose an organization or fundraiser"
+    },
+    "tradeProducer": {
+      "title": "Producer and seller application"
+    },
+    "organizerSelf": {
+      "title": "I can organize it myself: apply"
+    },
+    "organizerMember": {
+      "title": "Join a team: apply"
+    },
+    "organizerVenue": {
+      "title": "I have a fair venue: apply"
+    },
+    "mine": {
+      "title": "My requests"
+    },
+    "sent": "Request sent",
+    "tooLong": "Text is too long, please shorten it",
+    "mineEmpty": "No requests yet"
+  },
+  "fld": {
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "country": "Country",
+    "region": "Region",
+    "city": "City",
+    "address": "Address",
+    "desc": "Description",
+    "what": "What needs to be done",
+    "text": "Text or document description",
+    "exp": "Experience",
+    "services": "Services",
+    "character": "Animal temperament",
+    "care": "Care details",
+    "routes": "Routes",
+    "categories": "Product categories",
+    "delivery": "Delivery",
+    "goal": "Goal and need",
+    "resources": "Resources and capabilities",
+    "date": "Date",
+    "dateFrom": "Start date",
+    "dateTo": "End date",
+    "back": "Return date",
+    "title": "Title",
+    "budget": "Budget",
+    "deadline": "Deadline",
+    "term": "Term",
+    "site": "Website or social network",
+    "company": "Company",
+    "price": "Price",
+    "schedule": "Schedule",
+    "direction": "Direction",
+    "specialty": "Specialty",
+    "education": "Education",
+    "languagePairs": "Language pairs",
+    "srcLang": "From language",
+    "dstLang": "To language",
+    "docType": "Document type",
+    "pet": "Animal (kind, breed)",
+    "age": "Age",
+    "medical": "Health and notes",
+    "from": "From",
+    "to": "To",
+    "class": "Class",
+    "baggage": "Baggage",
+    "ages": "Travelers’ ages",
+    "purpose": "Purpose of trip",
+    "countries": "Countries",
+    "hotel": "Hotel",
+    "children": "Children (number, ages)",
+    "car": "Car (make, model)",
+    "jobWanted": "Desired job",
+    "salary": "Desired pay",
+    "startWhen": "When I can start",
+    "volumes": "Volumes",
+    "terms": "Terms",
+    "buy": "What you are looking for",
+    "product": "Product",
+    "amount": "Amount",
+    "shopName": "Shop name",
+    "products": "Products",
+    "cargo": "What you carry",
+    "org": "Organization",
+    "proof": "Proof of activity",
+    "report": "Reporting",
+    "parent": "Parent section",
+    "exportCountries": "Export countries",
+    "adults": "Adults",
+    "days": "Days",
+    "count": "Number of people",
+    "location": "Where you work",
+    "activity": "Type of activity",
+    "productKind": "Product kind",
+    "exportDocs": "Export documents",
+    "exportExp": "Export experience",
+    "hasStore": "Have a shop abroad",
+    "sellsUa": "Sell Ukrainian goods",
+    "restKind": "Type of holiday",
+    "need": "What you need",
+    "freq": "How often",
+    "supplier": "Where to look for a supplier",
+    "export": "Export",
+    "format": "Format",
+    "official": "Official certified translation",
+    "storeKind": "What you add",
+    "deptType": "Department type",
+    "placeLevel": "What you add"
+  },
+  "fopt": {
+    "location": {
+      "ua": "In Ukraine",
+      "abroad": "Abroad"
+    },
+    "activity": {
+      "producer": "Producer",
+      "seller": "Seller",
+      "shopOwner": "Shop owner",
+      "farm": "Farmer",
+      "master": "Craftsman",
+      "other": "Other"
+    },
+    "productKind": {
+      "food": "Food",
+      "meatDairy": "Meat and dairy",
+      "fish": "Fish",
+      "sweets": "Sweets",
+      "drinks": "Drinks",
+      "textile": "Textile and clothing",
+      "souvenirs": "Souvenirs",
+      "other": "Other"
+    },
+    "exportDocs": {
+      "yes": "Yes",
+      "no": "No",
+      "partly": "Partly"
+    },
+    "exportExp": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "hasStore": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "sellsUa": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "restKind": {
+      "sea": "Sea",
+      "family": "Family",
+      "romantic": "Romantic",
+      "excursion": "Sightseeing",
+      "active": "Active",
+      "mountain": "Mountains",
+      "other": "Other"
+    },
+    "need": {
+      "services": "Services",
+      "goods": "Goods",
+      "suppliers": "Suppliers",
+      "staff": "Staff",
+      "export": "Export",
+      "purchases": "Purchases",
+      "other": "Other"
+    },
+    "freq": {
+      "once": "One time",
+      "regular": "Regularly"
+    },
+    "supplier": {
+      "local": "In my country",
+      "abroad": "Abroad",
+      "any": "Any"
+    },
+    "export": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "format": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Both"
+    },
+    "official": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "storeKind": {
+      "store": "Shop",
+      "warehouse": "Warehouse"
+    },
+    "deptType": {
+      "main": "Main department",
+      "sub": "Sub-department"
+    },
+    "placeLevel": {
+      "country": "Country",
+      "region": "Region",
+      "city": "City",
+      "breed": "Breed"
+    }
+  },
+  "fh": {
+    "where": "Where you are",
+    "ifUa": "If you are in Ukraine",
+    "ifAbroad": "If you are abroad",
+    "contacts": "Contacts"
+  },
+  "fnote": {
+    "privacy": "Do not enter passport or document numbers in the form. Hand originals directly to the translator after agreeing.",
+    "tradeNoGuarantee": "The application does not guarantee participation in a fair. Terms are agreed with the organizer."
+  },
+  "drill": {
+    "showAll": "Show all",
+    "byPlace": "Choose by place",
+    "count": "{count} ads",
+    "pick": {
+      "country": "Choose a country",
+      "region": "Choose a region",
+      "city": "Choose a city",
+      "breed": "Choose a breed"
+    },
+    "add": {
+      "country": "Add a country",
+      "region": "Add a region",
+      "city": "Add a city",
+      "breed": "Add a breed"
+    }
+  },
+  "jobs": {
+    "text": {
+      "info_about": "Jobs for our people in different countries: vacancies and candidates in one catalog.",
+      "info_how": "Employers add vacancies by country and region. Job seekers browse or submit a request, which appears in “My requests”. Check the employer before traveling or paying for any services."
+    }
+  },
+  "cars": {
+    "text": {
+      "info_about": "Buying, renting and everything for cars: owner listings and specialized online shops.",
+      "info_how": "Choose a section, filter by country and region, contact the owner. Can’t find it — submit a selection request. Check the car and papers before buying."
+    }
+  },
+  "shops": {
+    "text": {
+      "info_about": "Ukrainian goods by department: food, clothing, household chemicals, souvenirs, electronics, plus delivery and partner shops and warehouses abroad.",
+      "info_how": "Open a department, pick a sub-department and a partner shop. Shop owners can apply for their own department. Order delivery via carriers in “Delivery and logistics”."
+    }
+  },
+  "health": {
+    "text": {
+      "info_about": "Doctors, nutrition, sport, psychology, recovery and health goods — specialists who understand our people.",
+      "info_how": "Choose a direction, find a specialist and request a consultation. Information here does not replace diagnosis or treatment: see a doctor for medical care."
+    },
+    "intro": "Doctors, nutrition, sport, psychology, recovery and health goods. This is information, not medical advice."
+  },
+  "helperHour": {
+    "text": {
+      "info_about": "Helper for an hour: masters, loaders and tool rental near you.",
+      "info_how": "Describe what needs doing and performers in your city will respond. Masters create a cabinet and form teams in a city, region or country. Agree terms and payment directly.",
+      "cabinet_create": "Submit the “Become a master or specialist” application. After administrator review you get a cabinet: profile, services, orders, reviews and settings."
+    }
+  },
+  "translator": {
+    "text": {
+      "info_about": "Translators and translation of documents and texts by language and country.",
+      "info_how": "Choose a language and submit a request with description and deadline. Send only a description via the form; hand over original documents directly to the translator after agreeing."
+    }
+  },
+  "turnkey": {
+    "text": {
+      "info_about": "Business Speed — a set of services to launch and grow a business: specialists, partners and other platform projects.",
+      "info_how": "Pick business specialists, request partner matching or find a sales market. Administrators will respond to your request."
+    },
+    "intro": "Business Speed — help starting and growing a business: specialists, partners, sales markets and platform projects."
+  },
+  "invest": {
+    "text": {
+      "info_about": "A place where project authors, investors and specialists meet. The platform only introduces parties, takes no part in deals and guarantees no funding or profit.",
+      "info_how": "Authors submit projects, investors create a profile (open or hidden), specialists offer services. Parties settle everything themselves; investing involves risk."
+    },
+    "intro": "Projects, investors and specialists. The platform only introduces parties; investing involves risk."
+  },
+  "travel": {
+    "text": {
+      "info_about": "Tours, hot offers, tickets and insurance for our people.",
+      "info_how": "Submit a request for a tour, holiday selection or tickets — the reply appears in “My requests”. Hot offers disappear after the date passes or when no seats remain."
+    },
+    "intro": "Tours, hot offers, tickets and insurance. Pick a holiday or submit a request."
+  },
+  "pets": {
+    "text": {
+      "info_about": "Everything for pets: animals, shops, vets, training, grooming, pet sitting, travel and help for animals.",
+      "info_how": "Choose an animal type and breed, shops or specialists, submit service requests. Check documents and terms before buying or boarding.",
+      "travel_docs": "Before traveling with an animal check destination rules: microchip, rabies vaccination, veterinary certificate. Rules change — confirm with official services.",
+      "travel_rules": "Carriers have their own rules on weight, carriers and breeds. Confirm terms with the airline or carrier in advance."
+    },
+    "intro": "Animals, shops, vets, training, grooming, pet sitting and help for animals — all in one place."
+  },
+  "trade": {
+    "text": {
+      "info_about": "Fairs of Ukrainian products worldwide: producer and seller applications and fair organizers.",
+      "info_how": "Producers apply, organizers in countries or cities form teams and venues. Participation in fairs is not guaranteed; details are agreed with the organizer."
+    },
+    "intro": "Fairs of Ukrainian products abroad: producers apply, organizers form teams and venues."
   }
 }

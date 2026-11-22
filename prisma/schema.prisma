@@ -1585,7 +1585,7 @@ model ProjectSuggestion {
   userId      Int      @map("user_id")
   projectSlug String   @map("project_slug") @db.VarChar(60)
   kind        String   @db.VarChar(16)
-  text        String   @db.VarChar(1000)
+  text        String   @db.VarChar(3000)
   status      String   @default("new") @db.VarChar(16)
   createdAt   DateTime @default(now()) @map("created_at")
 

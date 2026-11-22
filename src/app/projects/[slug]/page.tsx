@@ -12,10 +12,12 @@ import { MovingActions } from '@/components/projects/MovingActions';
 import { BusinessDirectory } from '@/components/listings/BusinessDirectory';
 import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
-import { applyIdOf, findFolder, foldersFor } from '@/lib/projectFolders';
+import { applyIdOf, findFolder, folderLink, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
 import { useFolderImages } from '@/lib/useFolderImages';
 import { FolderTileInner, folderTileCls } from '@/components/projects/FolderTile';
+import { GeoCatalog } from '@/components/projects/GeoCatalog';
+import { SectionActions } from '@/components/projects/SectionActions';
 import { TaxiFolders } from '@/components/projects/TaxiFolders';
 import { KindLeaf } from '@/components/projects/KindLeaf';
 import { SuggestBox } from '@/components/projects/SuggestBox';
@@ -32,6 +34,9 @@ interface Project {
   status: 'active' | 'coming_soon' | 'hidden';
   bannerUrl?: string | null;
 }
+
+/** Проєкти зі вступним текстом (головний текст концепції) над папками першого рівня */
+const INTRO_SLUGS = ['trade', 'turnkey', 'health', 'pets', 'travel', 'invest'];
 
 export default function ProjectPage() {
   const params = useParams<{ slug: string }>();
@@ -54,6 +59,8 @@ export default function ProjectPage() {
   };
   const [state, setState] = useState<'loading' | 'ready' | 'missing' | 'error'>('loading');
   const folderImages = useFolderImages(params.slug);
+  const parentOf = (path: string | null) => { const parts = (path || '').split('.'); parts.pop(); return parts.length ? parts.join('.') : null; };
+  const nsOf = (slug: string) => slug.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase());
 
   useEffect(() => { setLoggedIn(!!readStoredUser()); }, []);
 
@@ -108,25 +115,29 @@ export default function ProjectPage() {
                 if (folders.length > 0 && (!found || (found.folder.children && found.folder.children.length > 0))) {
                   return (
                     <div className="space-y-3">
+                      {!found && INTRO_SLUGS.indexOf(project.slug) !== -1 && <p className="rounded-2xl bg-black/30 backdrop-blur text-sm text-white p-3 whitespace-pre-line">{t(`projects.${nsOf(project.slug)}.intro`)}</p>}
                       {found && (
-                        <button type="button" onClick={() => openFolder(found.parent ? found.parent.key : null)} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">
+                        <button type="button" onClick={() => openFolder(parentOf(folderPath))} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">
                           <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')}
                         </button>
                       )}
                       <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {(list || []).map((f) => {
-                          const img = folderImages[found ? `${found.folder.key}.${f.key}` : f.key];
+                          const childPath = folderPath ? `${folderPath}.${f.key}` : f.key;
+                          const img = folderImages[childPath];
                           const tileCls = folderTileCls(img);
                           const inner = <FolderTileInner image={img} icon={f.icon} label={t(f.labelKey)} arrow={!!f.children} />;
                           // Заявка (кабінет, команда, новий напрям) і посилання в інший розділ — це не каталог, а перехід
                           const target = f.href ? f.href : f.apply
-                            ? `/projects/${project.slug}/earn?apply=${encodeURIComponent(applyIdOf(project.slug, found ? [found.folder.key, f.key] : [f.key]))}`
+                            ? `/projects/${project.slug}/earn?apply=${encodeURIComponent(applyIdOf(project.slug, childPath.split('.')))}`
                             : null;
                           return (
                             <li key={f.key}>
-                              {target
-                                ? <Link href={target} className={tileCls}>{inner}</Link>
-                                : <button type="button" onClick={() => openFolder(found ? `${found.folder.key}.${f.key}` : f.key)} className={tileCls}>{inner}</button>}
+                              {target && target.indexOf(folderLink(project.slug, '')) === 0
+                                ? <button type="button" onClick={() => openFolder(target.slice(folderLink(project.slug, '').length))} className={tileCls}>{inner}</button>
+                                : target
+                                  ? <Link href={target} className={tileCls}>{inner}</Link>
+                                  : <button type="button" onClick={() => openFolder(childPath)} className={tileCls}>{inner}</button>}
                             </li>
                           );
                         })}
@@ -137,7 +148,7 @@ export default function ProjectPage() {
                 return (
                   <div className="space-y-3">
                     {found && (
-                      <button type="button" onClick={() => openFolder(found.parent ? found.parent.key : null)} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">
+                      <button type="button" onClick={() => openFolder(parentOf(folderPath))} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
@@ -145,9 +156,12 @@ export default function ProjectPage() {
                     {found?.folder.kind ? null : (<>
                     {project.slug === 'real-estate' && found?.folder.sectionId === 'real_estate_home_moving' && <MovingActions />}
                     {project.slug === 'china' && found?.folder.sectionId && <ChinaActions sectionLabel={t(found.folder.labelKey)} />}
+                    {found?.folder.acts && <SectionActions key={folderPath} projectSlug={project.slug} acts={found.folder.acts} label={t(found.folder.labelKey)} />}
                     {found?.folder.directory && found.folder.sectionId
                       ? <BusinessDirectory key={folderPath} slug={project.slug} sectionId={found.folder.sectionId} />
-                      : <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />}
+                      : found?.folder.drill?.length
+                        ? <GeoCatalog key={folderPath} slug={project.slug} node={found.folder} label={t(found.folder.labelKey)} />
+                        : <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />}
                     </>)}
                   </div>
                 );

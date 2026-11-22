@@ -165,6 +165,8 @@ export function publicWhere(slug: string | null): Prisma.ListingWhereInput {
     status: 'approved',
     expiresAt: { gt: new Date() },
     owner: { isActive: true },
+    // Інвестор із прихованим профілем не потрапляє в публічний каталог, стрічку й пошук (бачить лише власник у «Мої оголошення»)
+    AND: [{ OR: [{ projectSlug: { not: 'invest' } }, { data: { path: ['section'], not: 'invest_investors' } }, { data: { path: ['visibility'], equals: 'open' } }] }],
   };
 }
 

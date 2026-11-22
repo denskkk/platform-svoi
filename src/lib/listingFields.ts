@@ -43,6 +43,17 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'fuel', type: 'select', options: ['petrol', 'diesel', 'gas', 'hybrid', 'electric'], filter: 'select' },
     { key: 'engineVolume', type: 'number', min: 0.1, max: 12 },
     { key: 'transmission', type: 'select', options: ['manual', 'automatic', 'robot', 'variator'], filter: 'select' },
+    { key: 'bodyType', type: 'select', options: ['sedan', 'hatchback', 'wagon', 'suv', 'crossover', 'minivan', 'coupe', 'pickup', 'other'], filter: 'select' },
+    { key: 'carCondition', type: 'select', options: ['new', 'used'], filter: 'select' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 80, filter: 'text' },
+    { key: 'carFeatures', type: 'text', maxLength: 300 },
+    { key: 'carRentUnit', type: 'select', options: ['day', 'week', 'month'], filter: 'select' },
+    { key: 'seats', type: 'number', min: 1, max: 60, filter: 'range' },
+    { key: 'driverOption', type: 'select', options: ['without', 'with', 'both'], filter: 'select' },
+    { key: 'deposit', type: 'text', maxLength: 80 },
+    { key: 'pickupPlace', type: 'text', maxLength: 150 },
+    { key: 'rentTerms', type: 'text', maxLength: 300 },
   ],
   'real-estate': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
@@ -73,6 +84,9 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
     { key: 'workplace', type: 'text', maxLength: 120 },
     { key: 'consultFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'languages', type: 'text', maxLength: 120, filter: 'text' },
+    { key: 'education', type: 'text', maxLength: 200 },
   ],
   sport: [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
@@ -103,6 +117,16 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'popularProduct', type: 'text', maxLength: 120 },
     { key: 'benefits', type: 'text', maxLength: 200 },
     { key: 'partnerTerms', type: 'text', maxLength: 150 },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 80, filter: 'text' },
+    { key: 'shopAddress', type: 'text', maxLength: 150 },
+    { key: 'workHours', type: 'text', maxLength: 100 },
+    { key: 'producedGoods', type: 'text', maxLength: 250 },
+    { key: 'routes', type: 'text', maxLength: 250 },
+    { key: 'routeFrom', type: 'text', maxLength: 120 },
+    { key: 'routeTo', type: 'text', maxLength: 120 },
+    { key: 'cargoInfo', type: 'text', maxLength: 250 },
+    { key: 'desiredDate', type: 'date' },
   ],
   events: [
     { key: 'eventKind', type: 'select', required: true, options: ['event', 'conference', 'exhibition', 'meetup', 'training', 'sport_event', 'culture'], filter: 'select' },
@@ -141,6 +165,10 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'businessKind', type: 'text', required: true, maxLength: 100, filter: 'text' },
     { key: 'investment', type: 'text', maxLength: 80 },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'languages', type: 'text', maxLength: 120, filter: 'text' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+    { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
   ],
   'apps': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
@@ -152,20 +180,65 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'languages', type: 'text', required: true, maxLength: 120, filter: 'text' },
     { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'education', type: 'text', maxLength: 200 },
+    { key: 'directions', type: 'text', maxLength: 200, filter: 'text' },
+    { key: 'official', type: 'select', options: ['yes', 'no'], filter: 'select' },
   ],
   'invest': [
     { key: 'investKind', type: 'select', required: true, options: ['project', 'investor'], filter: 'select' },
     { key: 'amountNeeded', type: 'text', maxLength: 80 },
     { key: 'stage', type: 'text', maxLength: 100 },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'industry', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'amountUsd', type: 'number', min: 0, max: 1_000_000_000_000, filter: 'range' },
+    { key: 'raisedUsd', type: 'number', min: 0, max: 1_000_000_000_000 },
+    { key: 'searchStatus', type: 'select', options: ['open', 'partial', 'closed'], filter: 'select' },
+    { key: 'contactPerson', type: 'text', maxLength: 100 },
+    { key: 'investBudget', type: 'select', options: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8'], filter: 'select' },
+    { key: 'visibility', type: 'select', options: ['open', 'hidden'], filter: 'select' },
+    { key: 'investFormats', type: 'text', maxLength: 200 },
+    { key: 'interests', type: 'text', maxLength: 200, filter: 'text' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+    { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
   ],
   'travel': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'destination', type: 'text', required: true, maxLength: 120, filter: 'text' },
     { key: 'tripDate', type: 'date' },
+    { key: 'fromCity', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'tripDateEnd', type: 'date' },
+    { key: 'hotelName', type: 'text', maxLength: 120 },
+    { key: 'nights', type: 'number', min: 1, max: 365, filter: 'range' },
+    { key: 'seatsFree', type: 'number', min: 0, max: 1000 },
+    { key: 'oldPrice', type: 'number', min: 0, max: 100_000_000 },
+    { key: 'included', type: 'text', maxLength: 300 },
+    { key: 'extraCosts', type: 'text', maxLength: 200 },
+    { key: 'validUntil', type: 'date' },
   ],
   'pets': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'petCategory', type: 'text', required: true, maxLength: 100, filter: 'text' },
+    { key: 'breed', type: 'text', maxLength: 80, filter: 'text' },
+    { key: 'petAge', type: 'text', maxLength: 40 },
+    { key: 'petGender', type: 'select', options: ['male', 'female'], filter: 'select' },
+    { key: 'petAdType', type: 'select', options: ['owner', 'rehome', 'mate', 'other'], filter: 'select' },
+    { key: 'petHealth', type: 'text', maxLength: 250 },
+    { key: 'petTerms', type: 'text', maxLength: 250 },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+    { key: 'languages', type: 'text', maxLength: 120, filter: 'text' },
+    { key: 'education', type: 'text', maxLength: 200 },
+    { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+    { key: 'petKind', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'careFrom', type: 'date' },
+    { key: 'careTo', type: 'date' },
+    { key: 'capacity', type: 'text', maxLength: 100 },
+    { key: 'petService', type: 'select', options: ['walk', 'nanny', 'feeding', 'visiting', 'individual', 'regular'], filter: 'select' },
+    { key: 'routes', type: 'text', maxLength: 250 },
+    { key: 'organizer', type: 'text', maxLength: 120 },
+    { key: 'goalAmount', type: 'text', maxLength: 80 },
+    { key: 'reportUrl', type: 'url', maxLength: 255 },
   ],
   clubs: [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
@@ -176,11 +249,29 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
   ],
   'helper-hour': [
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'tools', type: 'text', maxLength: 200 },
+    { key: 'availability', type: 'text', maxLength: 150 },
+    { key: 'desiredDate', type: 'date' },
+    { key: 'address', type: 'text', maxLength: 150 },
+    { key: 'rentDeposit', type: 'text', maxLength: 100 },
+    { key: 'deliveryOption', type: 'select', options: ['yes', 'no'], filter: 'select' },
+    { key: 'techState', type: 'text', maxLength: 200 },
   ],
   jobs: [
     { key: 'jobKind', type: 'select', required: true, options: ['vacancy', 'resume', 'partner_search', 'cooperation'], filter: 'select' },
     { key: 'employment', type: 'select', options: ['full', 'part', 'remote', 'project'], filter: 'select' },
     { key: 'company', type: 'text', maxLength: 120 },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 80, filter: 'text' },
+    { key: 'profession', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'schedule', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'hours', type: 'number', min: 1, max: 100, filter: 'range' },
+    { key: 'jobExperience', type: 'number', min: 0, max: 60, filter: 'range' },
+    { key: 'housing', type: 'select', options: ['yes', 'no'], filter: 'select' },
+    { key: 'requirements', type: 'text', maxLength: 300 },
+    { key: 'jobConditions', type: 'text', maxLength: 300 },
+    { key: 'startWhen', type: 'text', maxLength: 80 },
   ],
 };
 
@@ -195,6 +286,18 @@ const RE_HOME = ['real_estate_home_sell', 'real_estate_home_free', 'real_estate_
 // Розділи, де має сенс кількість кімнат (не земля, гаражі, комерція й офіси)
 const RE_ROOMS = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_sale_newbuilds', 'real_estate_rent_apartments', 'real_estate_rent_houses', 'real_estate_rent_rooms', 'real_estate_rent_short'];
 const CAR_SECTIONS = ['cars_buy', 'cars_rent'];
+const ids = (slug: string, prefix: string) => sectionLeaves(slug).map((l) => l.id).filter((id) => id.indexOf(prefix) === 0);
+const JOB_SECTIONS = ['jobs_vacancies', 'jobs_apply_candidates'];
+const SHOP_ABROAD = ['shops_abroad_stores', 'shops_abroad_warehouses'];
+const SHOP_CARRIER = ['shops_delivery_fromUa', 'shops_delivery_europe'];
+const TOUR_SECTIONS = ['travel_turnkey', 'travel_join'].concat(ids('travel', 'travel_hot_'));
+const HEALTH_SPECIALISTS = ids('health', 'health_').filter((id) => id.indexOf('health_shops') !== 0);
+const PET_ADS = sectionLeaves('pets').map((l) => l.id).filter((id) => /_list$/.test(id));
+const PET_SPECIALISTS = ids('pets', 'pets_vet_').concat(ids('pets', 'pets_training_'), ids('pets', 'pets_nutrition_'), ['pets_grooming_learning', 'pets_grooming_onsite']);
+const PET_CARE = ['pets_sitting_need', 'pets_sitting_can', 'pets_sitting_hotels', 'pets_sitting_help', 'pets_walking_need', 'pets_walking_can'];
+const HH_RENT = ids('helper-hour', 'helper_hour_work_rent_');
+const HH_JOB = ids('helper-hour', 'helper_hour_work_job_');
+const HH_ALL = ids('helper-hour', 'helper_hour_');
 const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
   'real-estate': {
     // Тип об'єкта виставляється розділом (derive); обирає його сам користувач лише в короткостроковій оренді
@@ -227,10 +330,69 @@ const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
     engineVolume: { sections: CAR_SECTIONS },
     transmission: { sections: CAR_SECTIONS },
     sellerType: { sections: CAR_SECTIONS },
+    bodyType: { sections: CAR_SECTIONS }, country: { sections: CAR_SECTIONS }, region: { sections: CAR_SECTIONS }, carFeatures: { sections: CAR_SECTIONS },
+    carCondition: { sections: ['cars_buy'] },
+    carRentUnit: { sections: ['cars_rent'] }, seats: { sections: ['cars_rent'] }, driverOption: { sections: ['cars_rent'] },
+    deposit: { sections: ['cars_rent'] }, pickupPlace: { sections: ['cars_rent'] }, rentTerms: { sections: ['cars_rent'] },
   },
-  jobs: { jobKind: { derived: true } },
-  invest: { investKind: { derived: true } },
-  health: { healthKind: { derived: true }, medSpecialty: { derived: true } },
+  jobs: {
+    jobKind: { derived: true },
+    employment: { sections: JOB_SECTIONS }, company: { sections: ['jobs_vacancies'] },
+    country: { sections: JOB_SECTIONS }, region: { sections: JOB_SECTIONS }, profession: { sections: JOB_SECTIONS },
+    schedule: { sections: JOB_SECTIONS }, hours: { sections: ['jobs_vacancies'] }, jobExperience: { sections: JOB_SECTIONS },
+    housing: { sections: ['jobs_vacancies'] }, requirements: { sections: ['jobs_vacancies'] }, jobConditions: { sections: ['jobs_vacancies'] },
+    startWhen: { sections: ['jobs_apply_candidates'] },
+  },
+  invest: {
+    investKind: { derived: true },
+    country: { sections: ['invest_projects', 'invest_investors'].concat(ids('invest', 'invest_specialists_')) },
+    industry: { sections: ['invest_projects'] }, amountUsd: { sections: ['invest_projects'] }, raisedUsd: { sections: ['invest_projects'] },
+    searchStatus: { sections: ['invest_projects'] }, contactPerson: { sections: ['invest_projects'] }, stage: { sections: ['invest_projects'] }, amountNeeded: { sections: ['invest_projects'] },
+    investBudget: { sections: ['invest_investors'], requiredIn: ['invest_investors'] }, visibility: { sections: ['invest_investors'], requiredIn: ['invest_investors'] },
+    investFormats: { sections: ['invest_investors'] }, interests: { sections: ['invest_investors'] },
+    experience: { sections: ids('invest', 'invest_specialists_') }, serviceFormat: { sections: ids('invest', 'invest_specialists_') },
+  },
+  health: {
+    healthKind: { derived: true }, medSpecialty: { derived: true },
+    consultFormat: { sections: HEALTH_SPECIALISTS }, experience: { sections: HEALTH_SPECIALISTS }, workplace: { sections: HEALTH_SPECIALISTS },
+    country: { sections: HEALTH_SPECIALISTS }, languages: { sections: HEALTH_SPECIALISTS }, education: { sections: HEALTH_SPECIALISTS },
+  },
+  shops: {
+    country: { sections: SHOP_ABROAD }, region: { sections: SHOP_ABROAD }, shopAddress: { sections: SHOP_ABROAD }, workHours: { sections: SHOP_ABROAD }, producedGoods: { sections: SHOP_ABROAD },
+    routes: { sections: SHOP_CARRIER }, routeFrom: { sections: ['shops_delivery_request'] }, routeTo: { sections: ['shops_delivery_request'] },
+    cargoInfo: { sections: ['shops_delivery_request'] }, desiredDate: { sections: ['shops_delivery_request'] },
+  },
+  turnkey: {
+    adKind: { sections: ['turnkey_partners'] }, businessKind: { sections: ['turnkey_partners'] }, investment: { sections: [] },
+    country: { sections: ['turnkey_partners'] },
+    languages: { sections: ids('turnkey', 'turnkey_specialists_') }, experience: { sections: ids('turnkey', 'turnkey_specialists_') }, serviceFormat: { sections: ids('turnkey', 'turnkey_specialists_') },
+  },
+  translator: {
+    adKind: { sections: [] }, languages: { sections: ids('translator', 'translator_translators_') }, serviceFormat: { sections: ids('translator', 'translator_translators_') },
+    experience: { sections: ids('translator', 'translator_translators_') }, country: { sections: ids('translator', 'translator_translators_') },
+    education: { sections: ids('translator', 'translator_translators_') }, directions: { sections: ids('translator', 'translator_translators_') }, official: { sections: ids('translator', 'translator_translators_') },
+  },
+  travel: {
+    adKind: { sections: [] },
+    destination: { sections: TOUR_SECTIONS }, tripDate: { sections: TOUR_SECTIONS }, tripDateEnd: { sections: TOUR_SECTIONS }, fromCity: { sections: TOUR_SECTIONS },
+    hotelName: { sections: TOUR_SECTIONS }, nights: { sections: TOUR_SECTIONS }, included: { sections: TOUR_SECTIONS }, extraCosts: { sections: TOUR_SECTIONS },
+    seatsFree: { sections: ['travel_join'].concat(ids('travel', 'travel_hot_')) }, oldPrice: { sections: ids('travel', 'travel_hot_') }, validUntil: { sections: ids('travel', 'travel_hot_') },
+  },
+  pets: {
+    adKind: { sections: [] }, petCategory: { sections: [] },
+    breed: { sections: PET_ADS }, petAge: { sections: PET_ADS }, petGender: { sections: PET_ADS }, petAdType: { sections: PET_ADS }, petHealth: { sections: PET_ADS }, petTerms: { sections: PET_ADS },
+    country: { sections: PET_ADS.concat(PET_SPECIALISTS, PET_CARE, ['pets_travel_transport', 'pets_travel_hotels']) },
+    experience: { sections: PET_SPECIALISTS.concat(PET_CARE) }, languages: { sections: PET_SPECIALISTS }, education: { sections: PET_SPECIALISTS }, serviceFormat: { sections: PET_SPECIALISTS },
+    petKind: { sections: PET_CARE }, careFrom: { sections: PET_CARE }, careTo: { sections: PET_CARE }, capacity: { sections: PET_CARE }, petService: { sections: ['pets_walking_need', 'pets_walking_can'] },
+    routes: { sections: ['pets_travel_transport'] },
+    organizer: { sections: ids('pets', 'pets_support_') }, goalAmount: { sections: ids('pets', 'pets_support_') }, reportUrl: { sections: ids('pets', 'pets_support_') },
+  },
+  'helper-hour': {
+    experience: { sections: HH_ALL }, country: { sections: HH_ALL },
+    tools: { sections: ['helper_hour_work_job_find'] }, availability: { sections: ['helper_hour_work_job_find'] },
+    desiredDate: { sections: ['helper_hour_work_job_need'] }, address: { sections: ['helper_hour_work_job_need'] },
+    rentDeposit: { sections: HH_RENT }, deliveryOption: { sections: HH_RENT }, techState: { sections: HH_RENT },
+  },
 };
 
 Object.keys(LISTING_FIELDS).forEach((slug) => {

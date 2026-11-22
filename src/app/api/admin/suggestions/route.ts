@@ -7,7 +7,8 @@ import { logAudit } from '@/lib/audit';
 import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
-const STATUSES = ['new', 'done', 'rejected'];
+const STATUSES = ['new', 'review', 'offers', 'clarify', 'done', 'rejected', 'closed'];
+const STATUS_UK: Record<string, string> = { new: 'Нова', review: 'На розгляді', offers: 'Є пропозиції', clarify: 'Потрібне уточнення', done: 'Опрацьована', rejected: 'Відхилена', closed: 'Закрита' };
 
 async function list(request: NextRequest) {
   const t = getApiT(request);
@@ -43,6 +44,14 @@ async function update(request: NextRequest) {
       });
     } catch (e) {
       console.error('Unlock notification error:', e);
+    }
+  }
+  // Заявки (не пропозиції й скарги): людина отримує сповіщення про новий статус
+  if (['request', 'consult', 'specialist', 'market'].includes(row.kind) && body.status !== 'new') {
+    try {
+      await prisma.notification.create({ data: { userId: row.userId, type: 'project_request_status', title: `Статус заявки: ${STATUS_UK[body.status] || body.status}`, message: '', relatedEntityType: 'project_suggestion', relatedEntityId: id } });
+    } catch (e) {
+      console.error('Request status notification error:', e);
     }
   }
   await logAudit({ actorId: adminId, action: 'suggestion.status', entityType: 'project_suggestion', entityId: id, details: { status: body.status } });

@@ -1,4 +1,5 @@
-/** POST /api/project-suggestions { projectSlug, kind: suggestion|complaint|product|specialist|market|request|consult|calc, text } — пропозиція чи скарга до проєкту */
+/** POST /api/project-suggestions { projectSlug, kind: suggestion|complaint|product|specialist|market|request|consult|calc, text } — пропозиція, скарга чи заявка до проєкту.
+ *  GET  /api/project-suggestions?projectSlug= — власні звернення користувача з їхніми статусами («Мої заявки»). */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
@@ -21,13 +22,30 @@ export async function POST(request: NextRequest) {
     const kind = ['suggestion', 'complaint', 'product', 'specialist', 'market', 'unlock', 'request', 'consult', 'calc'].includes(body?.kind) ? body.kind : '';
     const text = typeof body?.text === 'string' ? body.text.trim() : '';
     const slug = String(body?.projectSlug || '');
-    if (!kind || text.length < 5 || text.length > 1000 || !(kind === 'unlock' && slug === 'platform') && !(await getProject(slug))) {
+    if (!kind || text.length < 5 || text.length > 3000 || !(kind === 'unlock' && slug === 'platform') && !(await getProject(slug))) {
       return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
     }
     await prisma.projectSuggestion.create({ data: { userId, projectSlug: slug, kind, text } });
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (e) {
     console.error('[project-suggestions POST]', e);
+    return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const t = getApiT(request);
+  const { user, error } = await requireAuth(request);
+  if (error) return error;
+  try {
+    const slug = new URL(request.url).searchParams.get('projectSlug') || '';
+    const items = await prisma.projectSuggestion.findMany({
+      where: { userId: Number(user.userId), ...(slug ? { projectSlug: slug } : {}) },
+      orderBy: { id: 'desc' }, take: 50, select: { id: true, kind: true, text: true, status: true, createdAt: true },
+    });
+    return NextResponse.json({ items });
+  } catch (e) {
+    console.error('[project-suggestions GET]', e);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });
   }
 }

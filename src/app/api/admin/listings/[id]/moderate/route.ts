@@ -28,15 +28,23 @@ async function handler(request: NextRequest, idParam: string) {
     if (action !== 'approve' && action !== 'reject') return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
     if (action === 'reject' && !reason) return NextResponse.json({ error: t('api.listings.reasonRequired') }, { status: 400 });
 
-    const row = id ? await prisma.listing.findUnique({ where: { id }, select: { ownerId: true, status: true, title: true } }) : null;
+    const row = id ? await prisma.listing.findUnique({ where: { id }, select: { ownerId: true, status: true, title: true, data: true } }) : null;
     if (!id || !row) return NextResponse.json({ error: t('api.listings.notFound') }, { status: 404 });
 
     const approve = action === 'approve';
+    // Пропозиції зі строком дії (гарячі тури): після validUntil — або з 0 вільних місць — оголошення не показується в каталозі
+    const info = (row.data && typeof row.data === 'object' ? row.data : {}) as Record<string, unknown>;
+    let expires = new Date(Date.now() + LISTING_LIMITS.publishDays * 86400000);
+    if (typeof info.validUntil === 'string') {
+      const until = new Date(`${info.validUntil}T23:59:59Z`);
+      if (!Number.isNaN(until.getTime()) && until < expires) expires = until;
+    }
+    if (info.seatsFree === 0) expires = new Date();
     // Умова на статус захищає від подвійної обробки (два модератори одночасно)
     const updated = await prisma.listing.updateMany({
       where: { id, status: 'pending' },
       data: approve
-        ? { status: 'approved', rejectReason: null, moderatedAt: new Date(), moderatedById: adminId, expiresAt: new Date(Date.now() + LISTING_LIMITS.publishDays * 86400000) }
+        ? { status: 'approved', rejectReason: null, moderatedAt: new Date(), moderatedById: adminId, expiresAt: expires }
         : { status: 'rejected', rejectReason: reason, moderatedAt: new Date(), moderatedById: adminId, expiresAt: null },
     });
     if (updated.count === 0) return NextResponse.json({ error: t('api.listings.alreadyModerated') }, { status: 409 });

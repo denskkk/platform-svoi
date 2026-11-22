@@ -37,6 +37,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (!owner && !publiclyVisible && !(await isAdmin(userId))) {
       return NextResponse.json({ error: t('api.listings.notFound') }, { status: 404 });
     }
+    // Прихований профіль інвестора: за прямим посиланням його бачить лише власник або адміністратор
+    const rowData = (row.data && typeof row.data === 'object' ? row.data : {}) as Record<string, unknown>;
+    if (!owner && row.projectSlug === 'invest' && rowData.section === 'invest_investors' && rowData.visibility !== 'open' && !(await isAdmin(userId))) {
+      return NextResponse.json({ error: t('api.listings.notFound') }, { status: 404 });
+    }
     if (!owner && (await isBlockedBetween(userId, row.ownerId))) {
       return NextResponse.json({ error: t('api.listings.notFound') }, { status: 404 });
     }

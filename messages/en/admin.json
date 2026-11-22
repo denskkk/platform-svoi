@@ -122,7 +122,11 @@
     "status": {
       "new": "New",
       "done": "Done",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "review": "In review",
+      "offers": "Offers received",
+      "clarify": "Needs clarification",
+      "closed": "Closed"
     },
     "kind": {
       "suggestion": "Suggestion",
@@ -135,6 +139,7 @@
       "request": "Request",
       "consult": "Consultation",
       "calc": "Purchase calculation"
-    }
+    },
+    "statusLabel": "Status"
   }
 }
