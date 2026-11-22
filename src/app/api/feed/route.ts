@@ -4,7 +4,7 @@
  * Стрічка дописів (нові зверху), курсорна пагінація за id допису.
  *  - scope=all        — усі публічні дописи
  *  - scope=following  — дописи тих, на кого підписаний користувач, та власні
- * Додатково: saved=1 — лише збережені користувачем дописи; authorId=ID — лише дописи одного автора (для сторінки профілю).
+ * Додатково: reposts=1 — лише репости; reacted=1 — мої лайки й коментарі; saved=1 — лише збережені користувачем дописи; authorId=ID — лише дописи одного автора (для сторінки профілю).
  * Відповідь: { posts, nextCursor }  (nextCursor === null — це кінець стрічки)
  */
 
@@ -51,9 +51,14 @@ export async function GET(request: NextRequest) {
     if (cursor) where.id = { lt: cursor };
     if (params.get('videos') === '1') where.video = { is: { status: 'ready' } };
     const authorId = parseId(params.get('authorId'));
+    // reposts=1 — лише репости (для вкладки профілю); reacted=1 — дописи, які поточний користувач лайкнув або прокоментував
+    if (params.get('reposts') === '1') (where as any).repostOfId = { not: null };
+    if (params.get('reacted') === '1') (where as any).OR = [{ likes: { some: { userId } } }, { comments: { some: { authorId: userId } } }];
     if (params.get('saved') === '1') {
       const rows = await prisma.savedPost.findMany({ where: { userId }, select: { postId: true }, orderBy: { id: 'desc' }, take: 1000 });
       where.id = { ...(cursor ? { lt: cursor } : {}), in: rows.map((r: any) => r.postId) };
+      if (blocked.length > 0) where.authorId = { notIn: blocked };
+    } else if (params.get('reacted') === '1') {
       if (blocked.length > 0) where.authorId = { notIn: blocked };
     } else if (authorId) {
       if (blocked.includes(authorId)) return NextResponse.json({ posts: [], nextCursor: null });

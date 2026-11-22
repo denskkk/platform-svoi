@@ -259,7 +259,7 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
   return (
     <div ref={ref} className="relative h-full snap-start snap-always bg-black overflow-hidden select-none">
       <video ref={vref} src={`${post.video.url}#t=0.1`} poster={post.video.posterUrl || undefined} loop playsInline muted={muted} preload="metadata"
-        onLoadedData={onLoaded} onTimeUpdate={onTime} className="absolute inset-0 h-full w-full object-cover" />
+        onLoadedData={onLoaded} onTimeUpdate={onTime} className="absolute inset-0 h-full w-full object-contain bg-black" />
       {/* Область тапу (пауза / подвійний тап) */}
       <div onClick={onTap} className="absolute inset-0 z-10" aria-hidden />
       {paused && <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"><span className="h-20 w-20 rounded-full bg-black/40 flex items-center justify-center"><Play className="w-10 h-10 text-white fill-white" /></span></div>}
