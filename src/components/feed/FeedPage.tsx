@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, Clapperboard, Loader2, Newspaper, Search, Users } from 'lucide-react';
+import { ArrowDown, Clapperboard, Loader2, Newspaper, Radio, Search, Users } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useI18n } from '@/i18n/client';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
@@ -14,9 +14,13 @@ import { Recommendations } from './Recommendations';
 import { FeedMenuDrawer, FeedSidebar } from './FeedSidebar';
 import { StoriesBar } from './StoriesBar';
 import { PostComposer } from './PostComposer';
+import { MarketFeed } from './MarketFeed';
 import { GuestBanner, useGuestGate } from '@/components/ui/GuestGate';
 
 type Scope = 'all' | 'following';
+/** Вкладки стрічки за ТЗ: LIVE, Товари/Послуги, Підписки, Рекомендоване */
+type Tab = 'live' | 'market' | 'following' | 'all';
+const TABS: Tab[] = ['live', 'market', 'following', 'all'];
 
 function PostSkeleton() {
   return (
@@ -41,6 +45,7 @@ export function FeedPage() {
   const [user, setUser] = useState<ReturnType<typeof readStoredUser>>(null);
   const [ready, setReady] = useState(false);
   const [scope, setScope] = useState<Scope>('all');
+  const [view, setView] = useState<'feed' | 'live' | 'market'>('feed');
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [cursor, setCursor] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -209,21 +214,39 @@ export function FeedPage() {
         </Link>
 
         {/* Вкладки */}
-        <div role="tablist" data-guest-ok className="grid grid-cols-2 rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] overflow-hidden">
-          {(['all', 'following'] as Scope[]).map((s) => (
-            <button
-              key={s}
-              role="tab"
-              type="button"
-              aria-selected={scope === s}
-              onClick={() => { if (isGuest && s === 'following') { gate.show(); return; } if (scope !== s) changeScope(s); }}
-              className={cn('py-3 text-[15px] font-semibold border-b-[3px] transition-colors', scope === s ? 'text-primary-600 border-primary-500' : 'text-neutral-500 border-transparent hover:bg-neutral-100')}
-            >
-              {s === 'all' ? t('feed.tabs.forYou') : t('feed.tabs.following')}
-            </button>
-          ))}
+        <div role="tablist" data-guest-ok className="grid grid-cols-4 rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] overflow-hidden">
+          {TABS.map((tab) => {
+            const active = tab === 'live' || tab === 'market' ? view === tab : view === 'feed' && scope === tab;
+            return (
+              <button
+                key={tab}
+                role="tab"
+                type="button"
+                aria-selected={active}
+                onClick={() => {
+                  if (tab === 'market' && isGuest) { gate.show(); return; }
+                  if (tab === 'live' || tab === 'market') { setView(tab); return; }
+                  if (isGuest && tab === 'following') { gate.show(); return; }
+                  setView('feed');
+                  if (scope !== tab) changeScope(tab);
+                }}
+                className={cn('py-3 px-1 text-[13px] sm:text-[15px] font-semibold border-b-[3px] transition-colors leading-tight', active ? 'text-primary-600 border-primary-500' : 'text-neutral-500 border-transparent hover:bg-neutral-100')}
+              >
+                {t(`feed.tabs.${tab}`)}
+              </button>
+            );
+          })}
         </div>
 
+        {view === 'live' && (
+          <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-8 text-center space-y-3">
+            <span className="mx-auto h-14 w-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center"><Radio className="w-7 h-7" /></span>
+            <h2 className="text-lg font-bold text-neutral-900">{t('feed.live.title')}</h2>
+            <p className="text-sm text-neutral-600">{t('feed.live.soon')}</p>
+          </div>
+        )}
+        {view === 'market' && <MarketFeed canSave={canInteract} />}
+        {view === 'feed' && (<>
         {loading && (
           <div className="space-y-4">
             <PostSkeleton />
@@ -282,6 +305,7 @@ export function FeedPage() {
         {!loading && !cursor && !error && posts.length > 0 && (
           <p className="text-center text-xs text-neutral-400 py-4">{t('feed.end')}</p>
         )}
+        </>)}
         </div>
 
         {isDesktop && !isGuest && (

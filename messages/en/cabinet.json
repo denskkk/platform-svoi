@@ -15,8 +15,8 @@
     "photo": "Photo",
     "video": "Video",
     "story": "Story",
-    "live": "Go live",
-    "liveSoon": "Live streams are coming in the next update",
+    "live": "LIVE broadcast",
+    "liveSoon": "LIVE broadcast is in development and will be available in an upcoming update",
     "close": "Close",
     "storyHint": "Tap “+” in the stories bar to add yours"
   },

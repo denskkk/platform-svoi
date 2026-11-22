@@ -2,7 +2,10 @@
   "title": "Feed",
   "tabs": {
     "forYou": "For you",
-    "following": "Following"
+    "following": "Following",
+    "live": "LIVE broadcast",
+    "market": "Goods / Services",
+    "all": "Recommended"
   },
   "composer": {
     "prompt": "What's new?",
@@ -271,5 +274,14 @@
     "laugh": "Haha",
     "wow": "Wow",
     "sad": "Sad"
+  },
+  "live": {
+    "title": "LIVE broadcast",
+    "soon": "This section is in development: live broadcasts will be available in one of the next updates."
+  },
+  "market": {
+    "empty": "No listings yet",
+    "emptyHint": "Goods and services from all platform projects will appear here.",
+    "projects": "Open projects"
   }
 }

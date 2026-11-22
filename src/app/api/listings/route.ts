@@ -30,7 +30,9 @@ export async function GET(request: NextRequest) {
     const params = new URL(request.url).searchParams;
     const slug = params.get('project');
     const savedOnly = params.get('saved') === '1';
-    if (!savedOnly && (!slug || !hasListings(slug))) {
+    // all=1 — стрічка «Товари/Послуги»: свіжі схвалені оголошення з усіх проєктів
+    const allProjects = params.get('all') === '1';
+    if (!savedOnly && !allProjects && (!slug || !hasListings(slug))) {
       return NextResponse.json({ error: t('api.listings.projectInvalid') }, { status: 400 });
     }
 
@@ -41,8 +43,8 @@ export async function GET(request: NextRequest) {
     const blocked = await getBlockedIds(userId);
     const where: Prisma.ListingWhereInput = {
       AND: [
-        publicWhere(savedOnly ? null : slug),
-        savedOnly ? { saves: { some: { userId } } } : buildCatalogWhere(slug as string, params),
+        publicWhere(savedOnly || allProjects ? null : slug),
+        savedOnly ? { saves: { some: { userId } } } : allProjects ? {} : buildCatalogWhere(slug as string, params),
         blocked.length ? { ownerId: { notIn: blocked } } : {},
         cursor ? { id: { lt: cursor } } : {},
       ],
