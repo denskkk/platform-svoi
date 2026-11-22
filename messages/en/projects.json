@@ -104,5 +104,58 @@
     "examplesUk": "Examples (Ukrainian) — one per line",
     "examplesEn": "Examples (English) — one per line",
     "linesHint": "Steps and examples: one item per line."
+  },
+  "china": {
+    "leaveRequest": "Leave a request",
+    "getQuote": "Get a quote",
+    "consultant": "Contact a consultant",
+    "requestTitle": "Request",
+    "consultTitle": "Consultation",
+    "requestHint": "Describe what you need. Add a product link, requirements, quantity and preferred dates.",
+    "consultHint": "Write your question. A consultant will contact you.",
+    "phone": "Phone",
+    "phoneInvalid": "Enter a valid phone number",
+    "sent": "Thank you! We will contact you",
+    "calc": {
+      "back": "Back to the China project",
+      "title": "Turnkey purchase calculator",
+      "subtitle": "Approximate total cost of goods: from the factory price to a warehouse in Ukraine.",
+      "rateHint": "Enter the yuan rate that applies to you (for example from your bank or exchange office). The calculation is approximate.",
+      "result": "Result (UAH)",
+      "total": "Whole batch",
+      "perUnit": "Per unit",
+      "disclaimer": "An approximate calculation for planning. A consultant will confirm the final cost.",
+      "sendHint": "Want a consultant to check and refine the calculation? Leave your phone.",
+      "send": "Send calculation to a consultant",
+      "summary": "Calculation: {qty} pcs x {price} CNY, rate {rate} UAH per 1 CNY. Total {total} UAH, per unit {unit} UAH",
+      "units": {
+        "cny": "CNY",
+        "uah": "UAH",
+        "pct": "%",
+        "pcs": "pcs"
+      },
+      "fields": {
+        "price": "Product price in China per unit",
+        "qty": "Quantity",
+        "rate": "Yuan rate",
+        "payFee": "Payment costs (fee)",
+        "chinaDelivery": "Delivery within China",
+        "agentPct": "Representative or intermediary services",
+        "qc": "Quality check and packaging",
+        "intl": "International shipping",
+        "customs": "Customs duties and clearance",
+        "other": "Other related costs"
+      },
+      "rows": {
+        "goods": "Goods",
+        "payFee": "Payment costs",
+        "inChina": "Delivery in China",
+        "agent": "Representative",
+        "qc": "Check and packaging",
+        "intl": "International shipping",
+        "customs": "Duties and clearance",
+        "other": "Other"
+      }
+    }
   }
 }

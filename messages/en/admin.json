@@ -131,7 +131,10 @@
       "specialist": "Specialist",
       "market": "Sales market",
       "taxi": "Taxi",
-      "unlock": "Feature unlock"
+      "unlock": "Feature unlock",
+      "request": "Request",
+      "consult": "Consultation",
+      "calc": "Purchase calculation"
     }
   }
 }

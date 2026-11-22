@@ -1,4 +1,4 @@
-/** POST /api/project-suggestions { projectSlug, kind: suggestion|complaint|product|specialist|market, text } — пропозиція чи скарга до проєкту */
+/** POST /api/project-suggestions { projectSlug, kind: suggestion|complaint|product|specialist|market|request|consult|calc, text } — пропозиція чи скарга до проєкту */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: t('api.common.tooManyRequests') }, { status: 429 });
     }
     const body = await request.json().catch(() => ({}));
-    const kind = ['suggestion', 'complaint', 'product', 'specialist', 'market', 'unlock'].includes(body?.kind) ? body.kind : '';
+    const kind = ['suggestion', 'complaint', 'product', 'specialist', 'market', 'unlock', 'request', 'consult', 'calc'].includes(body?.kind) ? body.kind : '';
     const text = typeof body?.text === 'string' ? body.text.trim() : '';
     const slug = String(body?.projectSlug || '');
     if (!kind || text.length < 5 || text.length > 1000 || !(kind === 'unlock' && slug === 'platform') && !(await getProject(slug))) {

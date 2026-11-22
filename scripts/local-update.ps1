@@ -40,7 +40,8 @@ $files = @(
   "20261141_activate_more_projects.sql",
   "20261142_client_list_v2.sql",
   "20261143_listings_backfill_sections.sql",
-  "20261144_perf_indexes.sql"
+  "20261144_perf_indexes.sql",
+  "20261145_china_sections_remap.sql"
 )
 foreach ($f in $files) {
   Write-Host "  -> $f"

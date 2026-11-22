@@ -125,12 +125,16 @@ const SPECS: Record<string, Spec[]> = {
     leaf('export', '🚢'),
   ],
   china: [
-    { key: 'sourcing', icon: '🏭', kids: [leaf('factory', '🏭'), leaf('product', '📦'), leaf('other', '➕')] },
-    { key: 'brand', icon: '🏷️', kids: [leaf('develop', '🎨'), leaf('manufacturer', '🏭'), leaf('other', '➕')] },
-    { key: 'recalc', icon: '🧾', kids: [leaf('products', '📦'), leaf('analog', '🔁'), leaf('rate', '💴'), leaf('other', '➕')] },
-    { key: 'yuan', icon: '💴', kids: [leaf('buy', '💴'), leaf('pay', '🧾'), leaf('other', '➕')] },
-    leaf('otherRequest', '📮'),
-    { key: 'logistics', icon: '🚢', kids: [leaf('air', '✈️', { business: true }), leaf('rail', '🚆', { business: true }), leaf('sea', '🚢', { business: true }), leaf('road', '🚚', { business: true }), leaf('multimodal', '🔀', { business: true })] },
+    { key: 'search', icon: '🔎', kids: [leaf('product', '📦'), leaf('manufacturer', '🏭'), leaf('analogs', '🔁'), leaf('compare', '⚖️'), leaf('suppliers', '🏢'), leaf('custom', '📝')] },
+    { key: 'brand', icon: '🏷️', kids: [leaf('create', '🎯'), leaf('design', '🎨'), leaf('packaging', '📦'), leaf('production', '🏭'), leaf('custom', '📐'), leaf('newProduct', '💡'), leaf('samples', '🧪')] },
+    { key: 'rep', icon: '🤝', kids: [leaf('agent', '🧑‍💼'), leaf('negotiations', '💬'), leaf('visit', '🚶'), leaf('translator', '🗣️'), leaf('partners', '🔗'), leaf('deals', '📑')] },
+    { key: 'quality', icon: '✅', kids: [leaf('manufacturerCheck', '🔍'), leaf('samples', '🧪'), leaf('productionControl', '🏗️'), leaf('finalCheck', '📋'), leaf('media', '📸'), leaf('packagingCheck', '🎁')] },
+    { key: 'finance', icon: '💴', kids: [leaf('rate', '📈'), leaf('exchange', '💱'), leaf('payment', '🧾'), leaf('international', '🌐'), leaf('totalCost', '🧮'), leaf('support', '🛡️')] },
+    { key: 'logistics', icon: '🚢', kids: [leaf('air', '✈️', { business: true }), leaf('rail', '🚆', { business: true }), leaf('sea', '🚢', { business: true }), leaf('road', '🚚', { business: true }), leaf('express', '⚡', { business: true }), leaf('groupage', '📦', { business: true }), leaf('quote', '🧮')] },
+    { key: 'warehouse', icon: '🏬', kids: [leaf('warehouse', '🏬'), leaf('consolidation', '🔗'), leaf('repack', '📦'), leaf('inspection', '⚖️'), leaf('customs', '🛃'), leaf('docs', '📄'), leaf('certification', '📜')] },
+    { key: 'wholesale', icon: '🛒', kids: [leaf('shops', '🏪'), leaf('online', '💻'), leaf('marketplaces', '🛍️'), leaf('regular', '🔄'), leaf('business', '🎯'), leaf('custom', '📝')] },
+    { key: 'trips', icon: '✈️', kids: [leaf('expos', '🎪'), leaf('organize', '🗺️'), leaf('factories', '🏭'), leaf('partners', '🤝'), leaf('translator', '🗣️'), leaf('tours', '🧳')] },
+    { key: 'consult', icon: '💬', kids: [leaf('start', '🌱'), leaf('working', '💼'), leaf('purchaseHelp', '🆘'), leaf('turnkeyCalc', '🧮'), leaf('custom', '❓'), leaf('partner', '🤝')] },
   ],
   invest: [
     leaf('projects', '📈', { derive: { investKind: 'project' } }),
@@ -246,7 +250,7 @@ export function applyLabelKey(slug: string, id: string | null | undefined): stri
   const walk = (nodes: ProjectFolder[], parents: string[]) => {
     nodes.forEach((n) => {
       const path = parents.concat(n.key);
-      if (n.apply && sectionIdOf(slug, path) === id) key = n.labelKey;
+      if ((n.apply && sectionIdOf(slug, path) === id) || (n.sectionId && n.sectionId === id)) key = n.labelKey;
       if (n.children) walk(n.children, path);
     });
   };
