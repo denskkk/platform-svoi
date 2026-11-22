@@ -434,8 +434,30 @@
       "news": "Project news will appear here. Follow updates and propose topics via “Suggestions and complaints”.",
       "howPlace": "Submit an application with the project description, required amount and contacts. After administrator review the project appears in the catalog. The platform only introduces the parties and does not guarantee funding.",
       "howInvestor": "Create an investor profile: budget, industries and participation formats. The profile can be open or hidden. Any investment carries risk — check projects yourself; the platform gives no financial advice and guarantees no profit.",
-      "howSpecialist": "Pick your specialty and apply with your experience and contacts. After review you will receive requests from project authors."
-    }
+      "howSpecialist": "Pick your specialty and apply with your experience and contacts. After review you will receive requests from project authors.",
+      "growth": "Clubs are a place to grow skills and learn. A specialist who completed training and holds the required qualification and license (where the law requires it) can apply to the “Jobs” project. A club course certificate is not automatically equal to a state qualification or license."
+    },
+    "cl_interest": "Interest clubs",
+    "cl_communities": "Countries and communities",
+    "cl_list": "Local communities by city",
+    "cl_join": "Join the club",
+    "cl_lead": "Become a representative or lead a branch",
+    "cl_board": "Bulletin board",
+    "cl_shop": "Club online shop",
+    "cl_bloggers": "Bloggers and live streams",
+    "cl_courses": "Online courses and training",
+    "cl_amateur": "Amateur courses",
+    "cl_certified": "Specialized courses with certificates",
+    "cl_events": "Events and meetups",
+    "cl_experts": "Experts and specialists",
+    "cl_team": "Join the team",
+    "cl_newClub": "Suggest a new club",
+    "cl_all": "All platform clubs",
+    "cl_shops": "Online shops",
+    "createClub": "How to create your own club",
+    "becomeBlogger": "Become a club blogger: apply",
+    "teachCourses": "How to run courses: apply",
+    "growth": "Professional development opportunities"
   },
   "f": {
     "consult": {
@@ -608,7 +630,22 @@
     },
     "sent": "Request sent",
     "tooLong": "Text is too long, please shorten it",
-    "mineEmpty": "No requests yet"
+    "mineEmpty": "No requests yet",
+    "appraisalRequest": {
+      "title": "Request an appraisal"
+    },
+    "joinClub": {
+      "title": "Join the club: form"
+    },
+    "becomeBlogger": {
+      "title": "Become a club blogger: apply"
+    },
+    "offerCourse": {
+      "title": "Offer a course: apply"
+    },
+    "newClub": {
+      "title": "Suggest a new club"
+    }
   },
   "fld": {
     "name": "Name",
@@ -697,7 +734,12 @@
     "official": "Official certified translation",
     "storeKind": "What you add",
     "deptType": "Department type",
-    "placeLevel": "What you add"
+    "placeLevel": "What you add",
+    "item": "Item or collection",
+    "district": "District or locality",
+    "interests": "About you and interests",
+    "courseKind": "Course type",
+    "duration": "Duration"
   },
   "fopt": {
     "location": {
@@ -792,6 +834,10 @@
       "region": "Region",
       "city": "City",
       "breed": "Breed"
+    },
+    "courseKind": {
+      "amateur": "Amateur",
+      "certified": "Specialized with certificate"
     }
   },
   "fh": {
@@ -895,5 +941,19 @@
       "info_how": "Producers apply, organizers in countries or cities form teams and venues. Participation in fairs is not guaranteed; details are agreed with the organizer."
     },
     "intro": "Fairs of Ukrainian products abroad: producers apply, organizers form teams and venues."
+  },
+  "clubs": {
+    "text": {
+      "info_about": "Interest clubs: hunters, anglers, pet lovers, drivers, motorcyclists, cyclists, knitting, cooking and pastry. Each club has communities by country and city, a bulletin board, shop, bloggers, courses, events and specialists.",
+      "info_how": "Pick a club, join a local community or apply for a branch or representation. Applications for leadership, new clubs and directions are moderated. Only lawful goods and services are allowed."
+    },
+    "intro": "Interest clubs: chat, ads, shops, training, events and specialists in your city and country."
+  },
+  "antiques": {
+    "text": {
+      "info_about": "The Antiques shop brings together owners of antique and precious items, collectors, buyers, shops, appraisers, experts and masters from different countries.",
+      "info_how": "Post listings in online shops, add an offline shop, find an appraiser or expert. The platform does not allow illegal trade in cultural property, archaeological finds or precious metals contrary to law; check provenance and export rules."
+    },
+    "intro": "Antiques and precious items: online and offline shops, appraisers, experts and masters. Illegal trade in cultural property is prohibited."
   }
 }

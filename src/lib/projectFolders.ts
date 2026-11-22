@@ -122,6 +122,37 @@ const F_SUPPORT: Spec = { key: 'support', icon: '🛟', kind: 'form:consult', lk
 /** Типові кнопки каталогу спеціалістів: заявка + приєднання до команди */
 const SPEC = (key: string, icon: string, acts: string[] = ['consult', 'join'], extra?: Partial<Spec>): Spec => leaf(key, icon, { business: true, acts, ...extra });
 
+// ——— «Клуби за інтересами»: однакова структура кожного клубу (країни, дошка, магазин, блогери, курси, події, спеціалісти, команда) ———
+const CLUB_LIST: Array<[string, string]> = [['hunting', '🦌'], ['fishing', '🎣'], ['pets', '🐾'], ['auto', '🚗'], ['moto', '🏍️'], ['bike', '🚴'], ['knitting', '🧶'], ['cooking', '🍳'], ['pastry', '🎂']];
+const CLUB_SHOP_CATS: Array<[string, string]> = [['hunters', '🦌'], ['fishers', '🎣'], ['pets', '🐾'], ['auto', '🚗'], ['moto', '🏍️'], ['bike', '🚴'], ['knitting', '🧶'], ['cooking', '🍳'], ['pastry', '🎂'], ['other', '🛍️']];
+const GEO = ['country', 'region', 'city'];
+const clubNode = (c: string, icon: string): Spec => ({
+  key: c, icon, kids: [
+    { key: 'communities', icon: '🌍', lk: 'projects.std.cl_communities', kids: [
+      { key: 'list', icon: '👥', href: `/clubs?category=${c}`, lk: 'projects.std.cl_list' },
+      { key: 'join', icon: '🤝', kind: 'fx:joinClub', lk: 'projects.std.cl_join' },
+      { key: 'lead', icon: '🏛️', kind: 'repapply:open', lk: 'projects.std.cl_lead' },
+    ] },
+    leaf('board', '📋', { lk: 'projects.std.cl_board', drill: GEO }),
+    leaf('shop', '🛒', { lk: 'projects.std.cl_shop', business: true, acts: ['shopApply'] }),
+    leaf('bloggers', '🎥', { lk: 'projects.std.cl_bloggers', acts: ['becomeBlogger'] }),
+    { key: 'courses', icon: '🎓', lk: 'projects.std.cl_courses', kids: [
+      leaf('amateur', '📚', { lk: 'projects.std.cl_amateur', acts: ['offerCourse'] }),
+      leaf('certified', '📜', { lk: 'projects.std.cl_certified', acts: ['offerCourse'] }),
+    ] },
+    leaf('events', '📅', { lk: 'projects.std.cl_events', drill: GEO }),
+    SPEC('experts', '🧑‍🏫', ['consult', 'join'], { lk: 'projects.std.cl_experts', drill: GEO }),
+    { key: 'team', icon: '👥', kind: 'repapply:open', lk: 'projects.std.cl_team' },
+  ],
+});
+
+// ——— «Антикварна лавка»: онлайн-/офлайн-крамниці та експерти ———
+const ANT_CATS: Array<[string, string]> = [['coins', '🪙'], ['antique', '🏺'], ['jewelry', '💎'], ['porcelain', '🍶'], ['watches', '⌚'], ['furniture', '🪑'], ['books', '📜'], ['collectibles', '🏆'], ['other', '✨']];
+const ANT_ART = ['paintings', 'icons', 'sculptures', 'graphics', 'engravings', 'objects', 'otherArt'];
+const ANT_ACTS = ['appraisalRequest', 'shopApply', 'newDirection'];
+const antLeaf = (key: string, icon: string): Spec => leaf(key, icon, { acts: ANT_ACTS });
+const antPeople = (acts: string[], keys: string[], extraKey: string): Spec[] => keys.map((k) => SPEC(k, '🧑‍🔬', acts, { drill: GEO })).concat([fx(extraKey, '➕', 'newDirection')]);
+
 /** Специфікація папок за ТЗ замовника (скріншоти, голосові та файли структури). Порядок = порядок на екрані. */
 const SPECS: Record<string, Spec[]> = {
   // «Юристи»: 7 кнопок за ТЗ. 1 — дерево представництв (країна → область → район → громада), 2–4 — заявки з маршрутом до керівника,
@@ -404,8 +435,33 @@ const SPECS: Record<string, Spec[]> = {
     { key: 'feedback', icon: '⭐', kids: [view('review', '💬', 'form:suggestion'), view('rate', '⭐', 'form:suggestion'), view('complaint', '📣', 'form:complaint'), view('report', '🚨', 'form:complaint'), view('suggestion', '💡', 'form:suggestion'), view('ideas', '🚀', 'form:suggestion')] },
   ],
   clubs: [
-    { key: 'all', icon: '🤝', href: '/clubs' },
-    { key: 'fishing', icon: '🎣', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=fishing' }, leaf('shop', '🛒')] }, { key: 'hunting', icon: '🦌', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=hunting' }, leaf('shop', '🛒')] }, { key: 'knitting', icon: '🧶', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=knitting' }, leaf('shop', '🛒')] }, { key: 'creativity', icon: '🎨', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=creativity' }, leaf('shop', '🛒')] }, { key: 'travel', icon: '🧭', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=travel' }, leaf('shop', '🛒')] }, { key: 'sport', icon: '⚽', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=sport' }, leaf('shop', '🛒')] }, { key: 'auto', icon: '🚗', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=auto' }, leaf('shop', '🛒')] }, { key: 'business', icon: '💼', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=business' }, leaf('shop', '🛒')] }, { key: 'professional', icon: '🎓', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=professional' }, leaf('shop', '🛒')] }, { key: 'bloggers', icon: '📱', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=bloggers' }, leaf('shop', '🛒')] }, { key: 'streamers', icon: '🎥', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=streamers' }, leaf('shop', '🛒')] }, { key: 'gamers', icon: '🎮', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=gamers' }, leaf('shop', '🛒')] }, { key: 'other', icon: '✨', kids: [{ key: 'list', icon: '👥', href: '/clubs?category=other' }, leaf('shop', '🛒')] },
+    { key: 'interest', icon: '🤝', lk: 'projects.std.cl_interest', kids: [
+      ...CLUB_LIST.map(([c, icon]) => clubNode(c, icon)),
+      fx('newClub', '➕', 'newClub', 'projects.std.cl_newClub'),
+      { key: 'all', icon: '🤝', href: '/clubs', lk: 'projects.std.cl_all' },
+    ] },
+    { key: 'shops', icon: '🛒', lk: 'projects.std.cl_shops', kids: CLUB_SHOP_CATS.map(([c, icon]) => leaf(c, icon, { business: true, acts: ['shopApply'] })) },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_PARTNER, stdFx('openShop', '🛍️', 'shopApply'), S_REP, stdFx('createClub', '🆕', 'newClub'), stdFx('becomeBlogger', '🎥', 'becomeBlogger'), stdFx('teachCourses', '🎓', 'offerCourse'), S_TEAM, std('growth', '📈'), S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newClub', '➕', 'suggestion'), fb('newCategory', '🗂️', 'suggestion'), fb('newCourse', '🎓', 'suggestion'), fb('newSpecialist', '🧑‍🏫', 'suggestion'), fb('error', '🐞', 'suggestion'), fb('complaintAd', '📣', 'complaint'), fb('complaintShop', '🛒', 'complaint'), fb('complaintMember', '👤', 'complaint'), F_SUPPORT]),
+  ],
+
+  antiques: [
+    { key: 'things', icon: '🏺', kids: [
+      { key: 'online', icon: '🛒', kids: [
+        { key: 'art', icon: '🎨', kids: ANT_ART.map((k) => antLeaf(k, '🖼️')).concat([fx('newSub', '➕', 'newDirection')]) },
+        ...ANT_CATS.map(([c, icon]) => antLeaf(c, icon)),
+        fx('newSub', '➕', 'newDirection'),
+      ] },
+      leaf('offline', '🏬', { business: true, drill: GEO, acts: ['shopApply'] }),
+    ] },
+    { key: 'experts', icon: '🧑‍🔬', kids: [
+      { key: 'appraisers', icon: '⚖️', kids: antPeople(['appraisalRequest', 'join'], ['antiques', 'coins', 'jewelry', 'metals', 'paintings', 'watches', 'furniture', 'porcelain', 'books', 'collections', 'other'], 'newDirection') },
+      { key: 'authors', icon: '🔎', kids: antPeople(['consult', 'join'], ['art', 'antique', 'historical', 'numismatics', 'phaleristics', 'jewelry', 'watches', 'furniture', 'books', 'authenticity', 'other'], 'newDirection') },
+      { key: 'masters', icon: '🛠️', kids: antPeople(['service', 'join'], ['paintingRestorers', 'furnitureRestorers', 'antiqueRestorers', 'watchRepair', 'jewelers', 'care', 'storage', 'photographers', 'other'], 'newSpecialty') },
+      fx('newDirection', '➕', 'newDirection'),
+    ] },
+    INFO([S_ABOUT, S_HOW, S_EARN, S_PARTNER, S_TEAM, S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newCategory', '🗂️', 'suggestion'), fb('newSub', '📂', 'suggestion'), fb('newExpert', '🧑‍🔬', 'suggestion'), fb('error', '🐞', 'suggestion'), fb('complaintSeller', '📣', 'complaint'), fb('complaintSpecialist', '👤', 'complaint'), fb('suspicious', '🚨', 'complaint'), F_SUPPORT]),
   ],
 
   // «Міжнародні ярмарки української продукції»: 4 кнопки за ТЗ

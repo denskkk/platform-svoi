@@ -36,7 +36,7 @@ interface Project {
 }
 
 /** Проєкти зі вступним текстом (головний текст концепції) над папками першого рівня */
-const INTRO_SLUGS = ['trade', 'turnkey', 'health', 'pets', 'travel', 'invest'];
+const INTRO_SLUGS = ['trade', 'turnkey', 'health', 'pets', 'travel', 'invest', 'antiques', 'clubs'];
 
 export default function ProjectPage() {
   const params = useParams<{ slug: string }>();

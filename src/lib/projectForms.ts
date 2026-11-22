@@ -41,6 +41,8 @@ export const FIELDS: Record<string, FieldDef> = {
   storeKind: { t: 'sel', opts: ['store', 'warehouse'] },
   deptType: { t: 'sel', opts: ['main', 'sub'] },
   placeLevel: { t: 'sel', opts: ['country', 'region', 'city', 'breed'] },
+  courseKind: { t: 'sel', opts: ['amateur', 'certified'] },
+  district: { t: 'text' }, duration: { t: 'text' }, interests: { t: 'area' }, item: { t: 'text' },
 };
 
 const P = ['phone*'];
@@ -109,6 +111,13 @@ export const FORMS: Record<string, FormDef> = {
   petTransport: base('request', 'from*', 'to*', 'pet*', 'date', 'desc', ...P),
   volunteer: base('request', 'desc*', 'country', 'city', ...P),
   charityPropose: base('suggestion', 'org*', 'goal*', 'country', 'city', 'proof', 'report', ...P),
+  // Антикварна лавка
+  appraisalRequest: base('request', 'item*', 'country*', 'city', 'desc*', 'format', 'photos', ...P),
+  // Клуби за інтересами
+  joinClub: base('request', 'name*', 'country*', 'region', 'city*', 'district', 'interests', 'photos', ...P),
+  becomeBlogger: base('specialist', 'name*', 'country', 'city', 'site*', 'desc*', 'photos', ...P),
+  offerCourse: base('request', 'title*', 'courseKind*', 'format', 'duration', 'price', 'terms', 'site', 'desc*', 'photos', ...P),
+  newClub: base('suggestion', 'title*', 'desc*', 'country', 'city', 'phone'),
   // Ярмарки
   tradeProducer: { kind: 'request', fields: ['#where', 'location*', 'activity*', 'productKind*', '#ifUa', 'exportDocs', 'exportExp', 'exportCountries', '#ifAbroad', 'country', 'region', 'city', 'hasStore', 'sellsUa', '#contacts', 'name*', 'phone*', 'email', 'site', 'photos'], note: 'tradeNoGuarantee' },
   organizerSelf: base('request', ...ORG),
