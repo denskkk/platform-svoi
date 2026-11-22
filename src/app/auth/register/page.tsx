@@ -26,7 +26,9 @@ function readInviteRef(): string | undefined {
 export default function RegisterPage() {
   const router = useRouter();
   const { t } = useI18n();
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', age: '', gender: '' });
+  // Після успішної реєстрації пропонуємо доповнити профіль; next — куди йти, якщо «пізніше»
+  const [nextUrl, setNextUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,6 +45,9 @@ export default function RegisterPage() {
     if (!firstName || !lastName || !email || !form.password) { setError(t('auth.register.simple.errors.required')); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError(t('auth.register.simple.errors.email')); return; }
     if (form.password.length < 6) { setError(t('auth.register.simple.errors.password')); return; }
+    const age = Number(form.age);
+    if (!form.age || !Number.isInteger(age) || age < 14 || age > 120) { setError(t('auth.register.simple.errors.age')); return; }
+    if (!form.gender) { setError(t('auth.register.simple.errors.gender')); return; }
 
     setLoading(true);
     try {
@@ -52,7 +57,7 @@ export default function RegisterPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ firstName, lastName, email, password: form.password, accountType: 'basic', ref: readInviteRef() }),
+          body: JSON.stringify({ firstName, lastName, email, password: form.password, accountType: 'basic', age, gender: form.gender, ref: readInviteRef() }),
         });
       } catch {
         throw new Error(t('auth.register.simple.errors.network'));
@@ -68,13 +73,26 @@ export default function RegisterPage() {
         const back = new URLSearchParams(window.location.search).get('returnUrl');
         if (back && back.startsWith('/') && !back.startsWith('//') && !back.startsWith('/auth/')) next = back;
       } catch { /* лишаємо /feed */ }
-      router.push(next);
+      setNextUrl(next);
     } catch (err: any) {
       setError(err?.message || t('auth.register.simple.errors.failed'));
     } finally {
       setLoading(false);
     }
   };
+
+  if (nextUrl) {
+    return (
+      <div className="min-h-screen bg-neutral-100 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 text-center space-y-4">
+          <h1 className="text-2xl font-bold text-neutral-900">{t('auth.register.simple.doneTitle')}</h1>
+          <p className="text-neutral-700">{t('auth.register.simple.doneText')}</p>
+          <button type="button" onClick={() => router.push('/profile/edit')} className="w-full rounded-lg bg-primary-500 hover:bg-primary-600 text-white text-lg font-bold py-3">{t('auth.register.simple.doneComplete')}</button>
+          <button type="button" onClick={() => router.push(nextUrl)} className="w-full rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-semibold py-3">{t('auth.register.simple.doneLater')}</button>
+        </div>
+      </div>
+    );
+  }
 
   const perks = [
     { icon: Newspaper, text: t('auth.register.simple.perks.people') },
@@ -110,6 +128,15 @@ export default function RegisterPage() {
             <input className={inputCls} placeholder={t('auth.register.simple.lastName')} aria-label={t('auth.register.simple.lastName')} autoComplete="family-name" value={form.lastName} onChange={set('lastName')} maxLength={50} />
           </div>
           <input className={inputCls} type="email" inputMode="email" autoCapitalize="none" placeholder={t('auth.register.simple.email')} aria-label={t('auth.register.simple.email')} autoComplete="email" value={form.email} onChange={set('email')} maxLength={120} />
+          <div className="grid grid-cols-2 gap-3">
+            <input className={inputCls} type="number" inputMode="numeric" min={14} max={120} placeholder={t('auth.register.simple.age')} aria-label={t('auth.register.simple.age')} value={form.age} onChange={set('age')} />
+            <select className={inputCls} aria-label={t('auth.register.simple.gender')} value={form.gender} onChange={set('gender')}>
+              <option value="">{t('auth.register.simple.gender')}</option>
+              <option value="male">{t('auth.register.simple.genderMale')}</option>
+              <option value="female">{t('auth.register.simple.genderFemale')}</option>
+              <option value="other">{t('auth.register.simple.genderOther')}</option>
+            </select>
+          </div>
           <div className="relative">
             <input className={`${inputCls} pr-12`} type={showPassword ? 'text' : 'password'} placeholder={t('auth.register.simple.password')} aria-label={t('auth.register.simple.password')} autoComplete="new-password" value={form.password} onChange={set('password')} maxLength={100} />
             <button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? t('auth.register.simple.hidePassword') : t('auth.register.simple.showPassword')} className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100">

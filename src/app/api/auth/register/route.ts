@@ -55,7 +55,12 @@ export async function POST(request: NextRequest) {
       avatarBase64,
       socialLinks,
       ref,
+      gender: rawGender,
+      age: rawAge,
     } = body;
+    const gender = ['male', 'female', 'other'].includes(rawGender) ? rawGender : null;
+    const ageNum = Number(rawAge);
+    const age = Number.isInteger(ageNum) && ageNum >= 14 && ageNum <= 120 ? ageNum : null;
     // Email зберігаємо у нижньому регістрі без пробілів: мобільні клавіатури самі міняють регістр
     const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
 
@@ -175,6 +180,8 @@ export async function POST(request: NextRequest) {
           email,
           phone: phone || null,
           city: city || null,
+          gender,
+          age,
           avatarUrl: finalAvatarUrl || null,
           socialLinks: socialLinks ? socialLinks : null,
           passwordHash,
