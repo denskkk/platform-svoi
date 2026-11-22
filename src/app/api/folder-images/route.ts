@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   try {
     const rows = await prisma.folderImage.findMany({ where: { project }, select: { path: true, imageUrl: true }, take: 500 });
     const images: Record<string, string> = {};
-    rows.forEach((r) => { images[r.path] = r.imageUrl; });
+    rows.forEach((r: { path: string; imageUrl: string }) => { images[r.path] = r.imageUrl; });
     return NextResponse.json({ images }, { headers: { 'Cache-Control': 'no-store' } });
   } catch {
     // Таблиця ще не створена або збій: плитки просто без картинок
