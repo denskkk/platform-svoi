@@ -175,11 +175,6 @@ export async function POST(request: NextRequest) {
       });
 
       // Створення бізнес інформації
-      console.log('[Register Business API] Створення бізнес профілю з даними:', {
-        companyName,
-        logoUrl,
-        bannerUrl,
-      });
 
       const business = await tx.businessInfo.create({
         data: {

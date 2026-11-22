@@ -28,18 +28,11 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       );
     }
-    console.log('[Upload Business Images] Отримано запит на завантаження зображень');
     
     const formData = await request.formData();
     const logo = formData.get('logo') as File | null;
     const banner = formData.get('banner') as File | null;
 
-    console.log('[Upload Business Images] Файли:', {
-      hasLogo: !!logo,
-      hasBanner: !!banner,
-      logoName: logo?.name,
-      bannerName: banner?.name,
-    });
 
     if (!logo && !banner) {
       return NextResponse.json(
@@ -111,7 +104,6 @@ export async function POST(request: NextRequest) {
       await writeFile(filePathWebp, optimizedWebp);
       await writeFile(filePathJpg, optimizedJpg);
       
-      console.log(`[Upload Business Images] Логотип оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → WebP ${(optimizedWebp.length / 1024).toFixed(2)}KB / JPG ${(optimizedJpg.length / 1024).toFixed(2)}KB`);
 
       uploadResults.logoUrl = `/uploads/logos/${fileNameWebp}`;
       uploadResults.logoAlternates = {
@@ -162,7 +154,6 @@ export async function POST(request: NextRequest) {
       await writeFile(filePathWebp, optimizedWebp);
       await writeFile(filePathJpg, optimizedJpg);
       
-      console.log(`[Upload Business Images] Банер оптимізовано: ${(buffer.length / 1024).toFixed(2)}KB → WebP ${(optimizedWebp.length / 1024).toFixed(2)}KB / JPG ${(optimizedJpg.length / 1024).toFixed(2)}KB`);
 
       uploadResults.bannerUrl = `/uploads/banners/${fileNameWebp}`;
       uploadResults.bannerAlternates = {
@@ -171,7 +162,6 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    console.log('[Upload Business Images] Успішно завантажено:', uploadResults);
 
     return NextResponse.json({
       success: true,

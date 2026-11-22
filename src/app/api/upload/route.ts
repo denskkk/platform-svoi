@@ -185,7 +185,6 @@ export async function POST(request: NextRequest) {
     const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
     const optimizedSizeMBWebp = (optimizedWebp.length / 1024 / 1024).toFixed(2);
     const optimizedSizeMBJpg = (optimizedJpeg.length / 1024 / 1024).toFixed(2);
-  console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → WebP ${optimizedSizeMBWebp}MB / JPEG ${optimizedSizeMBJpg}MB (dir: ${safeDir})`);
     
     // Возвращаем URL файла
   const urlWebp = `/uploads/${safeDir}/${filename}`;
