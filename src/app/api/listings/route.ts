@@ -13,6 +13,7 @@ import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { getProject } from '@/lib/projects';
 import { hasListings, LISTING_LIMITS } from '@/lib/listingFields';
+import { findSection } from '@/lib/projectFolders';
 import { buildCatalogWhere, listingInclude, loadSavedIds, publicWhere, serializeListing, validateListing } from '@/lib/listings';
 import { getBlockedIds } from '@/lib/blocks';
 import { parseId } from '@/lib/feed';
@@ -82,6 +83,15 @@ export async function POST(request: NextRequest) {
     const result = validateListing(slug, body);
     if (!result.ok) {
       return NextResponse.json({ error: t(`api.listings.${result.error}`), field: result.field }, { status: 400 });
+    }
+
+    // Розділи для професіоналів (лікарі, адвокати, магазини тощо): лише з бізнес-акаунта
+    const sectionId = typeof result.value.data.section === 'string' ? result.value.data.section : '';
+    if (findSection(slug, sectionId)?.business) {
+      const me = await prisma.user.findUnique({ where: { id: userId }, select: { accountType: true } });
+      if (me?.accountType !== 'business') {
+        return NextResponse.json({ error: t('api.listings.businessRequired'), code: 'BUSINESS_REQUIRED' }, { status: 403 });
+      }
     }
 
     const pending = await prisma.listing.count({ where: { ownerId: userId, status: 'pending' } });

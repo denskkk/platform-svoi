@@ -56,5 +56,5 @@ export function specSummary(slug: string, data: Record<string, string | number>,
 export function detailRows(slug: string, data: Record<string, string | number>, t: T): { label: string; value: string }[] {
   return fieldsFor(slug)
     .filter((f) => data?.[f.key] !== undefined && data?.[f.key] !== '')
-    .map((f) => ({ label: t(`listings.fields.${slug}.${f.key}`), value: fieldValueLabel(f.key, data[f.key], f.type, t) }));
+    .map((f) => ({ label: f.key === 'section' ? t('listings.common.section') : t(`listings.fields.${slug}.${f.key}`), value: fieldValueLabel(f.key, data[f.key], f.type, t) }));
 }

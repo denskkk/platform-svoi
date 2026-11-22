@@ -3,7 +3,8 @@
  */
 
 import type { Prisma } from '@prisma/client';
-import { CURRENCIES, fieldsFor, LISTING_LIMITS, ListingField } from '@/lib/listingFields';
+import { CURRENCIES, fieldsFor, isFieldRequired, LISTING_LIMITS, ListingField } from '@/lib/listingFields';
+import { findSection, hasSections } from '@/lib/projectFolders';
 
 export const listingInclude = {
   images: { orderBy: { position: 'asc' as const }, select: { id: true, url: true } },
@@ -65,11 +66,20 @@ export function validateListing(slug: string, body: any): ValidationResult {
 
   const data: Record<string, string | number> = {};
   const input = body?.data && typeof body.data === 'object' ? body.data : {};
+  // Розділ (папка) проєкту: перевіряється першим, від нього залежать решта полів
+  const section = typeof input.section === 'string' ? input.section : '';
+  if (hasSections(slug)) {
+    const found = findSection(slug, section);
+    if (!found) return { ok: false, error: 'fieldRequired', field: 'section' };
+    if (found.derive) Object.keys(found.derive).forEach((k) => { data[k] = (found.derive as Record<string, string>)[k]; });
+  }
   for (const field of fieldsFor(slug)) {
+    if (field.derived) continue;
+    if (field.sections && field.sections.indexOf(section) === -1) continue;
     const raw = input[field.key];
     const empty = raw === undefined || raw === null || raw === '';
     if (empty) {
-      if (field.required) return { ok: false, error: 'fieldRequired', field: field.key };
+      if (isFieldRequired(field, section)) return { ok: false, error: 'fieldRequired', field: field.key };
       continue;
     }
     const checked = checkField(field, raw);

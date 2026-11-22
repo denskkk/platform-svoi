@@ -5,6 +5,8 @@
  * Модуль безпечний для імпорту і на клієнті, і на сервері (без залежностей).
  */
 
+import { hasSections, sectionLeaves } from '@/lib/projectFolders';
+
 export type FieldType = 'text' | 'number' | 'select' | 'url' | 'date';
 
 export interface ListingField {
@@ -20,6 +22,12 @@ export interface ListingField {
   maxLength?: number;
   /** Як поле використовується у фільтрах каталогу */
   filter?: 'select' | 'range' | 'text';
+  /** Поле стосується лише цих розділів (поле `section`); в інших воно приховане і не перевіряється */
+  sections?: string[];
+  /** Обов'язкове лише в цих розділах */
+  requiredIn?: string[];
+  /** Значення виставляється автоматично за розділом (див. derive в projectFolders): у формі не показується */
+  derived?: boolean;
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -145,12 +153,56 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'petCategory', type: 'text', required: true, maxLength: 100, filter: 'text' },
   ],
+  lawyers: [
+    { key: 'consultFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+  ],
+  'helper-hour': [
+    { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
+  ],
   jobs: [
     { key: 'jobKind', type: 'select', required: true, options: ['vacancy', 'resume', 'partner_search', 'cooperation'], filter: 'select' },
     { key: 'employment', type: 'select', options: ['full', 'part', 'remote', 'project'], filter: 'select' },
     { key: 'company', type: 'text', maxLength: 120 },
   ],
 };
+
+/**
+ * Проєкти з папками (projectFolders): оголошення завжди належить розділу (поле `section`, обов'язкове),
+ * а решта полів стають необов'язковими й показуються лише там, де мають сенс (див. SECTION_RULES).
+ */
+const RE_SECTIONS = ['real_estate_sale', 'real_estate_rent'];
+const CAR_SECTIONS = ['cars_buy', 'cars_rent'];
+const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
+  'real-estate': {
+    propertyType: { sections: RE_SECTIONS, requiredIn: RE_SECTIONS },
+    dealType: { sections: RE_SECTIONS, derived: true },
+    rooms: { sections: RE_SECTIONS },
+    area: { sections: RE_SECTIONS, requiredIn: RE_SECTIONS },
+    address: { sections: RE_SECTIONS },
+  },
+  cars: {
+    make: { sections: CAR_SECTIONS, requiredIn: CAR_SECTIONS },
+    model: { sections: CAR_SECTIONS, requiredIn: CAR_SECTIONS },
+    year: { sections: CAR_SECTIONS, requiredIn: CAR_SECTIONS },
+    mileage: { sections: CAR_SECTIONS },
+    fuel: { sections: CAR_SECTIONS },
+    engineVolume: { sections: CAR_SECTIONS },
+    transmission: { sections: CAR_SECTIONS },
+    sellerType: { sections: CAR_SECTIONS },
+  },
+  jobs: { jobKind: { derived: true } },
+  invest: { investKind: { derived: true } },
+  health: { healthKind: { derived: true }, medSpecialty: { derived: true } },
+};
+
+Object.keys(LISTING_FIELDS).forEach((slug) => {
+  if (!hasSections(slug)) return;
+  const rules = SECTION_RULES[slug] ?? {};
+  const ids = sectionLeaves(slug).map((l) => l.id);
+  const relaxed: ListingField[] = LISTING_FIELDS[slug].map((f) => ({ ...f, required: false, ...(rules[f.key] ?? {}) }));
+  LISTING_FIELDS[slug] = [{ key: 'section', type: 'select', required: true, options: ids, filter: 'select' } as ListingField].concat(relaxed);
+});
 
 export const CURRENCIES = ['UAH', 'USD', 'EUR'] as const;
 
@@ -170,4 +222,14 @@ export function hasListings(slug: string): boolean {
 
 export function fieldsFor(slug: string): ListingField[] {
   return hasListings(slug) ? LISTING_FIELDS[slug] : [];
+}
+
+/** Поля, які показуються у формі для обраного розділу (приховані й автоматичні не показуються). */
+export function visibleFields(slug: string, section: string | null | undefined): ListingField[] {
+  return fieldsFor(slug).filter((f) => !f.derived && (!f.sections || (!!section && f.sections.indexOf(section) !== -1)));
+}
+
+/** Чи обов'язкове поле в обраному розділі. */
+export function isFieldRequired(f: ListingField, section: string | null | undefined): boolean {
+  return !!f.required || (!!f.requiredIn && !!section && f.requiredIn.indexOf(section) !== -1);
 }

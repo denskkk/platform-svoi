@@ -245,7 +245,8 @@
     "renewNotAllowed": "Only an approved listing can be renewed",
     "renewed": "Publication extended",
     "reasonRequired": "Enter a rejection reason",
-    "alreadyModerated": "This listing has already been processed"
+    "alreadyModerated": "This listing has already been processed",
+    "businessRequired": "This section is for business accounts. Create a business account to post a listing."
   },
   "businessApplications": {
     "fieldsInvalid": "Fill in all required fields (description — at least 20 characters)",

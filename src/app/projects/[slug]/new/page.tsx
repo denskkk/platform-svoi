@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ListingForm } from '@/components/listings/ListingForm';
+import { BusinessRequired } from '@/components/listings/BusinessRequired';
 import { useI18n } from '@/i18n/client';
 import { hasListings } from '@/lib/listingFields';
+import { findSection } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
 
 export default function NewListingPage() {
@@ -14,11 +16,18 @@ export default function NewListingPage() {
   const router = useRouter();
   const { t } = useI18n();
   const [ok, setOk] = useState(false);
+  const [section, setSection] = useState('');
+  const [needBusiness, setNeedBusiness] = useState(false);
 
   useEffect(() => {
     const user = readStoredUser();
-    if (!user) { router.replace(`/auth/login?returnUrl=/projects/${params.slug}/new`); return; }
+    const wanted = new URLSearchParams(window.location.search).get('section') || '';
+    const back = `/projects/${params.slug}/new${wanted ? `?section=${encodeURIComponent(wanted)}` : ''}`;
+    if (!user) { router.replace(`/auth/login?returnUrl=${encodeURIComponent(back)}`); return; }
     if (user.accountType === 'viewer' || !hasListings(params.slug)) { router.replace(`/projects/${params.slug}`); return; }
+    const found = findSection(params.slug, wanted);
+    setSection(found ? found.id : '');
+    setNeedBusiness(!!found?.business && user.accountType !== 'business');
     setOk(true);
   }, [router, params.slug]);
 
@@ -31,7 +40,9 @@ export default function NewListingPage() {
           <ArrowLeft className="w-4 h-4" /> {t('listings.common.back')}
         </Link>
         <h1 className="text-2xl font-bold text-neutral-900">{t('listings.form.titleNew')}</h1>
-        <ListingForm slug={params.slug} />
+        {needBusiness
+          ? <BusinessRequired returnUrl={`/projects/${params.slug}/new?section=${encodeURIComponent(section)}`} />
+          : <ListingForm slug={params.slug} presetSection={section || undefined} />}
       </div>
     </div>
   );

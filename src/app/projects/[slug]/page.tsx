@@ -9,7 +9,7 @@ import { projectWallpaper } from '@/lib/projectThemes';
 import { ComingSoon } from '@/components/projects/ComingSoon';
 import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
-import { findFolder, foldersFor } from '@/lib/projectFolders';
+import { applyIdOf, findFolder, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
 import { TaxiOrder } from '@/components/projects/TaxiOrder';
 import { SuggestBox } from '@/components/projects/SuggestBox';
@@ -91,9 +91,6 @@ export default function ProjectPage() {
                 {description && <p className="text-sm text-white/80 mt-0.5">{description}</p>}
               </div>
             </header>
-            <Link href={`/projects/${project.slug}/earn`} className="block rounded-2xl bg-primary-500 hover:bg-primary-600 text-neutral-900 font-bold text-center py-3 shadow-md">
-              💼 {t('projects.earn.button')}
-            </Link>
             {loggedIn ? (
               (() => {
                 const folders = foldersFor(project.slug);
@@ -109,16 +106,27 @@ export default function ProjectPage() {
                         </button>
                       )}
                       <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {(list || []).map((f) => (
-                          <li key={f.key}>
-                            <button type="button" onClick={() => openFolder(found ? `${found.folder.key}.${f.key}` : f.key)}
-                              className="w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center">
+                        {(list || []).map((f) => {
+                          const tileCls = 'w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center';
+                          const inner = (
+                            <>
                               <span className="text-4xl" aria-hidden>{f.icon}</span>
                               <span className="text-sm font-bold text-neutral-900 leading-snug">{t(f.labelKey)}</span>
                               {f.children && <span aria-hidden className="text-neutral-400 text-xs">›</span>}
-                            </button>
-                          </li>
-                        ))}
+                            </>
+                          );
+                          // Заявка (кабінет, команда, новий напрям) і посилання в інший розділ — це не каталог, а перехід
+                          const target = f.href ? f.href : f.apply
+                            ? `/projects/${project.slug}/earn?apply=${encodeURIComponent(applyIdOf(project.slug, found ? [found.folder.key, f.key] : [f.key]))}`
+                            : null;
+                          return (
+                            <li key={f.key}>
+                              {target
+                                ? <Link href={target} className={tileCls}>{inner}</Link>
+                                : <button type="button" onClick={() => openFolder(found ? `${found.folder.key}.${f.key}` : f.key)} className={tileCls}>{inner}</button>}
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   );
@@ -130,7 +138,7 @@ export default function ProjectPage() {
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
-                    <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} />
+                    <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />
                   </div>
                 );
               })()

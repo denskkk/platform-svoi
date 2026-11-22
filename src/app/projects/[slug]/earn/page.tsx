@@ -9,6 +9,7 @@ import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { parseVideoUrl } from '@/lib/embed';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
+import { applyLabelKey } from '@/lib/projectFolders';
 
 interface EarnData {
   page: { titleUk: string; titleEn: string; bodyUk: string; bodyEn: string; videoUrl?: string; stepsUk?: string; stepsEn?: string; examplesUk?: string; examplesEn?: string } | null;
@@ -33,6 +34,8 @@ export default function EarnPage() {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [reapply, setReapply] = useState(false);
+  // Заявка з папки проєкту (кабінет, команда, новий напрям): ?apply=<id>
+  const [applyKey, setApplyKey] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -47,13 +50,16 @@ export default function EarnPage() {
   }, [params.slug]);
 
   useEffect(() => { setLoggedIn(!!readStoredUser()); load(); }, [load]);
+  useEffect(() => {
+    setApplyKey(applyLabelKey(params.slug, new URLSearchParams(window.location.search).get('apply')));
+  }, [params.slug]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (sending) return;
     setSending(true);
     try {
-      const res = await fetch('/api/partner-applications', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ projectSlug: params.slug, phone, message }) });
+      const res = await fetch('/api/partner-applications', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ projectSlug: params.slug, phone, message: applyKey ? `[${t(applyKey)}] ${message}` : message }) });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) { toast.error(body.error || t('projects.earn.failed')); return; }
       toast.success(t('projects.earn.success'));
@@ -141,7 +147,7 @@ export default function EarnPage() {
 
             {loggedIn && formVisible && (
               <form onSubmit={submit} className="bg-white rounded-2xl border border-neutral-200/70 shadow-sm p-4 space-y-3">
-                <h2 className="font-semibold text-neutral-900">{t('projects.earn.applyTitle')}</h2>
+                <h2 className="font-semibold text-neutral-900">{applyKey ? `${t('projects.earn.applyFor')}: ${t(applyKey)}` : t('projects.earn.applyTitle')}</h2>
                 <label className="block space-y-1">
                   <span className="text-sm font-medium text-neutral-700">{t('projects.earn.phone')}</span>
                   <input className={inputCls} type="tel" inputMode="tel" required maxLength={30} value={phone} onChange={(e) => setPhone(e.target.value)} />

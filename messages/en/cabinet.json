@@ -400,7 +400,9 @@
       "market": "What you produce or grow, volumes, where you want to sell",
       "suggestion": "Which section to add",
       "complaint": "What is wrong?"
-    }
+    },
+    "info": "Project information, earn with your own",
+    "feedback": "Suggestions and Complaints"
   },
   "taxi": {
     "city": "City",

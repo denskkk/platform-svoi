@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { CheckCircle2, ImagePlus, Loader2, X } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
-import { CURRENCIES, fieldsFor, LISTING_LIMITS } from '@/lib/listingFields';
+import { CURRENCIES, isFieldRequired, LISTING_LIMITS, visibleFields } from '@/lib/listingFields';
+import { sectionLabelKeys } from '@/lib/projectFolders';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 
 export interface ListingFormInitial {
@@ -24,14 +25,14 @@ export interface ListingFormInitial {
 interface Props {
   slug: string;
   initial?: ListingFormInitial;
+  /** Розділ (папка), з якої людина натиснула «Подати оголошення» */
+  presetSection?: string;
 }
 
-export function ListingForm({ slug, initial }: Props) {
+export function ListingForm({ slug, initial, presetSection }: Props) {
   const { t } = useI18n();
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
-  const fields = fieldsFor(slug);
-
   const [title, setTitle] = useState(initial?.title ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
   const [price, setPrice] = useState(initial?.price != null ? String(initial.price) : '');
@@ -39,9 +40,14 @@ export function ListingForm({ slug, initial }: Props) {
   const [city, setCity] = useState(initial?.city ?? '');
   const [contactName, setContactName] = useState(initial?.contactName ?? '');
   const [phone, setPhone] = useState(initial?.phone ?? '');
-  const [data, setData] = useState<Record<string, string>>(
-    Object.fromEntries(Object.entries(initial?.data ?? {}).filter(([k]) => !k.endsWith('_l')).map(([k, v]) => [k, String(v)]))
-  );
+  const [data, setData] = useState<Record<string, string>>(() => {
+    const base: Record<string, string> = Object.fromEntries(Object.entries(initial?.data ?? {}).filter(([k]) => !k.endsWith('_l')).map(([k, v]) => [k, String(v)]));
+    if (!base.section && presetSection) base.section = presetSection;
+    return base;
+  });
+  const fields = visibleFields(slug, data.section);
+  const optionLabel = (key: string, value: string) =>
+    key === 'section' ? sectionLabelKeys(slug, value).map((k) => t(k)).join(' › ') || value : t(`listings.options.${key}.${value}`);
   const [images, setImages] = useState<string[]>(initial?.images.map((i) => i.url) ?? []);
   const [uploading, setUploading] = useState(0);
   const [sending, setSending] = useState(false);
@@ -127,14 +133,15 @@ export function ListingForm({ slug, initial }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {fields.map((f) => {
-          const name = t(`listings.fields.${slug}.${f.key}`);
+          const name = f.key === 'section' ? t('listings.common.section') : t(`listings.fields.${slug}.${f.key}`);
+          const required = isFieldRequired(f, data.section);
           return (
-            <label key={f.key} className="block">
-              {label(name, f.required)}
+            <label key={f.key} className={`block ${f.key === 'section' ? 'sm:col-span-2' : ''}`}>
+              {label(name, required)}
               {f.type === 'select' ? (
-                <select value={data[f.key] ?? ''} onChange={(e) => setData((d) => ({ ...d, [f.key]: e.target.value }))} required={f.required} className={inputCls(f.key)}>
+                <select value={data[f.key] ?? ''} onChange={(e) => setData((d) => ({ ...d, [f.key]: e.target.value }))} required={required} className={inputCls(f.key)}>
                   <option value="">—</option>
-                  {f.options?.map((o) => <option key={o} value={o}>{t(`listings.options.${f.key}.${o}`)}</option>)}
+                  {f.options?.map((o) => <option key={o} value={o}>{optionLabel(f.key, o)}</option>)}
                 </select>
               ) : (
                 <input
@@ -146,7 +153,7 @@ export function ListingForm({ slug, initial }: Props) {
                   maxLength={f.maxLength}
                   value={data[f.key] ?? ''}
                   onChange={(e) => setData((d) => ({ ...d, [f.key]: e.target.value }))}
-                  required={f.required}
+                  required={required}
                   className={inputCls(f.key)}
                 />
               )}

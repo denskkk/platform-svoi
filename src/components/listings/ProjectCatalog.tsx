@@ -6,14 +6,25 @@ import { Loader2, PlusCircle, Search, SlidersHorizontal } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { fieldsFor } from '@/lib/listingFields';
 import { authHeaders, readStoredUser } from '@/lib/feedClient';
+import { BusinessRequired } from './BusinessRequired';
 import { ListingCard } from './ListingCard';
 import { ListingCardData } from './helpers';
 
 type Filters = Record<string, string>;
 
-export function ProjectCatalog({ slug, initialFilters }: { slug: string; initialFilters?: Filters }) {
+interface CatalogProps {
+  slug: string;
+  initialFilters?: Filters;
+  /** Розділ (папка), яку відкрито: оголошення подається саме в неї */
+  sectionId?: string;
+  /** У розділі оголошення можуть подавати лише бізнес-акаунти */
+  business?: boolean;
+}
+
+export function ProjectCatalog({ slug, initialFilters, sectionId, business }: CatalogProps) {
   const { t } = useI18n();
-  const fields = fieldsFor(slug).filter((f) => f.filter);
+  // Розділ уже обрано папкою, тож його вибір і автоматичні поля у фільтрах не потрібні
+  const fields = fieldsFor(slug).filter((f) => f.filter && f.key !== 'section' && !(sectionId && f.derived) && (!f.sections || !sectionId || f.sections.indexOf(sectionId) !== -1));
   const [user, setUser] = useState<ReturnType<typeof readStoredUser>>(null);
   const [draft, setDraft] = useState<Filters>(initialFilters ?? {});
   const [applied, setApplied] = useState<Filters>(initialFilters ?? {});
@@ -92,22 +103,25 @@ export function ProjectCatalog({ slug, initialFilters }: { slug: string; initial
 
   const inputCls = 'w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400';
   const canPost = user && user.accountType !== 'viewer';
+  const needBusiness = !!business && !!user && user.accountType !== 'business';
+  const postHref = `/projects/${slug}/new${sectionId ? `?section=${encodeURIComponent(sectionId)}` : ''}`;
 
   if (!user) return null;
 
   return (
     <div className="space-y-4">
       {/* Основні дії */}
+      {needBusiness && <BusinessRequired returnUrl={postHref} />}
       <div className="flex flex-wrap gap-2">
-        {canPost ? (
-          <Link href={`/projects/${slug}/new`} className="inline-flex items-center gap-2 rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-2.5">
+        {canPost && !needBusiness ? (
+          <Link href={postHref} className="inline-flex items-center gap-2 rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-2.5">
             <PlusCircle className="w-5 h-5" /> {t('listings.common.post')}
           </Link>
-        ) : (
+        ) : !needBusiness ? (
           <Link href="/auth/register" className="inline-flex items-center gap-2 rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-2.5">
             {t('listings.common.viewerAction')}
           </Link>
-        )}
+        ) : null}
         <button type="button" onClick={() => { searchRef.current?.focus(); searchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}
           className="inline-flex items-center gap-2 rounded-full bg-white border border-neutral-200 font-semibold px-5 py-2.5 text-neutral-800">
           <Search className="w-5 h-5" /> {t('listings.common.search')}
