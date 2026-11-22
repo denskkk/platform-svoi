@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import { CLUB_CATEGORIES, CLUB_ICONS } from '@/lib/clubs';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
 import { canCreateGroups } from '@/lib/groupRights';
+import { useFolderImages } from '@/lib/useFolderImages';
+import { FolderTileInner, folderTileCls } from '@/components/projects/FolderTile';
 
 interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean; membership?: 'active' | 'pending' | null; joinMode?: string }
 
@@ -18,6 +20,7 @@ export default function ClubsPage() {
   const router = useRouter();
   const { t } = useI18n();
   const toast = useToast();
+  const folderImages = useFolderImages('clubs');
   const [scope, setScope] = useState<'all' | 'mine'>('all');
   const [category, setCategory] = useState('');
   // Спочатку кубики категорій; після вибору кубика (або «Усі клуби») — список
@@ -97,16 +100,14 @@ export default function ClubsPage() {
         {!browse && !query && scope === 'all' ? (
           <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <li>
-              <button type="button" onClick={() => { setCategory(''); setBrowse(true); }} className="w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center">
-                <span className="text-4xl" aria-hidden>🤝</span>
-                <span className="text-sm font-bold text-neutral-900 leading-snug">{t('clubs.browse.allClubs')}</span>
+              <button type="button" onClick={() => { setCategory(''); setBrowse(true); }} className={folderTileCls(folderImages.all)}>
+                <FolderTileInner image={folderImages.all} icon="🤝" label={t('clubs.browse.allClubs')} />
               </button>
             </li>
             {CLUB_CATEGORIES.map((c) => (
               <li key={c}>
-                <button type="button" onClick={() => { setCategory(c); setBrowse(true); }} className="w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center">
-                  <span className="text-4xl" aria-hidden>{CLUB_ICONS[c]}</span>
-                  <span className="text-sm font-bold text-neutral-900 leading-snug">{t(`clubs.categories.${c}`)}</span>
+                <button type="button" onClick={() => { setCategory(c); setBrowse(true); }} className={folderTileCls(folderImages[c])}>
+                  <FolderTileInner image={folderImages[c]} icon={CLUB_ICONS[c]} label={t(`clubs.categories.${c}`)} />
                 </button>
               </li>
             ))}

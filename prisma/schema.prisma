@@ -1085,6 +1085,18 @@ model Project {
   @@map("projects")
 }
 
+// Картинка папки (кубика) всередині проєкту або категорії клубів. path = a або a.b (як ?folder= у адресі проєкту).
+model FolderImage {
+  id        Int      @id @default(autoincrement()) @map("folder_image_id")
+  project   String   @db.VarChar(60)
+  path      String   @db.VarChar(120)
+  imageUrl  String   @map("image_url") @db.VarChar(255)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([project, path])
+  @@map("folder_images")
+}
+
 // ========================================
 // ОГОЛОШЕННЯ (єдиний модуль для всіх проєктів)
 // ========================================

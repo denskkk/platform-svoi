@@ -35,7 +35,12 @@
     "imageChange": "Change image",
     "imageRemove": "Remove image",
     "imageSaved": "Image saved",
-    "imageRemoved": "Image removed"
+    "imageRemoved": "Image removed",
+    "folders": "Folder images",
+    "foldersTitle": "Folder and subfolder images",
+    "foldersSubtitle": "Add a photo to each folder. It appears on the tile in the project; without a photo the icon is shown.",
+    "foldersBack": "Back to projects",
+    "foldersEmpty": "This project has no folders"
   },
   "earn": {
     "button": "Earn with your own",

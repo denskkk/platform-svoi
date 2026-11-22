@@ -13,6 +13,8 @@ import { ProjectCatalog } from '@/components/listings/ProjectCatalog';
 import { hasListings } from '@/lib/listingFields';
 import { applyIdOf, findFolder, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
+import { useFolderImages } from '@/lib/useFolderImages';
+import { FolderTileInner, folderTileCls } from '@/components/projects/FolderTile';
 import { TaxiOrder } from '@/components/projects/TaxiOrder';
 import { SuggestBox } from '@/components/projects/SuggestBox';
 import { useI18n } from '@/i18n/client';
@@ -49,6 +51,7 @@ export default function ProjectPage() {
     window.scrollTo({ top: 0 });
   };
   const [state, setState] = useState<'loading' | 'ready' | 'missing' | 'error'>('loading');
+  const folderImages = useFolderImages(params.slug);
 
   useEffect(() => { setLoggedIn(!!readStoredUser()); }, []);
 
@@ -110,14 +113,9 @@ export default function ProjectPage() {
                       )}
                       <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {(list || []).map((f) => {
-                          const tileCls = 'w-full h-full min-h-[7rem] rounded-2xl bg-white shadow-md hover:shadow-lg active:scale-[0.98] transition p-3 flex flex-col items-center justify-center gap-2 text-center';
-                          const inner = (
-                            <>
-                              <span className="text-4xl" aria-hidden>{f.icon}</span>
-                              <span className="text-sm font-bold text-neutral-900 leading-snug">{t(f.labelKey)}</span>
-                              {f.children && <span aria-hidden className="text-neutral-400 text-xs">›</span>}
-                            </>
-                          );
+                          const img = folderImages[found ? `${found.folder.key}.${f.key}` : f.key];
+                          const tileCls = folderTileCls(img);
+                          const inner = <FolderTileInner image={img} icon={f.icon} label={t(f.labelKey)} arrow={!!f.children} />;
                           // Заявка (кабінет, команда, новий напрям) і посилання в інший розділ — це не каталог, а перехід
                           const target = f.href ? f.href : f.apply
                             ? `/projects/${project.slug}/earn?apply=${encodeURIComponent(applyIdOf(project.slug, found ? [found.folder.key, f.key] : [f.key]))}`

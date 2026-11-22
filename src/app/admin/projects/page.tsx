@@ -6,6 +6,7 @@ import { ArrowLeft, ImagePlus, Loader2, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
+import { foldersFor } from '@/lib/projectFolders';
 
 interface Row {
   slug: string;
@@ -133,6 +134,11 @@ export default function AdminProjectsPage() {
               </label>
               {r.bannerUrl && (
                 <button type="button" onClick={() => removeBanner(r)} aria-label={t('projects.admin.imageRemove')} title={t('projects.admin.imageRemove')} className="rounded-lg border border-red-200 p-2 text-red-600 hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
+              )}
+              {foldersFor(r.slug).length > 0 && (
+                <Link href={`/admin/projects/${r.slug}/folders`} className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-300 px-3 py-1.5 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
+                  <ImagePlus className="w-4 h-4" /> {t('projects.admin.folders')}
+                </Link>
               )}
               <button type="button" disabled={saving === r.slug} onClick={() => save(r)} className="rounded-lg bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-4 py-1.5 disabled:opacity-50">
                 {t('projects.admin.save')}
