@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ error: t('api.feed.tooManyPosts') }, { status: 429 });
     }
     const id = parseId(params.id);
-    const source = id ? await prisma.post.findFirst({ where: { id, isHidden: false, author: { isActive: true } }, select: { id: true, authorId: true, repostOfId: true } }) : null;
+    const source = id ? await prisma.post.findFirst({ where: { id, isHidden: false, isPrivate: false, author: { isActive: true } }, select: { id: true, authorId: true, repostOfId: true } }) : null;
     if (!source) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
     if (await isBlockedBetween(userId, source.authorId)) return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
 

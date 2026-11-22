@@ -1,6 +1,6 @@
 /**
  * GET    /api/posts/:id — один допис
- * PATCH  /api/posts/:id { content } — змінити текст (лише автор)
+ * PATCH  /api/posts/:id { content } або { isPrivate } — змінити текст або закрити/відкрити допис (лише автор)
  * DELETE /api/posts/:id — видалити допис (автор або адміністратор)
  */
 
@@ -30,6 +30,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (post?.clubId && !(await getClubAccess(post.clubId, userId))?.canSee) {
       return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
     }
+    if (post && (post as any).isPrivate && post.authorId !== userId) {
+      return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    }
     if (!post || (await isBlockedBetween(userId, post.authorId)) || (post.authorId !== userId && (await getPrivateAuthorIdsHiddenFrom(userId)).includes(post.authorId))) {
       return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
     }
@@ -57,6 +60,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (existing.authorId !== userId) return NextResponse.json({ error: t('api.feed.forbidden') }, { status: 403 });
 
     const body = await request.json().catch(() => ({}));
+    // Закрити / відкрити допис (замок у профілі): змінюється лише видимість, текст не чіпаємо
+    if (typeof body?.isPrivate === 'boolean' && body?.content === undefined) {
+      const updated = await prisma.post.update({ where: { id: postId }, data: { isPrivate: body.isPrivate }, include: postInclude });
+      const st = await loadViewerState(userId, [updated.id], [userId]);
+      return NextResponse.json({ success: true, post: serializePost(updated, st) });
+    }
     const content = typeof body?.content === 'string' ? body.content.trim() : '';
     if (!content && existing.images.length === 0) {
       return NextResponse.json({ error: t('api.feed.emptyPost') }, { status: 400 });

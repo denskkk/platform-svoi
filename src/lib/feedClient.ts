@@ -28,6 +28,7 @@ export interface FeedAuthor {
 export interface FeedPost {
   id: number;
   content: string;
+  isPrivate?: boolean;
   likesCount: number;
   commentsCount: number;
   createdAt: string;

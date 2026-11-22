@@ -54,7 +54,12 @@ export async function GET(request: NextRequest) {
     // reposts=1 — лише репости (для вкладки профілю); reacted=1 — дописи, які поточний користувач лайкнув або прокоментував
     if (params.get('reposts') === '1') (where as any).repostOfId = { not: null };
     if (params.get('reacted') === '1') (where as any).OR = [{ likes: { some: { userId } } }, { comments: { some: { authorId: userId } } }];
-    if (params.get('saved') === '1') {
+    // private=1 — власні закриті дописи (вкладка із замком); в усіх інших вибірках закриті дописи не показуються
+    const privateTab = params.get('private') === '1';
+    (where as any).isPrivate = privateTab;
+    if (privateTab) {
+      where.authorId = userId;
+    } else if (params.get('saved') === '1') {
       const rows = await prisma.savedPost.findMany({ where: { userId }, select: { postId: true }, orderBy: { id: 'desc' }, take: 1000 });
       where.id = { ...(cursor ? { lt: cursor } : {}), in: rows.map((r: any) => r.postId) };
       if (blocked.length > 0) where.authorId = { notIn: blocked };

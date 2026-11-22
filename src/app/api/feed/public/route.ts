@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     if (hit && Date.now() - hit.at < TTL_MS) return NextResponse.json(hit.body);
 
     const hidden = await getPrivateAuthorIdsHiddenFrom(0);
-    const where: any = { isHidden: false, clubId: null, author: { isActive: true } };
+    const where: any = { isHidden: false, isPrivate: false, clubId: null, author: { isActive: true } };
     if (hidden.length) where.authorId = { notIn: hidden };
     if (cursor) where.id = { lt: cursor };
     if (videos) where.video = { is: { status: 'ready' } };

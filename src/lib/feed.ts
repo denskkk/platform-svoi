@@ -67,10 +67,11 @@ type PostRow = {
 
 export function serializePost(post: PostRow, viewer: { liked: Set<number>; following: Set<number>; saved?: Set<number>; reactions?: Map<number, string>; userId: number }) {
   const { author } = post;
-  const orig = post.repostOf && !post.repostOf.isHidden ? post.repostOf : null;
+  const orig = post.repostOf && !post.repostOf.isHidden && !(post.repostOf as any).isPrivate ? post.repostOf : null;
   return {
     id: post.id,
     content: post.content,
+    isPrivate: !!(post as any).isPrivate,
     likesCount: post.likesCount,
     commentsCount: post.commentsCount,
     repostsCount: post.repostsCount ?? 0,

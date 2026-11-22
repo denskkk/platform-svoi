@@ -67,7 +67,9 @@
     "repost": "Share to your feed",
     "repostPlaceholder": "Add a comment (optional)",
     "copyLink": "Copy link",
-    "repostUnavailable": "The original post is unavailable"
+    "repostUnavailable": "The original post is unavailable",
+    "makePrivate": "Make private (only me)",
+    "makePublic": "Make public"
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -111,7 +113,9 @@
     "actionFailed": "Could not complete the action. Please try again.",
     "saved": "Changes saved",
     "blocked": "User blocked",
-    "unblocked": "User unblocked"
+    "unblocked": "User unblocked",
+    "madePrivate": "Post is private: only you can see it",
+    "madePublic": "Post is public again"
   },
   "errors": {
     "load": "Could not load the feed",
@@ -181,18 +185,20 @@
     },
     "viewers": "Profile visitors",
     "tabs": {
-      "posts": "Posts",
+      "posts": "Posts, photos and videos",
       "reposts": "Reposts",
       "videos": "Videos",
       "saved": "Saved",
-      "reacted": "Liked and commented"
+      "reacted": "Liked and commented",
+      "private": "Private"
     },
     "emptyTab": {
       "posts": "No posts yet",
       "reposts": "No reposts yet",
       "videos": "No videos yet",
       "saved": "No saved posts yet",
-      "reacted": "You have not liked or commented on anything yet"
+      "reacted": "You have not liked or commented on anything yet",
+      "private": "No private posts. You can make a post private in its menu (three dots)."
     }
   },
   "single": {

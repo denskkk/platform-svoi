@@ -2,7 +2,7 @@
 
 import { memo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { BadgeCheck, ThumbsUp, MessageCircle, Bookmark, Share2, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck, Repeat2, Link2 } from 'lucide-react';
+import { BadgeCheck, ThumbsUp, MessageCircle, Bookmark, Share2, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck, Repeat2, Link2, Lock, Unlock } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { BlockButton } from './BlockButton';
@@ -175,6 +175,19 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
     }
   };
 
+  const togglePrivate = async () => {
+    const next = !post.isPrivate;
+    setMenuOpen(false);
+    try {
+      const res = await fetch(`/api/posts/${post.id}`, { method: 'PATCH', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ isPrivate: next }) });
+      if (!res.ok) throw new Error();
+      onChange(post.id, { isPrivate: next });
+      toast.success(next ? t('feed.toast.madePrivate') : t('feed.toast.madePublic'));
+    } catch {
+      toast.error(t('feed.toast.actionFailed'));
+    }
+  };
+
   const doDelete = async () => {
     try {
       const res = await fetch(`/api/posts/${post.id}`, { method: 'DELETE', credentials: 'include', headers: authHeaders() });
@@ -245,6 +258,9 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
                     <>
                       <button type="button" onClick={startEdit} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-800 rounded-lg hover:bg-neutral-50">
                         <Pencil className="w-4 h-4" /> {t('feed.post.edit')}
+                      </button>
+                      <button type="button" onClick={togglePrivate} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-800 rounded-lg hover:bg-neutral-50">
+                        {post.isPrivate ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />} {post.isPrivate ? t('feed.post.makePublic') : t('feed.post.makePrivate')}
                       </button>
                       <button type="button" onClick={() => setConfirmDelete(true)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50">
                         <Trash2 className="w-4 h-4" /> {t('feed.post.delete')}

@@ -919,6 +919,7 @@ model Post {
   likesCount   Int      @default(0) @map("likes_count")
   commentsCount Int     @default(0) @map("comments_count")
   isHidden     Boolean  @default(false) @map("is_hidden") // прихований модерацією
+  isPrivate    Boolean  @default(false) @map("is_private") // закритий автором: бачить лише він (вкладка із замком у профілі)
   repostOfId   Int?     @map("repost_of_id")
   clubId       Int?     @map("club_id")
   club         Club?    @relation("ClubPosts", fields: [clubId], references: [id], onDelete: Cascade)
