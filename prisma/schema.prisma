@@ -1616,10 +1616,16 @@ model TaxiRequest {
   lng         Float?
   driverPref  String   @default("any") @map("driver_pref") @db.VarChar(16)
   status      String   @default("new") @db.VarChar(16)
+  rideType    String?  @map("ride_type") @db.VarChar(16)
+  carClass    String?  @map("car_class") @db.VarChar(16)
+  scheduledAt DateTime? @map("scheduled_at")
+  wishes      String?  @db.VarChar(255)
+  passengers  Int?
   createdAt   DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([city, status])
+  @@index([userId, id])
   @@map("taxi_requests")
 }

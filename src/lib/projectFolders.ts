@@ -23,6 +23,8 @@ export interface ProjectFolder {
   href?: string;
   /** Розділ показує бізнес-кабінети (магазини), а не стрічку оголошень */
   directory?: boolean;
+  /** Не каталог: спеціальний екран (форма замовлення, інформація, заявка-форма). Використовує «Таксі для своїх» */
+  kind?: string;
 }
 
 interface Spec {
@@ -34,6 +36,7 @@ interface Spec {
   derive?: Record<string, string>;
   href?: string;
   directory?: boolean;
+  kind?: string;
 }
 
 const slugId = (slug: string) => slug.replace(/-/g, '_');
@@ -54,6 +57,8 @@ function build(slug: string, specs: Spec[], parents: string[]): ProjectFolder[] 
       node.href = s.href;
     } else if (s.apply) {
       node.apply = true;
+    } else if (s.kind) {
+      node.kind = s.kind;
     } else {
       node.sectionId = id;
       node.filters = { f_section: id };
@@ -67,6 +72,7 @@ function build(slug: string, specs: Spec[], parents: string[]): ProjectFolder[] 
 
 const leaf = (key: string, icon: string, extra?: Partial<Spec>): Spec => ({ key, icon, ...extra });
 const apply = (key: string, icon = '➕'): Spec => ({ key, icon, apply: true });
+const view = (key: string, icon: string, kind: string): Spec => ({ key, icon, kind });
 
 /** Специфікація папок за ТЗ замовника (скріншоти та голосові). Порядок = порядок на екрані. */
 const SPECS: Record<string, Spec[]> = {
@@ -160,6 +166,17 @@ const SPECS: Record<string, Spec[]> = {
     leaf('nutrition', '🍖'),
     { key: 'club', icon: '🐾', href: '/clubs' },
     leaf('support', '❤️'),
+  ],
+  // «Таксі для своїх»: 8 основних папок за ТЗ замовника. Екрани: order:* — форма замовлення, ride:* — трансфер, form:* — звернення, info — довідка, trips — мої запити
+  taxi: [
+    { key: 'order', icon: '🚕', kids: [view('now', '⚡', 'order:now'), view('scheduled', '🗓️', 'order:scheduled'), view('address', '📍', 'order:address'), view('class', '🚘', 'order:class'), view('wishes', '📝', 'order:wishes')] },
+    { key: 'driver', icon: '🧑‍✈️', kids: [apply('register', '🪪'), view('docs', '📄', 'form:request'), view('car', '🚗', 'form:request'), view('requirements', '✅', 'info:apply'), view('cabinet', '🗂️', 'info:apply'), view('trips', '🧾', 'trips'), view('income', '💵', 'info')] },
+    { key: 'team', icon: '👥', kids: [apply('create', '🏙️'), apply('region', '🗺️'), apply('country', '🌍'), { key: 'invite', icon: '📨', href: '/menu/qr' }, view('partners', '🤝', 'form:request'), apply('network', '🌐')] },
+    { key: 'transfers', icon: '✈️', kids: [view('airport', '🛫', 'ride:airport'), view('station', '🚆', 'ride:station'), view('intercity', '🛣️', 'ride:intercity'), view('international', '🌍', 'ride:international'), view('group', '🚐', 'ride:group'), view('special', '♿', 'ride:special')] },
+    { key: 'info', icon: 'ℹ️', kids: [view('about', '🚕', 'info'), view('how', '⚙️', 'info'), view('drivers', '🧑‍✈️', 'info:apply'), view('partner', '💼', 'info:apply'), view('regions', '🏙️', 'info:apply'), view('terms', '📃', 'info'), view('news', '📰', 'info')] },
+    { key: 'help', icon: '🛟', kids: [view('passengers', '🙋', 'form:request'), view('drivers', '🧑‍✈️', 'form:request'), view('ordering', '🧾', 'form:request'), view('trip', '⚠️', 'form:request'), view('cancel', '↩️', 'form:request'), view('lost', '🎒', 'form:request'), view('faq', '❓', 'form:consult')] },
+    { key: 'payment', icon: '💳', kids: [view('tariffs', '💰', 'info'), view('methods', '💳', 'info'), view('history', '🕘', 'trips'), view('receipts', '🧾', 'info'), view('settlements', '🤝', 'info'), view('fees', '📊', 'info'), view('refunds', '↩️', 'form:complaint')] },
+    { key: 'feedback', icon: '⭐', kids: [view('review', '💬', 'form:suggestion'), view('rate', '⭐', 'form:suggestion'), view('complaint', '📣', 'form:complaint'), view('report', '🚨', 'form:complaint'), view('suggestion', '💡', 'form:suggestion'), view('ideas', '🚀', 'form:suggestion')] },
   ],
   clubs: [
     { key: 'all', icon: '🤝', href: '/clubs' },

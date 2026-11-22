@@ -162,5 +162,65 @@
         "other": "Other"
       }
     }
+  },
+  "taxi": {
+    "order": {
+      "scheduledAt": "Pickup date and time",
+      "class": "Car class",
+      "classes": {
+        "economy": "Economy",
+        "comfort": "Comfort",
+        "business": "Business",
+        "minivan": "Minivan"
+      },
+      "passengers": "Number of passengers",
+      "wishes": "Ride wishes",
+      "wishesHint": "Child seat, pet, luggage, no smoking…"
+    },
+    "form": {
+      "phone": "Phone (optional)",
+      "hint": "Describe in detail, we will reply soon",
+      "sent": "Sent. We will reply soon.",
+      "lead": {
+        "request": "Leave a request and a manager will contact you.",
+        "consult": "Ask a question and we will answer.",
+        "suggestion": "Tell us what could be better, or share a review.",
+        "complaint": "Describe the problem. The complaint goes to the administration."
+      }
+    },
+    "info": {
+      "apply": "Apply",
+      "ask": "Have a question? Write to us"
+    },
+    "trips": {
+      "empty": "No ride requests yet",
+      "waitlist": "Waiting for the taxi to launch in the city",
+      "accepted": "Request accepted",
+      "ride": {
+        "airport": "Airport",
+        "station": "Station",
+        "intercity": "Intercity",
+        "international": "International",
+        "group": "Group",
+        "special": "Special"
+      }
+    },
+    "text": {
+      "driver_requirements": "Requirements for drivers (documents, experience) and cars depend on the city and country. A manager will provide them after your application. Apply as a driver and we will tell you what is needed in your city.",
+      "driver_cabinet": "The driver cabinet opens once your application is approved. It will hold your orders, rides and income. Apply as a driver and we will let you know when the cabinet is available.",
+      "driver_income": "Your income and payouts will appear here. The platform does not transfer money itself. This section opens when the taxi starts in your city.",
+      "info_about": "“Taxi for your own” is a platform service for passengers and drivers from your community. The taxi launches city by city: leave a request in your city and we will tell you when it starts.",
+      "info_how": "A passenger creates a request: city, address, wishes. If the taxi already works in the city, drivers see it. If not, we add you to the waiting list and tell you about the launch.",
+      "info_drivers": "Become a driver: submit an application and a manager will contact you. After approval the driver cabinet opens.",
+      "info_partner": "Partner program: invite drivers and passengers with your link and grow the service in your city. Cooperation and reward terms are set separately and are not a guarantee of income.",
+      "info_regions": "You can create a team in your city, become a regional representative or open the service in your country. Submit an application and a manager will explain the terms.",
+      "info_terms": "Cooperation and reward terms are agreed individually and set separately. They are not a guarantee of income.",
+      "info_news": "Project news will appear here. Right now we are launching the taxi city by city and collecting requests from passengers and drivers.",
+      "payment_tariffs": "Fares depend on the city and car class and will appear when the taxi starts in your city.",
+      "payment_methods": "Payment methods will be announced before launch in your city. The platform does not transfer money itself.",
+      "payment_receipts": "Receipts will appear after the first rides.",
+      "payment_settlements": "The platform does not transfer money itself. The settlement procedure with drivers will be announced before launch in the city.",
+      "payment_fees": "Fees and payment terms are set separately before launch in the city. The platform does not transfer money itself."
+    }
   }
 }

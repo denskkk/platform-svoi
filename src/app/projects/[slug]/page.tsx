@@ -15,7 +15,7 @@ import { applyIdOf, findFolder, foldersFor } from '@/lib/projectFolders';
 import { readStoredUser } from '@/lib/feedClient';
 import { useFolderImages } from '@/lib/useFolderImages';
 import { FolderTileInner, folderTileCls } from '@/components/projects/FolderTile';
-import { TaxiOrder } from '@/components/projects/TaxiOrder';
+import { TaxiFolders } from '@/components/projects/TaxiFolders';
 import { SuggestBox } from '@/components/projects/SuggestBox';
 import { useI18n } from '@/i18n/client';
 
@@ -163,7 +163,14 @@ export default function ProjectPage() {
                 {description && <p className="text-sm text-white/80 mt-0.5">{description}</p>}
               </div>
             </header>
-            <TaxiOrder />
+            {loggedIn
+              ? <TaxiFolders folderPath={folderPath} openFolder={openFolder} />
+              : (
+                <div className="bg-white rounded-2xl border border-neutral-200 p-6 text-center space-y-3">
+                  <p className="text-neutral-700">{t('listings.common.loginRequired')}</p>
+                  <Link href={`/auth/login?returnUrl=/projects/${project.slug}`} className="inline-block rounded-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-2.5">{t('listings.common.login')}</Link>
+                </div>
+              )}
             <Link href={`/projects/${project.slug}/earn`} className="flex items-center gap-4 rounded-2xl bg-white shadow-md p-4 hover:shadow-lg transition">
               <UserPlus className="w-7 h-7 shrink-0 text-space-500" />
               <span><span className="block font-bold text-neutral-900">{t('cabinet.projects.taxi.apply')}</span><span className="block text-xs text-neutral-500">{t('cabinet.projects.taxi.applyHint')}</span></span>
