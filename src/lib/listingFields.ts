@@ -250,6 +250,24 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'goalAmount', type: 'text', maxLength: 80 },
     { key: 'reportUrl', type: 'url', maxLength: 255 },
   ],
+  'export-alliance': [
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'area', type: 'text', maxLength: 100 },
+    { key: 'producedGoods', type: 'text', maxLength: 200, filter: 'text' },
+    { key: 'volume', type: 'text', maxLength: 100 },
+    { key: 'season', type: 'text', maxLength: 100 },
+    { key: 'prodForm', type: 'select', options: ['fresh', 'frozen', 'processed', 'dried', 'other'], filter: 'select' },
+    { key: 'readyPeriod', type: 'text', maxLength: 100 },
+    { key: 'marketWhere', type: 'text', maxLength: 200 },
+    { key: 'priceInfo', type: 'text', maxLength: 150 },
+    { key: 'sphere', type: 'text', maxLength: 150 },
+    { key: 'buys', type: 'text', maxLength: 200, filter: 'text' },
+    { key: 'languages', type: 'text', maxLength: 150 },
+    { key: 'experience', type: 'number', min: 0, max: 70 },
+    { key: 'routes', type: 'text', maxLength: 300 },
+    { key: 'cargoInfo', type: 'text', maxLength: 300 },
+  ],
   clubs: [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
@@ -319,6 +337,7 @@ const PET_CARE = ['pets_sitting_need', 'pets_sitting_can', 'pets_sitting_hotels'
 const HH_RENT = ids('helper-hour', 'helper_hour_work_rent_');
 const HH_JOB = ids('helper-hour', 'helper_hour_work_job_');
 const HH_ALL = ids('helper-hour', 'helper_hour_');
+const EXA = (...p: string[]) => ids('export-alliance', 'export_alliance_').filter((x) => p.some((q) => x.indexOf('export_alliance_' + q) === 0));
 const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
   'real-estate': {
     // Тип об'єкта виставляється розділом (derive); обирає його сам користувач лише в короткостроковій оренді
@@ -398,6 +417,16 @@ const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
     destination: { sections: TOUR_SECTIONS }, tripDate: { sections: TOUR_SECTIONS }, tripDateEnd: { sections: TOUR_SECTIONS }, fromCity: { sections: TOUR_SECTIONS },
     hotelName: { sections: TOUR_SECTIONS }, nights: { sections: TOUR_SECTIONS }, included: { sections: TOUR_SECTIONS }, extraCosts: { sections: TOUR_SECTIONS },
     seatsFree: { sections: ['travel_join'].concat(ids('travel', 'travel_hot_')) }, oldPrice: { sections: ids('travel', 'travel_hot_') }, validUntil: { sections: ids('travel', 'travel_hot_') },
+  },
+  'export-alliance': {
+    country: { sections: EXA('agro', 'suppliers', 'markets_requests_all', 'markets_ua', 'markets_intl', 'markets_companies', 'markets_reps', 'markets_logistics', 'markets_deals') },
+    region: { sections: EXA('agro', 'suppliers', 'markets_requests_all', 'markets_ua', 'markets_intl', 'markets_companies', 'markets_reps', 'markets_logistics', 'markets_deals') },
+    area: { sections: EXA('agro') }, producedGoods: { sections: EXA('agro', 'suppliers') }, volume: { sections: EXA('agro', 'markets_requests_all') }, season: { sections: EXA('agro') },
+    prodForm: { sections: EXA('markets_requests_all') }, readyPeriod: { sections: EXA('markets_requests_all') }, marketWhere: { sections: EXA('markets_requests_all') },
+    priceInfo: { sections: EXA('markets_requests_all', 'suppliers') },
+    sphere: { sections: EXA('markets_ua', 'markets_intl', 'markets_companies') }, buys: { sections: EXA('markets_ua', 'markets_intl', 'markets_companies') },
+    languages: { sections: EXA('markets_reps') }, experience: { sections: EXA('markets_reps') },
+    routes: { sections: EXA('markets_logistics') }, cargoInfo: { sections: EXA('markets_logistics') },
   },
   antiques: {
     adKind: { sections: ids('antiques', 'antiques_things_online'), requiredIn: ids('antiques', 'antiques_things_online') },

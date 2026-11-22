@@ -435,7 +435,13 @@
       "howPlace": "Submit an application with the project description, required amount and contacts. After administrator review the project appears in the catalog. The platform only introduces the parties and does not guarantee funding.",
       "howInvestor": "Create an investor profile: budget, industries and participation formats. The profile can be open or hidden. Any investment carries risk — check projects yourself; the platform gives no financial advice and guarantees no profit.",
       "howSpecialist": "Pick your specialty and apply with your experience and contacts. After review you will receive requests from project authors.",
-      "growth": "Clubs are a place to grow skills and learn. A specialist who completed training and holds the required qualification and license (where the law requires it) can apply to the “Jobs” project. A club course certificate is not automatically equal to a state qualification or license."
+      "growth": "Clubs are a place to grow skills and learn. A specialist who completed training and holds the required qualification and license (where the law requires it) can apply to the “Jobs” project. A club course certificate is not automatically equal to a state qualification or license.",
+      "reward": "The platform does not guarantee any reward: its size and terms are agreed by the parties separately.",
+      "terms": "Supply terms (price, payment, delivery, deadlines) are agreed by the parties. The platform only helps find partners.",
+      "docs": "Some goods (agrochemicals, seeds, plant protection products) may require registration and permit documents under the law. Confidential contract terms do not become public automatically.",
+      "mission": "To unite farmers, producers, suppliers, buyers, trade representatives and logistics partners so Ukrainian producers reach new markets.",
+      "howProducers": "Create a sales request: product, volume, place, market and terms. After review it appears in the catalog; buyers and representatives can offer cooperation and the status is shown in “My requests”.",
+      "withProducers": "Represent producers in Ukraine or abroad, look for buyers and help with negotiations. Submit an application — administrators will contact you."
     },
     "cl_interest": "Interest clubs",
     "cl_communities": "Countries and communities",
@@ -457,7 +463,15 @@
     "createClub": "How to create your own club",
     "becomeBlogger": "Become a club blogger: apply",
     "teachCourses": "How to run courses: apply",
-    "growth": "Professional development opportunities"
+    "growth": "Professional development opportunities",
+    "reward": "Representation and reward",
+    "terms": "Supply terms",
+    "docs": "Documents and certificates",
+    "mission": "Mission and goals of the alliance",
+    "howProducers": "How producers find sales markets",
+    "intlRep": "Become an international trade representative",
+    "withProducers": "Cooperation with producers",
+    "withLogistics": "Cooperation with logistics companies"
   },
   "f": {
     "consult": {
@@ -645,6 +659,33 @@
     },
     "newClub": {
       "title": "Suggest a new club"
+    },
+    "farmApply": {
+      "title": "Add your farm: apply"
+    },
+    "supplierApply": {
+      "title": "Add a company: apply"
+    },
+    "marketRequest": {
+      "title": "New sales market request"
+    },
+    "helpBuyer": {
+      "title": "Offer help finding a buyer"
+    },
+    "addCompany": {
+      "title": "Add a company: apply"
+    },
+    "becomeRepresentative": {
+      "title": "Become a representative: fill in the form"
+    },
+    "commercialOffer": {
+      "title": "Create a commercial offer"
+    },
+    "routeCalc": {
+      "title": "Delivery quote request"
+    },
+    "shareStory": {
+      "title": "Share a cooperation story"
     }
   },
   "fld": {
@@ -739,7 +780,31 @@
     "district": "District or locality",
     "interests": "About you and interests",
     "courseKind": "Course type",
-    "duration": "Duration"
+    "duration": "Duration",
+    "farmName": "Farm name",
+    "productName": "Product name",
+    "category": "Category",
+    "sort": "Variety",
+    "quality": "Quality",
+    "volume": "Volume (tons or units)",
+    "minBatch": "Minimum batch",
+    "readyPeriod": "Readiness period",
+    "marketWhere": "Target market (Ukraine, regions, countries)",
+    "buyers": "Preferred buyers",
+    "transport": "Transport type",
+    "temp": "Temperature requirements",
+    "payTerms": "Payment terms",
+    "contactPerson": "Contact person",
+    "sphere": "Field of activity",
+    "source": "Source of information",
+    "comment": "Comment",
+    "languages": "Languages",
+    "help": "Help you can offer",
+    "area": "Area, ha",
+    "season": "Harvest period",
+    "supply": "Supply capability",
+    "buyer": "Buyer",
+    "prodForm": "Product form"
   },
   "fopt": {
     "location": {
@@ -838,17 +903,31 @@
     "courseKind": {
       "amateur": "Amateur",
       "certified": "Specialized with certificate"
+    },
+    "prodForm": {
+      "fresh": "Fresh",
+      "frozen": "Frozen",
+      "processed": "Processed",
+      "dried": "Dried",
+      "other": "Other"
     }
   },
   "fh": {
     "where": "Where you are",
     "ifUa": "If you are in Ukraine",
     "ifAbroad": "If you are abroad",
-    "contacts": "Contacts"
+    "contacts": "Contacts",
+    "product": "Step 1. Product",
+    "volume": "Step 2. Volume",
+    "form": "Step 3. Product form",
+    "place": "Step 4. Place of production",
+    "market": "Step 5–6. Market and buyers",
+    "terms": "Step 7. Logistics and commercial terms"
   },
   "fnote": {
     "privacy": "Do not enter passport or document numbers in the form. Hand originals directly to the translator after agreeing.",
-    "tradeNoGuarantee": "The application does not guarantee participation in a fair. Terms are agreed with the organizer."
+    "tradeNoGuarantee": "The application does not guarantee participation in a fair. Terms are agreed with the organizer.",
+    "marketNoGuarantee": "The platform does not guarantee finding a buyer and takes no part in deals; parties agree terms themselves. Check your data before submitting."
   },
   "drill": {
     "showAll": "Show all",
@@ -955,5 +1034,12 @@
       "info_how": "Post listings in online shops, add an offline shop, find an appraiser or expert. The platform does not allow illegal trade in cultural property, archaeological finds or precious metals contrary to law; check provenance and export rules."
     },
     "intro": "Antiques and precious items: online and offline shops, appraisers, experts and masters. Illegal trade in cultural property is prohibited."
+  },
+  "exportAlliance": {
+    "text": {
+      "info_about": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets.",
+      "info_how": "Choose a folder: farmers, suppliers or sales markets. Add a farm or company, create a sales request, find a buyer or carrier. Check your partner and documents before a deal; the platform takes no part in payments."
+    },
+    "intro": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets."
   }
 }

@@ -153,6 +153,26 @@ const ANT_ACTS = ['appraisalRequest', 'shopApply', 'newDirection'];
 const antLeaf = (key: string, icon: string): Spec => leaf(key, icon, { acts: ANT_ACTS });
 const antPeople = (acts: string[], keys: string[], extraKey: string): Spec[] => keys.map((k) => SPEC(k, '🧑‍🔬', acts, { drill: GEO })).concat([fx(extraKey, '➕', 'newDirection')]);
 
+// ——— «Український експортний альянс»: аграрії, постачальники, ринки збуту ———
+const EXP_AGRO: Array<[string, string, string[]]> = [
+  ['plants', '🌾', ['grain', 'oilseeds', 'legumes', 'technical', 'fodder']], ['berries', '🍓', ['strawberry', 'raspberry', 'blueberry', 'blackberry', 'currant', 'otherBerries']],
+  ['vegetables', '🥔', ['potato', 'tomato', 'cucumber', 'cabbage', 'carrotBeet', 'onion', 'garlic', 'melons', 'otherVeg']], ['orchards', '🍎', ['apple', 'pear', 'cherry', 'plumApricot', 'nuts', 'otherFruit']],
+  ['vineyards', '🍇', ['tableGrape', 'technicalGrape', 'nurseries']], ['livestock', '🐄', ['cattle', 'pigs', 'sheep', 'goats', 'horses', 'otherLivestock']],
+  ['poultry', '🐔', ['chicken', 'turkey', 'duckGoose', 'quail', 'otherPoultry']], ['fish', '🐟', ['fishBreeding', 'ponds', 'crayfish', 'shrimp', 'otherAqua']],
+  ['forestry', '🌲', ['forestry', 'saplings', 'forestNurseries', 'timber', 'reforestation']], ['greenhouses', '🏡', ['vegGreenhouse', 'berryGreenhouse', 'flowerGreenhouse', 'nurseries', 'hydroponics']],
+  ['land', '🗺️', ['landowners', 'lessors', 'tenants', 'farms', 'agroCompanies', 'landCoops']], ['otherAgro', '🌱', ['bees', 'flowers', 'decorative', 'mushrooms', 'herbs', 'seeds']],
+];
+const EXP_SUPPLY: Array<[string, string, string[]]> = [
+  ['fertilizers', '🧪', ['mineral', 'organic', 'complex', 'npk', 'micro', 'liquid', 'stimulants']], ['seeds', '🌱', []], ['protection', '🛡️', []], ['machinery', '🚜', []],
+  ['fuel', '⛽', []], ['storage', '🏭', []], ['irrigation', '💧', []], ['packaging', '📦', []],
+];
+const EXP_BUYERS = ['vegBases', 'wholesale', 'chains', 'processing', 'meat', 'dairy', 'canning', 'freezing', 'foodProd', 'horeca', 'distributors', 'wholeBuyers'];
+const EXP_COMPANIES = ['processing', 'vegBases', 'chains', 'meatDairy', 'canningFreezing', 'foodProd', 'distributors', 'importers', 'otherBuyers'];
+const EXP_INTL = ['regions', 'importers', 'wholeBuyers', 'processing', 'chains', 'distributors', 'allianceReps', 'logisticsPartners'];
+const EXP_LOGISTICS = ['refrigerated', 'grain', 'special', 'groupage', 'international', 'rail', 'road', 'otherLogistics'];
+const EXP_ACTS = ['farmApply', 'marketRequest', 'newDirection'];
+const expGroup = (key: string, icon: string, subs: string[], acts: string[], extra?: Partial<Spec>): Spec => ({ key, icon, kids: subs.map((k) => leaf(k, icon, { business: true, drill: GEO, acts, ...extra })).concat([fx('newDirection', '➕', 'newDirection')]) });
+
 /** Специфікація папок за ТЗ замовника (скріншоти, голосові та файли структури). Порядок = порядок на екрані. */
 const SPECS: Record<string, Spec[]> = {
   // «Юристи»: 7 кнопок за ТЗ. 1 — дерево представництв (країна → область → район → громада), 2–4 — заявки з маршрутом до керівника,
@@ -462,6 +482,27 @@ const SPECS: Record<string, Spec[]> = {
     ] },
     INFO([S_ABOUT, S_HOW, S_EARN, S_PARTNER, S_TEAM, S_NEWS]),
     FEEDBACK([F_SUGGEST, fb('newCategory', '🗂️', 'suggestion'), fb('newSub', '📂', 'suggestion'), fb('newExpert', '🧑‍🔬', 'suggestion'), fb('error', '🐞', 'suggestion'), fb('complaintSeller', '📣', 'complaint'), fb('complaintSpecialist', '👤', 'complaint'), fb('suspicious', '🚨', 'complaint'), F_SUPPORT]),
+  ],
+
+  'export-alliance': [
+    { key: 'agro', icon: '🌾', kids: EXP_AGRO.map(([c, icon, subs]) => c === 'plants'
+      ? { key: c, icon, kids: [leaf('grain', icon, { business: true, drill: GEO, acts: EXP_ACTS }), { key: 'oilseeds', icon, kids: ['sunflower', 'rapeseed', 'soy'].map((x) => leaf(x, icon, { business: true, drill: GEO, acts: EXP_ACTS })) }, ...subs.slice(2).map((x) => leaf(x, icon, { business: true, drill: GEO, acts: EXP_ACTS })), fx('newDirection', '➕', 'newDirection')] }
+      : expGroup(c, icon, subs, EXP_ACTS)) },
+    { key: 'suppliers', icon: '🚜', kids: EXP_SUPPLY.map(([c, icon, subs]) => subs.length
+      ? expGroup(c, icon, subs, ['supplierApply', 'newDirection'], { drill: ['country', 'region'] })
+      : leaf(c, icon, { business: true, drill: ['country', 'region'], acts: ['supplierApply', 'newDirection'] })).concat([fx('newCategory', '➕', 'newDirection')]) },
+    { key: 'markets', icon: '🌍', kids: [
+      { key: 'requests', icon: '📝', kids: [fx('create', '➕', 'marketRequest'), leaf('all', '🔎', { drill: GEO, acts: ['helpBuyer'] }), fx('helpBuyer', '🤝', 'helpBuyer'), view('mine', '📂', 'mine:request,market')] },
+      { key: 'ua', icon: '🇺🇦', kids: EXP_BUYERS.map((b) => leaf(b, '🏢', { business: true, drill: ['region', 'city'], acts: ['addCompany'] })).concat([view('rep', '🏛️', 'repapply:open')]) },
+      { key: 'intl', icon: '🌐', kids: EXP_INTL.map((b) => leaf(b, '🌐', { business: true, drill: ['country', 'region', 'city'], acts: ['addCompany'] })).concat([view('rep', '🏛️', 'repapply:open'), fx('newMarket', '➕', 'newDirection')]) },
+      { key: 'companies', icon: '🏭', kids: EXP_COMPANIES.map((b) => leaf(b, '🏢', { business: true, drill: GEO, acts: ['addCompany'] })) },
+      { key: 'reps', icon: '🤝', kids: [fx('become', '➕', 'becomeRepresentative'), leaf('offers', '🔎', { drill: GEO, acts: ['becomeRepresentative'] }), view('mine', '📂', 'mine:specialist,request'), std('reward', '💰')] },
+      { key: 'logistics', icon: '🚚', kids: EXP_LOGISTICS.map((b) => leaf(b, '🚚', { business: true, drill: GEO, acts: ['carrierAdd', 'routeCalc'] })).concat([fx('calc', '🧮', 'routeCalc')]) },
+      { key: 'talks', icon: '💬', kids: [fx('offer', '📄', 'commercialOffer'), view('mine', '📂', 'mine:request'), std('terms', '📃'), std('docs', '📎')] },
+      { key: 'deals', icon: '🏆', kids: [leaf('stories', '📖', { drill: GEO }), fx('share', '➕', 'shareStory')] },
+    ] },
+    INFO([S_ABOUT, std('mission', '🎯'), S_HOW, std('howProducers', '🌾'), S_EARN, S_PARTNER, S_REP, stdFx('intlRep', '🌐', 'becomeRepresentative'), std('withProducers', '🤝'), stdFx('withLogistics', '🚚', 'carrierAdd'), S_TEAM, S_NEWS]),
+    FEEDBACK([F_SUGGEST, fb('newProductCat', '🗂️', 'suggestion'), fb('newAgroDirection', '🌱', 'suggestion'), fb('newBuyer', '🏢', 'suggestion'), fb('newMarket', '🌍', 'suggestion'), fb('newRep', '🤝', 'suggestion'), fb('newLogistics', '🚚', 'suggestion'), fb('error', '🐞', 'suggestion'), fb('complaintAd', '📣', 'complaint'), fb('complaintCompany', '🏢', 'complaint'), F_SUPPORT]),
   ],
 
   // «Міжнародні ярмарки української продукції»: 4 кнопки за ТЗ

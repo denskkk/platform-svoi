@@ -47,7 +47,8 @@ $files = @(
   "20261148_representations.sql",
   "20261149_real_estate_sections.sql",
   "20261150_project_structures.sql",
-  "20261151_antiques_clubs_structure.sql"
+  "20261151_antiques_clubs_structure.sql",
+  "20261152_export_alliance.sql"
 )
 foreach ($f in $files) {
   Write-Host "  -> $f"

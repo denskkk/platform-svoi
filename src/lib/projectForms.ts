@@ -41,6 +41,10 @@ export const FIELDS: Record<string, FieldDef> = {
   storeKind: { t: 'sel', opts: ['store', 'warehouse'] },
   deptType: { t: 'sel', opts: ['main', 'sub'] },
   placeLevel: { t: 'sel', opts: ['country', 'region', 'city', 'breed'] },
+  prodForm: { t: 'sel', opts: ['fresh', 'frozen', 'processed', 'dried', 'other'] },
+  farmName: { t: 'text' }, productName: { t: 'text' }, category: { t: 'text' }, sort: { t: 'text' }, quality: { t: 'text' }, volume: { t: 'text' }, minBatch: { t: 'text' }, readyPeriod: { t: 'text' },
+  marketWhere: { t: 'area' }, buyers: { t: 'area' }, transport: { t: 'text' }, temp: { t: 'text' }, payTerms: { t: 'text' }, contactPerson: { t: 'text' }, sphere: { t: 'text' }, source: { t: 'text' }, comment: { t: 'area' },
+  languages: { t: 'text' }, help: { t: 'area' }, area: { t: 'text' }, season: { t: 'text' }, supply: { t: 'text' }, buyer: { t: 'text' },
   courseKind: { t: 'sel', opts: ['amateur', 'certified'] },
   district: { t: 'text' }, duration: { t: 'text' }, interests: { t: 'area' }, item: { t: 'text' },
 };
@@ -118,6 +122,16 @@ export const FORMS: Record<string, FormDef> = {
   becomeBlogger: base('specialist', 'name*', 'country', 'city', 'site*', 'desc*', 'photos', ...P),
   offerCourse: base('request', 'title*', 'courseKind*', 'format', 'duration', 'price', 'terms', 'site', 'desc*', 'photos', ...P),
   newClub: base('suggestion', 'title*', 'desc*', 'country', 'city', 'phone'),
+  // Український експортний альянс
+  farmApply: base('request', 'farmName*', 'country*', 'region', 'city', 'direction', 'area', 'products*', 'volume', 'season', 'delivery', 'site', 'photos', ...P),
+  supplierApply: base('request', 'company*', 'country*', 'city', 'categories*', 'desc*', 'delivery', 'site', 'photos', ...P),
+  marketRequest: { kind: 'request', fields: ['#product', 'productName*', 'category', 'sort', 'quality', 'desc', '#volume', 'volume*', 'minBatch', 'readyPeriod', '#form', 'prodForm*', '#place', 'country*', 'region', 'city', '#market', 'marketWhere*', 'buyers', '#terms', 'transport', 'temp', 'price', 'payTerms', 'delivery', '#contacts', 'company', 'contactPerson*', 'phone*', 'email', 'photos'], note: 'marketNoGuarantee' },
+  helpBuyer: base('request', 'desc*', 'country', 'phone*'),
+  addCompany: base('request', 'company*', 'country*', 'city*', 'address', 'sphere', 'buy', 'site', 'source', 'comment', 'photos', ...P),
+  becomeRepresentative: base('specialist', 'name*', 'country*', 'region', 'city*', 'languages', 'exp*', 'categories', 'countries', 'help', 'email', ...P),
+  commercialOffer: base('request', 'buyer*', 'product*', 'volumes', 'price', 'terms', 'delivery', 'desc', 'photos', ...P),
+  routeCalc: base('request', 'from*', 'to*', 'cargo*', 'volumes*', 'transport', 'temp', ...P),
+  shareStory: base('suggestion', 'title*', 'desc*', 'phone'),
   // Ярмарки
   tradeProducer: { kind: 'request', fields: ['#where', 'location*', 'activity*', 'productKind*', '#ifUa', 'exportDocs', 'exportExp', 'exportCountries', '#ifAbroad', 'country', 'region', 'city', 'hasStore', 'sellsUa', '#contacts', 'name*', 'phone*', 'email', 'site', 'photos'], note: 'tradeNoGuarantee' },
   organizerSelf: base('request', ...ORG),
