@@ -207,6 +207,8 @@
       "posts": "Posts",
       "reviews": "Reviews"
     },
-    "menu": "Menu"
+    "menu": "Menu",
+    "moreInfo": "Details, contacts, reviews",
+    "lessInfo": "Hide details"
   }
 }
