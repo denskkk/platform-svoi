@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const read = (row: { city: string | null; data: any }, key: string) => norm(key === 'city' ? row.city : row.data?.[key]);
     const parents = FIELDS.filter((f) => f !== field && params.get(f));
     const counts = new Map<string, { value: string; count: number }>();
-    rows.forEach((row) => {
+    rows.forEach((row: any) => {
       if (!parents.every((p) => read(row, p).toLowerCase() === norm(params.get(p)).toLowerCase())) return;
       const value = read(row, field);
       if (!value) return;

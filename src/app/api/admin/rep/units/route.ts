@@ -25,7 +25,7 @@ async function getHandler(request: NextRequest) {
     where: { project }, orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }], take: 2000,
     select: { id: true, parentId: true, level: true, name: true, flag: true, isActive: true, sortOrder: true, leader: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } } },
   });
-  return NextResponse.json({ units: rows.map((r) => ({ id: r.id, parentId: r.parentId, level: r.level, name: r.name, flag: r.flag, isActive: r.isActive, sortOrder: r.sortOrder, leader: personOf(r.leader) })) });
+  return NextResponse.json({ units: rows.map((r: any) => ({ id: r.id, parentId: r.parentId, level: r.level, name: r.name, flag: r.flag, isActive: r.isActive, sortOrder: r.sortOrder, leader: personOf(r.leader) })) });
 }
 
 async function postHandler(request: NextRequest) {

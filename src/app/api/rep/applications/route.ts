@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
       take: 50,
       select: { id: true, kind: true, placeName: true, message: true, phone: true, specialization: true, mode: true, status: true, createdAt: true, unit: { select: { id: true, name: true, level: true } }, user: PERSON },
     });
-    return NextResponse.json({ applications: rows.map((r) => ({ id: r.id, kind: r.kind, placeName: r.placeName, message: r.message, phone: box === 'in' ? r.phone : undefined, specialization: r.specialization, mode: r.mode, status: r.status, createdAt: r.createdAt, unit: r.unit, applicant: box === 'in' ? personOf(r.user) : undefined })) });
+    return NextResponse.json({ applications: rows.map((r: any) => ({ id: r.id, kind: r.kind, placeName: r.placeName, message: r.message, phone: box === 'in' ? r.phone : undefined, specialization: r.specialization, mode: r.mode, status: r.status, createdAt: r.createdAt, unit: r.unit, applicant: box === 'in' ? personOf(r.user) : undefined })) });
   } catch (e) {
     console.error('[rep applications GET]', e);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });

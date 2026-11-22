@@ -27,7 +27,7 @@ async function handler(request: NextRequest) {
         toLeader: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
       },
     });
-    return NextResponse.json({ applications: rows.map((r) => ({ id: r.id, kind: r.kind, placeName: r.placeName, message: r.message, phone: r.phone, specialization: r.specialization, mode: r.mode, status: r.status, createdAt: r.createdAt, unit: r.unit, applicant: personOf(r.user), toLeader: personOf(r.toLeader) })) });
+    return NextResponse.json({ applications: rows.map((r: any) => ({ id: r.id, kind: r.kind, placeName: r.placeName, message: r.message, phone: r.phone, specialization: r.specialization, mode: r.mode, status: r.status, createdAt: r.createdAt, unit: r.unit, applicant: personOf(r.user), toLeader: personOf(r.toLeader) })) });
   } catch (e) {
     console.error('[admin rep applications]', e);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });

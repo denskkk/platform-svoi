@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       unit: { id: unit.id, name: unit.name, level: unit.level, flag: unit.flag, leader: personOf(unit.leader) },
       ancestors,
       children: children.map(shapeChild),
-      members: members.map((m) => ({ id: m.id, role: m.role, mode: m.mode, specialization: m.specialization, person: personOf(m.user) })),
+      members: members.map((m: any) => ({ id: m.id, role: m.role, mode: m.mode, specialization: m.specialization, person: personOf(m.user) })),
       nextLevel: childLevel(unit.level as RepLevel),
       viewer: { isLeader: unit.leaderId === me },
     });
