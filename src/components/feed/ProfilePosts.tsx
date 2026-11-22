@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Heart, Loader2, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/i18n/client';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
@@ -26,7 +27,7 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
 
   const load = useCallback(async (after?: number | null) => {
     try {
-      const qs = new URLSearchParams({ limit: '5' });
+      const qs = new URLSearchParams({ limit: tab === 'videos' ? '12' : '5' });
       if (tab === 'saved') qs.set('saved', '1');
       else if (tab === 'reacted') qs.set('reacted', '1');
       else qs.set('authorId', String(authorId));
@@ -79,8 +80,25 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
       ) : posts.length === 0 ? (
         <p className="text-neutral-500 text-sm">{t(`feed.profile.emptyTab.${tab}`)}</p>
       ) : (
-        <div className="space-y-4 max-w-xl">
-          {posts.map((post) => (
+        <div className={tab === 'videos' ? '' : 'space-y-4 max-w-xl'}>
+          {tab === 'videos' ? (
+            // Сітка відео як у TikTok: вертикальні прев'ю 3 в ряд, лайки внизу, клік відкриває відео
+            <ul className="grid grid-cols-3 gap-1">
+              {posts.map((post) => post.video && (
+                <li key={post.id}>
+                  <Link href={`/feed/${post.id}`} className="relative block aspect-[9/16] bg-neutral-900 overflow-hidden rounded-md group">
+                    {post.video.posterUrl
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={post.video.posterUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      : <video src={`${post.video.url}#t=0.1`} preload="metadata" muted playsInline className="h-full w-full object-cover" />}
+                    <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-6 text-xs font-semibold text-white">
+                      <Play className="w-3.5 h-3.5 fill-white" aria-hidden />{post.likesCount > 0 && (<><Heart className="w-3.5 h-3.5 ml-1" aria-hidden />{post.likesCount}</>)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : posts.map((post) => (
             <PostCard key={post.id} post={post} canInteract={viewerType !== 'viewer'} canFollow onChange={patch} onFollowChange={follow} onDeleted={remove} onBlocked={() => setPosts([])} />
           ))}
           {cursor && (
