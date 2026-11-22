@@ -29,7 +29,13 @@
     "statusHidden": "Hidden",
     "back": "Back to admin",
     "forbidden": "Administrators only",
-    "link": "Projects"
+    "link": "Projects",
+    "image": "Project image",
+    "imageAdd": "Add image",
+    "imageChange": "Change image",
+    "imageRemove": "Remove image",
+    "imageSaved": "Image saved",
+    "imageRemoved": "Image removed"
   },
   "earn": {
     "button": "Earn with your own",

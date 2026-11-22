@@ -25,6 +25,7 @@ interface Project {
   descriptionUk: string | null;
   descriptionEn: string | null;
   status: 'active' | 'coming_soon' | 'hidden';
+  bannerUrl?: string | null;
 }
 
 export default function ProjectPage() {
@@ -73,7 +74,7 @@ export default function ProjectPage() {
   const description = project ? (locale === 'uk' ? project.descriptionUk : project.descriptionEn) || project.descriptionUk : null;
 
   return (
-    <div className="min-h-screen bg-space-800" style={project ? projectWallpaper(project.slug) : undefined}>
+    <div className="min-h-screen bg-space-800" style={project ? (project.bannerUrl ? { backgroundImage: `linear-gradient(to bottom, rgba(10,31,68,.55), rgba(10,31,68,.85)), url(${project.bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' } : projectWallpaper(project.slug)) : undefined}>
       <div className="mx-auto w-full max-w-3xl px-3 sm:px-6 pt-4 pb-28 md:pb-12 space-y-4">
         <Link href="/projects" className="inline-flex items-center gap-2 rounded-full bg-black/30 backdrop-blur text-sm font-semibold text-white px-3 py-1.5 hover:bg-black/40">
           <ArrowLeft className="w-4 h-4" /> {t('projects.back')}
