@@ -385,9 +385,9 @@
       "investor": "Я інвестор"
     },
     "section": {
-      "lawyers_advocates": "Адвокати онлайн та офлайн",
-      "lawyers_cabinet": "Кабінет адвоката",
-      "lawyers_team": "Формувати команду (місто, регіон, країна)",
+      "lawyers_advocates": "Оголошення адвокатів",
+      "lawyers_cabinet": "Подати заявку та створити кабінет адвоката",
+      "lawyers_team": "Формування команд і представництв",
       "real_estate_sale": "Купити / Продати",
       "real_estate_rent": "Орендувати / Здати в оренду",
       "real_estate_home": "Усе для дому",
@@ -734,7 +734,12 @@
       "taxi_feedback_complaint": "Подати скаргу",
       "taxi_feedback_report": "Повідомити про проблему або порушення",
       "taxi_feedback_suggestion": "Залишити пропозицію щодо покращення",
-      "taxi_feedback_ideas": "Ідеї для розвитку проєкту"
+      "taxi_feedback_ideas": "Ідеї для розвитку проєкту",
+      "lawyers_network": "Адвокати онлайн та офлайн",
+      "lawyers_team_join": "Приєднатися до команди",
+      "lawyers_team_open": "Відкрити представництво",
+      "lawyers_consult": "Юридична допомога та консультації",
+      "lawyers_help": "Допомога та підтримка"
     }
   },
   "notFound": "Оголошення не знайдено",

@@ -222,5 +222,140 @@
       "payment_settlements": "The platform does not transfer money itself. The settlement procedure with drivers will be announced before launch in the city.",
       "payment_fees": "Fees and payment terms are set separately before launch in the city. The platform does not transfer money itself."
     }
+  },
+  "rep": {
+    "levels": {
+      "country": "Country",
+      "region": "Region",
+      "district": "District",
+      "community": "Community / city"
+    },
+    "levelsOf": {
+      "country": "country",
+      "region": "region",
+      "district": "district",
+      "community": "community"
+    },
+    "levelsAcc": {
+      "country": "a country",
+      "region": "a region",
+      "district": "a district",
+      "community": "a community"
+    },
+    "choose": {
+      "country": "Choose a country",
+      "region": "Choose a region",
+      "district": "Choose a district",
+      "community": "Choose a city or community"
+    },
+    "enter": {
+      "country": "Enter representation",
+      "region": "Go to region",
+      "district": "Go to district",
+      "community": "View team"
+    },
+    "leader": "Leader",
+    "leaderOf": "Leader of the {level}",
+    "profile": "Leader profile",
+    "profileShort": "Profile",
+    "openCabinet": "Leader cabinet",
+    "noLeader": "There is no leader yet. Your application goes to the general queue of the administration.",
+    "noLeaderShort": "No leader yet",
+    "hasLeader": "Leader: {name}",
+    "emptyChildren": "Nothing here yet. Submit an application to open a representation.",
+    "team": "Lawyers and representatives",
+    "noTeam": "The team is still being formed.",
+    "roles": {
+      "lawyer": "Lawyer",
+      "representative": "Representative"
+    },
+    "modes": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Online and offline"
+    },
+    "actions": {
+      "lawyer": "Apply as a lawyer",
+      "join": "Join the team",
+      "consult": "Get a consultation",
+      "addCountry": "Add a country",
+      "openHere": "Apply to create a representation",
+      "openChild": "Open {level}"
+    },
+    "kinds": {
+      "lawyer": "Lawyer cabinet application",
+      "join": "Join a team",
+      "open": "Open a representation",
+      "consult": "Consultation request"
+    },
+    "hint": {
+      "lawyer": "Briefly about your experience and right to practise law",
+      "join": "Why you want to join, your experience",
+      "open": "Describe what you want to open and who you are",
+      "consult": "Describe your situation"
+    },
+    "specialization": "Specialization",
+    "mode": "Work format",
+    "placeName": "Name (country, region, district, city)",
+    "verifyNote": "A lawyer profile is published after the documents and the right to practise law are verified.",
+    "willGoToLeader": "The application goes to the leader: {name}",
+    "willGoGeneral": "There is no leader yet, so the application goes to the general queue.",
+    "sent": "Application sent",
+    "sentToLeader": "It was received by the leader: {name}. They will reply.",
+    "sentGeneral": "It is in the general queue of the administration. We will contact you.",
+    "duplicate": "This application was already sent and awaits an answer",
+    "notInList": "Not in the list",
+    "needUnit": "Choose at least a country from the list. If your country is missing, apply to open a representation.",
+    "flowLead": {
+      "lawyer": "Choose where you will work. The application goes to the leader of this level, or to the general queue if there is none yet.",
+      "join": "Choose the team you want to join.",
+      "open": "Choose where to open a representation, or enter a new place.",
+      "consult": "Choose the place where you need help. The request goes to the leader if there is one."
+    },
+    "leaderPage": {
+      "title": "Leader cabinet",
+      "back": "Back to project",
+      "mine": "Your representations",
+      "none": "You are not appointed as a leader yet. The administration appoints leaders.",
+      "inbox": "Applications to you",
+      "inboxEmpty": "No new applications",
+      "accept": "Accept",
+      "reject": "Reject",
+      "done": "Done",
+      "myApps": "My applications",
+      "myEmpty": "You have not submitted applications yet",
+      "status": {
+        "new": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "to": "Unit",
+      "phone": "Phone",
+      "spec": "Specialization",
+      "open": "Open"
+    },
+    "admin": {
+      "title": "Representations",
+      "subtitle": "Countries, regions, districts, communities and their leaders. Applications go to the leader, or to the general queue if there is none.",
+      "back": "Back to admin panel",
+      "add": "Add",
+      "addCountry": "Add a country",
+      "name": "Name",
+      "flag": "Flag (emoji)",
+      "leaderEmail": "Leader email",
+      "setLeader": "Assign",
+      "removeLeader": "Remove leader",
+      "delete": "Delete",
+      "confirmDelete": "Delete “{name}” with everything inside?",
+      "saved": "Saved",
+      "failed": "Failed",
+      "queue": "General application queue",
+      "queueEmpty": "The general queue is empty",
+      "noLeader": "no leader",
+      "leader": "Leader",
+      "child": "Add below",
+      "forbidden": "Administrators only",
+      "applicant": "Applicant"
+    }
   }
 }

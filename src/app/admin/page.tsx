@@ -266,6 +266,12 @@ export default function AdminDashboard() {
               {t('projects.admin.link')}
             </button>
             <button
+              onClick={() => router.push('/admin/representations')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('projects.rep.admin.title')}
+            </button>
+            <button
               onClick={() => router.push('/admin/listings')}
               className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
             >

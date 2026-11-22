@@ -315,5 +315,12 @@
     "notFound": "Chat not found",
     "notOwner": "Only the chat owner can do this",
     "ownerCannotLeave": "The owner cannot leave their own chat"
+  },
+  "rep": {
+    "notFound": "Not found",
+    "duplicate": "This application was already sent and awaits an answer",
+    "forbidden": "No access to this application",
+    "maxDepth": "There is nothing below a community",
+    "leaderNotFound": "No user with this email"
   }
 }

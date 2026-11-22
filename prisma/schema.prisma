@@ -137,6 +137,10 @@ model User {
   linkedAccounts   LinkedAccount[] @relation("LinkedOwner")
   linkedTo         LinkedAccount[] @relation("LinkedTarget")
   taxiRequests TaxiRequest[]
+  repLeads        RepUnit[]        @relation("RepLeader")
+  repMembers      RepMember[]
+  repApplications RepApplication[] @relation("RepApplicant")
+  repReceived     RepApplication[] @relation("RepToLeader")
   projectSuggestions ProjectSuggestion[]
   groupChatsOwned  GroupChat[] @relation("GroupChatOwner")
   groupChatMemberships GroupChatMember[]
@@ -1628,4 +1632,79 @@ model TaxiRequest {
   @@index([city, status])
   @@index([userId, id])
   @@map("taxi_requests")
+}
+
+// ========================================
+// ПРЕДСТАВНИЦТВА (країна → область → район → громада): керівники, команди, заявки
+// ========================================
+// Список одиниць веде адміністрація. Заявка йде керівникові обраної одиниці; якщо керівника немає, потрапляє в загальну чергу (toLeaderId = null).
+model RepUnit {
+  id        Int      @id @default(autoincrement()) @map("unit_id")
+  project   String   @db.VarChar(60)
+  parentId  Int?     @map("parent_id")
+  level     String   @db.VarChar(12) // country | region | district | community
+  name      String   @db.VarChar(120)
+  flag      String?  @db.VarChar(8)
+  leaderId  Int?     @map("leader_id")
+  sortOrder Int      @default(0) @map("sort_order")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  parent       RepUnit?         @relation("RepTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children     RepUnit[]        @relation("RepTree")
+  leader       User?            @relation("RepLeader", fields: [leaderId], references: [id], onDelete: SetNull)
+  members      RepMember[]
+  applications RepApplication[]
+
+  @@index([project, parentId, sortOrder])
+  @@index([leaderId])
+  @@map("rep_units")
+}
+
+// Адвокат або представник у команді одиниці. Публікується (approved) після перевірки керівником або адміністрацією.
+model RepMember {
+  id             Int      @id @default(autoincrement()) @map("member_id")
+  unitId         Int      @map("unit_id")
+  userId         Int      @map("user_id")
+  role           String   @db.VarChar(16) // lawyer | representative
+  mode           String   @default("both") @db.VarChar(8) // online | offline | both
+  specialization String?  @db.VarChar(160)
+  status         String   @default("approved") @db.VarChar(12)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  unit RepUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([unitId, userId, role])
+  @@index([userId])
+  @@map("rep_members")
+}
+
+// kind: lawyer (кабінет адвоката) | join (до команди) | open (відкрити представництво) | consult (консультація)
+model RepApplication {
+  id             Int      @id @default(autoincrement()) @map("application_id")
+  project        String   @db.VarChar(60)
+  unitId         Int?     @map("unit_id")
+  userId         Int      @map("user_id")
+  kind           String   @db.VarChar(12)
+  placeName      String?  @map("place_name") @db.VarChar(120)
+  message        String   @db.Text
+  phone          String?  @db.VarChar(30)
+  specialization String?  @db.VarChar(160)
+  mode           String?  @db.VarChar(8)
+  toLeaderId     Int?     @map("to_leader_id")
+  status         String   @default("new") @db.VarChar(12) // new | accepted | rejected
+  handledById    Int?     @map("handled_by_id")
+  handledAt      DateTime? @map("handled_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  unit     RepUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  user     User     @relation("RepApplicant", fields: [userId], references: [id], onDelete: Cascade)
+  toLeader User?    @relation("RepToLeader", fields: [toLeaderId], references: [id], onDelete: SetNull)
+
+  @@index([toLeaderId, status])
+  @@index([unitId, status])
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+  @@map("rep_applications")
 }

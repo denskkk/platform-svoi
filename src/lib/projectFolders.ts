@@ -76,10 +76,15 @@ const view = (key: string, icon: string, kind: string): Spec => ({ key, icon, ki
 
 /** Специфікація папок за ТЗ замовника (скріншоти та голосові). Порядок = порядок на екрані. */
 const SPECS: Record<string, Spec[]> = {
+  // «Юристи»: 7 кнопок за ТЗ. 1 — дерево представництв (країна → область → район → громада), 2–4 — заявки з маршрутом до керівника,
+  // 5 і 7 — «Інформація» та «Пропозиції й скарги» (SuggestBox), 6 — допомога. Оголошення адвокатів лишаються окремою папкою.
   lawyers: [
-    leaf('advocates', '⚖️', { business: true }),
-    apply('cabinet', '🗂️'),
-    apply('team', '👥'),
+    view('network', '⚖️', 'reptree'),
+    view('cabinet', '🗂️', 'repapply:lawyer'),
+    { key: 'team', icon: '👥', kids: [view('join', '🤝', 'repapply:join'), view('open', '🏛️', 'repapply:open')] },
+    view('consult', '💬', 'repapply:consult'),
+    view('help', '🛟', 'form:request'),
+    leaf('advocates', '📋', { business: true }),
   ],
   'real-estate': [
     leaf('sale', '🏠', { derive: { dealType: 'sale' } }),

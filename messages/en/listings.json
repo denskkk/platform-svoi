@@ -385,9 +385,9 @@
       "investor": "I'm an investor"
     },
     "section": {
-      "lawyers_advocates": "Lawyers online and offline",
-      "lawyers_cabinet": "Lawyer cabinet",
-      "lawyers_team": "Build a team (city, region, country)",
+      "lawyers_advocates": "Lawyer listings",
+      "lawyers_cabinet": "Apply and create a lawyer cabinet",
+      "lawyers_team": "Teams and representations",
       "real_estate_sale": "Buy / Sell",
       "real_estate_rent": "Rent / Let",
       "real_estate_home": "Everything for the home",
@@ -734,7 +734,12 @@
       "taxi_feedback_complaint": "File a complaint",
       "taxi_feedback_report": "Report a problem or violation",
       "taxi_feedback_suggestion": "Suggest an improvement",
-      "taxi_feedback_ideas": "Ideas for project development"
+      "taxi_feedback_ideas": "Ideas for project development",
+      "lawyers_network": "Lawyers online and offline",
+      "lawyers_team_join": "Join a team",
+      "lawyers_team_open": "Open a representation",
+      "lawyers_consult": "Legal help and consultations",
+      "lawyers_help": "Help and support"
     }
   },
   "notFound": "Listing not found",

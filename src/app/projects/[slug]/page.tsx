@@ -16,6 +16,7 @@ import { readStoredUser } from '@/lib/feedClient';
 import { useFolderImages } from '@/lib/useFolderImages';
 import { FolderTileInner, folderTileCls } from '@/components/projects/FolderTile';
 import { TaxiFolders } from '@/components/projects/TaxiFolders';
+import { KindLeaf } from '@/components/projects/KindLeaf';
 import { SuggestBox } from '@/components/projects/SuggestBox';
 import { useI18n } from '@/i18n/client';
 
@@ -139,10 +140,13 @@ export default function ProjectPage() {
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
+                    {found?.folder.kind && <KindLeaf project={project.slug} node={found.folder} />}
+                    {found?.folder.kind ? null : (<>
                     {project.slug === 'china' && found?.folder.sectionId && <ChinaActions sectionLabel={t(found.folder.labelKey)} />}
                     {found?.folder.directory && found.folder.sectionId
                       ? <BusinessDirectory key={folderPath} slug={project.slug} sectionId={found.folder.sectionId} />
                       : <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />}
+                    </>)}
                   </div>
                 );
               })()
