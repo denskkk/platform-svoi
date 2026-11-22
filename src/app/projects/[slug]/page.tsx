@@ -139,7 +139,7 @@ export default function ProjectPage() {
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
-                    {project.slug === 'shops' && found?.folder.sectionId
+                    {found?.folder.directory && found.folder.sectionId
                       ? <BusinessDirectory key={folderPath} slug={project.slug} sectionId={found.folder.sectionId} />
                       : <ProjectCatalog key={folderPath || 'all'} slug={project.slug} initialFilters={found?.folder.filters} sectionId={found?.folder.sectionId} business={found?.folder.business} />}
                   </div>

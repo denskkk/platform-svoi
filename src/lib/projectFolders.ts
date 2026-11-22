@@ -21,6 +21,8 @@ export interface ProjectFolder {
   derive?: Record<string, string>;
   /** Звичайне посилання (папка веде в інший розділ платформи) */
   href?: string;
+  /** Розділ показує бізнес-кабінети (магазини), а не стрічку оголошень */
+  directory?: boolean;
 }
 
 interface Spec {
@@ -31,6 +33,7 @@ interface Spec {
   business?: boolean;
   derive?: Record<string, string>;
   href?: string;
+  directory?: boolean;
 }
 
 const slugId = (slug: string) => slug.replace(/-/g, '_');
@@ -55,6 +58,7 @@ function build(slug: string, specs: Spec[], parents: string[]): ProjectFolder[] 
       node.sectionId = id;
       node.filters = { f_section: id };
       if (s.business) node.business = true;
+      if (s.directory) node.directory = true;
       if (s.derive) node.derive = s.derive;
     }
     return node;
@@ -142,8 +146,8 @@ const SPECS: Record<string, Spec[]> = {
     leaf('insurance', '🛡️', { business: true }),
   ],
   pets: [
-    { key: 'animals', icon: '🐶', kids: [leaf('dogs', '🐕'), leaf('cats', '🐈'), leaf('birds', '🦜'), leaf('rodents', '🐹'), leaf('fish', '🐠'), leaf('reptiles', '🦎'), leaf('farm', '🐄'), leaf('other', '🐾')] },
-    leaf('shops', '🛒', { business: true }),
+    { key: 'animals', icon: '🐶', kids: [{ key: 'dogs', icon: '🐕', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'cats', icon: '🐈', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'birds', icon: '🦜', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'rodents', icon: '🐹', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'fish', icon: '🐠', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'reptiles', icon: '🦎', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'farm', icon: '🐄', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }, { key: 'other', icon: '🐾', kids: [leaf('list', '📋'), leaf('shop', '🛒', { business: true, directory: true })] }] },
+    leaf('shops', '🛒', { business: true, directory: true }),
     leaf('vet', '🩺', { business: true }),
     leaf('training', '🎓', { business: true }),
     { key: 'grooming', icon: '✂️', kids: [leaf('shop', '🛒', { business: true }), leaf('learning', '🎓'), leaf('onsite', '🚗', { business: true })] },
@@ -166,6 +170,9 @@ const SPECS: Record<string, Spec[]> = {
 export const PROJECT_FOLDERS: Record<string, ProjectFolder[]> = (() => {
   const out: Record<string, ProjectFolder[]> = {};
   Object.keys(SPECS).forEach((slug) => { out[slug] = build(slug, SPECS[slug], []); });
+  // «Крамниця»: усі відділи ведуть до бізнес-кабінетів, а не до стрічки товарів
+  const mark = (nodes: ProjectFolder[]) => nodes.forEach((n) => { if (n.sectionId) n.directory = true; if (n.children) mark(n.children); });
+  mark(out['shops'] || []);
   return out;
 })();
 

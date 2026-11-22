@@ -18,7 +18,7 @@ UPDATE listings SET data = data || jsonb_build_object('section', CASE
     WHEN project_slug = 'turnkey' THEN 'turnkey_partners'
     WHEN project_slug = 'china' THEN 'china_otherRequest'
     WHEN project_slug = 'travel' THEN 'travel_turnkey'
-    WHEN project_slug = 'pets' THEN 'pets_animals_other'
+    WHEN project_slug = 'pets' THEN 'pets_animals_other_list'
     WHEN project_slug = 'trade' THEN 'trade_producers'
   END)
 WHERE project_slug IN ('real-estate','jobs','cars','invest','health','shops','lawyers','helper-hour','translator','turnkey','china','travel','pets','trade')
