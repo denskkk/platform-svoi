@@ -142,7 +142,7 @@ const SPECS: Record<string, Spec[]> = {
     leaf('insurance', '🛡️', { business: true }),
   ],
   pets: [
-    leaf('animals', '🐶'),
+    { key: 'animals', icon: '🐶', kids: [leaf('dogs', '🐕'), leaf('cats', '🐈'), leaf('birds', '🦜'), leaf('rodents', '🐹'), leaf('fish', '🐠'), leaf('reptiles', '🦎'), leaf('farm', '🐄'), leaf('other', '🐾')] },
     leaf('shops', '🛒', { business: true }),
     leaf('vet', '🩺', { business: true }),
     leaf('training', '🎓', { business: true }),

@@ -538,7 +538,7 @@
       "travel_hot_lastSeats": "Last available seats",
       "travel_tickets": "Ticket search and booking",
       "travel_insurance": "Travel insurance",
-      "pets_animals": "Animals",
+      "pets_animals": "Animals and pets",
       "pets_shops": "Online shops of pet goods",
       "pets_vet": "Veterinary help and consultation",
       "pets_training": "Pet training and education",
@@ -559,7 +559,15 @@
       "trade_producers": "Application of a producer or seller of Ukrainian products",
       "trade_organizers": "Fair organizer in your country or city",
       "trade_organizers_self": "I can organize myself, I have experience",
-      "trade_organizers_member": "Join the team"
+      "trade_organizers_member": "Join the team",
+      "pets_animals_dogs": "Dogs and puppies",
+      "pets_animals_cats": "Cats and kittens",
+      "pets_animals_birds": "Birds and parrots",
+      "pets_animals_rodents": "Rodents: hamsters, guinea pigs, rabbits, chinchillas",
+      "pets_animals_fish": "Aquarium fish",
+      "pets_animals_reptiles": "Reptiles and exotic animals",
+      "pets_animals_farm": "Farm animals",
+      "pets_animals_other": "Other pets"
     }
   },
   "notFound": "Listing not found",
