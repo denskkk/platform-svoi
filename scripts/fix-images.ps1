@@ -1,11 +1,13 @@
 # One-click: repair and fill all project images (folders + project banners) on localhost.
 # Usage (PowerShell, from the project folder, e.g. C:\dev\svoi-test):
 #   .\scripts\fix-images.ps1 -Key "YOUR_PIXABAY_KEY"
+#   .\scripts\fix-images.ps1 -Key "YOUR_PIXABAY_KEY" -Reseed     # + recreate demo people/stories with avatars
 #   .\scripts\fix-images.ps1 -Key "YOUR_PIXABAY_KEY" -Force      # also replace working images
 # NOTE: ASCII only on purpose.
 param(
   [string]$Key = $env:PIXABAY_API_KEY,
   [switch]$Force,
+  [switch]$Reseed,   # recreate demo people/stories/posts WITH their image files (fixes missing avatars in stories)
   [string]$Backup = "C:\dev\svoi-uploads-bak"
 )
 $ErrorActionPreference = "Stop"
@@ -20,6 +22,12 @@ if (Test-Path $Backup) {
   Copy-Item "$Backup\*" "public\uploads\" -Recurse -Force
   Write-Host "Restored from $Backup"
 } else { Write-Host "No backup folder, skipping." }
+
+if ($Reseed) {
+  Write-Host "== 1b Recreate demo data with images (seed) ==" -ForegroundColor Cyan
+  npm run db:seed-projects -- --reset
+  if ($LASTEXITCODE -ne 0) { Write-Host "Seed failed" -ForegroundColor Red; exit 1 }
+}
 
 Write-Host "== 2/4 Remove DB links to missing files ==" -ForegroundColor Cyan
 npx tsx scripts/clean-broken-images.ts
