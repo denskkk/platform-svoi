@@ -100,7 +100,6 @@ export default function ProjectPage() {
         {state === 'ready' && project && project.status === 'active' && hasListings(project.slug) && (
           <>
             <header className="bg-black/30 backdrop-blur rounded-3xl border border-white/15 shadow-lg p-5 flex items-center gap-4 text-white">
-              <span className="text-4xl" aria-hidden>{project.icon}</span>
               <div className="min-w-0">
                 <h1 className="text-xl font-bold">{name}</h1>
                 {description && <p className="text-sm text-white/80 mt-0.5">{description}</p>}
@@ -117,10 +116,10 @@ export default function ProjectPage() {
                     <div className="space-y-3">
                       {!found && project.slug === 'export-alliance' && (
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                          {([['cabinet', '🗂️', `/projects/${project.slug}/cabinet`], ['search', '🔎', `/search?project=${project.slug}`], ['map', '🗺️', `/projects/${project.slug}/map`]] as Array<[string, string, string]>).map(([k, icon, href]) => (
-                            <Link key={k} href={href} className="flex items-center justify-center gap-1.5 rounded-full bg-white/90 text-sm font-bold text-neutral-900 px-3 py-2"><span aria-hidden>{icon}</span>{t(`projects.tools.${k}`)}</Link>
+                          {([['cabinet', '🗂️', `/projects/${project.slug}/cabinet`], ['search', '🔎', `/search?project=${project.slug}`], ['map', '🗺️', `/projects/${project.slug}/map`]] as Array<[string, string, string]>).map(([k, , href]) => (
+                            <Link key={k} href={href} className="flex items-center justify-center gap-1.5 rounded-full bg-white/90 text-sm font-bold text-neutral-900 px-3 py-2">{t(`projects.tools.${k}`)}</Link>
                           ))}
-                          <button type="button" onClick={() => openFolder('markets.talks.active')} className="flex items-center justify-center gap-1.5 rounded-full bg-white/90 text-sm font-bold text-neutral-900 px-3 py-2"><span aria-hidden>💬</span>{t('projects.tools.talks')}</button>
+                          <button type="button" onClick={() => openFolder('markets.talks.active')} className="flex items-center justify-center gap-1.5 rounded-full bg-white/90 text-sm font-bold text-neutral-900 px-3 py-2">{t('projects.tools.talks')}</button>
                         </div>
                       )}
                       {!found && INTRO_SLUGS.indexOf(project.slug) !== -1 && <p className="rounded-2xl bg-black/30 backdrop-blur text-sm text-white p-3 whitespace-pre-line">{t(`projects.${nsOf(project.slug)}.intro`)}</p>}

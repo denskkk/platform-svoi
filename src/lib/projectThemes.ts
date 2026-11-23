@@ -45,17 +45,10 @@ export function projectTheme(slug: string): Theme {
   return THEMES[slug] ?? DEFAULT;
 }
 
-/** SVG-візерунок з емодзі (прозорий), підставляється як CSS-фон без жодних файлів. */
-function pattern(glyph: string): string {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><text x='12' y='52' font-size='34' opacity='0.16'>${glyph}</text><text x='82' y='112' font-size='26' opacity='0.1'>${glyph}</text></svg>`;
-  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
-}
-
-/** Стиль «шпалер» проєкту (градієнт + візерунок). */
+/** Стиль «шпалер» проєкту: чистий градієнт без емодзі (сучасний вигляд). */
 export function projectWallpaper(slug: string): CSSProperties {
   const t = projectTheme(slug);
   return {
-    backgroundImage: `${pattern(t.glyph)}, radial-gradient(circle at 85% 8%, rgba(255,255,255,0.18), transparent 45%), linear-gradient(160deg, ${t.from}, ${t.to})`,
-    backgroundSize: '140px 140px, auto, auto',
+    backgroundImage: `radial-gradient(circle at 85% 8%, rgba(255,255,255,0.16), transparent 50%), linear-gradient(160deg, ${t.from}, ${t.to})`,
   };
 }

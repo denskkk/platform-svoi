@@ -243,17 +243,8 @@ async function main() {
     for (const [i, text] of texts.entries()) await prisma.negotiationMessage.create({ data: { negotiationId: ng.id, authorId: i % 2 ? b.id : a.id, kind: 'text', text, createdAt: ago(1, 5 - i) } });
   }
 
-  // ---- Картинки головних папок кожного проєкту (лише там, де ще немає) ----
+  // Картинки папок підбираються окремо: npm run db:fill-folder-images (фото зі стоку), тут не створюємо.
   let tiles = 0;
-  for (const slug of Object.keys(PROJECT_FOLDERS)) {
-    for (const [i, f] of (PROJECT_FOLDERS[slug] || []).entries()) {
-      const exists = await prisma.folderImage.findFirst({ where: { project: slug, path: f.key }, select: { id: true } });
-      if (exists) continue;
-      const label = (L.options.section[`${slug.replace(/-/g, '_')}_${f.key}`] || f.key);
-      await prisma.folderImage.create({ data: { project: slug, path: f.key, imageUrl: await img('misc', `seed_f_${slug}_${f.key}.jpg`, 600, 600, i + slug.length, String(label).slice(0, 18)) } });
-      tiles += 1;
-    }
-  }
   console.log(`Картинок папок: ${tiles}`);
   console.log(`\nГОТОВО.\n  Адмін:     ${adminEmail} / ${adminPass}\n  Користувачі: seed01@svoi.test … seed${String(n).padStart(2, '0')}@svoi.test / Demo12345\n  Бізнес-акаунти: seed17…seed26@svoi.test, фермер: seed15, ягідник: seed16\n`);
 }

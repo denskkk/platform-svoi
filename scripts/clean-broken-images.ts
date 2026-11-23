@@ -15,7 +15,8 @@ const prisma = new PrismaClient();
 (async () => {
   console.log('Uploads folder:', root);
   const fi = await prisma.folderImage.findMany();
-  const bad = fi.filter((r) => !exists(r.imageUrl));
+  // seed_f_* — згенеровані скриптом сіда плакати з текстом: замінюємо їх фото; завантажені вручну не чіпаємо
+  const bad = fi.filter((r) => !exists(r.imageUrl) || /seed_f_/.test(r.imageUrl));
   for (const r of bad) await prisma.folderImage.deleteMany({ where: { project: r.project, path: r.path } });
   const pr = await prisma.project.findMany({ select: { slug: true, bannerUrl: true } });
   let nb = 0;

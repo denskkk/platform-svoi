@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search, ArrowUpRight } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { projectTheme, projectWallpaper } from '@/lib/projectThemes';
 
@@ -84,18 +84,22 @@ export default function ProjectsPage() {
                 <li key={p.slug} className={featured ? 'col-span-2 md:col-span-3' : undefined}>
                   <Link
                     href={`/projects/${p.slug}`}
-                    className={`relative flex h-full flex-col justify-between overflow-hidden rounded-2xl p-4 text-white shadow-md hover:shadow-xl transition active:scale-[0.98] ${featured ? 'min-h-[9rem]' : 'min-h-[10.5rem]'}`}
-                    style={p.bannerUrl ? { backgroundImage: `linear-gradient(to top, rgba(10,31,68,.75), rgba(10,31,68,.15)), url(${p.bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : projectWallpaper(p.slug)}
+                    className={`group relative flex h-full flex-col justify-end overflow-hidden rounded-3xl p-4 sm:p-5 text-white shadow-md ring-1 ring-white/10 hover:shadow-2xl transition duration-300 active:scale-[0.98] ${featured ? 'min-h-[11rem] sm:min-h-[13rem]' : 'min-h-[10.5rem] sm:min-h-[12rem]'}`}
+                    style={p.bannerUrl ? undefined : projectWallpaper(p.slug)}
                   >
-                    {p.status === 'coming_soon' && (
-                      <span className="absolute right-3 top-3 rounded-full bg-black/35 backdrop-blur text-[10px] font-bold uppercase tracking-wide px-2 py-0.5" style={{ color: th.accent }}>{t('projects.soon')}</span>
+                    {p.bannerUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.bannerUrl} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                     )}
-                    <span className={featured ? 'text-5xl' : 'text-4xl'} aria-hidden>{p.icon || '✨'}</span>
-                    <span>
-                      <span className={`block font-bold leading-snug drop-shadow ${featured ? 'text-xl' : ''}`}>{name(p)}</span>
-                      {description(p) && <span className="mt-1 block text-xs text-white/80 line-clamp-2">{description(p)}</span>}
+                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                    {p.status === 'coming_soon' && (
+                      <span className="absolute left-3 top-3 rounded-full bg-black/40 backdrop-blur text-[10px] font-bold uppercase tracking-wide px-2.5 py-1" style={{ color: th.accent }}>{t('projects.soon')}</span>
+                    )}
+                    <span aria-hidden className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/15 backdrop-blur ring-1 ring-white/25 transition group-hover:bg-white/30"><ArrowUpRight className="h-4 w-4" /></span>
+                    <span className="relative">
+                      <span className={`block font-bold leading-snug drop-shadow ${featured ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'}`}>{name(p)}</span>
+                      {description(p) && <span className="mt-1 block text-xs sm:text-sm text-white/80 line-clamp-2">{description(p)}</span>}
                     </span>
-                    <span aria-hidden className="absolute inset-x-0 bottom-0 h-1" style={{ background: th.accent }} />
                   </Link>
                 </li>
               );
