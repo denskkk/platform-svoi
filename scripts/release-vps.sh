@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # One-command release on the VPS: backup -> git pull -> SQL migrations -> deploy (build + reload) -> optional pictures -> health check.
 # Run ON THE VPS in the project folder:   bash scripts/release-vps.sh
-# Options (env vars):  PM2_APP=sviy-platform   IMAGES_ZIP=/tmp/folder-images-export.zip   BACKUP_DIR=$HOME/backups   YES=1 (no confirmation question)
+# Options (env vars):  PM2_APP=sviy   IMAGES_ZIP=/tmp/folder-images-export.zip   BACKUP_DIR=$HOME/backups   YES=1 (no confirmation question)
 # Nothing here deletes data: migrations only add tables/columns and re-map listing sections; the database is backed up first.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
-PM2_APP="${PM2_APP:-sviy-platform}"
+PM2_APP="${PM2_APP:-sviy}"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/backups}"
 IMAGES_ZIP="${IMAGES_ZIP:-/tmp/folder-images-export.zip}"
 TS="$(date +%Y%m%d_%H%M%S)"
