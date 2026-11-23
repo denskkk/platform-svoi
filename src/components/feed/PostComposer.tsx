@@ -7,6 +7,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { FeedPost, authHeaders, jsonHeaders } from '@/lib/feedClient';
+import { uploadVideo, shrinkImage, VIDEO_MAX_BYTES, VIDEO_MAX_MB } from '@/lib/videoClient';
 
 const MAX_IMAGES = 6;
 const MAX_LENGTH = 2000;
