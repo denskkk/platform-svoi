@@ -166,7 +166,7 @@ export function FeedPage() {
 
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1024px)');
+    const mq = window.matchMedia('(min-width: 1280px)'); // права колонка з рекомендаціями лише на широких екранах
     const update = () => setIsDesktop(mq.matches);
     update();
     mq.addEventListener('change', update);
@@ -195,7 +195,7 @@ export function FeedPage() {
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-2xl lg:max-w-[1180px] px-2 sm:px-4 pt-3 sm:pt-4 pb-28 lg:pb-10 lg:grid lg:grid-cols-[250px_minmax(0,1fr)_300px] lg:gap-6 xl:grid-cols-[280px_minmax(0,680px)_320px] xl:justify-center">
+      <div className="mx-auto w-full max-w-2xl lg:max-w-[1180px] px-2 sm:px-4 pt-3 sm:pt-4 pb-28 lg:pb-10 lg:grid lg:grid-cols-[240px_minmax(0,680px)] lg:gap-6 lg:justify-center xl:grid-cols-[minmax(220px,280px)_minmax(0,680px)_minmax(240px,320px)]">
         <FeedSidebar user={user} />
         <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>
