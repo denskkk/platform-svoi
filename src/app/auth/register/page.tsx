@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2, Newspaper, Store, Wallet } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
+import { readInviteRef } from '@/lib/inviteRef';
 import { saveToken, saveUser } from '@/lib/client-auth';
 import { LANG_CHOSEN_KEY, LanguageStep } from '@/components/auth/LanguageStep';
 
@@ -15,15 +16,6 @@ const inputCls =
  * Єдина проста реєстрація (як у соцмережах): ім'я, прізвище, пошта, пароль.
  * Решту (місто, інтереси, бізнес-профіль, організація) людина додає пізніше в профілі.
  */
-/** Код запрошення: з адреси (?ref=) або збережений після переходу по посиланню/QR. */
-function readInviteRef(): string | undefined {
-  try {
-    const fromUrl = new URLSearchParams(window.location.search).get('ref');
-    const code = fromUrl || localStorage.getItem('svoi_ref');
-    return code ? code.slice(0, 16) : undefined;
-  } catch { return undefined; }
-}
-
 export default function RegisterPage() {
   const router = useRouter();
   const { t } = useI18n();

@@ -141,6 +141,11 @@
       "consult": "Consultation",
       "calc": "Purchase calculation"
     },
-    "statusLabel": "Status"
+    "statusLabel": "Status",
+    "filterProject": "Filter by project",
+    "allProjects": "All projects",
+    "filterKind": "Filter by type",
+    "allKinds": "All types",
+    "count": "Found: {count}"
   }
 }

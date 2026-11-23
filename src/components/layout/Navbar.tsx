@@ -317,7 +317,7 @@ export function Navbar() {
                   </button>
 
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 py-2">
+                    <div className="absolute right-0 mt-2 w-64 max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain bg-white rounded-lg shadow-lg border border-neutral-200 py-2">
                       {/* Account Type Badge */}
                       <div className="px-4 py-3 border-b border-neutral-200">
                         <p className="text-xs text-neutral-500 mb-2">{t('layout.navbar.accountType')}</p>

@@ -4,6 +4,7 @@
 
 'use client';
 
+import { readInviteRef } from '@/lib/inviteRef';
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -100,6 +101,7 @@ function ViewerRegisterForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          ref: readInviteRef(),
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           email: formData.email.trim(),

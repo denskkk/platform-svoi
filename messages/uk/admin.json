@@ -141,6 +141,11 @@
       "consult": "Консультація",
       "calc": "Розрахунок закупівлі"
     },
-    "statusLabel": "Статус"
+    "statusLabel": "Статус",
+    "filterProject": "Фільтр за проєктом",
+    "allProjects": "Усі проєкти",
+    "filterKind": "Фільтр за типом",
+    "allKinds": "Усі типи",
+    "count": "Знайдено: {count}"
   }
 }

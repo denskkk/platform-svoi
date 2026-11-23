@@ -1,5 +1,6 @@
 "use client";
 
+import { readInviteRef } from '@/lib/inviteRef';
 import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -245,6 +246,7 @@ function BusinessRegistrationForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          ref: readInviteRef(),
           user: {
             firstName: formData.firstName.trim(),
             lastName: formData.lastName.trim(),

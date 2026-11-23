@@ -310,7 +310,7 @@ export function FeedPage() {
         </div>
 
         {isDesktop && !isGuest && (
-          <aside className="sticky top-20 self-start space-y-3">
+          <aside className="sticky top-20 self-start space-y-3 max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain [scrollbar-width:thin]">
             <Recommendations vertical canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />
           </aside>
         )}

@@ -1,5 +1,6 @@
 'use client'
 
+import { readInviteRef } from '@/lib/inviteRef';
 import Link from 'next/link'
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -96,6 +97,7 @@ function RegisterIndividualForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          ref: readInviteRef(),
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           email: formData.email.trim(),

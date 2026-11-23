@@ -14,9 +14,16 @@ async function list(request: NextRequest) {
   const t = getApiT(request);
   const adminId = Number((request as any).user?.userId);
   if (!(await hasAdminPermission(adminId, 'reports.handle'))) return NextResponse.json({ error: t('api.common.adminOnly') }, { status: 403 });
-  const status = new URL(request.url).searchParams.get('status') || 'new';
+  const sp = new URL(request.url).searchParams;
+  const status = sp.get('status') || 'new';
+  const project = (sp.get('project') || '').trim();
+  const kind = (sp.get('kind') || '').trim();
+  const where: Record<string, unknown> = {};
+  if (STATUSES.includes(status)) where.status = status;
+  if (/^[a-z0-9-]{1,60}$/.test(project)) where.projectSlug = project;
+  if (/^[a-z]{1,20}$/.test(kind)) where.kind = kind;
   const rows = await prisma.projectSuggestion.findMany({
-    where: STATUSES.includes(status) ? { status } : {}, orderBy: { id: 'desc' }, take: 100,
+    where, orderBy: { id: 'desc' }, take: 200,
     include: { user: { select: { id: true, firstName: true, lastName: true, email: true } } },
   });
   return NextResponse.json({ items: rows });
