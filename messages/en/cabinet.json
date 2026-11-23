@@ -460,6 +460,9 @@
     "askText": "To shoot photos, videos and stories, allow access to the camera and microphone. Or pick a file from your gallery.",
     "allow": "Turn on camera",
     "deniedTitle": "No camera access",
-    "denied": "Allow the camera and microphone in your phone settings (Settings → Sviy dlya Svoikh) and come back. You can also use the device camera or pick from the gallery."
+    "denied": "Allow the camera and microphone in your phone settings (Settings → Sviy dlya Svoikh) and come back. You can also use the device camera or pick from the gallery.",
+    "openSettings": "Open settings",
+    "deniedIos": "Camera access is off. Open Settings, turn on Camera and Microphone for the app, then come back — the camera will start automatically.",
+    "deniedAndroid": "Camera access is off. Open Settings → Apps → Sviy dlya Svoikh → Permissions, turn on Camera and Microphone, then come back — the camera will start automatically."
   }
 }
