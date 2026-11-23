@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "cap:sync": "npx cap sync android",
+    "cap:sync:ios": "npx cap sync ios",
     "build:mobile": "npm run build && npm run cap:sync",
     "start": "next start",
     "lint": "next lint",
