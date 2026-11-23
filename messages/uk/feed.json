@@ -173,7 +173,18 @@
     "negotiation_agreed": "Умови погоджено обома сторонами",
     "negotiation_active": "Переговори прийнято в роботу",
     "negotiation_declined": "Переговори відхилено",
-    "negotiation_closed": "Переговори закрито"
+    "negotiation_closed": "Переговори закрито",
+    "projectRequestStatus": "Статус заявки",
+    "requestStatus": {
+      "new": "Нова",
+      "review": "На розгляді",
+      "offers": "Є пропозиції",
+      "clarify": "Потрібне уточнення",
+      "published": "Опубліковано",
+      "done": "Опрацьована",
+      "rejected": "Відхилена",
+      "closed": "Закрита"
+    }
   },
   "profile": {
     "title": "Дописи",

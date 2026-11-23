@@ -173,7 +173,18 @@
     "negotiation_agreed": "Terms agreed by both parties",
     "negotiation_active": "Negotiation accepted",
     "negotiation_declined": "Negotiation declined",
-    "negotiation_closed": "Negotiation closed"
+    "negotiation_closed": "Negotiation closed",
+    "projectRequestStatus": "Request status",
+    "requestStatus": {
+      "new": "New",
+      "review": "Under review",
+      "offers": "Offers received",
+      "clarify": "Clarification needed",
+      "published": "Published",
+      "done": "Processed",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    }
   },
   "profile": {
     "title": "Posts",

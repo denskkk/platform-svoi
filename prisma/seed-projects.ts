@@ -30,19 +30,60 @@ const GRADS: Array<[string, string]> = [['#0a1f44', '#2563eb'], ['#1e3a8a', '#f5
 const esc = (s: string) => s.replace(/[<>&"']/g, ' ');
 
 /** Малює градієнтну картинку з текстом і зберігає в <uploads>/<dir>/<name>; повертає URL виду /uploads/<dir>/<name> */
-async function img(dir: string, name: string, w: number, h: number, seed: number, text = '', circle = false): Promise<string> {
+// ---- Реальні фото зі стоку Pixabay (якщо задано PIXABAY_API_KEY), інакше — градієнтна картинка ----
+const STOCK_CACHE = path.join(process.cwd(), '.folder-images-cache.json');
+let stockCache: Record<string, { t: number; v: any[] }> = {};
+try { stockCache = JSON.parse(fs.readFileSync(STOCK_CACHE, 'utf8')); } catch { stockCache = {}; }
+const stockUsed: Record<string, number> = {};
+let stockFails = 0;
+async function stock(q: string, orient: string, w: number, h: number, circle: boolean): Promise<Buffer | null> {
+  const key = process.env.PIXABAY_API_KEY;
+  if (!key || stockFails > 5) return null;
+  try {
+    const ck = `${q}|${orient}`;
+    let hit = stockCache[ck];
+    if (!hit || Date.now() - hit.t > 24 * 3600 * 1000) {
+      const r = await fetch(`https://pixabay.com/api/?key=${key}&image_type=photo&safesearch=true&per_page=40&lang=en&orientation=${orient}&min_width=${Math.min(w, 600)}&q=${encodeURIComponent(q.slice(0, 100))}`);
+      if (!r.ok) { stockFails++; return null; }
+      const j: any = await r.json();
+      hit = { t: Date.now(), v: (j.hits || []).map((x: any) => ({ id: x.id, url: x.largeImageURL || x.webformatURL })) };
+      stockCache[ck] = hit;
+      try { fs.writeFileSync(STOCK_CACHE, JSON.stringify(stockCache)); } catch { /* ignore */ }
+      await new Promise((res) => setTimeout(res, 700));
+    }
+    if (!hit.v.length) return null;
+    const n = stockUsed[ck] = (stockUsed[ck] ?? -1) + 1;
+    const ph = hit.v[n % hit.v.length];
+    const buf = Buffer.from(await (await fetch(ph.url)).arrayBuffer());
+    return await sharp(buf).resize(w, h, { fit: 'cover', position: circle ? 'attention' : 'centre' }).jpeg({ quality: 78 }).toBuffer();
+  } catch { stockFails++; return null; }
+}
+
+/** Малює градієнтну картинку з текстом або (якщо задано q і є ключ) бере реальне фото; зберігає в <uploads>/<dir>/<name>; повертає URL /uploads/<dir>/<name> */
+async function img(dir: string, name: string, w: number, h: number, seed: number, text = '', circle = false, q = '', orient = 'horizontal'): Promise<string> {
+  const dirPath = path.join(ROOT, dir);
+  fs.mkdirSync(dirPath, { recursive: true });
+  if (q) {
+    const photo = await stock(q, orient, w, h, circle);
+    if (photo) { fs.writeFileSync(path.join(dirPath, name), photo); return `/uploads/${dir}/${name}`; }
+  }
   const [a, b] = pick(GRADS, seed);
   const fs_ = Math.round(Math.min(w, h) * (circle ? 0.45 : 0.14));
   const lines = (text || '').slice(0, 40);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>`
     + `<rect width="100%" height="100%" fill="url(#g)"/><circle cx="${w * 0.82}" cy="${h * 0.2}" r="${Math.min(w, h) * 0.22}" fill="#fff" fill-opacity=".10"/><circle cx="${w * 0.15}" cy="${h * 0.9}" r="${Math.min(w, h) * 0.3}" fill="#fff" fill-opacity=".08"/>`
     + `<text x="50%" y="54%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${fs_}" fill="#fff">${esc(lines)}</text></svg>`;
-  const dirPath = path.join(ROOT, dir);
-  fs.mkdirSync(dirPath, { recursive: true });
   const buf = await sharp(Buffer.from(svg)).jpeg({ quality: 78 }).toBuffer();
   fs.writeFileSync(path.join(dirPath, name), buf);
   return `/uploads/${dir}/${name}`;
 }
+
+const COVER_Q = ['city street evening', 'mountains landscape', 'river sunset', 'old town architecture', 'forest path', 'countryside field', 'sea coast', 'city skyline'];
+const BANNER_Q = ['restaurant interior', 'shop storefront', 'office team meeting', 'workshop craftsman', 'farm field harvest', 'travel agency', 'beauty salon', 'fitness gym', 'construction site', 'law office'];
+const POST_Q = ['sunrise morning coffee', 'friends coffee cafe', 'craftsman workshop tools', 'nature forest walk', 'fresh baked bread', 'volunteers help blue yellow', 'small business shop opening', 'fishing lake', 'city street europe', 'farmers market bread', 'documents translation desk', 'wheat field harvest'];
+const STORY_Q = ['morning coffee window', 'city evening lights', 'flowers garden', 'street food', 'mountains hiking', 'sea beach sunset', 'cozy home', 'autumn park'];
+const WOMAN_Q = 'portrait smiling woman';
+const MAN_Q = 'portrait smiling man';
 
 const PEOPLE: Array<[string, string, 'female' | 'male', string, string, string]> = [
   ['Олена', 'Коваленко', 'female', 'Київ', 'Київська', 'Мама двох, люблю подорожі та каву.'], ['Марія', 'Шевченко', 'female', 'Львів', 'Львівська', 'Фотографую Львів і печу сирники.'],
@@ -88,6 +129,8 @@ function readEnv() {
     try {
       const up = fs.readFileSync(path.join(process.cwd(), f), 'utf8').match(/^\s*UPLOADS_DIR\s*=\s*"?([^"\r\n]+)"?/m);
       if (up && !process.env.UPLOADS_DIR) process.env.UPLOADS_DIR = up[1].trim();
+      const pk = fs.readFileSync(path.join(process.cwd(), f), 'utf8').match(/^\s*PIXABAY_API_KEY\s*=\s*"?([^"\r\n]+)"?/m);
+      if (pk && !process.env.PIXABAY_API_KEY) process.env.PIXABAY_API_KEY = pk[1].trim();
     } catch { /* немає файлу */ }
     try {
       const m = fs.readFileSync(path.join(process.cwd(), f), 'utf8').match(/^\s*DATABASE_URL\s*=\s*"?([^"\r\n]+)"?/m);
@@ -128,15 +171,15 @@ async function main() {
   const people: any[] = []; const biz: any[] = [];
   for (const [i, p] of PEOPLE.entries()) {
     n += 1; const tag = String(n).padStart(2, '0');
-    const avatar = await img('avatars', `seed_a${tag}.jpg`, 400, 400, i, p[0][0] + p[1][0], true);
-    const cover = await img('banners', `seed_c${tag}.jpg`, 1200, 400, i + 3, p[3]);
+    const avatar = await img('avatars', `seed_a${tag}.jpg`, 400, 400, i, p[0][0] + p[1][0], true, p[2] === 'female' ? WOMAN_Q : MAN_Q, 'all');
+    const cover = await img('banners', `seed_c${tag}.jpg`, 1200, 400, i + 3, p[3], false, pick(COVER_Q, i));
     people.push(await prisma.user.create({ data: { email: `seed${tag}@svoi.test`, passwordHash: hash, firstName: p[0], lastName: p[1], gender: p[2], city: p[3], region: p[4], bio: p[5], avatarUrl: avatar, coverUrl: cover, isActive: true, isVerified: i % 3 === 0 } }));
   }
   for (const [i, b] of BUSINESS.entries()) {
     n += 1; const tag = String(n).padStart(2, '0');
-    const avatar = await img('avatars', `seed_a${tag}.jpg`, 400, 400, i + 5, b[6][0] + b[7][0], true);
+    const avatar = await img('avatars', `seed_a${tag}.jpg`, 400, 400, i + 5, b[6][0] + b[7][0], true, b[8] === 'female' ? WOMAN_Q : MAN_Q, 'all');
     const logo = await img('logos', `seed_l${tag}.jpg`, 400, 400, i + 1, b[0].replace(/[«»]/g, '').split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase(), true);
-    const banner = await img('banners', `seed_b${tag}.jpg`, 1200, 400, i + 2, b[0].replace(/[«»]/g, ''));
+    const banner = await img('banners', `seed_b${tag}.jpg`, 1200, 400, i + 2, b[0].replace(/[«»]/g, ''), false, pick(BANNER_Q, i));
     const u = await prisma.user.create({ data: { email: `seed${tag}@svoi.test`, passwordHash: hash, firstName: b[6], lastName: b[7], gender: b[8], city: b[1], region: b[2], avatarUrl: avatar, coverUrl: banner, role: 'business', accountType: 'business', isActive: true, isVerified: true } });
     await prisma.businessInfo.create({ data: { userId: u.id, companyName: b[0], city: b[1], region: b[2], businessType: b[4], businessCategory: b[3], description: b[5], logoUrl: logo, bannerUrl: banner, address: `${b[1]}, вул. Центральна, ${10 + i}` } });
     biz.push(u);
@@ -153,7 +196,7 @@ async function main() {
     for (let k = 0; k < 3; k++) {
       const post = await prisma.post.create({ data: { authorId: u.id, content: pick(POSTS, i * 3 + k), createdAt: ago(Math.floor(pi / 3), (pi * 5) % 23) } });
       const imgs = k % 2; // половина дописів з фото
-      for (let p = 0; p <= imgs; p++) await prisma.postImage.create({ data: { postId: post.id, url: await img('posts', `seed_p${post.id}_${p}.jpg`, 900, 700, pi + p, pick(POSTS, pi).slice(0, 24)), position: p } });
+      for (let p = 0; p <= imgs; p++) await prisma.postImage.create({ data: { postId: post.id, url: await img('posts', `seed_p${post.id}_${p}.jpg`, 900, 700, pi + p, pick(POSTS, pi).slice(0, 24), false, pick(POST_Q, pi)), position: p } });
       posts.push(post); pi += 1;
     }
   }
@@ -171,7 +214,7 @@ async function main() {
   }
   // ---- Історії (24 години) ----
   for (const [i, u] of everyone.entries()) {
-    for (let k = 0; k < 1 + (i % 2); k++) await prisma.story.create({ data: { ownerId: u.id, mediaType: 'image', mediaUrl: await img('posts', `seed_s${u.id}_${k}.jpg`, 720, 1280, i + k, pick(['Доброго дня!', 'Мій вечір', 'Нова робота', 'Зустріч зі своїми'], i + k)), caption: pick(['Доброго дня! ☀️', 'Мій вечір 🌇', 'Нова робота 💼', 'Зустріч зі своїми 🤝'], i + k), expiresAt: new Date(Date.now() + (12 + (i % 10)) * 3600 * 1000), createdAt: ago(0, i % 10) } });
+    for (let k = 0; k < 1 + (i % 2); k++) await prisma.story.create({ data: { ownerId: u.id, mediaType: 'image', mediaUrl: await img('posts', `seed_s${u.id}_${k}.jpg`, 720, 1280, i + k, pick(['Доброго дня!', 'Мій вечір', 'Нова робота', 'Зустріч зі своїми'], i + k), false, pick(STORY_Q, i + k), 'vertical'), caption: pick(['Доброго дня! ☀️', 'Мій вечір 🌇', 'Нова робота 💼', 'Зустріч зі своїми 🤝'], i + k), expiresAt: new Date(Date.now() + (12 + (i % 10)) * 3600 * 1000), createdAt: ago(0, i % 10) } });
   }
   console.log(`Дописів: ${posts.length}, рілсів: 12, історій: ${everyone.length + Math.floor(everyone.length / 2)}`);
 

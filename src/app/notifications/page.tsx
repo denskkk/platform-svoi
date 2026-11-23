@@ -135,6 +135,7 @@ export default function NotificationsPage() {
     if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
     if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
     if (n.type.startsWith('negotiation_')) return `${t(`feed.notifications.${n.type}`)}: ${n.title}`;
+    if (n.type === 'project_request_status') return `${t('feed.notifications.projectRequestStatus')}: ${t(`feed.notifications.requestStatus.${n.message || 'new'}`)}`;
     if (n.type === 'unlock_done') return t('feed.notifications.unlockDone');
     if (n.type === 'unlock_rejected') return t('feed.notifications.unlockRejected');
     return n.title;

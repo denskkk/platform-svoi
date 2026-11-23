@@ -49,7 +49,7 @@ async function update(request: NextRequest) {
   // Заявки (не пропозиції й скарги): людина отримує сповіщення про новий статус
   if (['request', 'consult', 'specialist', 'market'].includes(row.kind) && body.status !== 'new') {
     try {
-      await prisma.notification.create({ data: { userId: row.userId, type: 'project_request_status', title: `Статус заявки: ${STATUS_UK[body.status] || body.status}`, message: '', relatedEntityType: 'project_suggestion', relatedEntityId: id } });
+      await prisma.notification.create({ data: { userId: row.userId, type: 'project_request_status', title: STATUS_UK[body.status] || body.status, message: body.status, relatedEntityType: 'project_suggestion', relatedEntityId: id } });
     } catch (e) {
       console.error('Request status notification error:', e);
     }

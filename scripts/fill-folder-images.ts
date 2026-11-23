@@ -129,6 +129,31 @@ async function banners() {
   console.log(`Банери проєктів: ${n}`);
 }
 
+/** Демо-оголошення сіда отримують фото своєї папки замість згенерованих плакатів. */
+async function listingImages() {
+  const rows = await prisma.folderImage.findMany();
+  const img: Record<string, string> = {};
+  rows.forEach((r) => { img[r.project + '|' + r.path] = r.imageUrl; });
+  let n = 0;
+  for (const slug of Object.keys(PROJECT_FOLDERS)) {
+    const walk = async (nodes: any[], trail: string[]) => {
+      for (const nd of nodes) {
+        const p = trail.concat(nd.key).join('.');
+        if (nd.sectionId && img[slug + '|' + p]) {
+          const r = await prisma.listingImage.updateMany({
+            where: { url: { startsWith: '/uploads/listings/seed_' }, listing: { projectSlug: slug, data: { path: ['section'], equals: nd.sectionId } } },
+            data: { url: img[slug + '|' + p] },
+          });
+          n += r.count;
+        }
+        if (nd.children) await walk(nd.children, trail.concat(nd.key));
+      }
+    };
+    await walk(PROJECT_FOLDERS[slug], []);
+  }
+  console.log(`Фото демо-оголошень замінено на фото папок: ${n}`);
+}
+
 async function main() {
   if (flag('banners')) { await banners(); return; }
   await banners();
@@ -189,6 +214,7 @@ async function main() {
     await walk(PROJECT_FOLDERS[slug], [], []);
   }
   saveCache();
+  if (!flag('dry') && !one) { try { await listingImages(); } catch (e) { console.log('Фото оголошень пропущено:', e.message); } }
   if (!flag('dry')) { try { fs.writeFileSync(path.join(process.cwd(), 'folder-images-report.tsv'), report.join('\n')); } catch { /* ignore */ } }
   console.log(`Готово: ${done}, пропущено (вже є): ${skipped}, без знімка: ${miss}. Папка: ${outDir}`);
   console.log('Звіт (запит → фото → теги): folder-images-report.tsv. Фото: Pixabay/Pexels, вільна ліцензія.');
