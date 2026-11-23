@@ -124,7 +124,14 @@ if (-not $NoTunnel) {
     Write-Host "Downloading cloudflared.exe (one time, ~40 MB)..."
     New-Item -ItemType Directory -Force -Path "scripts\.bin" | Out-Null
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe" -OutFile "scripts\.bin\cloudflared.exe" -UseBasicParsing
+    $cfUrl = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
+    if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
+      & curl.exe -L --retry 3 -o "scripts\.bin\cloudflared.exe" $cfUrl
+    } else {
+      $ProgressPreference = "SilentlyContinue"   # the progress bar makes Invoke-WebRequest 10x slower in Windows PowerShell 5
+      Invoke-WebRequest $cfUrl -OutFile "scripts\.bin\cloudflared.exe" -UseBasicParsing
+    }
+    if (-not (Test-Path "scripts\.bin\cloudflared.exe") -or (Get-Item "scripts\.bin\cloudflared.exe").Length -lt 10MB) { Fail "cloudflared download failed" }
     $cfPath = (Resolve-Path "scripts\.bin\cloudflared.exe").Path
   }
   Remove-Item "logs\tunnel.log" -ErrorAction SilentlyContinue
