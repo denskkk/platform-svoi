@@ -217,7 +217,9 @@
     "blockSelf": "You cannot block yourself",
     "userBlocked": "User blocked",
     "userUnblocked": "User unblocked",
-    "commentsRestricted": "The author has restricted comments on this post"
+    "commentsRestricted": "The author has restricted comments on this post",
+    "tooManyMedia": "Too many photos and videos (maximum {max})",
+    "tooManyVideos": "Too many videos (maximum {max})"
   },
   "projects": {
     "notFound": "Project not found",

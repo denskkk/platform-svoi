@@ -8,7 +8,7 @@ const EVENT = 'svoi:video-playing';
  * Відео в стрічці як у соцмережі: стартує без звуку, коли ролик на екрані (≥60%), і САМО зупиняється, коли ви
  * прокрутили далі, перейшли на іншу вкладку або запустили інше відео. Якщо зупинили вручну — до виходу з екрана не вмикається.
  */
-export function FeedVideo({ src, poster }: { src: string; poster?: string | null }) {
+export function FeedVideo({ src, poster, className }: { src: string; poster?: string | null; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -43,5 +43,5 @@ export function FeedVideo({ src, poster }: { src: string; poster?: string | null
     };
   }, [src]);
 
-  return <video ref={ref} src={src} poster={poster || undefined} controls muted loop playsInline preload="metadata" className="w-full max-h-[80vh] mx-auto" />;
+  return <video ref={ref} src={src} poster={poster || undefined} controls muted loop playsInline preload="metadata" className={className || 'w-full max-h-[80vh] mx-auto'} />;
 }

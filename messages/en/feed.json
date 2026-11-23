@@ -38,7 +38,17 @@
       "encode_failed": "Could not convert the video. Try a shorter clip or another format",
       "ffmpeg_missing": "Video processing is temporarily unavailable. We are working on it"
     },
-    "videoUploadFailed": "Could not upload the video. Check your connection and try again"
+    "videoUploadFailed": "Could not upload the video. Check your connection and try again",
+    "addMedia": "Add photos or videos",
+    "addMore": "Add more",
+    "mediaCount": "{count} of {max}",
+    "maxMedia": "Up to {max} photos and videos per post",
+    "maxVideos": "Up to {max} videos per post",
+    "removeMedia": "Remove",
+    "moveEarlier": "Move earlier",
+    "moveLater": "Move later",
+    "mediaProcessing": "Processing video…",
+    "mediaFirst": "First in post"
   },
   "post": {
     "follow": "Follow",
@@ -77,7 +87,12 @@
     "copyLink": "Copy link",
     "repostUnavailable": "The original post is unavailable",
     "makePrivate": "Make private (only me)",
-    "makePublic": "Make public"
+    "makePublic": "Make public",
+    "carousel": {
+      "slide": "Slide {n} of {total}",
+      "prev": "Previous",
+      "next": "Next"
+    }
   },
   "comments": {
     "placeholder": "Write a comment…",

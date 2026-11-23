@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       (where as any).clubId = null;
     }
     if (cursor) where.id = { lt: cursor };
-    if (params.get('videos') === '1') where.video = { is: { status: 'ready' } };
+    if (params.get('videos') === '1') where.videos = { some: { status: 'ready' } };
     const authorId = parseId(params.get('authorId'));
     // reposts=1 — лише репости (для вкладки профілю); reacted=1 — дописи, які поточний користувач лайкнув або прокоментував
     if (params.get('reposts') === '1') (where as any).repostOfId = { not: null };
