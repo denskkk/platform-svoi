@@ -14,6 +14,7 @@ param(
   [switch]$SkipUpdate,
   [switch]$SkipSeed,
   [switch]$NoTunnel,
+  [ValidateSet("auto","cloudflared","ssh")][string]$Provider = "auto",   # ssh = localhost.run (no install, no account)
   [string]$DbUser = "postgres",
   [string]$DbName = "svoi",
   [string]$DbHost = "localhost",
@@ -114,40 +115,62 @@ if ($bad -gt 0) { Write-Host "$bad check(s) failed - the demo may still open, bu
 # ---------- 5. Public link ----------
 $publicUrl = "http://localhost:$Port"
 $tunnel = $null
-if (-not $NoTunnel) {
-  Step "5/6" "Public link (Cloudflare quick tunnel, free, no account)"
-  $cf = (Get-Command cloudflared -ErrorAction SilentlyContinue)
-  $cfPath = $null
-  if ($cf) { $cfPath = $cf.Source }
-  elseif (Test-Path "scripts\.bin\cloudflared.exe") { $cfPath = (Resolve-Path "scripts\.bin\cloudflared.exe").Path }
-  else {
-    Write-Host "Downloading cloudflared.exe (one time, ~40 MB)..."
-    New-Item -ItemType Directory -Force -Path "scripts\.bin" | Out-Null
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $cfUrl = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
-    if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
-      & curl.exe -L --retry 3 -o "scripts\.bin\cloudflared.exe" $cfUrl
-    } else {
-      $ProgressPreference = "SilentlyContinue"   # the progress bar makes Invoke-WebRequest 10x slower in Windows PowerShell 5
-      Invoke-WebRequest $cfUrl -OutFile "scripts\.bin\cloudflared.exe" -UseBasicParsing
-    }
-    if (-not (Test-Path "scripts\.bin\cloudflared.exe") -or (Get-Item "scripts\.bin\cloudflared.exe").Length -lt 10MB) { Fail "cloudflared download failed" }
-    $cfPath = (Resolve-Path "scripts\.bin\cloudflared.exe").Path
-  }
-  Remove-Item "logs\tunnel.log" -ErrorAction SilentlyContinue
-  $tunnel = Start-Process -FilePath $cfPath -ArgumentList "tunnel --no-autoupdate --url http://localhost:$Port" -PassThru -WindowStyle Hidden -RedirectStandardError "logs\tunnel.log" -RedirectStandardOutput "logs\tunnel.out.log"
-  $found = $null
-  for ($i = 0; $i -lt 60 -and -not $found; $i++) {
+function Wait-Url($logs, $pattern, $proc, $seconds) {
+  for ($i = 0; $i -lt $seconds; $i++) {
     Start-Sleep -Seconds 1
-    try { if (Test-Path "logs\tunnel.log") { $m = Select-String -Path "logs\tunnel.log" -Pattern "https://[a-z0-9-]+\.trycloudflare\.com" | Select-Object -First 1; if ($m) { $found = $m.Matches[0].Value } } } catch { }
-    if ($tunnel.HasExited) { break }
+    foreach ($l in $logs) {
+      try { if (Test-Path $l) { $m = Select-String -Path $l -Pattern $pattern | Select-Object -First 1; if ($m) { return $m.Matches[0].Value } } } catch { }
+    }
+    if ($proc.HasExited) { break }
   }
-  if (-not $found) { Stop-Tree $tunnel; Stop-Tree $app; Fail "tunnel did not start - see logs\tunnel.log" }
-  $publicUrl = $found
-  # wait until the public URL actually answers
-  $ok = $false
-  for ($i = 0; $i -lt 30 -and -not $ok; $i++) { try { if ((Invoke-WebRequest "$publicUrl/api/health" -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200) { $ok = $true } } catch { Start-Sleep -Seconds 2 } }
-  if (-not $ok) { Write-Host "Public link is created but not answering yet (DNS needs up to a minute) - try opening it in a moment." -ForegroundColor Yellow }
+  return $null
+}
+if (-not $NoTunnel) {
+  Step "5/6" "Public link"
+  $found = $null
+  # --- A. Cloudflare quick tunnel ---
+  if ($Provider -in @("auto", "cloudflared")) {
+    $cf = (Get-Command cloudflared -ErrorAction SilentlyContinue)
+    $cfPath = $null
+    if ($cf) { $cfPath = $cf.Source }
+    elseif (Test-Path "scripts\.bin\cloudflared.exe") { $cfPath = (Resolve-Path "scripts\.bin\cloudflared.exe").Path }
+    else {
+      Write-Host "Downloading cloudflared.exe (one time, ~40 MB)..."
+      New-Item -ItemType Directory -Force -Path "scripts\.bin" | Out-Null
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+      $cfUrl = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
+      if (Get-Command curl.exe -ErrorAction SilentlyContinue) { & curl.exe -L --retry 3 -o "scripts\.bin\cloudflared.exe" $cfUrl }
+      else { $ProgressPreference = "SilentlyContinue"; Invoke-WebRequest $cfUrl -OutFile "scripts\.bin\cloudflared.exe" -UseBasicParsing }
+      if ((Test-Path "scripts\.bin\cloudflared.exe") -and (Get-Item "scripts\.bin\cloudflared.exe").Length -gt 10MB) { $cfPath = (Resolve-Path "scripts\.bin\cloudflared.exe").Path }
+      else { Write-Host "cloudflared download failed" -ForegroundColor Yellow }
+    }
+    if ($cfPath) {
+      Write-Host "Trying Cloudflare tunnel (up to 45 s)..."
+      Remove-Item "logs\tunnel.log" -ErrorAction SilentlyContinue
+      $tunnel = Start-Process -FilePath $cfPath -ArgumentList "tunnel --no-autoupdate --protocol http2 --url http://localhost:$Port" -PassThru -WindowStyle Hidden -RedirectStandardError "logs\tunnel.log" -RedirectStandardOutput "logs\tunnel.out.log"
+      $found = Wait-Url @("logs\tunnel.log") "https://[a-z0-9-]+\.trycloudflare\.com" $tunnel 45
+      if (-not $found) { Write-Host "Cloudflare tunnel did not start (see logs\tunnel.log)." -ForegroundColor Yellow; Stop-Tree $tunnel; $tunnel = $null }
+    }
+  }
+  # --- B. localhost.run over plain SSH (Windows 10/11 has ssh.exe; no account, nothing to install) ---
+  if (-not $found -and $Provider -in @("auto", "ssh")) {
+    if (Get-Command ssh -ErrorAction SilentlyContinue) {
+      Write-Host "Trying localhost.run over SSH (up to 45 s)..."
+      Remove-Item "logs\ssh-tunnel.log", "logs\ssh-tunnel.err.log" -ErrorAction SilentlyContinue
+      $tunnel = Start-Process -FilePath "ssh" -ArgumentList "-o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -R 80:localhost:$Port nokey@localhost.run" -PassThru -WindowStyle Hidden -RedirectStandardOutput "logs\ssh-tunnel.log" -RedirectStandardError "logs\ssh-tunnel.err.log"
+      $found = Wait-Url @("logs\ssh-tunnel.log", "logs\ssh-tunnel.err.log") "https://[a-z0-9]+\.lhr\.life" $tunnel 45
+      if (-not $found) { Write-Host "localhost.run did not start (see logs\ssh-tunnel.log)." -ForegroundColor Yellow; Stop-Tree $tunnel; $tunnel = $null }
+    } else { Write-Host "ssh.exe not found (Windows optional feature 'OpenSSH Client')." -ForegroundColor Yellow }
+  }
+  if (-not $found) {
+    Write-Host "No public link could be created from this network. The app keeps running on http://localhost:$Port." -ForegroundColor Red
+    Write-Host "Options: use another network / phone hotspot / VPN and run:  .\scripts\demo.ps1 -SkipUpdate -SkipSeed   or put the demo on the VPS (separate subdomain)." -ForegroundColor Yellow
+  } else {
+    $publicUrl = $found
+    $ok = $false
+    for ($i = 0; $i -lt 20 -and -not $ok; $i++) { try { if ((Invoke-WebRequest "$publicUrl/api/health" -UseBasicParsing -TimeoutSec 8).StatusCode -eq 200) { $ok = $true } } catch { Start-Sleep -Seconds 2 } }
+    if (-not $ok) { Write-Host "Link is created but not answering yet (needs up to a minute) - open it in a moment." -ForegroundColor Yellow }
+  }
 } else {
   Step "5/6" "Skipped (-NoTunnel)"
 }
