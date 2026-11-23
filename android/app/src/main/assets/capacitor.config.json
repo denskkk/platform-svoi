@@ -1,13 +1,14 @@
 {
-	"appId": "com.sviy_dlya_svoih.android",
-	"appName": "Sviy dlya Svoikh",
-	"webDir": "mobile-web",
-	"android": {
-		"adjustMarginsForEdgeToEdge": "auto"
-	},
-	"server": {
-		"url": "https://sviydlyasvoih.com.ua",
-		"cleartext": false,
-		"errorPath": "error.html"
-	}
+  "appId": "com.sviy_dlya_svoih.android",
+  "appName": "Sviy dlya Svoikh",
+  "webDir": "mobile-web",
+  "android": {
+    "adjustMarginsForEdgeToEdge": "auto",
+    "appendUserAgent": "SviyApp/2"
+  },
+  "server": {
+    "url": "https://sviydlyasvoih.com.ua",
+    "cleartext": false,
+    "errorPath": "error.html"
+  }
 }

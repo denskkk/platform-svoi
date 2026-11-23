@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 import { uploadVideo, waitVideoReady, VIDEO_MAX_BYTES } from '@/lib/videoClient';
+import { nativePlatform, openAppSettings, shellOutdated } from '@/lib/nativeApp';
 import { localizedPath } from '@/i18n/routes';
 
 export type CreatorMode = 'text' | 'photo' | 'story' | 'reel';
@@ -40,12 +41,6 @@ async function cameraPermission(): Promise<'granted' | 'denied' | 'prompt' | 'un
     return q?.state ?? 'unknown';
   } catch { return 'unknown'; }
 }
-
-const nativePlatform = (): 'ios' | 'android' | 'web' => {
-  try { const p = (window as any).Capacitor?.getPlatform?.(); return p === 'ios' || p === 'android' ? p : 'web'; } catch { return 'web'; }
-};
-/** iPhone: iOS відкриває налаштування застосунку за схемою app-settings:. На Android безпечного способу без плагіна немає — лише інструкція. */
-const openAppSettings = () => { try { window.location.href = 'app-settings:'; } catch { /* ignore */ } };
 
 const pickMime = () => ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find((m) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported?.(m)) || '';
 
@@ -329,10 +324,11 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
                   {camera === 'denied' && <button type="button" onClick={allowCamera} className={nativePlatform() === 'ios' ? 'w-full max-w-xs rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold' : 'mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition'}>{t('cabinet.studio.retry')}</button>}
                   {camera === 'off' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.retry')}</button>}
                   <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
-                    {mode !== 'reel' && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemCamera')}</button>}
-                    {mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
+                    {!shellOutdated() && mode !== 'reel' && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemCamera')}</button>}
+                    {!shellOutdated() && mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
                     <button type="button" onClick={() => galleryRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.gallery')}</button>
                   </div>
+                  {shellOutdated() && <p className="max-w-xs rounded-xl bg-white/10 px-3 py-2 text-xs text-white/80">{t('cabinet.studio.updateApp')}</p>}
                   {camErr && <p className="mt-1 text-[11px] text-white/40">{camErr}</p>}
                 </>
               )}
