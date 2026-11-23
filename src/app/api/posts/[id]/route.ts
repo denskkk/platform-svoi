@@ -95,7 +95,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const post = await prisma.post.findUnique({
       where: { id: postId },
-      select: { authorId: true, repostOfId: true, images: { select: { url: true } }, video: { select: { rawName: true, url: true, posterUrl: true } } },
+      select: { authorId: true, repostOfId: true, images: { select: { url: true } }, videos: { select: { rawName: true, url: true, posterUrl: true } } },
     });
     if (!post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
 
@@ -107,7 +107,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     await prisma.post.delete({ where: { id: postId } });
     if (post.repostOfId) await prisma.post.updateMany({ where: { id: post.repostOfId, repostsCount: { gt: 0 } }, data: { repostsCount: { decrement: 1 } } }).catch(() => undefined);
     await removePostImageFiles(post.images.map((i: any) => i.url));
-    if (post.video) await removeVideoFiles(post.video);
+    for (const v of post.videos) await removeVideoFiles(v);
     return NextResponse.json({ success: true, message: t('api.feed.postDeleted') });
   } catch (error) {
     console.error('Delete post error:', error);

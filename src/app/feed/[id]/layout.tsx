@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       select: {
         content: true,
         images: { take: 1, orderBy: { position: 'asc' }, select: { url: true } },
-        video: { select: { posterUrl: true } },
+        videos: { take: 1, where: { status: 'ready' }, orderBy: { position: 'asc' }, select: { posterUrl: true } },
         author: { select: { firstName: true, lastName: true } },
       },
     });
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     const author = `${post.author.firstName ?? ''} ${post.author.lastName ?? ''}`.trim() || brand;
     const text = (post.content || '').replace(/\s+/g, ' ').trim();
     const description = text ? (text.length > 140 ? `${text.slice(0, 137)}…` : text) : brand;
-    const rawImage = post.video?.posterUrl || post.images[0]?.url || '';
+    const rawImage = post.videos[0]?.posterUrl || post.images[0]?.url || '';
     const image = rawImage ? (rawImage.startsWith('http') ? rawImage : `${SITE_URL}${rawImage}`) : '';
     const url = `${SITE_URL}/feed/${id}`;
     const appId = /id(\d+)/.exec(APP_STORE_URL)?.[1];

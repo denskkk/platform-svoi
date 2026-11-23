@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const where: any = { isHidden: false, isPrivate: false, clubId: null, author: { isActive: true } };
     if (hidden.length) where.authorId = { notIn: hidden };
     if (cursor) where.id = { lt: cursor };
-    if (videos) where.video = { is: { status: 'ready' } };
+    if (videos) where.videos = { some: { status: 'ready' } };
 
     const rows = await prisma.post.findMany({ where, orderBy: { id: 'desc' }, take: limit + 1, include: postInclude });
     const hasMore = rows.length > limit;

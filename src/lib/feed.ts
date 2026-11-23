@@ -10,6 +10,8 @@ export const FEED_LIMITS = {
   postMaxLength: 2000,
   commentMaxLength: 1000,
   maxImages: 6,
+  maxMedia: 10, // фото + відео разом в одному дописі
+  maxVideos: 4,
   pageSize: 10,
   maxPageSize: 30,
 } as const;
@@ -28,17 +30,37 @@ export const authorSelect = {
 
 export const postInclude = {
   author: { select: authorSelect },
-  images: { orderBy: { position: 'asc' as const }, select: { id: true, url: true } },
-  video: { select: { id: true, status: true, url: true, posterUrl: true, durationSec: true } },
+  images: { orderBy: { position: 'asc' as const }, select: { id: true, url: true, position: true } },
+  videos: { orderBy: [{ position: 'asc' as const }, { id: 'asc' as const }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
   repostOf: {
     select: {
       id: true, content: true, isHidden: true,
       author: { select: authorSelect },
-      images: { orderBy: { position: 'asc' as const }, take: 4, select: { id: true, url: true } },
-      video: { select: { id: true, status: true, url: true, posterUrl: true, durationSec: true } },
+      images: { orderBy: { position: 'asc' as const }, take: 4, select: { id: true, url: true, position: true } },
+      videos: { orderBy: [{ position: 'asc' as const }, { id: 'asc' as const }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
     },
   },
 } as const;
+
+type RawVideo = { id: number; status: string; url: string | null; posterUrl: string | null; durationSec: number | null; position?: number };
+
+export type MediaItem =
+  | { type: 'image'; id: number; url: string }
+  | { type: 'video'; id: number; url: string; posterUrl: string | null; durationSec: number | null };
+
+/**
+ * Єдина карусель допису: фото й відео в порядку, який вибрав автор (спільна нумерація position).
+ * У старих дописів (одне відео + фото) позиції збігаються — відео йде першим, як і показувалось раніше.
+ */
+export function buildMedia(images: { id: number; url: string; position?: number }[], videos: RawVideo[] | undefined): MediaItem[] {
+  const out: { pos: number; kind: number; item: MediaItem }[] = [];
+  images.forEach((im, i) => out.push({ pos: im.position ?? i, kind: 1, item: { type: 'image', id: im.id, url: im.url } }));
+  (videos ?? []).forEach((v) => {
+    if (v.status === 'ready' && v.url) out.push({ pos: v.position ?? 0, kind: 0, item: { type: 'video', id: v.id, url: v.url, posterUrl: v.posterUrl, durationSec: v.durationSec } });
+  });
+  out.sort((a, b) => a.pos - b.pos || a.kind - b.kind);
+  return out.map((o) => o.item);
+}
 
 type PostRow = {
   id: number;
@@ -58,12 +80,17 @@ type PostRow = {
     accountType: string;
     businessInfo: { companyName: string | null; logoUrl: string | null } | null;
   };
-  images: { id: number; url: string }[];
-  video?: { id: number; status: string; url: string | null; posterUrl: string | null; durationSec: number | null } | null;
+  images: { id: number; url: string; position?: number }[];
+  videos?: RawVideo[];
   repostsCount?: number;
   repostOfId?: number | null;
-  repostOf?: { id: number; content: string; isHidden: boolean; author: PostRow['author']; images: { id: number; url: string }[]; video?: { id: number; status: string; url: string | null; posterUrl: string | null; durationSec: number | null } | null } | null;
+  repostOf?: { id: number; content: string; isHidden: boolean; author: PostRow['author']; images: { id: number; url: string; position?: number }[]; videos?: RawVideo[] } | null;
 };
+
+function firstVideo(videos: RawVideo[] | undefined) {
+  const v = (videos ?? []).find((x) => x.status === 'ready' && x.url);
+  return v ? { id: v.id, url: v.url as string, posterUrl: v.posterUrl, durationSec: v.durationSec } : null;
+}
 
 export function serializePost(post: PostRow, viewer: { liked: Set<number>; following: Set<number>; saved?: Set<number>; reactions?: Map<number, string>; userId: number }) {
   const { author } = post;
@@ -79,18 +106,17 @@ export function serializePost(post: PostRow, viewer: { liked: Set<number>; follo
       ? {
           id: orig.id,
           content: orig.content,
-          images: orig.images,
-          video: orig.video && orig.video.status === 'ready' && orig.video.url ? { id: orig.video.id, url: orig.video.url, posterUrl: orig.video.posterUrl, durationSec: orig.video.durationSec } : null,
+          images: orig.images.map((im) => ({ id: im.id, url: im.url })),
+          video: firstVideo(orig.videos),
           author: { id: orig.author.id, name: orig.author.businessInfo?.companyName || `${orig.author.firstName} ${orig.author.lastName}`.trim(), avatarUrl: orig.author.businessInfo?.logoUrl || orig.author.avatarUrl, isVerified: orig.author.isVerified },
         }
       : null,
     repostUnavailable: !!post.repostOfId && !orig,
     createdAt: post.createdAt.toISOString(),
     edited: post.updatedAt.getTime() - post.createdAt.getTime() > 60_000,
-    images: post.images,
-    video: post.video && post.video.status === 'ready' && post.video.url
-      ? { id: post.video.id, url: post.video.url, posterUrl: post.video.posterUrl, durationSec: post.video.durationSec }
-      : null,
+    images: post.images.map((im) => ({ id: im.id, url: im.url })),
+    video: firstVideo(post.videos), // перше відео — для рілсів, прев'ю й сумісності зі старими клієнтами
+    media: buildMedia(post.images, post.videos),
     author: {
       id: author.id,
       name: author.businessInfo?.companyName || `${author.firstName} ${author.lastName}`.trim(),

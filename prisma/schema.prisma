@@ -938,7 +938,7 @@ model Post {
   images       PostImage[]
   likes        PostLike[]
   comments     PostComment[]
-  video     PostVideo?
+  videos       PostVideo[]
   savedBy      SavedPost[]
   repostOf     Post?         @relation("PostReposts", fields: [repostOfId], references: [id], onDelete: SetNull)
   reposts      Post[]        @relation("PostReposts")
@@ -968,7 +968,8 @@ model PostImage {
 model PostVideo {
   id          Int      @id @default(autoincrement()) @map("post_video_id")
   ownerId     Int      @map("owner_id")
-  postId      Int?     @unique @map("post_id")
+  postId      Int?     @map("post_id")
+  position    Int      @default(0) // порядок у каруселі допису разом із фото (спільна нумерація)
   status      String   @default("queued") @db.VarChar(20)
   rawName     String?  @map("raw_name") @db.VarChar(80)
   url         String?  @db.VarChar(255)
@@ -985,6 +986,7 @@ model PostVideo {
 
   @@index([status, createdAt])
   @@index([ownerId, createdAt])
+  @@index([postId, position])
   @@map("post_videos")
 }
 

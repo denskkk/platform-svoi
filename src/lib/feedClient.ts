@@ -25,6 +25,10 @@ export interface FeedAuthor {
   accountType: string;
 }
 
+export type FeedMedia =
+  | { type: 'image'; id: number; url: string }
+  | { type: 'video'; id: number; url: string; posterUrl: string | null; durationSec: number | null };
+
 export interface FeedPost {
   id: number;
   content: string;
@@ -35,6 +39,8 @@ export interface FeedPost {
   edited?: boolean;
   images: { id: number; url: string }[];
   video?: { id: number; url: string; posterUrl: string | null; durationSec: number | null } | null;
+  /** Фото і відео разом, у порядку каруселі */
+  media?: FeedMedia[];
   repostsCount?: number;
   repostOf?: { id: number; content: string; images: { id: number; url: string }[]; video?: { id: number; url: string; posterUrl: string | null } | null; author: { id: number; name: string; avatarUrl: string | null; isVerified: boolean } } | null;
   repostUnavailable?: boolean;

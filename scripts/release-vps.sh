@@ -31,7 +31,7 @@ echo "Branch : $(git rev-parse --abbrev-ref HEAD)  now at $(git rev-parse --shor
 git status --porcelain | head -5 | sed 's/^/  local change: /' || true
 if [ "${YES:-}" != "1" ]; then
   echo
-  echo "This will: back up the database, pull origin/main, run ALL SQL migrations 20261112-20261154 (safe to repeat), rebuild and reload the site."
+  echo "This will: back up the database, pull origin/main, run ALL SQL migrations 20261112-20261155 (safe to repeat), rebuild and reload the site."
   read -r -p "Type RELEASE to continue: " ANSWER
   [ "$ANSWER" = "RELEASE" ] || die "cancelled"
 fi
@@ -65,7 +65,7 @@ MIGRATIONS=(
   20261145_china_sections_remap.sql 20261146_folder_images.sql 20261147_taxi_request_details.sql
   20261148_representations.sql 20261149_real_estate_sections.sql 20261150_project_structures.sql
   20261151_antiques_clubs_structure.sql 20261152_export_alliance.sql 20261153_nine_projects_structure.sql
-  20261154_negotiations.sql
+  20261154_negotiations.sql 20261155_post_mixed_media.sql
 )
 export PGCLIENTENCODING=UTF8
 for f in "${MIGRATIONS[@]}"; do

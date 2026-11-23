@@ -9,6 +9,7 @@ import { BlockButton } from './BlockButton';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { FeedVideo } from '@/components/feed/FeedVideo';
+import { MediaCarousel } from '@/components/feed/MediaCarousel';
 import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, jsonHeaders, timeAgo } from '@/lib/feedClient';
 import { PostComments } from './PostComments';
@@ -203,7 +204,9 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
     }
   };
 
-  const imgs = post.images;
+  // Кілька елементів (фото й відео разом) — карусель; одне фото чи одне відео показуємо як раніше
+  const mixed = !post.repostOf && (post.media?.length ?? 0) > 1 ? post.media! : null;
+  const imgs = mixed ? [] : post.images;
   const gridClass = imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
 
   return (
@@ -340,7 +343,8 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
         </Link>
       )}
       {post.repostUnavailable && <p className="mx-4 mt-3 rounded-xl bg-neutral-100 px-3 py-3 text-sm text-neutral-500">{t('feed.post.repostUnavailable')}</p>}
-      {post.video && (
+      {mixed && <MediaCarousel media={mixed} onOpenImage={setLightbox} />}
+      {!mixed && post.video && (
         <div className="mt-3 bg-black">
           <FeedVideo src={post.video.url} poster={post.video.posterUrl} />
         </div>
