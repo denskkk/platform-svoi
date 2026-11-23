@@ -161,6 +161,20 @@ async function main() {
   if (adm) await prisma.user.update({ where: { id: adm.id }, data: { passwordHash: adminHash, isAdmin: true, role: 'admin', isActive: true, isVerified: true } });
   else await prisma.user.create({ data: { email: adminEmail, passwordHash: adminHash, firstName: 'Адміністратор', lastName: 'Платформи', role: 'admin', accountType: 'basic', isAdmin: true, isActive: true, isVerified: true, city: 'Київ' } });
 
+  // ---- Демо-акаунт для замовника: звичайний користувач (НЕ адмін). Пароль: DEMO_PASSWORD або Demo12345 ----
+  {
+    const demoPass = process.env.DEMO_PASSWORD || 'Demo12345';
+    const demoHash = await bcrypt.hash(demoPass, 10);
+    const demoEmail = 'seed00@svoi.test';
+    const d0 = await prisma.user.findFirst({ where: { email: demoEmail }, select: { id: true } });
+    if (d0) await prisma.user.update({ where: { id: d0.id }, data: { passwordHash: demoHash, isActive: true } });
+    else {
+      const av = await img('avatars', 'seed_a00.jpg', 400, 400, 2, 'ДЗ', true, MAN_Q, 'all');
+      await prisma.user.create({ data: { email: demoEmail, passwordHash: demoHash, firstName: 'Демо', lastName: 'Замовник', gender: 'male', city: 'Київ', region: 'Київська', bio: 'Демонстраційний акаунт: перегляньте стрічку, проєкти, історії та кабінет.', avatarUrl: av, isActive: true, isVerified: true } });
+    }
+    console.log(`Демо-акаунт: ${demoEmail} / ${demoPass}`);
+  }
+
   if (await prisma.user.findFirst({ where: { email: 'seed01@svoi.test' }, select: { id: true } })) {
     console.log('Seed-дані вже є. Щоб створити заново: npx tsx prisma/seed-projects.ts --reset');
     console.log(`Адмін: ${adminEmail} / ${adminPass}`);
