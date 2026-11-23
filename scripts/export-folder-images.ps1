@@ -77,5 +77,15 @@ if ($missing.Count -gt 0) {
 
 $zip = Join-Path $projectDir "folder-images-export.zip"
 if (Test-Path $zip) { Remove-Item $zip -Force }
-Compress-Archive -Path (Join-Path $out "*") -DestinationPath $zip
+# Build the zip by hand with forward slashes (Compress-Archive in Windows PowerShell 5 writes backslashes, which break on Linux)
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$fs = [IO.File]::Open($zip, [IO.FileMode]::Create)
+$za = New-Object IO.Compression.ZipArchive($fs, [IO.Compression.ZipArchiveMode]::Create)
+$base = (Resolve-Path $out).Path.TrimEnd("\")
+foreach ($f in Get-ChildItem $out -Recurse -File) {
+  $entry = $f.FullName.Substring($base.Length + 1).Replace("\", "/")
+  [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($za, $f.FullName, $entry, [IO.Compression.CompressionLevel]::Optimal)
+}
+$za.Dispose(); $fs.Dispose()
 Write-Host "Ready: $zip ($([math]::Round((Get-Item $zip).Length / 1MB, 1)) MB)" -ForegroundColor Green
