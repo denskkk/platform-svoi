@@ -41,6 +41,12 @@ async function cameraPermission(): Promise<'granted' | 'denied' | 'prompt' | 'un
   } catch { return 'unknown'; }
 }
 
+const nativePlatform = (): 'ios' | 'android' | 'web' => {
+  try { const p = (window as any).Capacitor?.getPlatform?.(); return p === 'ios' || p === 'android' ? p : 'web'; } catch { return 'web'; }
+};
+/** iPhone: iOS відкриває налаштування застосунку за схемою app-settings:. На Android безпечного способу без плагіна немає — лише інструкція. */
+const openAppSettings = () => { try { window.location.href = 'app-settings:'; } catch { /* ignore */ } };
+
 const pickMime = () => ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find((m) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported?.(m)) || '';
 
 /**
@@ -55,6 +61,9 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   const [mode, setMode] = useState<CreatorMode>(initialMode);
   const [facing, setFacing] = useState<'user' | 'environment'>('environment');
   const [camera, setCamera] = useState<CamState>('starting');
+  const [camErr, setCamErr] = useState('');
+  const camRef = useRef<CamState>('starting');
+  camRef.current = camera;
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
@@ -82,7 +91,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   const startCamera = useCallback(async (face: 'user' | 'environment', withAudio: boolean) => {
     stopStream();
     if (!navigator.mediaDevices?.getUserMedia) { setCamera('off'); return; }
-    setCamera('starting');
+    setCamera('starting'); setCamErr('');
     // 720p вистачає для рілсів і значно легший для телефона (пам’ять, нагрів, розмір файлу)
     const video = { facingMode: face, width: { ideal: 720 }, height: { ideal: 1280 } };
     const open = (audio: boolean) => navigator.mediaDevices.getUserMedia({ video, audio });
@@ -103,6 +112,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
       if (el) { el.srcObject = s; await el.play().catch(() => undefined); }
       setCamera('on');
     } catch (e: any) {
+      setCamErr(String(e?.name || e?.message || '').slice(0, 40));
       setCamera(e?.name === 'NotAllowedError' ? 'denied' : 'off');
     }
   }, [stopStream]);
@@ -117,7 +127,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
       if (!camAsked.current) {
         const st = await cameraPermission();
         if (cancelled) return;
-        if (st === 'denied') { setCamera('denied'); return; }
+        if (st === 'denied') { setCamErr('denied'); setCamera('denied'); return; }
         if (st !== 'granted') { setCamera('ask'); return; }
         camAsked.current = true;
       }
@@ -130,9 +140,9 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   // Після системного запиту дозволу / згортання застосунку потік може обірватися — відновлюємо
   useEffect(() => {
     const onVisible = () => {
-      if (document.visibilityState !== 'visible' || !camAsked.current || preview || mode === 'text' || recRef.current) return;
+      if (document.visibilityState !== 'visible' || (!camAsked.current && camRef.current !== 'denied') || preview || mode === 'text' || recRef.current) return;
       const live = streamRef.current?.getTracks().some((tr) => tr.readyState === 'live');
-      if (!live) startCamera(facing, mode !== 'photo');
+      if (!live) { camAsked.current = true; startCamera(facing, mode !== 'photo'); }
     };
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
@@ -313,15 +323,17 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
                 <>
                   <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10"><Camera className="h-8 w-8 text-primary-400" /></span>
                   <p className="text-lg font-bold">{camera === 'ask' ? t('cabinet.studio.askTitle') : camera === 'denied' ? t('cabinet.studio.deniedTitle') : t('cabinet.studio.noCameraTitle')}</p>
-                  <p className="max-w-xs text-sm text-white/75">{camera === 'ask' ? t('cabinet.studio.askText') : camera === 'denied' ? t('cabinet.studio.denied') : t('cabinet.studio.noCamera')}</p>
+                  <p className="max-w-xs text-sm text-white/75">{camera === 'ask' ? t('cabinet.studio.askText') : camera === 'denied' ? t(nativePlatform() === 'ios' ? 'cabinet.studio.deniedIos' : nativePlatform() === 'android' ? 'cabinet.studio.deniedAndroid' : 'cabinet.studio.denied') : t('cabinet.studio.noCamera')}</p>
+                  {camera === 'denied' && nativePlatform() === 'ios' && <button type="button" onClick={openAppSettings} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.openSettings')}</button>}
                   {camera === 'ask' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.allow')}</button>}
-                  {camera === 'denied' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.retry')}</button>}
+                  {camera === 'denied' && <button type="button" onClick={allowCamera} className={nativePlatform() === 'ios' ? 'w-full max-w-xs rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold' : 'mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition'}>{t('cabinet.studio.retry')}</button>}
                   {camera === 'off' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.retry')}</button>}
                   <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
                     {mode !== 'reel' && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemCamera')}</button>}
                     {mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
                     <button type="button" onClick={() => galleryRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.gallery')}</button>
                   </div>
+                  {camErr && <p className="mt-1 text-[11px] text-white/40">{camErr}</p>}
                 </>
               )}
             </div>
