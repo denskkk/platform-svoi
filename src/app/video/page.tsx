@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Bookmark, Clapperboard, Heart, MessageCircle, Play, Plus, Check, Share2, Volume2, VolumeX, X } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -20,7 +21,9 @@ type Tab = 'all' | 'following';
 export default function VideoPage() {
   const { t } = useI18n();
   const toast = useToast();
+  const router = useRouter();
   const me = readStoredUser();
+  useEffect(() => { if (!readStoredUser()) router.replace('/'); }, [router]);
   const gate = useGuestGate(!me);
   const guestPages = useRef(0);
   const [tab, setTab] = useState<Tab>('all');

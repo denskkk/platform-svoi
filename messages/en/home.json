@@ -136,5 +136,16 @@
     "earnCta": "Get started",
     "finalTitle": "Join your community",
     "finalText": "Free sign-up — and you are in the feed, friends and projects right away."
+  },
+  "welcome": {
+    "title": "Svij dlya Svoih",
+    "subtitle": "A social network to connect, find services and earn.",
+    "p1": "Feed, friends and news",
+    "p2": "Videos and reels",
+    "p3": "Projects, listings and companies",
+    "p4": "Clubs and communities",
+    "register": "Sign up",
+    "login": "Log in",
+    "note": "Free to join: name, email and password."
   }
 }
