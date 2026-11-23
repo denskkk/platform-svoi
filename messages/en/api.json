@@ -316,7 +316,8 @@
     "invalid": "Invalid chat data",
     "notFound": "Chat not found",
     "notOwner": "Only the chat owner can do this",
-    "ownerCannotLeave": "The owner cannot leave their own chat"
+    "ownerCannotLeave": "The owner cannot leave their own chat",
+    "viewerNotAllowed": "Group chats are available after full registration"
   },
   "rep": {
     "notFound": "Not found",

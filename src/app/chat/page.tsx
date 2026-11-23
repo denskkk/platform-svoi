@@ -3,7 +3,10 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { MessageCircle, Send, ArrowLeft } from 'lucide-react';
+import { MessageCircle, Send, ArrowLeft, Plus, X } from 'lucide-react';
+import { GroupChatList } from '@/components/chat/GroupChatList';
+import { NewGroupForm } from '@/components/chat/NewGroupForm';
+import { canCreateGroupChats } from '@/lib/groupRights';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
@@ -57,6 +60,10 @@ function ChatPageContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState('');
   const [loading, setLoading] = useState(true);
+  // Вкладки месенджера: особисті чати / групові; створення групи — у модальному вікні прямо тут
+  const [tab, setTab] = useState<'direct' | 'groups'>('direct');
+  const [newGroup, setNewGroup] = useState(false);
+  const [groupsKey, setGroupsKey] = useState(0);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   // Чтобы обработать ?with=... один раз и не зациклиться
@@ -314,7 +321,6 @@ function ChatPageContent() {
               <ArrowLeft className="w-6 h-6" />
             </Link>
             <h1 className="text-2xl font-bold text-neutral-900 flex-1">{t('chat.title')}</h1>
-            <Link href={localizedPath('/chat/groups', locale)} className="rounded-full bg-primary-500 hover:bg-primary-600 text-neutral-900 text-sm font-bold px-4 py-1.5">{t('cabinet.groupChats.tab')}</Link>
           </div>
         </div>
 
@@ -329,7 +335,24 @@ function ChatPageContent() {
         <div className="flex-1 flex overflow-hidden">
           {/* Список диалогов */}
           <div className={`w-full md:w-96 md:shrink-0 bg-white border-r border-neutral-200 overflow-y-auto ${selectedConv ? 'hidden md:block' : ''}`}>
-            {loading ? (
+            <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-neutral-100 bg-white px-3 py-2">
+              <div role="tablist" className="grid flex-1 grid-cols-2 rounded-full bg-neutral-100 p-1 text-sm font-semibold">
+                {(['direct', 'groups'] as const).map((k) => (
+                  <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+                    className={`rounded-full py-1.5 transition ${tab === k ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500'}`}>
+                    {k === 'direct' ? t('chat.tabs.direct') : t('chat.tabs.groups')}
+                  </button>
+                ))}
+              </div>
+              {canCreateGroupChats(user) && (
+                <button type="button" onClick={() => setNewGroup(true)} aria-label={t('cabinet.groupChats.new')} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-500 text-neutral-900 hover:bg-primary-600">
+                  <Plus className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+            {tab === 'groups' ? (
+              <GroupChatList onCreate={() => setNewGroup(true)} reloadKey={groupsKey} />
+            ) : loading ? (
               <div className="p-4 text-center text-neutral-600">{t('chat.loading')}</div>
             ) : conversations.length === 0 ? (
               <div className="p-8 text-center">
@@ -488,6 +511,18 @@ function ChatPageContent() {
           </div>
         </div>
       </div>
+      {newGroup && (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={t('cabinet.groupChats.new')}>
+          <button type="button" className="absolute inset-0 bg-black/50" aria-label={t('chat.back')} onClick={() => setNewGroup(false)} />
+          <div className="relative max-h-[90%] w-full overflow-y-auto rounded-t-2xl bg-white p-4 pb-[calc(1rem+var(--safe-area-inset-bottom,0px))] sm:max-w-md sm:rounded-2xl">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-neutral-900">{t('cabinet.groupChats.new')}</h2>
+              <button type="button" onClick={() => setNewGroup(false)} aria-label={t('chat.back')} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-neutral-100"><X className="h-5 w-5" /></button>
+            </div>
+            <NewGroupForm onCreated={(id) => { setNewGroup(false); setGroupsKey((k) => k + 1); router.push(`/chat/groups/${id}`); }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

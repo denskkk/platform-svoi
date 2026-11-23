@@ -8,7 +8,7 @@ import { requireAuth } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { GROUP_CHAT_LIMITS } from '@/lib/groupChats';
-import { canCreateGroups } from '@/lib/groupRights';
+import { canCreateGroupChats } from '@/lib/groupRights';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   if (error) return error;
   try {
     const userId = Number(user.userId);
-    if (!canCreateGroups(user)) return NextResponse.json({ error: t('api.clubs.businessOnly') }, { status: 403 });
+    if (!canCreateGroupChats(user)) return NextResponse.json({ error: t('api.groupChats.viewerNotAllowed') }, { status: 403 });
     if (!checkRateLimit(`gchat:create:${userId}`, { interval: 60 * 60 * 1000, maxRequests: 10 }).allowed) {
       return NextResponse.json({ error: t('api.common.tooManyRequests') }, { status: 429 });
     }

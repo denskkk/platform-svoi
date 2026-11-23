@@ -19,5 +19,9 @@
     "sendMessage": "Failed to send message",
     "connection": "Failed to connect to the server"
   },
-  "back": "Back"
+  "back": "Back",
+  "tabs": {
+    "direct": "Direct",
+    "groups": "Groups"
+  }
 }
