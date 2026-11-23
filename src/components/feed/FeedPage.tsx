@@ -13,6 +13,7 @@ import { PostCard } from './PostCard';
 import { Recommendations } from './Recommendations';
 import { FeedMenuDrawer, FeedSidebar } from './FeedSidebar';
 import { StoriesBar } from './StoriesBar';
+import { PostComposer } from './PostComposer';
 import { MarketFeed } from './MarketFeed';
 import { GuestBanner, useGuestGate } from '@/components/ui/GuestGate';
 
@@ -156,6 +157,10 @@ export function FeedPage() {
 
   const removePost = useCallback((id: number) => setPosts((prev) => prev.filter((p) => p.id !== id)), []);
 
+  const onPosted = useCallback((post: FeedPost) => {
+    setPosts((prev) => [post, ...prev]);
+  }, []);
+
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
@@ -201,6 +206,8 @@ export function FeedPage() {
 
         {isGuest && <GuestBanner />}
         {canInteract && !isGuest && <StoriesBar me={user} />}
+        {/* На ПК (де немає нижнього меню з «+») лишається панель допису з фото, відео й оголошенням; на телефоні — студія «+» */}
+        {!isGuest && <div className="hidden md:block"><PostComposer canPost={canInteract} user={user} onPosted={onPosted} /></div>}
 
         <Link href="/video" data-guest-ok className="flex items-center justify-between rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] px-4 py-3">
           <span className="inline-flex items-center gap-2 font-semibold text-neutral-900"><Clapperboard className="w-5 h-5 text-primary-700" /> {t('projects.video.chip')}</span>
