@@ -400,3 +400,10 @@ img, video, canvas, svg { max-width: 100%; }
 }
 /* нижня шторка/студія не повинні «стрибати» від адресного рядка браузера */
 .vh-full { height: 100vh; height: 100dvh; }
+
+/* ===== Клавіатура телефона (змінні задає ViewportSync) ===== */
+/* Діалоги й повноекранні панелі закінчуються над клавіатурою, а не під нею */
+.fixed.inset-0[aria-modal="true"] { top: var(--vv-top, 0px); bottom: auto; height: var(--vvh, 100dvh); }
+/* Поки друкуєте, нижнє меню не з'їдає екран над клавіатурою */
+html[data-keyboard="open"] .mobile-nav-bar { display: none; }
+html[data-keyboard="open"] main { padding-bottom: 0.5rem; }

@@ -287,7 +287,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   const nameOf = (m: CreatorMode) => (m === 'text' ? t('cabinet.studio.modeText') : m === 'photo' ? t('cabinet.studio.modePost') : m === 'story' ? t('cabinet.studio.modeStory') : t('cabinet.studio.modeReel'));
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[80] h-[100dvh] bg-black text-white select-none overscroll-none" role="dialog" aria-modal="true" aria-label={nameOf(mode)}>
+    <div style={{ top: 'var(--vv-top, 0px)', height: 'var(--vvh, 100dvh)' }} className="fixed inset-x-0 z-[80] bg-black text-white select-none overscroll-none" role="dialog" aria-modal="true" aria-label={nameOf(mode)}>
       <input ref={galleryRef} type="file" accept={acceptGallery} multiple={mode === 'photo'} hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
       <input ref={cameraPhotoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files, 'image'); e.target.value = ''; }} />
       <input ref={cameraVideoRef} type="file" accept="video/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
