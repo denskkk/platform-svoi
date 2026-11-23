@@ -13,7 +13,7 @@ import { join } from 'path';
 import { prisma } from '@/lib/prisma';
 
 export const VIDEO_LIMITS = {
-  maxBytes: 50 * 1024 * 1024,
+  maxBytes: 150 * 1024 * 1024, // відео з телефона: хвилина 1080p ≈ 60–130 МБ
   maxSeconds: 60,
   maxLongSide: 1280,
   uploadsPerDay: 10,
@@ -60,7 +60,7 @@ async function processOne(video: { id: number; rawName: string | null }): Promis
     const probe = await run(FFPROBE, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', input], 30_000);
     const duration = Number(probe.out.trim().split('\n')[0]);
     if (probe.code !== 0 || !Number.isFinite(duration) || duration <= 0) return fail('unreadable');
-    if (duration > VIDEO_LIMITS.maxSeconds + 1) return fail('too_long');
+    // задовге відео не відхиляємо: нижче ffmpeg обріже його до maxSeconds (-t)
 
     const L = VIDEO_LIMITS.maxLongSide;
     const scale = `scale='if(gt(iw,ih),min(${L},iw),-2)':'if(gt(iw,ih),-2,min(${L},ih))'`;

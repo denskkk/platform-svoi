@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Eye, Loader2, Plus, Trash2, X } from 'lucide
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
+import { uploadVideo, waitVideoReady, shrinkImage } from '@/lib/videoClient';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 
 interface Story { id: number; mediaType: 'image' | 'video'; mediaUrl: string; posterUrl: string | null; caption: string | null; createdAt: string; seen: boolean; viewsCount?: number }
@@ -46,25 +47,16 @@ export function StoriesBar({ me }: { me: { firstName?: string; lastName?: string
   const pick = async (file: File | undefined) => {
     if (!file) return;
     try {
-      if (file.type.startsWith('video/')) {
-        if (file.size > 50 * 1024 * 1024) throw new Error(t('feed.composer.videoTooLarge'));
+      if (file.type.startsWith('video/') || /\.(mp4|mov|m4v|webm|3gp)$/i.test(file.name)) {
+        setBusy(t('feed.stories.uploading'));
+        const id = await uploadVideo(file, t, (pct) => setBusy(`${t('feed.stories.uploading')} ${pct}%`));
         setBusy(t('feed.stories.processing'));
-        const up = await fetch('/api/videos/upload', { method: 'POST', credentials: 'include', headers: { ...authHeaders(), 'Content-Type': file.type }, body: file });
-        const upData = await up.json().catch(() => ({}));
-        if (!up.ok || !upData.video?.id) throw new Error(upData.error);
-        const id = upData.video.id as number;
-        for (let i = 0; i < 100; i++) { // до ~5 хвилин
-          await new Promise((r) => setTimeout(r, 3000));
-          const st = await fetch(`/api/videos/${id}`, { credentials: 'include', headers: authHeaders() });
-          const d = await st.json().catch(() => ({}));
-          if (d.video?.status === 'ready') { await create({ videoId: id }); break; }
-          if (d.video?.status === 'failed' || !st.ok) throw new Error(t('feed.composer.videoFailed'));
-          if (i === 99) throw new Error(t('feed.composer.videoFailed'));
-        }
+        await waitVideoReady(id, t);
+        await create({ videoId: id });
       } else {
         setBusy(t('feed.stories.uploading'));
         const form = new FormData();
-        form.append('file', file);
+        form.append('file', await shrinkImage(file));
         form.append('type', 'posts');
         const up = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers: authHeaders(), body: form });
         const upData = await up.json().catch(() => ({}));

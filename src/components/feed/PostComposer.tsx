@@ -80,16 +80,14 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
 
   const pickVideo = async (file: File | undefined) => {
     if (!file) return;
-    if (file.size > 50 * 1024 * 1024) { toast.error(t('feed.composer.videoTooLarge')); return; }
+    if (file.size > VIDEO_MAX_BYTES) { toast.error(t('feed.composer.videoTooLarge', { max: VIDEO_MAX_MB })); if (videoRef.current) videoRef.current.value = ''; return; }
     setVideo({ id: null, status: 'uploading' });
     try {
-      const res = await fetch('/api/videos/upload', { method: 'POST', credentials: 'include', headers: { ...authHeaders(), 'Content-Type': file.type || 'video/mp4' }, body: file });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.video?.id) throw new Error(data.error);
-      setVideo({ id: data.video.id, status: 'processing' });
+      const id = await uploadVideo(file, t);
+      setVideo({ id, status: 'processing' });
     } catch (e: any) {
       setVideo(undefined);
-      toast.error(e?.message || t('feed.composer.uploadFailed'));
+      toast.error(e?.message || t('feed.composer.videoUploadFailed'));
     } finally {
       if (videoRef.current) videoRef.current.value = '';
     }
@@ -110,7 +108,7 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
     await Promise.all(chosen.map(async (file) => {
       try {
         const form = new FormData();
-        form.append('file', file);
+        form.append('file', await shrinkImage(file));
         form.append('type', 'posts');
         const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers: authHeaders(), body: form });
         const data = await res.json().catch(() => ({}));
@@ -148,7 +146,7 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
   return (
     <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 sm:p-4 min-w-0 max-w-full overflow-hidden">
       <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => pickFiles(e.target.files)} />
-      <input ref={videoRef} type="file" accept="video/mp4,video/quicktime,video/webm" hidden onChange={(e) => pickVideo(e.target.files?.[0])} />
+      <input ref={videoRef} type="file" accept="video/*" hidden onChange={(e) => pickVideo(e.target.files?.[0])} />
       <div className="flex gap-3">
         <UserAvatar src={user?.avatarUrl} alt={name} fallbackName={name || '?'} className="w-10 h-10 rounded-full shrink-0" />
         {!open ? (
