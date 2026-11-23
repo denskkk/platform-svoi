@@ -43,5 +43,5 @@ export function FeedVideo({ src, poster, className }: { src: string; poster?: st
     };
   }, [src]);
 
-  return <video ref={ref} src={src} poster={poster || undefined} controls muted loop playsInline preload="metadata" className={className || 'w-full max-h-[80vh] mx-auto'} />;
+  return <video ref={ref} src={src} poster={poster || undefined} controls muted loop playsInline preload="metadata" className={className || 'w-full aspect-[4/5] max-h-[80vh] object-contain bg-black'} />;
 }

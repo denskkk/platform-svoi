@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { BadgeCheck, ThumbsUp, MessageCircle, Bookmark, Share2, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck, Repeat2, Link2, Lock, Unlock } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -210,7 +211,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
   const gridClass = imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
 
   return (
-    <article className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] [content-visibility:auto] [contain-intrinsic-size:auto_420px]">
+    <article className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
       {/* Автор */}
       <header className="flex items-center gap-3 px-4 pt-4">
         <Link href={`/profile/${author.id}`} className="shrink-0">
@@ -477,15 +478,15 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
         />
       )}
 
-      {lightbox && (
-        <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
+      {lightbox && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-2 pt-[calc(0.5rem+var(--safe-area-inset-top,0px))] pb-[calc(0.5rem+var(--safe-area-inset-bottom,0px))]" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
           <button type="button" aria-label={t('feed.post.closePhoto')} className="absolute right-3 top-[calc(0.75rem+var(--safe-area-inset-top,0px))] p-2 rounded-full bg-white/15 text-white">
             <X className="w-6 h-6" />
           </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={lightbox} alt="" className="max-h-full max-w-full object-contain" />
         </div>
-      )}
+      , document.body)}
     </article>
   );
 }
