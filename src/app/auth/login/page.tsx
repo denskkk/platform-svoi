@@ -9,6 +9,7 @@ import { getSafeRedirect } from '@/components/ui/AuthGate'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useI18n } from '@/i18n/client'
 import { localizedPath } from '@/i18n/routes'
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -72,7 +73,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <LanguageSwitcher className="absolute right-3 top-[calc(0.75rem+var(--safe-area-inset-top,0px))]" />
       <div className="max-w-md w-full space-y-8">
         {/* Логотип */}
         <div className="text-center">
