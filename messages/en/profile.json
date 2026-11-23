@@ -207,8 +207,13 @@
       "posts": "Posts",
       "reviews": "Reviews"
     },
-    "menu": "Menu",
-    "moreInfo": "Details, contacts, reviews",
-    "lessInfo": "Hide details"
+    "menu": "Menu"
+  },
+  "cabinet": {
+    "share": "Share profile",
+    "linkCopied": "Link copied",
+    "more": "More",
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites"
   }
 }
