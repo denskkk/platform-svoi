@@ -61,7 +61,7 @@ MIGRATIONS=(
   20261134_add_invoices.sql 20261135_project_catalog_client_list.sql 20261136_activate_project_boards.sql
   20261137_group_chats.sql 20261138_project_suggestions.sql 20261139_linked_accounts.sql
   20261140_taxi_requests.sql 20261141_activate_more_projects.sql
-  20261142_client_list_v2.sql 20261143_listings_backfill_sections.sql 20261144_perf_indexes.sql
+  20261142_client_list_v2.sql 20261143_listings_backfill_sections.sql 20261143_posts_is_private.sql 20261144_perf_indexes.sql
   20261145_china_sections_remap.sql 20261146_folder_images.sql 20261147_taxi_request_details.sql
   20261148_representations.sql 20261149_real_estate_sections.sql 20261150_project_structures.sql
   20261151_antiques_clubs_structure.sql 20261152_export_alliance.sql 20261153_nine_projects_structure.sql
