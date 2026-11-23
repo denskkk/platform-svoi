@@ -31,7 +31,7 @@ echo "Branch : $(git rev-parse --abbrev-ref HEAD)  now at $(git rev-parse --shor
 git status --porcelain | head -5 | sed 's/^/  local change: /' || true
 if [ "${YES:-}" != "1" ]; then
   echo
-  echo "This will: back up the database, pull origin/main, run SQL migrations 20261142-20261154, rebuild and reload the site."
+  echo "This will: back up the database, pull origin/main, run ALL SQL migrations 20261112-20261154 (safe to repeat), rebuild and reload the site."
   read -r -p "Type RELEASE to continue: " ANSWER
   [ "$ANSWER" = "RELEASE" ] || die "cancelled"
 fi
@@ -42,7 +42,7 @@ BACKUP="$BACKUP_DIR/svoi_before_release_$TS.dump"
 pg_dump "$DB_URL" -Fc -f "$BACKUP"
 [ -s "$BACKUP" ] || die "backup is empty"
 echo "Backup: $BACKUP ($(du -h "$BACKUP" | cut -f1))"
-echo "Restore if needed:  pg_restore -c -d '$DB_URL' '$BACKUP'"
+echo "Restore if needed:  pg_restore -c -d \"\$DATABASE_URL\" '$BACKUP'   (DATABASE_URL is in .env; cut off the ?schema=public part)"
 
 say "2/6 Get the code (git pull --ff-only origin main)"
 git pull --ff-only origin main
@@ -50,6 +50,17 @@ echo "Now at $(git rev-parse --short HEAD)"
 
 say "3/6 SQL migrations"
 MIGRATIONS=(
+  20261112_add_social_feed.sql 20261112_add_user_blocks.sql 20261112_add_projects.sql
+  20261113_add_listings.sql 20261114_add_business_applications.sql 20261115_add_partner_pages.sql
+  20261116_add_admin_roles.sql 20261117_add_saved_posts.sql 20261118_add_comment_likes_replies.sql
+  20261119_business_application_fields.sql 20261120_add_organization_applications.sql 20261121_activate_listing_projects.sql
+  20261122_add_outbound_clicks.sql 20261123_add_clubs.sql 20261124_add_referrals_deals.sql
+  20261125_add_post_videos.sql 20261126_add_stories.sql 20261127_earn_page_media_steps.sql
+  20261128_business_media_geo.sql 20261129_add_notification_settings.sql 20261130_add_reposts_reactions.sql
+  20261131_add_user_cover.sql 20261132_invites_views_settings.sql 20261133_club_communities.sql
+  20261134_add_invoices.sql 20261135_project_catalog_client_list.sql 20261136_activate_project_boards.sql
+  20261137_group_chats.sql 20261138_project_suggestions.sql 20261139_linked_accounts.sql
+  20261140_taxi_requests.sql 20261141_activate_more_projects.sql
   20261142_client_list_v2.sql 20261143_listings_backfill_sections.sql 20261144_perf_indexes.sql
   20261145_china_sections_remap.sql 20261146_folder_images.sql 20261147_taxi_request_details.sql
   20261148_representations.sql 20261149_real_estate_sections.sql 20261150_project_structures.sql
@@ -61,9 +72,23 @@ for f in "${MIGRATIONS[@]}"; do
   [ -f "database/migrations/$f" ] || die "missing migration file $f"
   printf '  -> %s\n' "$f"
   if ! psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f "database/migrations/$f"; then
-    die "migration $f failed. The site is still running the OLD code. Fix/ask for help; restore with: pg_restore -c -d '$DB_URL' '$BACKUP'"
+    die "migration $f failed. The site is still running the OLD code. Fix/ask for help; restore with: pg_restore -c -d \"\$DATABASE_URL\" '$BACKUP'"
   fi
 done
+
+say "3b/6 Schema check (anything printed below is still missing in the database)"
+if [ -d node_modules/.bin ] && [ -x node_modules/.bin/prisma ]; then
+  DIFF="$(node_modules/.bin/prisma migrate diff --from-url "$DB_URL" --to-schema-datamodel prisma/schema.prisma --script 2>&1 || true)"
+  if echo "$DIFF" | grep -qiE "CREATE TABLE|ALTER TABLE|CREATE (UNIQUE )?INDEX"; then
+    echo "$DIFF" | head -60
+    echo
+    echo "NOTE: the lines above are differences between schema.prisma and the database. If they are only CREATE/ADD, run:  npx prisma db push   (do NOT use --accept-data-loss)"
+  else
+    echo "Schema matches the database."
+  fi
+else
+  echo "prisma CLI not installed yet (it is installed in the next step) - skipped."
+fi
 
 say "4/6 Build and reload (scripts/deploy.sh)"
 PM2_APP="$PM2_APP" bash scripts/deploy.sh
@@ -83,4 +108,4 @@ for p in /api/health /api/projects /; do
 done
 printf '\n\033[1;32mRELEASE DONE.\033[0m Backup kept at %s\n' "$BACKUP"
 echo "Now check in the browser: login with an old account, feed, projects, admin."
-echo "Rollback code: git checkout <previous commit> && bash scripts/deploy.sh ; rollback DB: pg_restore (command above)."
+echo "Rollback code: git checkout <previous commit> && bash scripts/deploy.sh ; rollback DB: pg_restore (see the backup line above)."
