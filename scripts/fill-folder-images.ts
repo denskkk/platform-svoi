@@ -1,9 +1,9 @@
 // @ts-nocheck
 /**
- * Автопідбір картинок для папок проєктів з безкоштовного стоку Pexels (ліцензія дозволяє
+ * Автопідбір картинок для папок проєктів з безкоштовного стоку Pixabay або Pexels (ліцензії дозволяють
  * безкоштовне використання без обов'язкової атрибуції).
  *
- *   $env:PEXELS_API_KEY="ваш_ключ"     (безкоштовно: https://www.pexels.com/api/ — реєстрація 1 хв)
+ *   $env:PIXABAY_API_KEY="ваш_ключ"    (безкоштовно, одразу: https://pixabay.com/api/docs/ — ключ видно на сторінці після входу)
  *   npx tsx scripts/fill-folder-images.ts                    # лише папки БЕЗ картинки (ваші ручні не чіпає)
  *   npx tsx scripts/fill-folder-images.ts --project=dating   # один проєкт
  *   npx tsx scripts/fill-folder-images.ts --top              # лише папки верхнього рівня
@@ -22,7 +22,7 @@ function readEnv() {
   for (const f of ['.env.local', '.env']) {
     let txt = '';
     try { txt = fs.readFileSync(path.join(process.cwd(), f), 'utf8'); } catch { continue; }
-    for (const k of ['UPLOADS_DIR', 'DATABASE_URL', 'PEXELS_API_KEY']) {
+    for (const k of ['UPLOADS_DIR', 'DATABASE_URL', 'PEXELS_API_KEY', 'PIXABAY_API_KEY']) {
       const m = txt.match(new RegExp('^\\s*' + k + '\\s*=\\s*"?([^"\\r\\n]+)"?', 'm'));
       if (m && !process.env[k]) process.env[k] = m[1].trim();
     }
@@ -33,8 +33,9 @@ readEnv();
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes('--' + n);
 const opt = (n: string) => (args.find((a) => a.startsWith('--' + n + '=')) || '').split('=')[1];
+const PIX = process.env.PIXABAY_API_KEY;
 const KEY = process.env.PEXELS_API_KEY;
-if (!KEY && !flag('dry')) { console.error('Немає PEXELS_API_KEY. Отримайте безкоштовний ключ на https://www.pexels.com/api/ і задайте: $env:PEXELS_API_KEY="..."'); process.exit(1); }
+if (!PIX && !KEY && !flag('dry')) { console.error('Немає ключа. Найпростіше Pixabay (безкоштовно, одразу): https://pixabay.com/api/docs/ → задайте $env:PIXABAY_API_KEY="..."  (або PEXELS_API_KEY)'); process.exit(1); }
 
 const prisma = new PrismaClient();
 const root = process.env.UPLOADS_DIR || path.join(process.cwd(), 'public', 'uploads');
@@ -61,12 +62,16 @@ let calls = 0;
 async function search(q: string) {
   if (results[q]) return results[q];
   calls++;
-  const r = await fetch('https://api.pexels.com/v1/search?per_page=15&orientation=landscape&size=medium&query=' + encodeURIComponent(q), { headers: { Authorization: KEY! } });
-  if (r.status === 429) { console.error('Ліміт Pexels (200 запитів/год). Запустіть пізніше — вже збережене не втрачається.'); throw new Error('rate'); }
-  if (!r.ok) { console.error('Pexels', r.status, q); results[q] = []; return []; }
+  const url = PIX
+    ? 'https://pixabay.com/api/?key=' + PIX + '&image_type=photo&orientation=horizontal&safesearch=true&min_width=800&per_page=20&lang=en&q=' + encodeURIComponent(q)
+    : 'https://api.pexels.com/v1/search?per_page=15&orientation=landscape&size=medium&query=' + encodeURIComponent(q);
+  const r = await fetch(url, PIX ? {} : { headers: { Authorization: KEY! } });
+  if (r.status === 429) { console.error('Ліміт запитів. Запустіть пізніше — вже збережене не втрачається.'); throw new Error('rate'); }
+  if (!r.ok) { console.error('API', r.status, q); results[q] = []; return []; }
   const j: any = await r.json();
-  results[q] = j.photos || [];
-  await sleep(350);
+  // уніфікуємо: { id, url }
+  results[q] = PIX ? (j.hits || []).map((h: any) => ({ id: h.id, url: h.largeImageURL || h.webformatURL })) : (j.photos || []).map((x: any) => ({ id: x.id, url: x.src.large }));
+  await sleep(PIX ? 700 : 350);
   return results[q];
 }
 
@@ -100,7 +105,7 @@ async function main() {
               if (!photo) { miss++; console.log(`— немає знімка: ${slug}/${p} (${label})`); }
               else {
                 used.add(photo.id);
-                const buf = Buffer.from(await (await fetch(photo.src.large)).arrayBuffer());
+                const buf = Buffer.from(await (await fetch(photo.url)).arrayBuffer());
                 const file = `folder-${slug}-${p.replace(/\./g, '-')}-${photo.id}.jpg`;
                 await sharp(buf).resize(800, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(path.join(outDir, file));
                 const imageUrl = '/uploads/misc/' + file;
@@ -117,6 +122,6 @@ async function main() {
     await walk(PROJECT_FOLDERS[slug], []);
   }
   console.log(`Готово: ${done}, пропущено (вже є): ${skipped}, без знімка: ${miss}. Папка: ${outDir}`);
-  console.log('Фото: Pexels (pexels.com), вільна ліцензія. Змінити будь-яку можна в адмінці.');
+  console.log('Фото: Pixabay/Pexels, вільна ліцензія без обов'язкової атрибуції. Змінити будь-яку можна в адмінці.');
 }
 main().catch((e) => { console.error(e.message === 'rate' ? '' : e); process.exit(1); }).finally(() => prisma.$disconnect());
