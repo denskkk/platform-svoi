@@ -57,7 +57,10 @@ export function FeedPage() {
 
   useEffect(() => {
     // Без входу показуємо публічну стрічку (режим гостя): дивитись можна, будь-яка дія веде на вхід/реєстрацію
-    setUser(readStoredUser());
+    const stored = readStoredUser();
+    // Гість стрічку не бачить: ведемо на екран вибору мови й реєстрації
+    if (!stored) { router.replace('/'); return; }
+    setUser(stored);
     setReady(true);
   }, [router]);
   const isGuest = ready && !user;
