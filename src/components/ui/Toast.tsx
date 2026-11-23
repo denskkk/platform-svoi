@@ -56,7 +56,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed left-4 right-4 bottom-[calc(5.5rem+var(--safe-area-inset-bottom,0px))] md:left-auto md:bottom-4 md:right-4 z-[70] space-y-2 pointer-events-none [&>*]:pointer-events-auto">
+      <div className="fixed left-4 right-4 bottom-[calc(5.5rem+var(--safe-area-inset-bottom,0px))] lg:left-auto lg:bottom-4 lg:right-4 z-[70] space-y-2 pointer-events-none [&>*]:pointer-events-auto">
         {toasts.map(toast => (
           <ToastItem key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
         ))}
@@ -121,7 +121,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
     <div
       className={`
         ${style.bg} ${style.border}
-        flex items-start gap-3 min-w-[320px] max-w-md p-4 rounded-xl border-2 shadow-2xl
+        flex items-start gap-3 w-[calc(100vw-1.5rem)] max-w-md p-4 rounded-xl border-2 shadow-2xl
         transform transition-all duration-300 ease-out backdrop-blur-sm
         ${isExiting ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100 animate-slide-in-right'}
         relative overflow-hidden

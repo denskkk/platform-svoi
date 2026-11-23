@@ -192,7 +192,7 @@ export function FeedPage() {
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-[1180px] px-2 sm:px-4 pt-3 sm:pt-4 pb-28 md:pb-10 lg:grid lg:grid-cols-[250px_minmax(0,1fr)_300px] lg:gap-6 xl:grid-cols-[280px_minmax(0,680px)_320px] xl:justify-center">
+      <div className="mx-auto w-full max-w-2xl lg:max-w-[1180px] px-2 sm:px-4 pt-3 sm:pt-4 pb-28 lg:pb-10 lg:grid lg:grid-cols-[250px_minmax(0,1fr)_300px] lg:gap-6 xl:grid-cols-[280px_minmax(0,680px)_320px] xl:justify-center">
         <FeedSidebar user={user} />
         <div className="min-w-0 space-y-3">
         <h1 className="sr-only">{t('feed.title')}</h1>

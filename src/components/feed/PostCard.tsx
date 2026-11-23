@@ -8,6 +8,7 @@ import { ReportButton } from '@/components/ui/ReportButton';
 import { BlockButton } from './BlockButton';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
+import { FeedVideo } from '@/components/feed/FeedVideo';
 import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, jsonHeaders, timeAgo } from '@/lib/feedClient';
 import { PostComments } from './PostComments';
@@ -341,7 +342,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
       {post.repostUnavailable && <p className="mx-4 mt-3 rounded-xl bg-neutral-100 px-3 py-3 text-sm text-neutral-500">{t('feed.post.repostUnavailable')}</p>}
       {post.video && (
         <div className="mt-3 bg-black">
-          <video src={post.video.url} poster={post.video.posterUrl || undefined} controls playsInline preload="metadata" className="w-full max-h-[80vh] mx-auto" />
+          <FeedVideo src={post.video.url} poster={post.video.posterUrl} />
         </div>
       )}
       {imgs.length > 0 && (

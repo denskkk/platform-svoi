@@ -328,7 +328,6 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
                     {!shellOutdated() && mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
                     <button type="button" onClick={() => galleryRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.gallery')}</button>
                   </div>
-                  {shellOutdated() && <p className="max-w-xs rounded-xl bg-white/10 px-3 py-2 text-xs text-white/80">{t('cabinet.studio.updateApp')}</p>}
                   {camErr && <p className="mt-1 text-[11px] text-white/40">{camErr}</p>}
                 </>
               )}

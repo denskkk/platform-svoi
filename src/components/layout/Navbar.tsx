@@ -164,7 +164,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16 gap-4">
           {/* Назад (лише телефон, на сторінках без власної стрілки) */}
           {needsBackButton(pathname || '/') && (
-            <button type="button" onClick={() => goBack(router, !!user)} aria-label={t('cabinet.shell.back')} className="md:hidden -ml-2 shrink-0 rounded-full p-2 text-neutral-800 active:bg-neutral-100">
+            <button type="button" onClick={() => goBack(router, !!user)} aria-label={t('cabinet.shell.back')} className="lg:hidden -ml-2 shrink-0 rounded-full p-2 text-neutral-800 active:bg-neutral-100">
               <ArrowLeft className="h-6 w-6" />
             </button>
           )}
