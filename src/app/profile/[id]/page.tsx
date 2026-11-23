@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/Toast';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ProfilePosts } from '@/components/feed/ProfilePosts';
-import { ProfileHeaderTT } from '@/components/feed/ProfileHeaderTT';
+import { PersonCabinet } from '@/components/feed/PersonCabinet';
 import { BlockButton } from '@/components/feed/BlockButton';
 import { ProfileSocialBar } from '@/components/feed/ProfileSocialBar';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
@@ -47,8 +47,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const [error, setError] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  // У кабінеті як у TikTok докладна інформація (контакти, анкета, відгуки) схована під кнопкою
-  const [showMore, setShowMore] = useState(false);
 
   const authHeaders = (): Record<string, string> => {
     try {
@@ -250,15 +248,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         <ViewerUpgradeNotice className="mb-6" />
         {ttMode && (
           <div className="space-y-4 mb-6">
-            <ProfileHeaderTT profile={profile} isOwn={!!isOwnProfile} canWrite={currentUser?.accountType !== 'viewer'} canFollow={!!currentUser && currentUser.accountType !== 'viewer'}
-              editHref="/profile/edit" />
+            <PersonCabinet profile={profile} isOwn={!!isOwnProfile} currentUser={currentUser} isFavorite={isFavorite} onToggleFavorite={toggleFavorite}
+              onCoverChanged={(url) => setProfile((p: any) => ({ ...p, coverUrl: url }))} />
             {profile?.id && <ProfilePosts authorId={Number(profile.id)} />}
-            <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="w-full rounded-xl bg-white border border-neutral-200 shadow-sm py-3 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
-              {showMore ? t('profile.view.lessInfo') : t('profile.view.moreInfo')}
-            </button>
           </div>
         )}
-        <div className={ttMode && !showMore ? 'hidden' : ''}>
+        {/* Повна візитівка — лише для бізнес-профілів; кабінет людини її не містить */}
+        {!ttMode && (
+        <div>
         {/* Обкладинка профілю */}
         {!profile?.businessInfo?.bannerUrl && (profile?.coverUrl || isOwnProfile) && (
           <div className="mb-6 relative rounded-2xl overflow-hidden shadow-md bg-gradient-to-r from-primary-100 to-accent-100 h-40 md:h-56">
@@ -1594,6 +1591,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           )}
         </div>
         </div>
+        )}
       </div>
     </div>
   );
