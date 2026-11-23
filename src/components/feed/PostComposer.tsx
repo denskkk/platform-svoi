@@ -93,6 +93,21 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
     }
   };
 
+  // Студія створення (камера, галерея, фото/рілс) — та сама, що відкривається кнопкою «+». Якщо її на екрані немає — системний вибір файлу.
+  const studioAvailable = () => typeof document !== 'undefined' && !!document.querySelector('[data-creator-host]');
+  const openStudio = (mode: 'photo' | 'reel') => {
+    window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode, caption: text.trim() } }));
+    reset();
+  };
+  const addVideoClick = () => {
+    if (studioAvailable() && images.length === 0 && !video) openStudio('reel');
+    else videoRef.current?.click();
+  };
+  const addPhotoClick = () => {
+    if (studioAvailable() && images.length === 0 && !video) openStudio('photo');
+    else fileRef.current?.click();
+  };
+
   const removeVideo = () => {
     if (video?.id) fetch(`/api/videos/${video.id}`, { method: 'DELETE', credentials: 'include', headers: authHeaders() }).catch(() => undefined);
     setVideo(undefined);
@@ -173,10 +188,10 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
 
       {!open && (
         <div className="mt-3 pt-2 border-t border-neutral-200 grid grid-cols-3 gap-1">
-          <button type="button" onClick={() => { setOpen(true); setTimeout(() => fileRef.current?.click(), 0); }} className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
+          <button type="button" onClick={() => { if (studioAvailable()) { openStudio('photo'); return; } setOpen(true); setTimeout(() => fileRef.current?.click(), 0); }} className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
             <ImagePlus className="w-5 h-5 text-green-600" /> {t('feed.composer.photo')}
           </button>
-          <button type="button" onClick={() => { setOpen(true); setTimeout(() => videoRef.current?.click(), 0); }} className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
+          <button type="button" onClick={() => { if (studioAvailable()) { openStudio('reel'); return; } setOpen(true); setTimeout(() => videoRef.current?.click(), 0); }} className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
             <Clapperboard className="w-5 h-5 text-rose-500" /> {t('feed.composer.addVideo')}
           </button>
           <Link href="/projects" className="inline-flex items-center justify-center gap-2 rounded-md py-2 text-[14px] font-semibold text-neutral-600 hover:bg-neutral-100">
@@ -226,11 +241,11 @@ export function PostComposer({ canPost, user, onPosted, clubId }: Props) {
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1 min-w-0">
-              <button type="button" onClick={() => videoRef.current?.click()} disabled={!!video && video.status !== 'failed'}
+              <button type="button" onClick={addVideoClick} disabled={!!video && video.status !== 'failed'}
                 aria-label={t('feed.composer.addVideo')} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 disabled:opacity-40">
                 <Clapperboard className="w-5 h-5" /> <span className="hidden sm:inline">{t('feed.composer.addVideo')}</span>
               </button>
-              <button type="button" onClick={() => fileRef.current?.click()} disabled={images.length + uploading >= MAX_IMAGES}
+              <button type="button" onClick={addPhotoClick} disabled={images.length + uploading >= MAX_IMAGES}
                 aria-label={t('feed.composer.addPhoto')} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-accent-600 hover:bg-accent-50 disabled:opacity-40">
                 <ImagePlus className="w-5 h-5" /> <span className="hidden sm:inline">{t('feed.composer.addPhoto')}</span>
               </button>

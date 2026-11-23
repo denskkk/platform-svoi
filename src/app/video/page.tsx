@@ -145,7 +145,7 @@ export default function VideoPage() {
           <EmptyState icon={Clapperboard} title={tab === 'following' ? t('cabinet.reels.emptyFollowing') : t('feed.video.empty')}
             description={tab === 'following' ? t('cabinet.reels.emptyFollowingHint') : t('feed.video.emptyHint')}
             actionLabel={tab === 'following' ? t('cabinet.reels.seeAll') : t('feed.video.add')}
-            actionHref={tab === 'following' ? undefined : '/feed?create=post'} actionOnClick={tab === 'following' ? () => setTab('all') : undefined} />
+            actionHref={tab === 'following' || (typeof document !== 'undefined' && document.querySelector('[data-creator-host]')) ? undefined : '/feed?create=post'} actionOnClick={tab === 'following' ? () => setTab('all') : () => window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: 'reel' } }))} />
         </div>
       ) : (
         <div ref={listRef} className="mx-auto max-w-md h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none overscroll-contain">
