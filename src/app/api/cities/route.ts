@@ -15,7 +15,8 @@ export async function GET(request: Request) {
     const cities = await prisma.city.findMany({
       orderBy: {
         usersCount: 'desc'
-      }
+      },
+      take: 500
     });
 
     return NextResponse.json({ cities });

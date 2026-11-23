@@ -197,6 +197,18 @@
       "title": "Account",
       "favorites": "Favorites",
       "deleteAccount": "Delete account"
-    }
+    },
+    "cover": {
+      "change": "Change cover",
+      "failed": "Could not update the cover"
+    },
+    "tabs": {
+      "about": "About",
+      "posts": "Posts",
+      "reviews": "Reviews"
+    },
+    "menu": "Menu",
+    "moreInfo": "Details, contacts, reviews",
+    "lessInfo": "Hide details"
   }
 }

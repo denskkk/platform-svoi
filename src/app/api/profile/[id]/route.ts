@@ -15,6 +15,8 @@ import { prisma } from '@/lib/prisma';
 import { verifyToken, getTokenFromHeader } from '@/lib/auth';
 import { getAuthCookie } from '@/lib/cookies';
 import { getApiT } from '@/i18n/server';
+import { getSettings } from '@/lib/userSettings';
+import { getAdminAccess } from '@/lib/adminAccess';
 
 // Маппінг українських значень до enum значень бази даних
 const ukrainianToDbValue: Record<string, Record<string, string>> = {
@@ -57,6 +59,15 @@ function convertToDbValue(field: string, value: any): any {
   return value; // Якщо вже в правильному форматі або невідоме поле
 }
 
+// Поля, які бачить лише власник (або персонал)
+const PRIVATE_FIELDS = [
+  'phone', 'email', 'housingType', 'housingDetails', 'livingSituation', 'age', 'maritalStatus', 'familyComposition',
+  'childrenCount', 'childrenAges', 'hasChildren', 'hasPets', 'petsInfo', 'hasCar', 'carInfo', 'otherTransport', 'carServices',
+  'usesTaxi', 'hasBicycle', 'bicycleInfo', 'usesHomeServices', 'usesDelivery', 'restaurantFrequency', 'cuisinePreference',
+  'usesServices', 'usesBusinessServices', 'privateBusinessInfo', 'companyCode', 'fopGroup', 'tovType', 'workHistory',
+  'educationDetails', 'education', 'seekingPartTime', 'seekingFullTime', 'seekingSpecialty', 'jobSeeking', 'wantsStartBusiness',
+];
+
 interface RouteParams {
   params: {
     id: string;
@@ -91,6 +102,7 @@ export async function GET(
         email: true,
         phone: true,
         avatarUrl: true,
+        coverUrl: true,
         city: true,
         region: true,
         housingType: true,
@@ -201,13 +213,7 @@ export async function GET(
     }
 
     // Логування аватара та бізнес інформації для діагностики
-    console.log(`[GET /api/profile/${userId}] Avatar URL:`, user.avatarUrl);
     if (user.businessInfo) {
-      console.log(`[GET /api/profile/${userId}] Business Info:`, {
-        logoUrl: user.businessInfo.logoUrl,
-        bannerUrl: user.businessInfo.bannerUrl,
-        companyName: user.businessInfo.companyName,
-      });
     }
 
     // Авто-деактивація підписки, якщо пробний період завершився
@@ -239,6 +245,30 @@ export async function GET(
       trialDaysLeft,
       trialStatus: user.subscriptionActive ? 'active' : (user.subscriptionExpiresAt ? 'expired' : 'none'),
     };
+
+    // Приватність: чужий профіль не віддає контакти та особисті дані (адреса, телефон, e-mail, сім'я тощо).
+    // Контакти показуються лише якщо власник сам дозволив у налаштуваннях.
+    let viewerId = 0;
+    try {
+      const tk = getAuthCookie(request) || getTokenFromHeader(request.headers.get('authorization') || '') || undefined;
+      const payload = tk ? verifyToken(tk) : null;
+      viewerId = payload ? Number(payload.userId) : 0;
+    } catch { viewerId = 0; }
+    let privileged = viewerId === userId;
+    if (!privileged && viewerId) {
+      const access = await getAdminAccess(viewerId).catch(() => null);
+      privileged = !!(access && (access.isAdmin || access.role));
+    }
+    if (!privileged) {
+      const settings = await getSettings(userId);
+      const hidden: Record<string, unknown> = {};
+      for (const k of PRIVATE_FIELDS) hidden[k] = null;
+      const out: any = { ...userWithEducation, ...hidden, subscriptionActive: false, subscriptionExpiresAt: null, subscriptionStartedAt: null, trialDaysLeft: 0, trialStatus: 'none' };
+      out.phone = settings.contacts.phone === 'everyone' ? user.phone : null;
+      out.email = settings.contacts.email === 'everyone' ? user.email : null;
+      out.contactsHidden = !out.phone && !out.email;
+      return NextResponse.json({ user: out });
+    }
 
     return NextResponse.json({ user: userWithEducation });
 
@@ -332,7 +362,6 @@ export async function PUT(
     // Подготовка данных для обновления
     const updateData: any = {};
 
-    console.log('[PUT /api/profile] Received body:', JSON.stringify(body, null, 2));
 
     // Основная информация
     if (body.firstName !== undefined) updateData.firstName = body.firstName;
@@ -342,7 +371,6 @@ export async function PUT(
     if (body.phone !== undefined) updateData.phone = body.phone;
     if (body.avatarUrl !== undefined) {
       updateData.avatarUrl = body.avatarUrl;
-      console.log(`[PUT /api/profile/${userId}] Updating avatar URL to:`, body.avatarUrl);
     }
 
     // Локация
@@ -581,7 +609,6 @@ export async function PUT(
       return NextResponse.json({ error: t('api.common.invalidData'), details: errors }, { status: 400 });
     }
 
-    console.log('[PUT /api/profile] Updating user with data:', JSON.stringify(updateData, null, 2));
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },

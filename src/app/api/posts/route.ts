@@ -3,6 +3,7 @@
  *  Фото попередньо завантажуються через /api/upload (type=posts).
  */
 
+import { getClubAccess } from '@/lib/clubAccess';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
@@ -28,7 +29,24 @@ export async function POST(request: NextRequest) {
     const content = typeof body?.content === 'string' ? body.content.trim() : '';
     const images: unknown[] = Array.isArray(body?.images) ? body.images : [];
 
-    if (!content && images.length === 0) {
+    const videoId = body?.videoId ? Number(body.videoId) : null;
+    let video: { id: number } | null = null;
+    if (videoId) {
+      video = await prisma.postVideo.findFirst({ where: { id: videoId, ownerId: userId, postId: null, status: 'ready' }, select: { id: true } });
+      if (!video) return NextResponse.json({ error: t('api.videos.notReady') }, { status: 400 });
+    }
+
+    // Допис на дошці спільноти: писати може власник або учасник із правом писати
+    let clubId: number | null = null;
+    if (body?.clubId) {
+      const cid = Number(body.clubId);
+      const access = Number.isInteger(cid) && cid > 0 ? await getClubAccess(cid, userId) : null;
+      if (!access) return NextResponse.json({ error: t('api.clubs.notFound') }, { status: 404 });
+      if (!access.canPost) return NextResponse.json({ error: t('api.clubs.cannotPost') }, { status: 403 });
+      clubId = cid;
+    }
+
+    if (!content && images.length === 0 && !video) {
       return NextResponse.json({ error: t('api.feed.emptyPost') }, { status: 400 });
     }
     if (content.length > FEED_LIMITS.postMaxLength) {
@@ -44,11 +62,16 @@ export async function POST(request: NextRequest) {
     const post = await prisma.post.create({
       data: {
         authorId: userId,
+        clubId,
         content,
         images: { create: (images as string[]).map((url, position) => ({ url, position })) },
       },
       include: postInclude,
     });
+    if (video) {
+      await prisma.postVideo.update({ where: { id: video.id }, data: { postId: post.id } });
+      post.video = await prisma.postVideo.findUnique({ where: { id: video.id }, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true } });
+    }
 
     const state = await loadViewerState(userId, [post.id], [userId]);
     return NextResponse.json(

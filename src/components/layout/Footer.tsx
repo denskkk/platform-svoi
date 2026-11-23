@@ -46,16 +46,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  {t('layout.footer.services')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/public-requests" className="text-neutral-300 hover:text-primary-400 transition-colors">
-                  {t('layout.footer.requests')}
-                </Link>
-              </li>
-              <li>
                 <Link href={localizedPath('/about', locale)} className="text-neutral-300 hover:text-primary-400 transition-colors">
                   {t('layout.footer.about')}
                 </Link>

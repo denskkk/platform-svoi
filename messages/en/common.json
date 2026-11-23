@@ -131,5 +131,13 @@
     "title": "Page not found",
     "description": "It may have been deleted or the link is outdated.",
     "toCatalog": "Go to the directory"
+  },
+  "guest": {
+    "title": "Log in or sign up",
+    "text": "To like, comment, follow and open profiles and sections, you need a free account.",
+    "register": "Sign up",
+    "login": "Log in",
+    "bannerTitle": "You are browsing as a guest",
+    "bannerText": "You can look around without logging in. To act (like, write, follow), create a free account."
   }
 }

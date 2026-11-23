@@ -1,25 +1,32 @@
 /**
- * GET    /api/posts/:id/comments?cursor=<commentId>&limit=20 — коментарі (старіші зверху)
- * POST   /api/posts/:id/comments { content }                 — додати коментар
+ * GET    /api/posts/:id/comments?cursor=<commentId>&limit=20[&parentId=ID] — коментарі (старіші зверху); parentId — відповіді на коментар
+ * POST   /api/posts/:id/comments { content, parentId? }      — додати коментар або відповідь
  * DELETE /api/posts/:id/comments?commentId=ID                — видалити (автор коментаря, автор допису, адмін)
  */
 
+import { getClubAccess } from '@/lib/clubAccess';
+import { isAllowedByOwner } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getApiT } from '@/i18n/server';
 import { authorSelect, FEED_LIMITS, parseId } from '@/lib/feed';
+import { getBlockedIds, isBlockedBetween } from '@/lib/blocks';
 import { notifyFeed } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
-function serializeComment(c: any, userId: number) {
+function serializeComment(c: any, userId: number, liked: Set<number> = new Set()) {
   return {
     id: c.id,
     content: c.content,
     createdAt: c.createdAt.toISOString(),
     isOwn: c.author.id === userId,
+    parentId: c.parentId ?? null,
+    likesCount: c.likesCount ?? 0,
+    liked: liked.has(c.id),
+    repliesCount: c._count?.replies ?? 0,
     author: {
       id: c.author.id,
       name: c.author.businessInfo?.companyName || `${c.author.firstName} ${c.author.lastName}`.trim(),
@@ -47,17 +54,30 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const requested = Number(search.get('limit'));
     const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 50) : 20;
 
+    const parentId = parseId(search.get('parentId'));
+    const blocked = await getBlockedIds(userId);
     const rows = await prisma.postComment.findMany({
-      where: { postId, author: { isActive: true }, ...(cursor ? { id: { gt: cursor } } : {}) },
+      where: {
+        postId,
+        parentId: parentId ?? null,
+        author: { isActive: true },
+        ...(blocked.length ? { authorId: { notIn: blocked } } : {}),
+        ...(cursor ? { id: { gt: cursor } } : {}),
+      },
       orderBy: { id: 'asc' },
       take: limit + 1,
-      include: { author: { select: authorSelect } },
+      include: { author: { select: authorSelect }, _count: { select: { replies: true } } },
     });
     const hasMore = rows.length > limit;
     const page = hasMore ? rows.slice(0, limit) : rows;
 
+    const likedRows = page.length
+      ? await prisma.postCommentLike.findMany({ where: { userId, commentId: { in: page.map((c: any) => c.id) } }, select: { commentId: true } })
+      : [];
+    const liked = new Set<number>(likedRows.map((r: any) => r.commentId));
+
     return NextResponse.json({
-      comments: page.map((c) => serializeComment(c, userId)),
+      comments: page.map((c: any) => serializeComment(c, userId, liked)),
       nextCursor: hasMore ? page[page.length - 1].id : null,
     });
   } catch (error) {
@@ -78,9 +98,20 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     const postId = parseId(params.id);
     const post = postId
-      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true } })
+      ? await prisma.post.findFirst({ where: { id: postId, isHidden: false }, select: { id: true, authorId: true, clubId: true } })
       : null;
     if (!postId || !post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    if (post.clubId) {
+      const access = await getClubAccess(post.clubId, userId);
+      if (!access?.active) return NextResponse.json({ error: t('api.clubs.membersOnly') }, { status: 403 });
+    }
+
+    if (!(await isAllowedByOwner(post.authorId, userId, 'comments'))) {
+      return NextResponse.json({ error: t('api.feed.commentsRestricted') }, { status: 403 });
+    }
+    if (await isBlockedBetween(userId, post.authorId)) {
+      return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
+    }
 
     const body = await request.json().catch(() => ({}));
     const content = typeof body?.content === 'string' ? body.content.trim() : '';
@@ -89,16 +120,32 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ error: t('api.feed.commentTooLong', { max: FEED_LIMITS.commentMaxLength }) }, { status: 400 });
     }
 
-    const comment = await prisma.$transaction(async (tx) => {
+    // Відповідь: батьківський коментар має бути кореневим коментарем цього ж допису
+    const parentId = parseId(body?.parentId);
+    let parent: { id: number; authorId: number } | null = null;
+    if (body?.parentId !== undefined && body?.parentId !== null) {
+      parent = parentId
+        ? await prisma.postComment.findFirst({ where: { id: parentId, postId, parentId: null }, select: { id: true, authorId: true } })
+        : null;
+      if (!parent) return NextResponse.json({ error: t('api.feed.commentNotFound') }, { status: 404 });
+      if (parent.authorId !== userId && (await isBlockedBetween(userId, parent.authorId))) {
+        return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
+      }
+    }
+
+    const comment = await prisma.$transaction(async (tx: any) => {
       const created = await tx.postComment.create({
-        data: { postId, authorId: userId, content },
-        include: { author: { select: authorSelect } },
+        data: { postId, authorId: userId, content, parentId: parent?.id ?? null },
+        include: { author: { select: authorSelect }, _count: { select: { replies: true } } },
       });
       await tx.post.update({ where: { id: postId }, data: { commentsCount: { increment: 1 } } });
       return created;
     });
 
     await notifyFeed({ type: 'post_comment', recipientId: post.authorId, actorId: userId, postId, message: content });
+    if (parent && parent.authorId !== post.authorId) {
+      await notifyFeed({ type: 'post_comment', recipientId: parent.authorId, actorId: userId, postId, message: content });
+    }
 
     return NextResponse.json({ success: true, comment: serializeComment(comment, userId) }, { status: 201 });
   } catch (error) {
@@ -131,9 +178,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       if (!me?.isAdmin) return NextResponse.json({ error: t('api.feed.forbidden') }, { status: 403 });
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
+      // Відповіді видаляються каскадно — зменшуємо лічильник допису на всі видалені коментарі
+      const repliesCount = await tx.postComment.count({ where: { parentId: commentId, postId } });
       const removed = await tx.postComment.deleteMany({ where: { id: commentId, postId } });
-      if (removed.count > 0) await tx.post.update({ where: { id: postId }, data: { commentsCount: { decrement: 1 } } });
+      if (removed.count > 0) await tx.post.update({ where: { id: postId }, data: { commentsCount: { decrement: 1 + repliesCount } } });
     });
 
     return NextResponse.json({ success: true, message: t('api.feed.commentDeleted') });

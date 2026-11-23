@@ -2,7 +2,10 @@
   "title": "Feed",
   "tabs": {
     "forYou": "For you",
-    "following": "Following"
+    "following": "Following",
+    "live": "LIVE broadcast",
+    "market": "Goods / Services",
+    "all": "Recommended"
   },
   "composer": {
     "prompt": "What's new?",
@@ -17,7 +20,17 @@
     "uploadFailed": "Could not upload the photo",
     "charsLeft": "Characters left: {count}",
     "viewerNotice": "Create a full profile to post and comment.",
-    "viewerAction": "Create a profile"
+    "viewerAction": "Create a profile",
+    "promptNamed": "What's on your mind, {name}?",
+    "listing": "Listing",
+    "photo": "Photo",
+    "addVideo": "Video",
+    "videoProcessing": "Processing video…",
+    "videoFailed": "Could not process the video",
+    "videoUploading": "Uploading video…",
+    "removeVideo": "Remove video",
+    "videoTooLarge": "Video is too large — maximum 50 MB",
+    "videoLimits": "up to 60 s, up to 50 MB"
   },
   "post": {
     "follow": "Follow",
@@ -39,7 +52,24 @@
     "save": "Save",
     "saving": "Saving…",
     "report": "Report",
-    "menuClose": "Close menu"
+    "menuClose": "Close menu",
+    "block": "Block author",
+    "blockConfirm": "Block this user? You will no longer see their posts and they will not see yours.",
+    "unsave": "Remove from saved",
+    "savedToast": "Saved",
+    "unsavedToast": "Removed from saved",
+    "likeAction": "Like",
+    "commentAction": "Comment",
+    "shareAction": "Share",
+    "commentsLabel": "Comments: {count}",
+    "linkCopied": "Link copied",
+    "reposted": "Reposted to your feed",
+    "repost": "Share to your feed",
+    "repostPlaceholder": "Add a comment (optional)",
+    "copyLink": "Copy link",
+    "repostUnavailable": "The original post is unavailable",
+    "makePrivate": "Make private (only me)",
+    "makePublic": "Make public"
   },
   "comments": {
     "placeholder": "Write a comment…",
@@ -47,7 +77,15 @@
     "loadMore": "Show more",
     "empty": "No comments yet. Be the first!",
     "delete": "Delete comment",
-    "viewerNotice": "Only full profiles can comment."
+    "viewerNotice": "Only full profiles can comment.",
+    "like": "Like",
+    "reply": "Reply",
+    "replyPlaceholder": "Write a reply…",
+    "replyingTo": "Replying to {name}",
+    "cancelReply": "Cancel reply",
+    "showReplies": "Replies: {count}",
+    "hideReplies": "Hide replies",
+    "report": "Report"
   },
   "empty": {
     "forYou": {
@@ -73,7 +111,11 @@
     "followed": "You are now following",
     "unfollowed": "You unfollowed",
     "actionFailed": "Could not complete the action. Please try again.",
-    "saved": "Changes saved"
+    "saved": "Changes saved",
+    "blocked": "User blocked",
+    "unblocked": "User unblocked",
+    "madePrivate": "Post is private: only you can see it",
+    "madePublic": "Post is public again"
   },
   "errors": {
     "load": "Could not load the feed",
@@ -91,15 +133,194 @@
     "empty": {
       "title": "No notifications yet",
       "description": "Likes, comments and new followers will show up here."
+    },
+    "listingApproved": "Your listing was approved and published",
+    "listingRejected": "Your listing was rejected",
+    "businessApproved": "Your business application was approved",
+    "businessRejected": "Your business application was rejected",
+    "partnerApproved": "Your partnership application was approved",
+    "partnerRejected": "Your partnership application was rejected",
+    "organizationApproved": "Your organization application was approved",
+    "organizationRejected": "Your organization application was rejected",
+    "dealNew": "New client request via a partner",
+    "dealConfirmed": "Your deal was confirmed",
+    "dealAccrued": "A reward was accrued to you",
+    "dealPaidOut": "The reward was paid out",
+    "dealRejected": "The deal was rejected",
+    "dealDisputed": "A dispute was opened for the deal",
+    "settings": "Notification settings",
+    "settingsHint": "Notices about approved applications and listings are always delivered.",
+    "groups": {
+      "social": "Likes, comments and followers",
+      "messages": "New messages",
+      "deals": "Deals and rewards",
+      "reviews": "Reviews",
+      "requests": "Service requests"
+    },
+    "clubJoinRequest": "{name} wants to join your community",
+    "clubJoinApproved": "Your join request was approved",
+    "invoiceNew": "You have been issued an invoice",
+    "invoicePaid": "Invoice confirmed as paid",
+    "invoiceCancelled": "Invoice cancelled",
+    "invoicePayerMarked": "The payer marked the invoice as paid",
+    "invoiceUpdated": "Invoice status changed",
+    "unlockDone": "Your feature unlock request was approved",
+    "unlockRejected": "Your feature unlock request was declined for now",
+    "negotiation_new": "New negotiation",
+    "negotiation_message": "New negotiation message",
+    "negotiation_terms": "Negotiation terms changed",
+    "negotiation_agree": "A party confirmed the terms",
+    "negotiation_agreed": "Terms agreed by both parties",
+    "negotiation_active": "Negotiation accepted",
+    "negotiation_declined": "Negotiation declined",
+    "negotiation_closed": "Negotiation closed",
+    "projectRequestStatus": "Request status",
+    "requestStatus": {
+      "new": "New",
+      "review": "Under review",
+      "offers": "Offers received",
+      "clarify": "Clarification needed",
+      "published": "Published",
+      "done": "Processed",
+      "rejected": "Rejected",
+      "closed": "Closed"
     }
   },
   "profile": {
     "title": "Posts",
     "empty": "No posts yet",
-    "loadMore": "Show more"
+    "loadMore": "Show more",
+    "stats": {
+      "posts": "Posts",
+      "followers": "Followers",
+      "following": "Following",
+      "likes": "Likes",
+      "invited": "Invited",
+      "deals": "Deals"
+    },
+    "active": {
+      "label": "Active member",
+      "hint": "Invites people and completes deals"
+    },
+    "viewers": "Profile visitors",
+    "tabs": {
+      "posts": "Posts, photos and videos",
+      "reposts": "Reposts",
+      "videos": "Videos",
+      "saved": "Saved",
+      "reacted": "Liked and commented",
+      "private": "Private"
+    },
+    "emptyTab": {
+      "posts": "No posts yet",
+      "reposts": "No reposts yet",
+      "videos": "No videos yet",
+      "saved": "No saved posts yet",
+      "reacted": "You have not liked or commented on anything yet",
+      "private": "No private posts. You can make a post private in its menu (three dots)."
+    }
   },
   "single": {
     "notFound": "This post was not found or has been deleted",
     "back": "Back to feed"
+  },
+  "blocked": {
+    "title": "Blocked users",
+    "empty": "You have not blocked anyone",
+    "unblock": "Unblock",
+    "description": "Blocked users cannot see your posts or message you.",
+    "block": "Block",
+    "unblockLabel": "Unblock",
+    "confirm": "Block this user?",
+    "loadFailed": "Could not load the list"
+  },
+  "recommendations": {
+    "title": "Recommendations",
+    "people": "People you may know",
+    "business": "Recommended businesses",
+    "follow": "Follow",
+    "followed": "Following",
+    "sectionPeople": "People you may know",
+    "seeAll": "All"
+  },
+  "saved": {
+    "title": "Saved posts",
+    "empty": "Posts you save will appear here",
+    "back": "Back to feed",
+    "link": "Saved posts"
+  },
+  "sidebar": {
+    "profile": "My profile",
+    "feed": "Feed",
+    "projects": "Projects",
+    "search": "Search",
+    "saved": "Saved",
+    "listings": "My listings",
+    "chat": "Messages",
+    "business": "Business application",
+    "menu": "Menu",
+    "friends": "Friends",
+    "companies": "Companies",
+    "clubs": "Interest clubs",
+    "earnings": "Earn with your own",
+    "clients": "Attracted clients",
+    "company": "My company"
+  },
+  "friends": {
+    "title": "Friends",
+    "following": "Following",
+    "followers": "Followers",
+    "mutual": "Mutual",
+    "searchPlaceholder": "Search by name",
+    "noResults": "No one found",
+    "empty": {
+      "following": "You aren't following anyone yet",
+      "followers": "No followers yet",
+      "mutual": "No mutual follows yet"
+    }
+  },
+  "video": {
+    "title": "Video",
+    "description": "We're preparing short videos and 24-hour stories. For now, share photos and posts in the feed.",
+    "back": "Back to feed",
+    "subtitle": "Short community videos",
+    "empty": "No videos yet",
+    "emptyHint": "Add the first video from a feed post.",
+    "add": "Add video",
+    "unmute": "Unmute",
+    "mute": "Mute",
+    "open": "Open post",
+    "loadMore": "Load more"
+  },
+  "stories": {
+    "title": "Stories",
+    "you": "You",
+    "add": "Add story",
+    "mine": "My stories",
+    "uploading": "Uploading…",
+    "processing": "Processing video…",
+    "added": "Story added for 24 hours",
+    "deleted": "Story deleted",
+    "deleteFailed": "Could not delete the story",
+    "delete": "Delete story",
+    "close": "Close",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "reactions": {
+    "like": "Like",
+    "love": "Love",
+    "laugh": "Haha",
+    "wow": "Wow",
+    "sad": "Sad"
+  },
+  "live": {
+    "title": "LIVE broadcast",
+    "soon": "This section is in development: live broadcasts will be available in one of the next updates."
+  },
+  "market": {
+    "empty": "No listings yet",
+    "emptyHint": "Goods and services from all platform projects will appear here.",
+    "projects": "Open projects"
   }
 }

@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 /**
  * Компонент для редіректу адміністраторів
- * Якщо користувач - адмін, він не може відкривати звичайні сторінки
+ * Адмін із головної сторінки переходить в адмінку; інші сторінки відкриваються як звичайно
  */
 export default function AdminRedirect() {
   const router = useRouter();
@@ -19,8 +19,8 @@ export default function AdminRedirect() {
     try {
       const user = JSON.parse(storedUser);
       
-      // Якщо користувач адмін і не на адмін-сторінці
-      if (user.isAdmin && !pathname.startsWith('/admin') && !pathname.startsWith('/auth')) {
+      // Адмін потрапляє в адмінку лише з головної сторінки; решта розділів (стрічка, відео, проєкти...) лишаються доступними
+      if (user.isAdmin && pathname === '/') {
         router.replace('/admin');
       }
     } catch (error) {

@@ -54,16 +54,15 @@ export default function LoginPage() {
       }
       
       // Якщо користувач адміністратор - перехід на адмін-панель
-      const redirectTo = getSafeRedirect(new URLSearchParams(window.location.search).get('redirect'), '')
+      const redirectTo = getSafeRedirect(new URLSearchParams(window.location.search).get('redirect') || new URLSearchParams(window.location.search).get('returnUrl'), '')
       if (data.user?.isAdmin) {
         router.push('/admin')
       } else if (redirectTo) {
         // Повертаємо на сторінку, з якої перекинуло на вхід
         router.push(redirectTo)
       } else {
-        // Звичайний користувач - на профіль
-        const target = data?.user?.id ? `/profile/${data.user.id}` : '/catalog'
-        router.push(target)
+        // Звичайний користувач - на стрічку (головна сторінка соцмережі)
+        router.push('/feed')
       }
     } catch (err: any) {
       setError(err.message || t('auth.login.errors.generic'))

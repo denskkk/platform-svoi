@@ -197,7 +197,9 @@ export default function EditProfilePage() {
 
   const loadProfile = async (userId: number, authToken?: string) => {
     try {
-      const response = await fetch(`/api/profile/${userId}`);
+      let bearer = authToken;
+      if (!bearer) { try { bearer = localStorage.getItem('token') || undefined; } catch { /* noop */ } }
+      const response = await fetch(`/api/profile/${userId}`, { credentials: 'include', cache: 'no-store', headers: bearer ? { Authorization: `Bearer ${bearer}` } : {} });
       const data = await response.json();
       
       if (data.user) {

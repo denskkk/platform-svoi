@@ -30,7 +30,26 @@
     "login": "Log in",
     "register": "Create a profile",
     "menuAria": "Menu",
-    "feed": "Feed"
+    "feed": "Feed",
+    "blockedUsers": "Blocked users",
+    "projects": "Projects",
+    "myListings": "My listings",
+    "savedListings": "Saved listings",
+    "businessApply": "Business application",
+    "search": "Search",
+    "savedPosts": "Saved posts",
+    "searchPlaceholder": "Search people, businesses, listings",
+    "video": "Video",
+    "tabFeed": "Feed",
+    "tabProjects": "Projects",
+    "tabPeople": "People",
+    "tabServices": "Services",
+    "friends": "Friends",
+    "organizationApply": "Organization application",
+    "earnings": "Earn with your own",
+    "clients": "Attracted clients",
+    "stats": "Statistics",
+    "company": "My company"
   },
   "mobileMenu": {
     "navigation": "Navigation",
@@ -51,7 +70,9 @@
     "favorites": "Favorites",
     "register": "Create a profile",
     "viewer": "Join as a viewer",
-    "feed": "Feed"
+    "feed": "Feed",
+    "projects": "Projects",
+    "video": "Video"
   },
   "footer": {
     "description": "A platform for finding and offering services from Ukrainians to Ukrainians. Let's support each other and build a strong community.",

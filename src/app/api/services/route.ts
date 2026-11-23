@@ -25,13 +25,11 @@ export async function GET(request: NextRequest) {
     // Перевірити кеш (5 хвилин TTL)
     const cached = apiCache.get(cacheKey);
     if (cached) {
-      console.log(`[Cache HIT] ${cacheKey}`);
       return NextResponse.json(cached, {
         headers: { 'X-Cache': 'HIT' }
       });
     }
 
-    console.log(`[Cache MISS] ${cacheKey}`);
 
     const query = searchParams.get('q');
     const category = searchParams.get('category');

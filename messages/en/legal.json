@@ -266,11 +266,11 @@
         "p1Before": "If you believe that content or conduct violates these terms or the law, use the “Report” button on the profile, service or request, or notify the administration via",
         "p1Link": "Telegram",
         "p1After": ". If possible, include a link to the profile or material and a short description of the problem.",
-        "p2": "To protect users and the service and to comply with legal requirements, the administration may review complaints, restrict the visibility of or remove materials, suspend certain features or access to an account. Decisions are made taking into account the circumstances and the available information; you may contact the administration to request a review of a decision."
+        "p2": "To protect users and the service and to comply with legal requirements, the administration may review complaints, restrict the visibility of or remove materials, suspend certain features or access to an account. Decisions are made taking into account the circumstances and the available information; you may contact the administration to request a review of a decision. We do not tolerate abusive, discriminatory, sexual or violent content: reports are normally reviewed within 24 hours and violators may be blocked. “Report” and “Block” are available on posts, videos, comments and profiles."
       },
       "payments": {
         "title": "10. Paid features",
-        "p1": "Certain features or account types may be offered on a paid basis if they are available in your version of the Platform. Before you confirm an order, you must be shown the price, currency, what the feature includes and its duration. If a paid feature is not available, it cannot be purchased through the Platform.",
+        "p1": "Certain features or account types may be offered on a paid basis if they are available in your version of the Platform. Before you confirm an order, you must be shown the price, currency, what the feature includes and its duration. If a paid feature is not available, it cannot be purchased through the Platform. At present, the Platform is free to use, and the Platform itself does not accept, hold or transfer users’ money.",
         "p2": "A payment may be processed by a third-party payment provider; that provider’s terms also apply. Refunds, cancellations and payment-related claims are handled in accordance with the terms shown at checkout, the payment provider’s rules and applicable consumer protection law. If a payment is made directly between users, its terms are agreed by the parties themselves."
       },
       "privacy": {

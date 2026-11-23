@@ -1,17 +1,12 @@
-import { HeroSection } from '@/components/features/home/HeroSection'
-import { CategoriesSection } from '@/components/features/home/CategoriesSection'
-import { PopularProfiles } from '@/components/features/home/PopularProfiles'
-import { ValuesSection } from '@/components/features/home/ValuesSection'
-import { CTASection } from '@/components/features/home/CTASection'
+import { HomeRedirect } from '@/components/features/home/HomeRedirect'
+import { FeedPage } from '@/components/feed/FeedPage'
 
+// Гість одразу бачить соціальну мережу (публічну стрічку); будь-яка дія веде на вхід чи реєстрацію.
 export default function Home() {
   return (
-    <div className="ukrainian-pattern">
-      <HeroSection />
-      <CategoriesSection />
-      <PopularProfiles />
-      <ValuesSection />
-      <CTASection />
-    </div>
+    <>
+      <HomeRedirect />
+      <FeedPage />
+    </>
   )
 }

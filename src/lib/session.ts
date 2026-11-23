@@ -61,6 +61,9 @@ export async function createSession(user: SessionUser, request: Request) {
     },
   });
 
+  // Остання активність — для статистики «активні користувачі» в адмінці
+  void prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } }).catch(() => undefined);
+
   // Старі записи не потрібні: чистимо їх при кожному вході, щоб таблиця не росла безкінечно
   const now = new Date();
   void prisma.session

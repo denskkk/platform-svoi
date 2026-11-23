@@ -212,7 +212,8 @@ export default function QuestionnairePage() {
 
       // Также попытаться получить профиль с сервера и заполнить поля для редактирования
       try {
-        const res = await fetch(`/api/profile/${userData.id}`, { credentials: 'include' });
+        let bearer: string | null = null; try { bearer = localStorage.getItem('token'); } catch { /* noop */ }
+        const res = await fetch(`/api/profile/${userData.id}`, { credentials: 'include', headers: bearer ? { Authorization: `Bearer ${bearer}` } : {} });
         if (!res.ok) return;
         const json = await res.json();
         const u = json.user;

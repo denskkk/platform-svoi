@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
 import { parseId } from '@/lib/feed';
+import { mutedTypes } from '@/lib/notificationSettings';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,9 @@ export async function GET(request: NextRequest) {
     const userId = Number(auth.user.userId);
 
     const params = new URL(request.url).searchParams;
-    const unreadCount = await prisma.notification.count({ where: { userId, isRead: false } });
+    const muted = await mutedTypes(userId);
+    const typeFilter = muted.length ? { type: { notIn: muted } } : {};
+    const unreadCount = await prisma.notification.count({ where: { userId, isRead: false, ...typeFilter } });
     if (params.get('countOnly')) return NextResponse.json({ unreadCount });
 
     const cursor = parseId(params.get('cursor'));
@@ -27,21 +30,21 @@ export async function GET(request: NextRequest) {
     const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 50) : 20;
 
     const rows = await prisma.notification.findMany({
-      where: { userId, ...(cursor ? { id: { lt: cursor } } : {}) },
+      where: { userId, ...typeFilter, ...(cursor ? { id: { lt: cursor } } : {}) },
       orderBy: { id: 'desc' },
       take: limit + 1,
     });
     const hasMore = rows.length > limit;
     const page = hasMore ? rows.slice(0, limit) : rows;
 
-    const actorIds = Array.from(new Set(page.map((n) => n.relatedUserId).filter((id): id is number => !!id)));
+    const actorIds = Array.from(new Set(page.map((n: any) => n.relatedUserId).filter((id: any): id is number => !!id)));
     const actors = actorIds.length
       ? await prisma.user.findMany({
           where: { id: { in: actorIds } },
           select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } },
         })
       : [];
-    const actorMap = new Map(actors.map((a) => [a.id, {
+    const actorMap = new Map(actors.map((a: any) => [a.id, {
       id: a.id,
       name: a.businessInfo?.companyName || `${a.firstName} ${a.lastName}`.trim(),
       avatarUrl: a.businessInfo?.logoUrl || a.avatarUrl,
@@ -49,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       unreadCount,
-      notifications: page.map((n) => ({
+      notifications: page.map((n: any) => ({
         id: n.id,
         type: n.type,
         title: n.title,

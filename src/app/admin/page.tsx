@@ -1,5 +1,6 @@
 'use client';
 
+import { performLogout } from '@/lib/client-auth';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -88,20 +89,7 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      localStorage.removeItem('user');
-      router.push('/auth/login');
-    } catch (error) {
-      console.error('Помилка виходу:', error);
-      // Все одно перенаправити на сторінку входу
-      localStorage.removeItem('user');
-      router.push('/auth/login');
-    }
+    await performLogout('/auth/login');
   };
 
   if (!currentUser?.isAdmin) {
@@ -148,10 +136,10 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
-                <Shield className="w-10 h-10 text-primary-500" />
+              <h1 className="text-2xl sm:text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3">
+                <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-primary-500 shrink-0" />
                 {t('admin.dashboard.title')}
               </h1>
               <p className="text-neutral-600">
@@ -228,10 +216,10 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <div className="bg-white rounded-2xl shadow-lg p-2 mb-6">
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto max-w-full pb-1">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+              className={`shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
                 activeTab === 'overview'
                   ? 'bg-primary-500 text-white shadow-md'
                   : 'text-neutral-600 hover:bg-neutral-100'
@@ -241,7 +229,7 @@ export default function AdminDashboard() {
             </button>
             <button
               onClick={() => setActiveTab('users')}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+              className={`shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
                 activeTab === 'users'
                   ? 'bg-primary-500 text-white shadow-md'
                   : 'text-neutral-600 hover:bg-neutral-100'
@@ -251,7 +239,7 @@ export default function AdminDashboard() {
             </button>
             <button
               onClick={() => setActiveTab('messages')}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+              className={`shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
                 activeTab === 'messages'
                   ? 'bg-primary-500 text-white shadow-md'
                   : 'text-neutral-600 hover:bg-neutral-100'
@@ -261,9 +249,63 @@ export default function AdminDashboard() {
             </button>
             <button
               onClick={() => router.push('/admin/reports')}
-              className="flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
             >
               {t('admin.dashboard.tabs.reports')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/suggestions')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('admin.suggestions.title')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/projects')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('projects.admin.link')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/representations')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('projects.rep.admin.title')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/listings')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('listings.admin.link')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/business-applications')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('business.admin.link')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/organization-applications')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('organizations.admin.link')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/deals')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('deals.admin.link')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/partners')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('projects.partnerAdmin.link')}
+            </button>
+            <button
+              onClick={() => router.push('/admin/roles')}
+              className="shrink-0 whitespace-nowrap md:flex-1 px-4 py-3 rounded-lg font-medium transition-all text-neutral-600 hover:bg-neutral-100"
+            >
+              {t('staff.manage.link')}
             </button>
           </div>
         </div>

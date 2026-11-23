@@ -10,6 +10,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
+import { checkRateLimit } from '@/lib/rateLimit';
+import { isBlockedBetween } from '@/lib/blocks';
 
 // GET - Отримати повідомлення
 export async function GET(request: NextRequest) {
@@ -23,13 +25,18 @@ export async function GET(request: NextRequest) {
 
     let messages;
 
+    const withId = withUserId ? Number(withUserId) : 0;
+    if (withUserId && (!Number.isInteger(withId) || withId <= 0)) {
+      return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
+    }
+
     if (withUserId) {
       // Отримати переписку з конкретним користувачем
       messages = await prisma.message.findMany({
         where: {
           OR: [
-            { senderId: auth.user.userId, receiverId: parseInt(withUserId) },
-            { senderId: parseInt(withUserId), receiverId: auth.user.userId }
+            { senderId: auth.user.userId, receiverId: withId },
+            { senderId: withId, receiverId: auth.user.userId }
           ]
         },
         include: {
@@ -51,9 +58,12 @@ export async function GET(request: NextRequest) {
           }
         },
         orderBy: {
-          createdAt: 'asc'
-        }
+          createdAt: 'desc'
+        },
+        take: 200
       });
+      // Віддаємо останні 200 повідомлень у хронологічному порядку (історія не росте безмежно)
+      messages = messages.reverse();
     } else {
       // Отримати список всіх чатів
       messages = await prisma.message.findMany({
@@ -83,7 +93,8 @@ export async function GET(request: NextRequest) {
         },
         orderBy: {
           createdAt: 'desc'
-        }
+        },
+        take: 300
       });
     }
 
@@ -114,11 +125,21 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    if (!Number.isInteger(Number(receiverId)) || Number(receiverId) <= 0 || typeof text !== 'string' || text.length > 4000) {
+      return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
+    }
+    if (!checkRateLimit(`msg:${auth.user.userId}`, { interval: 60 * 1000, maxRequests: 60 }).allowed) {
+      return NextResponse.json({ error: t('api.common.tooManyRequests') }, { status: 429 });
+    }
+
+    if (await isBlockedBetween(Number(auth.user.userId), Number(receiverId))) {
+      return NextResponse.json({ error: t('api.feed.blocked') }, { status: 403 });
+    }
 
     const message = await prisma.message.create({
       data: {
         senderId: auth.user.userId,
-        receiverId,
+        receiverId: Number(receiverId),
         text,
       },
       include: {
@@ -144,7 +165,7 @@ export async function POST(request: NextRequest) {
     // Створити сповіщення
     await prisma.notification.create({
       data: {
-        userId: receiverId,
+        userId: Number(receiverId),
         type: 'new_message',
         title: 'Нове повідомлення', // i18n-ignore
         message: `${auth.user.email} надіслав вам повідомлення`, // i18n-ignore

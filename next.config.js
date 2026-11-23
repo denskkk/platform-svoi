@@ -102,7 +102,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(self), microphone=(), geolocation=(), payment=()'
+            value: 'camera=(self), microphone=(self), geolocation=(), payment=()'
           },
           // A full script-src policy is deliberately not set (Next.js inlines bootstrap scripts);
           // these directives block clickjacking, <base> hijacking and plugin content without affecting the app.

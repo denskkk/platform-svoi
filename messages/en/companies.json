@@ -1,0 +1,49 @@
+{
+  "title": "Companies",
+  "searchPlaceholder": "Search companies, services, categories",
+  "cityPlaceholder": "City",
+  "loadFailed": "Could not load",
+  "empty": "No companies found",
+  "emptyHint": "Try changing your search or apply for your own business.",
+  "apply": "Apply as a business",
+  "loadMore": "Load more",
+  "notFound": "Company not found",
+  "backToList": "Back to companies",
+  "write": "Message",
+  "call": "Call",
+  "route": "Directions",
+  "website": "Website",
+  "save": "Save",
+  "savedBtn": "Saved",
+  "share": "Share",
+  "saved": "Company saved",
+  "unsaved": "Removed from saved",
+  "reviews": "{count} reviews",
+  "about": "About",
+  "contacts": "Contacts",
+  "openMap": "Open on map",
+  "gallery": "Photos",
+  "video": "Video presentation",
+  "fullProfile": "Open full profile and reviews",
+  "fields": {
+    "services": "Products and services",
+    "priceRange": "Prices",
+    "mission": "Mission",
+    "contactName": "Contact person"
+  },
+  "qr": {
+    "button": "QR code",
+    "back": "Back to company",
+    "hint": "Scan to open the company page. Print it for tables, a shop window or business cards.",
+    "download": "Download SVG",
+    "print": "Print"
+  },
+  "groups": {
+    "title": "Groups and schools",
+    "byRequest": "Join by request",
+    "open": "Open group",
+    "members": "members",
+    "view": "Open",
+    "joined": "You are in"
+  }
+}

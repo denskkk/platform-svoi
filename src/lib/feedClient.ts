@@ -28,13 +28,18 @@ export interface FeedAuthor {
 export interface FeedPost {
   id: number;
   content: string;
+  isPrivate?: boolean;
   likesCount: number;
   commentsCount: number;
   createdAt: string;
   edited?: boolean;
   images: { id: number; url: string }[];
+  video?: { id: number; url: string; posterUrl: string | null; durationSec: number | null } | null;
+  repostsCount?: number;
+  repostOf?: { id: number; content: string; images: { id: number; url: string }[]; video?: { id: number; url: string; posterUrl: string | null } | null; author: { id: number; name: string; avatarUrl: string | null; isVerified: boolean } } | null;
+  repostUnavailable?: boolean;
   author: FeedAuthor;
-  viewer: { liked: boolean; isOwn: boolean; following: boolean };
+  viewer: { liked: boolean; reaction?: string | null; isOwn: boolean; following: boolean; saved?: boolean };
 }
 
 export interface FeedComment {
@@ -42,6 +47,10 @@ export interface FeedComment {
   content: string;
   createdAt: string;
   isOwn: boolean;
+  parentId?: number | null;
+  likesCount?: number;
+  liked?: boolean;
+  repliesCount?: number;
   author: { id: number; name: string; avatarUrl: string | null; isVerified: boolean };
 }
 

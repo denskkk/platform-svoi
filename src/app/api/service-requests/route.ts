@@ -86,10 +86,8 @@ async function createHandler(request: NextRequest) {
       }
       // Автоматично встановлюємо виконавця як власника послуги
       finalExecutorId = service.userId;
-      console.log(`[service-requests/create] Service ${serviceId} owner: ${service.userId}, setting as executor`);
     }
     
-    console.log(`[service-requests/create] Creating request: client=${userId}, executor=${finalExecutorId}, service=${serviceId}`);
 
     // Створити заявку
     const serviceRequest = await prisma.serviceRequest.create({
@@ -149,7 +147,6 @@ async function createHandler(request: NextRequest) {
       }
     });
     
-    console.log(`[service-requests/create] Created request ID ${serviceRequest.id}: isPublic=${finalIsPublic}, status=${serviceRequest.status}`);
     
     // Створити сповіщення для виконавця
     if (finalExecutorId) {
@@ -228,7 +225,6 @@ async function listHandler(request: NextRequest) {
       where.status = { in: ['new', 'viewed'] };
     }
     
-    console.log(`[service-requests/list] User ${userId}, type=${type}, where=`, JSON.stringify(where));
 
     // Додаткові фільтри
     if (status) where.status = status;

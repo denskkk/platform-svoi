@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get('file') as File;
   const rawType = (formData.get('type') as string) || 'avatars';
-  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc', 'requests', 'posts']);
+  const allowedDirs = new Set(['avatars', 'logos', 'services', 'banners', 'misc', 'requests', 'posts', 'listings']);
   const safeDir = allowedDirs.has(rawType) ? rawType : 'avatars';
     
     if (!file) {
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
   const isAvatar = safeDir === 'avatars' || safeDir === 'logos';
   const isService = safeDir === 'services' || safeDir === 'requests';
   const isBanner = safeDir === 'banners';
-  const isPost = safeDir === 'posts';
+  const isPost = safeDir === 'posts' || safeDir === 'listings';
 
     let pipeline = sharp(buffer);
 
@@ -185,7 +185,6 @@ export async function POST(request: NextRequest) {
     const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
     const optimizedSizeMBWebp = (optimizedWebp.length / 1024 / 1024).toFixed(2);
     const optimizedSizeMBJpg = (optimizedJpeg.length / 1024 / 1024).toFixed(2);
-  console.log(`[Upload] Оптимізовано: ${originalSizeMB}MB → WebP ${optimizedSizeMBWebp}MB / JPEG ${optimizedSizeMBJpg}MB (dir: ${safeDir})`);
     
     // Возвращаем URL файла
   const urlWebp = `/uploads/${safeDir}/${filename}`;
@@ -210,9 +209,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json(
-      { error: error.message || t('api.upload.error') },
-      { status: 500 }
-    );
+    // Файл не є справжнім зображенням (підроблене розширення/тип): це помилка запиту, а не збій сервера
+    if (/unsupported image format|Input buffer|corrupt|VipsJpeg|heif/i.test(String(error?.message || ''))) {
+      return NextResponse.json({ error: t('api.upload.imageTypesOnly') }, { status: 400 });
+    }
+    // Внутрішній текст помилки клієнту не віддаємо
+    return NextResponse.json({ error: t('api.upload.error') }, { status: 500 });
   }
 }

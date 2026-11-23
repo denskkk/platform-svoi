@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // (uploads are served from /uploads/* by nginx)
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift, LogOut } from 'lucide-react';
+import { MapPin, Star, Plus, Edit, Mail, Phone, MessageCircle, Heart, Facebook, Instagram, Linkedin, Globe, Send, Gift, LogOut, Menu } from 'lucide-react';
 import { formatRating } from '@/lib/format';
 import { logout } from '@/lib/client-auth';
 import { checkAuth, ensureToken } from '@/lib/silentFetch';
@@ -13,6 +13,9 @@ import { useToast } from '@/components/ui/Toast';
 import { PermissionButton } from '@/components/ui/RequirePermission';
 import { ReportButton } from '@/components/ui/ReportButton';
 import { ProfilePosts } from '@/components/feed/ProfilePosts';
+import { ProfileHeaderTT } from '@/components/feed/ProfileHeaderTT';
+import { BlockButton } from '@/components/feed/BlockButton';
+import { ProfileSocialBar } from '@/components/feed/ProfileSocialBar';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { UpgradeAccountCTA } from '@/components/ui/UpgradeAccountCTA';
 import { AccountTypeBadge } from '@/components/ui/AccountTypeBadge';
@@ -44,6 +47,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const [error, setError] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  // У кабінеті як у TikTok докладна інформація (контакти, анкета, відгуки) схована під кнопкою
+  const [showMore, setShowMore] = useState(false);
 
   const authHeaders = (): Record<string, string> => {
     try {
@@ -59,8 +64,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     setLoggingOut(true);
     try {
       await logout();
-      window.dispatchEvent(new Event('auth:changed'));
-      router.push(localizedPath('/', locale));
+      window.location.assign(localizedPath('/', locale));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('profile.view.toasts.logoutFailed'));
       setLoggingOut(false);
@@ -170,7 +174,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         credentials: 'include',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
+          'Pragma': 'no-cache',
+          ...authHeaders()
         }
       });
       const data = await response.json();
@@ -199,6 +204,14 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     return [];
   };
 
+  // Фіксуємо перегляд чужого профілю (раз на добу від одного глядача; сервер перевіряє налаштування)
+  const viewedId = profile?.id;
+  const viewerId = currentUser?.id;
+  useEffect(() => {
+    if (!viewedId || !viewerId || viewedId === viewerId) return;
+    fetch('/api/profile-views', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ profileId: viewedId }) }).catch(() => {});
+  }, [viewedId, viewerId]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
@@ -221,11 +234,59 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   }
 
   const isOwnProfile = currentUser && currentUser.id === profile.id;
+  // Бізнес-профілі лишаються з повною візитівкою; звичайні профілі: шапка й сітка як у TikTok
+  const ttMode = !String(profile.accountType || '').startsWith('business') && !profile.businessInfo;
 
   return (
     <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`${ttMode ? 'max-w-xl' : 'max-w-7xl'} mx-auto px-4 sm:px-6 lg:px-8`}>
+        {isOwnProfile && (
+          <div className="mb-3 flex justify-end">
+            <Link href="/menu" aria-label={t('profile.view.menu')} className="inline-flex items-center gap-2 rounded-full bg-white border border-neutral-200 shadow-sm px-4 py-2 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
+              <Menu className="w-5 h-5" /> {t('profile.view.menu')}
+            </Link>
+          </div>
+        )}
         <ViewerUpgradeNotice className="mb-6" />
+        {ttMode && (
+          <div className="space-y-4 mb-6">
+            <ProfileHeaderTT profile={profile} isOwn={!!isOwnProfile} canWrite={currentUser?.accountType !== 'viewer'} canFollow={!!currentUser && currentUser.accountType !== 'viewer'}
+              editHref="/profile/edit" />
+            {profile?.id && <ProfilePosts authorId={Number(profile.id)} />}
+            <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="w-full rounded-xl bg-white border border-neutral-200 shadow-sm py-3 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
+              {showMore ? t('profile.view.lessInfo') : t('profile.view.moreInfo')}
+            </button>
+          </div>
+        )}
+        <div className={ttMode && !showMore ? 'hidden' : ''}>
+        {/* Обкладинка профілю */}
+        {!profile?.businessInfo?.bannerUrl && (profile?.coverUrl || isOwnProfile) && (
+          <div className="mb-6 relative rounded-2xl overflow-hidden shadow-md bg-gradient-to-r from-primary-100 to-accent-100 h-40 md:h-56">
+            {profile?.coverUrl && <ServiceImage src={profile.coverUrl} alt="" className="w-full h-full object-cover" />}
+            {isOwnProfile && (
+              <label className="absolute bottom-3 right-3 cursor-pointer rounded-full bg-white/90 hover:bg-white text-neutral-800 text-sm font-semibold px-4 py-2 shadow">
+                <input type="file" accept="image/*" hidden onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try {
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    fd.append('type', 'banners');
+                    const up = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers: authHeaders(), body: fd });
+                    const ud = await up.json().catch(() => ({}));
+                    if (!up.ok || !ud.url) throw new Error(ud.error);
+                    const res = await fetch(`/api/profile/${profile.id}`, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ coverUrl: ud.url }) });
+                    if (!res.ok) throw new Error();
+                    setProfile((p: any) => ({ ...p, coverUrl: ud.url }));
+                  } catch (err: any) {
+                    toast.error(err?.message || t('profile.view.cover.failed'));
+                  }
+                }} />
+                {t('profile.view.cover.change')}
+              </label>
+            )}
+          </div>
+        )}
         {/* Банер компанії (для бізнес акаунтів) */}
         {profile?.businessInfo?.bannerUrl && (
           <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
@@ -384,6 +445,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                             label={t('profile.view.actions.report')}
                             className="inline-flex items-center gap-1.5 px-3 py-2.5 text-sm text-neutral-500 hover:text-red-600 border border-neutral-200 hover:border-red-200 rounded-lg bg-white transition-colors"
                           />
+                          <BlockButton userId={profile.id} onBlocked={() => router.push('/feed')} />
                         </>
                       )}
                     </div>
@@ -409,6 +471,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                       <span className="text-neutral-600">{t('profile.view.header.reviewsCount', { count: profile.totalReviews })}</span>
                     </div>
                   )}
+
+                  {profile?.id && <ProfileSocialBar userId={Number(profile.id)} isOwn={!!isOwnProfile} />}
                 </div>
               </div>
             </div>
@@ -875,21 +939,13 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </div>
             )}
 
-            {/* Послуги */}
+            {/* Послуги (лише наявні, без створення нових — платформа є соцмережею) */}
+            {profile.services && profile.services.length > 0 && (
             <div className="bg-white rounded-2xl shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-neutral-900">
                   {t('profile.view.services.title')} {profile._count?.services > 0 && `(${profile._count.services})`}
                 </h2>
-                {isOwnProfile && (
-                  <Link
-                    href="/services/create"
-                    className="flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('profile.view.actions.add')}
-                  </Link>
-                )}
               </div>
 
               {profile.services && profile.services.length > 0 ? (
@@ -963,11 +1019,22 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 </div>
               )}
             </div>
+            )}
+
+            {/* Швидка навігація по розділах профілю */}
+            <div role="tablist" className="flex gap-2 overflow-x-auto">
+              <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="shrink-0 rounded-full bg-white border border-neutral-200 px-4 py-1.5 text-sm font-semibold text-neutral-700 hover:border-primary-300">{t('profile.view.tabs.about')}</button>
+              <button type="button" onClick={() => document.getElementById('profile-posts')?.scrollIntoView({ behavior: 'smooth' })} className="shrink-0 rounded-full bg-white border border-neutral-200 px-4 py-1.5 text-sm font-semibold text-neutral-700 hover:border-primary-300">{t('profile.view.tabs.posts')}</button>
+              {profile.reviewsReceived && profile.reviewsReceived.length > 0 && (
+                <button type="button" onClick={() => document.getElementById('profile-reviews')?.scrollIntoView({ behavior: 'smooth' })} className="shrink-0 rounded-full bg-white border border-neutral-200 px-4 py-1.5 text-sm font-semibold text-neutral-700 hover:border-primary-300">{t('profile.view.tabs.reviews')}</button>
+              )}
+            </div>
 
             {/* Дописи зі стрічки */}
-            {profile?.id && <ProfilePosts authorId={Number(profile.id)} />}
+            <div id="profile-posts">{!ttMode && profile?.id && <ProfilePosts authorId={Number(profile.id)} />}</div>
 
             {/* Відгуки */}
+            <div id="profile-reviews" />
             {profile.reviewsReceived && profile.reviewsReceived.length > 0 && (
               <div className="bg-white rounded-2xl shadow-md p-6">
                 <h2 className="text-2xl font-bold text-neutral-900 mb-6">
@@ -1525,6 +1592,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </div>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

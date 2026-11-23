@@ -39,7 +39,8 @@
     "autoProposals": "Automatic proposals are a paid option. Activate it in your profile.",
     "default": "This feature is available with a \"{type}\" account. Please register.",
     "createPost": "Posting to the feed and interacting with posts is available with a \"{type}\" account. Please register.",
-    "interactPost": "Liking and commenting is available with a \"{type}\" account. Please register."
+    "interactPost": "Liking and commenting is available with a \"{type}\" account. Please register.",
+    "createListing": "Posting listings is available with a \"{type}\" account. Please register."
   },
   "chat": {
     "viewerCannotWrite": "Viewers cannot write in chat. Switch to a regular profile on your profile page.",
@@ -51,7 +52,8 @@
     "emptyMessage": "Message cannot be empty",
     "messageTooLong": "Message is too long (maximum {max} characters)",
     "recipientAndTextRequired": "Specify a recipient and message text",
-    "messageSent": "Message sent!"
+    "messageSent": "Message sent!",
+    "messagesRestricted": "This user has restricted who can message them"
   },
   "admin": {
     "statsError": "Failed to load statistics",
@@ -61,7 +63,10 @@
     "verifiedMustBeBoolean": "The \"verified\" parameter must be a boolean",
     "verifiedGranted": "User {firstName} {lastName} has received the \"Verified\" status",
     "verifiedRevoked": "The \"Verified\" status has been removed from user {firstName} {lastName}",
-    "statusUpdateError": "Failed to update status"
+    "statusUpdateError": "Failed to update status",
+    "reports": {
+      "cannotSuspendStaff": "You cannot suspend an admin, staff member or yourself"
+    }
   },
   "auth": {
     "tooManyAttempts": "Too many attempts. Please try again later.",
@@ -207,6 +212,115 @@
     "followed": "You are now following",
     "unfollowed": "You unfollowed",
     "tooManyPosts": "Too many posts. Please try again later.",
-    "tooManyActions": "Too many actions. Please try again later."
+    "tooManyActions": "Too many actions. Please try again later.",
+    "blocked": "Action unavailable: one of the users is blocked",
+    "blockSelf": "You cannot block yourself",
+    "userBlocked": "User blocked",
+    "userUnblocked": "User unblocked",
+    "commentsRestricted": "The author has restricted comments on this post"
+  },
+  "projects": {
+    "notFound": "Project not found",
+    "videoUrlInvalid": "Invalid video link (https required)"
+  },
+  "listings": {
+    "projectInvalid": "This direction is not available for listings",
+    "tooMany": "Too many listings today. Please try tomorrow.",
+    "titleInvalid": "Enter a title (up to 150 characters)",
+    "descriptionInvalid": "Add a description (up to 5000 characters)",
+    "priceInvalid": "Invalid price",
+    "currencyInvalid": "Invalid currency",
+    "cityRequired": "Enter a city",
+    "phoneInvalid": "Invalid phone number",
+    "fieldRequired": "Fill in the required field",
+    "fieldInvalid": "Invalid value in one of the fields",
+    "tooManyImages": "Too many photos (maximum 10)",
+    "imageInvalid": "Invalid image",
+    "tooManyPending": "You have too many listings awaiting moderation (maximum {max}). Please wait for the review.",
+    "submitted": "Listing submitted for moderation",
+    "notFound": "Listing not found",
+    "forbidden": "You cannot do this",
+    "updated": "Changes saved, the listing is back on moderation",
+    "deleted": "Listing deleted",
+    "renewNotAllowed": "Only an approved listing can be renewed",
+    "renewed": "Publication extended",
+    "reasonRequired": "Enter a rejection reason",
+    "alreadyModerated": "This listing has already been processed",
+    "businessRequired": "This section is for business accounts. Create a business account to post a listing."
+  },
+  "businessApplications": {
+    "fieldsInvalid": "Fill in all required fields (description — at least 20 characters)",
+    "phoneInvalid": "Invalid phone number",
+    "websiteInvalid": "Invalid website address",
+    "alreadyExists": "You already have an active application",
+    "submitted": "Application submitted",
+    "notFound": "Application not found",
+    "percentInvalid": "Enter a percentage between 0.5 and 50"
+  },
+  "partnerApplications": {
+    "messageInvalid": "Describe why you want to cooperate (at least 10 characters)",
+    "notFound": "Application not found"
+  },
+  "adminRoles": {
+    "alreadyAdmin": "This user is already a full administrator"
+  },
+  "organizationApplications": {
+    "fieldsInvalid": "Fill in all required fields (description — at least 20 characters)",
+    "contactRequired": "Provide a phone or an email",
+    "emailInvalid": "Invalid email address",
+    "notFound": "Application not found"
+  },
+  "clubs": {
+    "fieldsInvalid": "Check the name, category and description (at least 10 characters)",
+    "tooMany": "You reached the limit of owned clubs",
+    "notFound": "Club not found",
+    "ownerCannotLeave": "The owner cannot leave the club — only delete it",
+    "cannotPost": "Only the owner or a member with write access can post here",
+    "membersOnly": "This community is closed to non-members",
+    "notOwner": "Only the community owner can do this",
+    "businessOnly": "Only business accounts (trainers, doctors, project leaders) can create communities and group chats"
+  },
+  "deals": {
+    "companyNotFound": "Company not found",
+    "selfDeal": "You cannot create a deal with your own company",
+    "noProgram": "The company has no active partner program",
+    "invalidReferrer": "Invalid referral link",
+    "customerRequired": "Enter the client name and contact",
+    "duplicate": "This client is already registered with the company",
+    "notFound": "Deal not found",
+    "amountInvalid": "Enter a valid check amount",
+    "badState": "This action is not available for the current deal status",
+    "reasonRequired": "Enter a reason (at least 5 characters)",
+    "contractRequired": "Enter the contract number"
+  },
+  "videos": {
+    "tooMany": "Too many video uploads. Try again later",
+    "badType": "Unsupported video format (MP4, MOV or WebM)",
+    "tooLarge": "Video is too large — maximum {max} MB",
+    "notFound": "Video not found",
+    "notReady": "The video is still processing or unavailable"
+  },
+  "stories": {
+    "tooMany": "Too many stories today",
+    "mediaRequired": "Add a photo or a video",
+    "notFound": "Story not found"
+  },
+  "invoices": {
+    "invalid": "Invalid invoice data",
+    "notFound": "Invoice not found",
+    "badTransition": "This action is not possible now"
+  },
+  "groupChats": {
+    "invalid": "Invalid chat data",
+    "notFound": "Chat not found",
+    "notOwner": "Only the chat owner can do this",
+    "ownerCannotLeave": "The owner cannot leave their own chat"
+  },
+  "rep": {
+    "notFound": "Not found",
+    "duplicate": "This application was already sent and awaits an answer",
+    "forbidden": "No access to this application",
+    "maxDepth": "There is nothing below a community",
+    "leaderNotFound": "No user with this email"
   }
 }

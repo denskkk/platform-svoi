@@ -1,0 +1,43 @@
+{
+  "title": "Search",
+  "placeholder": "People, businesses, listings…",
+  "clear": "Clear",
+  "hint": "Enter at least 2 characters",
+  "empty": "Nothing found",
+  "failed": "Search failed",
+  "tabs": {
+    "all": "All",
+    "people": "People",
+    "business": "Businesses",
+    "listings": "Listings",
+    "clubs": "Clubs",
+    "posts": "Posts"
+  },
+  "cityPlaceholder": "City",
+  "directionLabel": "Direction",
+  "allDirections": "All directions",
+  "members": "{count} members",
+  "directions": {
+    "cars": "Cars",
+    "real-estate": "Real estate",
+    "health": "Health",
+    "sport": "Sport",
+    "services": "Services",
+    "jobs": "Jobs",
+    "shops": "Shops",
+    "events": "Events",
+    "trade": "International trade",
+    "china": "China",
+    "antiques": "Antiques shop",
+    "mystic": "Mystic",
+    "rebuild": "Rebuilding Ukraine",
+    "cooperatives": "Cooperatives",
+    "grants": "Grants",
+    "turnkey": "Turnkey business",
+    "apps": "Apps",
+    "translator": "Translator",
+    "invest": "Investments",
+    "travel": "Travel agency",
+    "pets": "Pet shop"
+  }
+}

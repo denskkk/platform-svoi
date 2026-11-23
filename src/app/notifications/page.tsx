@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bell, Heart, Loader2, MessageCircle, UserPlus } from 'lucide-react';
+import { Bell, Heart, Loader2, MessageCircle, Settings, UserPlus } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useI18n } from '@/i18n/client';
@@ -31,6 +31,29 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  const [groups, setGroups] = useState<{ key: string; enabled: boolean }[]>([]);
+
+  const toggleSettings = async () => {
+    const next = !showSettings;
+    setShowSettings(next);
+    if (next && groups.length === 0) {
+      try {
+        const res = await fetch('/api/notifications/settings', { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
+        if (res.ok) setGroups((await res.json()).groups);
+      } catch { /* панель покаже порожній стан */ }
+    }
+  };
+  const toggleGroup = async (key: string) => {
+    const updated = groups.map((g) => (g.key === key ? { ...g, enabled: !g.enabled } : g));
+    setGroups(updated);
+    try {
+      const res = await fetch('/api/notifications/settings', { method: 'PUT', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ muted: updated.filter((g) => !g.enabled).map((g) => g.key) }) });
+      if (!res.ok) throw new Error();
+    } catch {
+      setGroups(groups);
+    }
+  };
 
   const load = useCallback(async (after?: number | null) => {
     try {
@@ -77,6 +100,13 @@ export default function NotificationsPage() {
 
   const hrefFor = (n: Item): string | null => {
     if (n.relatedEntityType === 'post' && n.relatedEntityId) return `/feed/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'listing' && n.relatedEntityId) return `/listings/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'invoice') return '/invoices';
+    if (n.relatedEntityType === 'club' && n.relatedEntityId) return `/clubs/${n.relatedEntityId}`;
+    if (n.relatedEntityType === 'business_application') return '/business/apply';
+    if (n.relatedEntityType === 'negotiation') return '/projects/export-alliance?folder=markets.talks.active';
+    if (n.relatedEntityType === 'deal') return n.type === 'deal_new' ? '/business/clients' : '/earnings';
+    if (n.relatedEntityType === 'partner_application') return '/projects';
     if (n.type === 'new_follower' && n.actor) return `/profile/${n.actor.id}`;
     return null;
   };
@@ -86,6 +116,28 @@ export default function NotificationsPage() {
     if (n.type === 'post_like') return t('feed.notifications.postLike', { name: who });
     if (n.type === 'post_comment') return t('feed.notifications.postComment', { name: who });
     if (n.type === 'new_follower') return t('feed.notifications.newFollower', { name: who });
+    if (n.type === 'invoice_new') return t('feed.notifications.invoiceNew');
+    if (n.type.startsWith('invoice_')) return t(`feed.notifications.${n.type === 'invoice_paid' ? 'invoicePaid' : n.type === 'invoice_cancelled' ? 'invoiceCancelled' : n.type === 'invoice_payer_marked' ? 'invoicePayerMarked' : 'invoiceUpdated'}`);
+    if (n.type === 'club_join_request') return t('feed.notifications.clubJoinRequest', { name: who });
+    if (n.type === 'club_join_approved') return t('feed.notifications.clubJoinApproved');
+    if (n.type === 'listing_approved') return t('feed.notifications.listingApproved');
+    if (n.type === 'listing_rejected') return t('feed.notifications.listingRejected');
+    if (n.type === 'business_approved') return t('feed.notifications.businessApproved');
+    if (n.type === 'business_rejected') return t('feed.notifications.businessRejected');
+    if (n.type === 'organization_approved') return t('feed.notifications.organizationApproved');
+    if (n.type === 'organization_rejected') return t('feed.notifications.organizationRejected');
+    if (n.type === 'deal_new') return t('feed.notifications.dealNew');
+    if (n.type === 'deal_confirmed') return t('feed.notifications.dealConfirmed');
+    if (n.type === 'deal_accrued') return t('feed.notifications.dealAccrued');
+    if (n.type === 'deal_paid_out') return t('feed.notifications.dealPaidOut');
+    if (n.type === 'deal_rejected') return t('feed.notifications.dealRejected');
+    if (n.type === 'deal_disputed') return t('feed.notifications.dealDisputed');
+    if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
+    if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
+    if (n.type.startsWith('negotiation_')) return `${t(`feed.notifications.${n.type}`)}: ${n.title}`;
+    if (n.type === 'project_request_status') return `${t('feed.notifications.projectRequestStatus')}: ${t(`feed.notifications.requestStatus.${n.message || 'new'}`)}`;
+    if (n.type === 'unlock_done') return t('feed.notifications.unlockDone');
+    if (n.type === 'unlock_rejected') return t('feed.notifications.unlockRejected');
     return n.title;
   };
 
@@ -101,10 +153,29 @@ export default function NotificationsPage() {
       <div className="mx-auto w-full max-w-xl px-3 sm:px-4 pt-4 pb-28 md:pb-10 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-neutral-900">{t('feed.notifications.title')}</h1>
-          {unread > 0 && (
-            <button type="button" onClick={markAll} className="text-sm font-medium text-accent-600">{t('feed.notifications.markAll')}</button>
-          )}
+          <div className="flex items-center gap-3">
+            {unread > 0 && (
+              <button type="button" onClick={markAll} className="text-sm font-medium text-accent-600">{t('feed.notifications.markAll')}</button>
+            )}
+            <button type="button" onClick={toggleSettings} aria-label={t('feed.notifications.settings')} aria-expanded={showSettings} className="p-2 rounded-full text-neutral-600 hover:bg-neutral-100">
+              <Settings className="w-5 h-5" />
+            </button>
+          </div>
         </div>
+
+        {showSettings && (
+          <section className="bg-white rounded-2xl border border-neutral-200/70 p-4 space-y-3">
+            <h2 className="font-semibold text-neutral-900">{t('feed.notifications.settings')}</h2>
+            <p className="text-xs text-neutral-500">{t('feed.notifications.settingsHint')}</p>
+            {groups.length === 0 && <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />}
+            {groups.map((g) => (
+              <label key={g.key} className="flex items-center justify-between gap-3 cursor-pointer">
+                <span className="text-sm text-neutral-800">{t(`feed.notifications.groups.${g.key}`)}</span>
+                <input type="checkbox" role="switch" checked={g.enabled} onChange={() => toggleGroup(g.key)} className="h-5 w-5 accent-primary-500" />
+              </label>
+            ))}
+          </section>
+        )}
 
         {loading && <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
 

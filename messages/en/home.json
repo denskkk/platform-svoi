@@ -80,5 +80,61 @@
     "learnMore": "Learn more",
     "addService": "Add a service",
     "findSpecialist": "Find a specialist"
+  },
+  "social": {
+    "badge": "Social network and business ecosystem",
+    "title": "Connect, discover and earn — all in one place",
+    "subtitle": "Feed, video, projects, companies, clubs and a partner program in one place. One account for everything.",
+    "register": "Sign up",
+    "login": "Log in",
+    "registerNote": "Sign-up is free: name, email and password.",
+    "searchPlaceholder": "What are you looking for? A service, company, car, event…",
+    "searchButton": "Search",
+    "featuresTitle": "Everything you need in one account",
+    "features": {
+      "feed": {
+        "title": "Feed and friends",
+        "text": "Posts, photos, comments, follows and private messages."
+      },
+      "video": {
+        "title": "Short videos",
+        "text": "Share videos and watch a feed of short clips."
+      },
+      "projects": {
+        "title": "Projects",
+        "text": "Cars, real estate, health, sport, services, jobs and more."
+      },
+      "business": {
+        "title": "Companies",
+        "text": "A business directory with contacts, map and recommendations."
+      },
+      "clubs": {
+        "title": "Clubs and communities",
+        "text": "Find people by interests or create your own community."
+      },
+      "earn": {
+        "title": "Earn with your own",
+        "text": "Recommend companies to friends and get a reward for closed deals."
+      }
+    },
+    "directionsTitle": "Project directions",
+    "directions": {
+      "cars": "Cars",
+      "realEstate": "Real estate",
+      "health": "Health",
+      "sport": "Sport",
+      "services": "Services",
+      "shops": "Shops"
+    },
+    "earnTitle": "Earn with your own",
+    "earnText": "A transparent partner program: the reward is accrued only after a confirmed deal.",
+    "earnSteps": {
+      "s1": "Sign up and find a company with a partner program.",
+      "s2": "Recommend it to friends or pass a client.",
+      "s3": "Once the company confirms the deal, the reward appears in “My earnings”."
+    },
+    "earnCta": "Get started",
+    "finalTitle": "Join your community",
+    "finalText": "Free sign-up — and you are in the feed, friends and projects right away."
   }
 }

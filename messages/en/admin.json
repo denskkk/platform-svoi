@@ -75,8 +75,16 @@
     "actions": {
       "takeInReview": "Take for review",
       "resolve": "Resolved",
-      "reject": "Reject"
-    }
+      "reject": "Reject",
+      "openPost": "Open post",
+      "hidePost": "Hide post",
+      "unhidePost": "Restore post",
+      "deleteComment": "Delete comment",
+      "suspendUser": "Suspend user",
+      "restoreUser": "Unsuspend user"
+    },
+    "confirmAction": "Confirm the action? The report will be closed.",
+    "actionDone": "Action done"
   },
   "users": {
     "title": "User management",
@@ -103,5 +111,41 @@
     "confirmUnverify": "Remove the \"Verified\" status from {name}?",
     "loadError": "Failed to load users",
     "updateError": "Failed to update status"
+  },
+  "suggestions": {
+    "title": "Suggestions and complaints",
+    "back": "Back to admin",
+    "empty": "Nothing here",
+    "loadFailed": "Action failed",
+    "done": "Done",
+    "reject": "Reject",
+    "status": {
+      "new": "New",
+      "done": "Done",
+      "rejected": "Rejected",
+      "review": "In review",
+      "offers": "Offers received",
+      "clarify": "Needs clarification",
+      "closed": "Closed",
+      "published": "Published"
+    },
+    "kind": {
+      "suggestion": "Suggestion",
+      "complaint": "Complaint",
+      "product": "Product",
+      "specialist": "Specialist",
+      "market": "Sales market",
+      "taxi": "Taxi",
+      "unlock": "Feature unlock",
+      "request": "Request",
+      "consult": "Consultation",
+      "calc": "Purchase calculation"
+    },
+    "statusLabel": "Status",
+    "filterProject": "Filter by project",
+    "allProjects": "All projects",
+    "filterKind": "Filter by type",
+    "allKinds": "All types",
+    "count": "Found: {count}"
   }
 }

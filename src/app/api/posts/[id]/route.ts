@@ -1,13 +1,17 @@
 /**
  * GET    /api/posts/:id — один допис
- * PATCH  /api/posts/:id { content } — змінити текст (лише автор)
+ * PATCH  /api/posts/:id { content } або { isPrivate } — змінити текст або закрити/відкрити допис (лише автор)
  * DELETE /api/posts/:id — видалити допис (автор або адміністратор)
  */
 
+import { getClubAccess } from '@/lib/clubAccess';
+import { getPrivateAuthorIdsHiddenFrom } from '@/lib/userSettings';
 import { NextRequest, NextResponse } from 'next/server';
+import { removeVideoFiles } from '@/lib/videos';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
+import { isBlockedBetween } from '@/lib/blocks';
 import { FEED_LIMITS, loadViewerState, parseId, postInclude, removePostImageFiles, serializePost } from '@/lib/feed';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +27,15 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const post = postId
       ? await prisma.post.findFirst({ where: { id: postId, isHidden: false, author: { isActive: true } }, include: postInclude })
       : null;
-    if (!post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    if (post?.clubId && !(await getClubAccess(post.clubId, userId))?.canSee) {
+      return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    }
+    if (post && (post as any).isPrivate && post.authorId !== userId) {
+      return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    }
+    if (!post || (await isBlockedBetween(userId, post.authorId)) || (post.authorId !== userId && (await getPrivateAuthorIdsHiddenFrom(userId)).includes(post.authorId))) {
+      return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
+    }
 
     const state = await loadViewerState(userId, [post.id], [post.authorId]);
     return NextResponse.json({ post: serializePost(post, state) });
@@ -48,6 +60,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (existing.authorId !== userId) return NextResponse.json({ error: t('api.feed.forbidden') }, { status: 403 });
 
     const body = await request.json().catch(() => ({}));
+    // Закрити / відкрити допис (замок у профілі): змінюється лише видимість, текст не чіпаємо
+    if (typeof body?.isPrivate === 'boolean' && body?.content === undefined) {
+      const updated = await prisma.post.update({ where: { id: postId }, data: { isPrivate: body.isPrivate }, include: postInclude });
+      const st = await loadViewerState(userId, [updated.id], [userId]);
+      return NextResponse.json({ success: true, post: serializePost(updated, st) });
+    }
     const content = typeof body?.content === 'string' ? body.content.trim() : '';
     if (!content && existing.images.length === 0) {
       return NextResponse.json({ error: t('api.feed.emptyPost') }, { status: 400 });
@@ -77,7 +95,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const post = await prisma.post.findUnique({
       where: { id: postId },
-      select: { authorId: true, images: { select: { url: true } } },
+      select: { authorId: true, repostOfId: true, images: { select: { url: true } }, video: { select: { rawName: true, url: true, posterUrl: true } } },
     });
     if (!post) return NextResponse.json({ error: t('api.feed.postNotFound') }, { status: 404 });
 
@@ -87,7 +105,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     await prisma.post.delete({ where: { id: postId } });
-    await removePostImageFiles(post.images.map((i) => i.url));
+    if (post.repostOfId) await prisma.post.updateMany({ where: { id: post.repostOfId, repostsCount: { gt: 0 } }, data: { repostsCount: { decrement: 1 } } }).catch(() => undefined);
+    await removePostImageFiles(post.images.map((i: any) => i.url));
+    if (post.video) await removeVideoFiles(post.video);
     return NextResponse.json({ success: true, message: t('api.feed.postDeleted') });
   } catch (error) {
     console.error('Delete post error:', error);

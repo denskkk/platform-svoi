@@ -64,7 +64,7 @@ async function getUserProfile(id: string) {
 
     // Отримати відгуки
     const reviews = await prisma.review.findMany({
-      where: { reviewedUserId: user.id },
+      where: { reviewedId: user.id, isVisible: true },
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: {

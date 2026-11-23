@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
     const favorites = await prisma.favorite.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      take: 200,
       include: {
         targetUser: {
           select: {

@@ -7,6 +7,7 @@
 
 'use client';
 
+import { clearAuth } from '@/lib/client-auth';
 import { useState, useEffect } from 'react';
 import { checkAuth as checkAuthSession } from '@/lib/silentFetch';
 import { useI18n } from '@/i18n/client';
@@ -97,6 +98,7 @@ export function useAuth() {
         credentials: 'include'
       });
       if (!response.ok) throw new Error(t('common.auth.logoutFailed'));
+      clearAuth();
       setUser(null);
       setStatus('guest');
     } catch (error) {

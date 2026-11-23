@@ -1,0 +1,1372 @@
+{
+  "title": "Projects",
+  "subtitle": "All directions of the ecosystem in one place",
+  "soon": "Soon",
+  "open": "Open",
+  "back": "Back to projects",
+  "soonTitle": "This direction opens soon",
+  "soonDescription": "We are getting it ready for launch. Thank you for being with us!",
+  "toFeed": "Go to feed",
+  "loadFailed": "Could not load projects",
+  "retry": "Try again",
+  "notFound": "Project not found",
+  "video": {
+    "title": "Video and stories",
+    "description": "Short vertical videos and stories are coming soon to Sviy dlya Svoikh.",
+    "chip": "Video",
+    "open": "Open"
+  },
+  "admin": {
+    "title": "Projects (directions)",
+    "subtitle": "Manage the status and order of directions",
+    "status": "Status",
+    "order": "Order",
+    "save": "Save",
+    "saved": "Saved",
+    "failed": "Could not save",
+    "statusActive": "Active",
+    "statusSoon": "Soon",
+    "statusHidden": "Hidden",
+    "back": "Back to admin",
+    "forbidden": "Administrators only",
+    "link": "Projects",
+    "image": "Project image",
+    "imageAdd": "Add image",
+    "imageChange": "Change image",
+    "imageRemove": "Remove image",
+    "imageSaved": "Image saved",
+    "imageRemoved": "Image removed",
+    "folders": "Folder images",
+    "foldersTitle": "Folder and subfolder images",
+    "foldersSubtitle": "Add a photo to each folder. It appears on the tile in the project; without a photo the icon is shown.",
+    "foldersBack": "Back to projects",
+    "foldersEmpty": "This project has no folders"
+  },
+  "earn": {
+    "button": "Earn with your own",
+    "title": "Earn with your own",
+    "defaultBody": "Become a partner of this direction: recommend customers, offer cooperation to businesses and grow the direction together with us.\n\nSubmit an application below — a manager will contact you and explain the terms. Terms are agreed separately and are not a guarantee of income.",
+    "applyTitle": "Partnership application",
+    "phone": "Phone",
+    "message": "Tell us about yourself and your cooperation ideas",
+    "messageHint": "At least 10 characters",
+    "submit": "Submit application",
+    "sending": "Sending…",
+    "success": "Application sent",
+    "failed": "Could not submit the application",
+    "loginRequired": "Sign in to submit an application",
+    "login": "Sign in",
+    "statusTitle": "Your application",
+    "status": {
+      "pending": "Under review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "reason": "Reason",
+    "reapply": "Submit a new application",
+    "approvedHint": "Your application is approved. A manager will contact you.",
+    "pendingHint": "Your application is under review.",
+    "loadFailed": "Could not load the page",
+    "back": "Back to direction",
+    "watchVideo": "Watch the video",
+    "stepsTitle": "How it works",
+    "examplesTitle": "Examples",
+    "applyFor": "Application"
+  },
+  "partnerAdmin": {
+    "title": "Partnership",
+    "subtitle": "Partnership applications and “Earn with your own” texts",
+    "tabApplications": "Applications",
+    "tabContent": "Page texts",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "approve": "Approve",
+    "reject": "Reject",
+    "reasonPlaceholder": "Rejection reason (visible to the applicant)",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "empty": "Queue is empty",
+    "done": "Done",
+    "failed": "Could not complete the action",
+    "back": "Back to admin panel",
+    "forbidden": "Administrators only",
+    "link": "Partnership",
+    "applicant": "Applicant",
+    "loadMore": "Show more",
+    "project": "Direction",
+    "titleUk": "Title (Ukrainian)",
+    "titleEn": "Title (English)",
+    "bodyUk": "Text (Ukrainian)",
+    "bodyEn": "Text (English)",
+    "bodyHint": "Plain text. If empty, the default text is shown.",
+    "save": "Save",
+    "saved": "Saved",
+    "videoUrl": "Video (YouTube, Vimeo or https mp4 link)",
+    "videoHint": "Optional. https links only.",
+    "stepsUk": "Steps (Ukrainian) — one per line",
+    "stepsEn": "Steps (English) — one per line",
+    "examplesUk": "Examples (Ukrainian) — one per line",
+    "examplesEn": "Examples (English) — one per line",
+    "linesHint": "Steps and examples: one item per line."
+  },
+  "china": {
+    "leaveRequest": "Leave a request",
+    "getQuote": "Get a quote",
+    "consultant": "Contact a consultant",
+    "requestTitle": "Request",
+    "consultTitle": "Consultation",
+    "requestHint": "Describe what you need. Add a product link, requirements, quantity and preferred dates.",
+    "consultHint": "Write your question. A consultant will contact you.",
+    "phone": "Phone",
+    "phoneInvalid": "Enter a valid phone number",
+    "sent": "Thank you! We will contact you",
+    "calc": {
+      "back": "Back to the China project",
+      "title": "Turnkey purchase calculator",
+      "subtitle": "Approximate total cost of goods: from the factory price to a warehouse in Ukraine.",
+      "rateHint": "Enter the yuan rate that applies to you (for example from your bank or exchange office). The calculation is approximate.",
+      "result": "Result (UAH)",
+      "total": "Whole batch",
+      "perUnit": "Per unit",
+      "disclaimer": "An approximate calculation for planning. A consultant will confirm the final cost.",
+      "sendHint": "Want a consultant to check and refine the calculation? Leave your phone.",
+      "send": "Send calculation to a consultant",
+      "summary": "Calculation: {qty} pcs x {price} CNY, rate {rate} UAH per 1 CNY. Total {total} UAH, per unit {unit} UAH",
+      "units": {
+        "cny": "CNY",
+        "uah": "UAH",
+        "pct": "%",
+        "pcs": "pcs"
+      },
+      "fields": {
+        "price": "Product price in China per unit",
+        "qty": "Quantity",
+        "rate": "Yuan rate",
+        "payFee": "Payment costs (fee)",
+        "chinaDelivery": "Delivery within China",
+        "agentPct": "Representative or intermediary services",
+        "qc": "Quality check and packaging",
+        "intl": "International shipping",
+        "customs": "Customs duties and clearance",
+        "other": "Other related costs"
+      },
+      "rows": {
+        "goods": "Goods",
+        "payFee": "Payment costs",
+        "inChina": "Delivery in China",
+        "agent": "Representative",
+        "qc": "Check and packaging",
+        "intl": "International shipping",
+        "customs": "Duties and clearance",
+        "other": "Other"
+      }
+    }
+  },
+  "taxi": {
+    "order": {
+      "scheduledAt": "Pickup date and time",
+      "class": "Car class",
+      "classes": {
+        "economy": "Economy",
+        "comfort": "Comfort",
+        "business": "Business",
+        "minivan": "Minivan"
+      },
+      "passengers": "Number of passengers",
+      "wishes": "Ride wishes",
+      "wishesHint": "Child seat, pet, luggage, no smoking…"
+    },
+    "form": {
+      "phone": "Phone (optional)",
+      "hint": "Describe in detail, we will reply soon",
+      "sent": "Sent. We will reply soon.",
+      "lead": {
+        "request": "Leave a request and a manager will contact you.",
+        "consult": "Ask a question and we will answer.",
+        "suggestion": "Tell us what could be better, or share a review.",
+        "complaint": "Describe the problem. The complaint goes to the administration."
+      }
+    },
+    "info": {
+      "apply": "Apply",
+      "ask": "Have a question? Write to us"
+    },
+    "trips": {
+      "empty": "No ride requests yet",
+      "waitlist": "Waiting for the taxi to launch in the city",
+      "accepted": "Request accepted",
+      "ride": {
+        "airport": "Airport",
+        "station": "Station",
+        "intercity": "Intercity",
+        "international": "International",
+        "group": "Group",
+        "special": "Special"
+      }
+    },
+    "text": {
+      "driver_requirements": "Requirements for drivers (documents, experience) and cars depend on the city and country. A manager will provide them after your application. Apply as a driver and we will tell you what is needed in your city.",
+      "driver_cabinet": "The driver cabinet opens once your application is approved. It will hold your orders, rides and income. Apply as a driver and we will let you know when the cabinet is available.",
+      "driver_income": "Your income and payouts will appear here. The platform does not transfer money itself. This section opens when the taxi starts in your city.",
+      "info_about": "“Taxi for your own” is a platform service for passengers and drivers from your community. The taxi launches city by city: leave a request in your city and we will tell you when it starts.",
+      "info_how": "A passenger creates a request: city, address, wishes. If the taxi already works in the city, drivers see it. If not, we add you to the waiting list and tell you about the launch.",
+      "info_drivers": "Become a driver: submit an application and a manager will contact you. After approval the driver cabinet opens.",
+      "info_partner": "Partner program: invite drivers and passengers with your link and grow the service in your city. Cooperation and reward terms are set separately and are not a guarantee of income.",
+      "info_regions": "You can create a team in your city, become a regional representative or open the service in your country. Submit an application and a manager will explain the terms.",
+      "info_terms": "Cooperation and reward terms are agreed individually and set separately. They are not a guarantee of income.",
+      "info_news": "Project news will appear here. Right now we are launching the taxi city by city and collecting requests from passengers and drivers.",
+      "payment_tariffs": "Fares depend on the city and car class and will appear when the taxi starts in your city.",
+      "payment_methods": "Payment methods will be announced before launch in your city. The platform does not transfer money itself.",
+      "payment_receipts": "Receipts will appear after the first rides.",
+      "payment_settlements": "The platform does not transfer money itself. The settlement procedure with drivers will be announced before launch in the city.",
+      "payment_fees": "Fees and payment terms are set separately before launch in the city. The platform does not transfer money itself."
+    }
+  },
+  "rep": {
+    "levels": {
+      "country": "Country",
+      "region": "Region",
+      "district": "District",
+      "community": "Community / city"
+    },
+    "levelsOf": {
+      "country": "country",
+      "region": "region",
+      "district": "district",
+      "community": "community"
+    },
+    "levelsAcc": {
+      "country": "a country",
+      "region": "a region",
+      "district": "a district",
+      "community": "a community"
+    },
+    "choose": {
+      "country": "Choose a country",
+      "region": "Choose a region",
+      "district": "Choose a district",
+      "community": "Choose a city or community"
+    },
+    "enter": {
+      "country": "Enter representation",
+      "region": "Go to region",
+      "district": "Go to district",
+      "community": "View team"
+    },
+    "leader": "Leader",
+    "leaderOf": "Leader of the {level}",
+    "profile": "Leader profile",
+    "profileShort": "Profile",
+    "openCabinet": "Leader cabinet",
+    "noLeader": "There is no leader yet. Your application goes to the general queue of the administration.",
+    "noLeaderShort": "No leader yet",
+    "hasLeader": "Leader: {name}",
+    "emptyChildren": "Nothing here yet. Submit an application to open a representation.",
+    "team": "Lawyers and representatives",
+    "noTeam": "The team is still being formed.",
+    "roles": {
+      "lawyer": "Lawyer",
+      "representative": "Representative"
+    },
+    "modes": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Online and offline"
+    },
+    "actions": {
+      "lawyer": "Apply as a lawyer",
+      "join": "Join the team",
+      "consult": "Get a consultation",
+      "addCountry": "Add a country",
+      "openHere": "Apply to create a representation",
+      "openChild": "Open {level}"
+    },
+    "kinds": {
+      "lawyer": "Lawyer cabinet application",
+      "join": "Join a team",
+      "open": "Open a representation",
+      "consult": "Consultation request"
+    },
+    "hint": {
+      "lawyer": "Briefly about your experience and right to practise law",
+      "join": "Why you want to join, your experience",
+      "open": "Describe what you want to open and who you are",
+      "consult": "Describe your situation"
+    },
+    "specialization": "Specialization",
+    "mode": "Work format",
+    "placeName": "Name (country, region, district, city)",
+    "verifyNote": "A lawyer profile is published after the documents and the right to practise law are verified.",
+    "willGoToLeader": "The application goes to the leader: {name}",
+    "willGoGeneral": "There is no leader yet, so the application goes to the general queue.",
+    "sent": "Application sent",
+    "sentToLeader": "It was received by the leader: {name}. They will reply.",
+    "sentGeneral": "It is in the general queue of the administration. We will contact you.",
+    "duplicate": "This application was already sent and awaits an answer",
+    "notInList": "Not in the list",
+    "needUnit": "Choose at least a country from the list. If your country is missing, apply to open a representation.",
+    "flowLead": {
+      "lawyer": "Choose where you will work. The application goes to the leader of this level, or to the general queue if there is none yet.",
+      "join": "Choose the team you want to join.",
+      "open": "Choose where to open a representation, or enter a new place.",
+      "consult": "Choose the place where you need help. The request goes to the leader if there is one."
+    },
+    "leaderPage": {
+      "title": "Leader cabinet",
+      "back": "Back to project",
+      "mine": "Your representations",
+      "none": "You are not appointed as a leader yet. The administration appoints leaders.",
+      "inbox": "Applications to you",
+      "inboxEmpty": "No new applications",
+      "accept": "Accept",
+      "reject": "Reject",
+      "done": "Done",
+      "myApps": "My applications",
+      "myEmpty": "You have not submitted applications yet",
+      "status": {
+        "new": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "to": "Unit",
+      "phone": "Phone",
+      "spec": "Specialization",
+      "open": "Open"
+    },
+    "admin": {
+      "title": "Representations",
+      "subtitle": "Countries, regions, districts, communities and their leaders. Applications go to the leader, or to the general queue if there is none.",
+      "back": "Back to admin panel",
+      "add": "Add",
+      "addCountry": "Add a country",
+      "name": "Name",
+      "flag": "Flag (emoji)",
+      "leaderEmail": "Leader email",
+      "setLeader": "Assign",
+      "removeLeader": "Remove leader",
+      "delete": "Delete",
+      "confirmDelete": "Delete “{name}” with everything inside?",
+      "saved": "Saved",
+      "failed": "Failed",
+      "queue": "General application queue",
+      "queueEmpty": "The general queue is empty",
+      "noLeader": "no leader",
+      "leader": "Leader",
+      "child": "Add below",
+      "forbidden": "Administrators only",
+      "applicant": "Applicant"
+    }
+  },
+  "form": {
+    "country": "Country",
+    "city": "City",
+    "attach": "Attach photos",
+    "attached": "Photos attached: {count}",
+    "attachNote": "Up to 3 photos. Send documents when we contact you."
+  },
+  "realEstate": {
+    "text": {
+      "info_about": "The real estate agency brings together property, home goods and moving services in one place for Ukrainians in different countries. You can buy or rent a home, sell or give away items and find loaders and movers.",
+      "info_how": "Buy and rent property in “Buy property” and “Rent property”: choose the type, country and city, contact the owner or book a viewing. In “Everything for home” sell items or give them away for free. Need to move? Leave a request and see performers in your city.",
+      "info_news": "News, new features and platform updates will appear here."
+    },
+    "moving": {
+      "performers": "For performers",
+      "customers": "For customers",
+      "register": "Register as a performer",
+      "addServices": "Add your services",
+      "orders": {
+        "loaders": "Order loaders",
+        "disassembly": "Order furniture disassembly or assembly",
+        "transport": "Order transport",
+        "full_move": "Order a full relocation"
+      },
+      "address": "Address or district",
+      "what": "What needs to be done",
+      "when": "Date and time",
+      "photos": "Photos of furniture or items",
+      "submit": "Send request",
+      "sent": "Request sent",
+      "inCity": "Performers in {city}",
+      "noneInCity": "No performers in {city} yet. We will let you know when they appear."
+    }
+  },
+  "std": {
+    "info": "Information",
+    "about": "About the project",
+    "how": "How it works",
+    "earn": "How to earn here",
+    "rep": "Representatives by country and city",
+    "team": "Team",
+    "partner": "For partners: cooperation",
+    "inviteEmployer": "Invite an employer",
+    "news": "Project news",
+    "feedback": "Suggestions and complaints",
+    "suggest": "Suggest an improvement",
+    "review": "Leave a review",
+    "direction": "Suggest a new direction",
+    "addDept": "Add your department: apply",
+    "newDirection": "Suggest a new direction: submit a request",
+    "newCategory": "Suggest a new category: submit a request",
+    "becomeSpecialist": "Become a specialist: apply",
+    "complaint": "Submit a complaint",
+    "support": "Contact support",
+    "invite": "Invite friends",
+    "becomeTranslator": "Become a translator: apply",
+    "ownTeam": "Create your own team",
+    "howPlace": "How to submit a project",
+    "howInvestor": "How to become an investor",
+    "howSpecialist": "How to become a project specialist",
+    "becomeAgent": "Become a travel agent: apply",
+    "organizer": "Become a tour organizer: apply",
+    "partnerHotels": "Hotels: become a partner",
+    "partnerInsurance": "Insurance companies: become a partner",
+    "partnerShop": "Shops: become a partner",
+    "becomeVet": "Vets: become a specialist",
+    "becomeGroomer": "Groomers: become a specialist",
+    "partnerCarrier": "Carriers: become a partner",
+    "openShop": "Open your shop: apply",
+    "text": {
+      "about": "Everything for our people in one place: catalog, requests and contacts. The platform is free; the system never moves money between participants — payments are agreed directly.",
+      "how": "Pick a folder, browse listings or submit a request. Performers and administrators will see it; request status is shown in “My requests”. Always clarify details and check your partner before any deal.",
+      "earn": "Become a specialist, partner or representative. Submit an application — administrators will review it and get in touch. The platform is free; earnings depend on your own agreements with clients and no income is guaranteed.",
+      "news": "Project news will appear here. Follow updates and propose topics via “Suggestions and complaints”.",
+      "howPlace": "Submit an application with the project description, required amount and contacts. After administrator review the project appears in the catalog. The platform only introduces the parties and does not guarantee funding.",
+      "howInvestor": "Create an investor profile: budget, industries and participation formats. The profile can be open or hidden. Any investment carries risk — check projects yourself; the platform gives no financial advice and guarantees no profit.",
+      "howSpecialist": "Pick your specialty and apply with your experience and contacts. After review you will receive requests from project authors.",
+      "growth": "Clubs are a place to grow skills and learn. A specialist who completed training and holds the required qualification and license (where the law requires it) can apply to the “Jobs” project. A club course certificate is not automatically equal to a state qualification or license.",
+      "reward": "The platform does not guarantee any reward: its size and terms are agreed by the parties separately.",
+      "terms": "Supply terms (price, payment, delivery, deadlines) are agreed by the parties. The platform only helps find partners.",
+      "docs": "Some goods (agrochemicals, seeds, plant protection products) may require registration and permit documents under the law. Confidential contract terms do not become public automatically.",
+      "mission": "To unite farmers, producers, suppliers, buyers, trade representatives and logistics partners so Ukrainian producers reach new markets.",
+      "howProducers": "Create a sales request: product, volume, place, market and terms. After review it appears in the catalog; buyers and representatives can offer cooperation and the status is shown in “My requests”.",
+      "withProducers": "Represent producers in Ukraine or abroad, look for buyers and help with negotiations. Submit an application — administrators will contact you."
+    },
+    "cl_interest": "Interest clubs",
+    "cl_communities": "Countries and communities",
+    "cl_list": "Local communities by city",
+    "cl_join": "Join the club",
+    "cl_lead": "Become a representative or lead a branch",
+    "cl_board": "Bulletin board",
+    "cl_shop": "Club online shop",
+    "cl_bloggers": "Bloggers and live streams",
+    "cl_courses": "Online courses and training",
+    "cl_amateur": "Amateur courses",
+    "cl_certified": "Specialized courses with certificates",
+    "cl_events": "Events and meetups",
+    "cl_experts": "Experts and specialists",
+    "cl_team": "Join the team",
+    "cl_newClub": "Suggest a new club",
+    "cl_all": "All platform clubs",
+    "cl_shops": "Online shops",
+    "createClub": "How to create your own club",
+    "becomeBlogger": "Become a club blogger: apply",
+    "teachCourses": "How to run courses: apply",
+    "growth": "Professional development opportunities",
+    "reward": "Representation and reward",
+    "terms": "Supply terms",
+    "docs": "Documents and certificates",
+    "mission": "Mission and goals of the alliance",
+    "howProducers": "How producers find sales markets",
+    "intlRep": "Become an international trade representative",
+    "withProducers": "Cooperation with producers",
+    "withLogistics": "Cooperation with logistics companies"
+  },
+  "f": {
+    "consult": {
+      "title": "Get a consultation"
+    },
+    "join": {
+      "title": "Become a specialist: apply"
+    },
+    "service": {
+      "title": "Order a service"
+    },
+    "training": {
+      "title": "Sign up for training"
+    },
+    "newDirection": {
+      "title": "Suggest a new direction"
+    },
+    "partnerApply": {
+      "title": "Become a partner: apply"
+    },
+    "shopApply": {
+      "title": "Add your shop: apply"
+    },
+    "carrierAdd": {
+      "title": "Add a carrier: apply"
+    },
+    "becomeSpecialist": {
+      "title": "Become a specialist: apply"
+    },
+    "becomeAgent": {
+      "title": "Become a travel agent: apply"
+    },
+    "addSection": {
+      "title": "Suggest a new section"
+    },
+    "addDept": {
+      "title": "Add your department: apply"
+    },
+    "addPlace": {
+      "title": "Add your place"
+    },
+    "serviceRequest": {
+      "title": "Submit a service request"
+    },
+    "bizHelp": {
+      "title": "Help choosing a project"
+    },
+    "masterApply": {
+      "title": "Become a master or specialist: apply"
+    },
+    "orderWork": {
+      "title": "Order a job"
+    },
+    "offerWork": {
+      "title": "Workers needed: submit a request"
+    },
+    "rentRequest": {
+      "title": "Rent: submit a request"
+    },
+    "jobSeeker": {
+      "title": "Looking for a vacancy: submit a request"
+    },
+    "carPick": {
+      "title": "Car selection: submit a request"
+    },
+    "carRentRequest": {
+      "title": "Rent a car: submit a request"
+    },
+    "partnerStore": {
+      "title": "Add a shop or warehouse: apply"
+    },
+    "partnerSearch": {
+      "title": "Find a partner business"
+    },
+    "marketSearch": {
+      "title": "Find a sales market"
+    },
+    "investApply": {
+      "title": "Submit a request"
+    },
+    "projectContact": {
+      "title": "Contact the project author"
+    },
+    "translateRequest": {
+      "title": "Order a translation"
+    },
+    "translateOfficial": {
+      "title": "Order an official translation"
+    },
+    "translateDocs": {
+      "title": "Order document translation"
+    },
+    "translateText": {
+      "title": "Order text translation"
+    },
+    "newLanguage": {
+      "title": "Suggest a new language"
+    },
+    "becomeTranslator": {
+      "title": "Become a translator: apply"
+    },
+    "tourRequest": {
+      "title": "Submit a tour request"
+    },
+    "seatRequest": {
+      "title": "Reserve a seat"
+    },
+    "askOrganizer": {
+      "title": "Ask the organizer"
+    },
+    "bookTour": {
+      "title": "Book a tour"
+    },
+    "checkSeats": {
+      "title": "Check free seats"
+    },
+    "pickRest": {
+      "title": "Pick a holiday for me"
+    },
+    "ticketRequest": {
+      "title": "Find tickets"
+    },
+    "insuranceRequest": {
+      "title": "Request insurance quote"
+    },
+    "becomeOrganizer": {
+      "title": "Become a tour organizer: apply"
+    },
+    "lesson": {
+      "title": "Sign up for a lesson"
+    },
+    "appointment": {
+      "title": "Book an appointment"
+    },
+    "groomRequest": {
+      "title": "Order grooming"
+    },
+    "sittingRequest": {
+      "title": "Need pet sitting: submit a request"
+    },
+    "walkRequest": {
+      "title": "Walking needed: submit a request"
+    },
+    "bookPlace": {
+      "title": "Book a place"
+    },
+    "petTransport": {
+      "title": "Order animal transport"
+    },
+    "volunteer": {
+      "title": "Offer help"
+    },
+    "charityPropose": {
+      "title": "Propose an organization or fundraiser"
+    },
+    "tradeProducer": {
+      "title": "Producer and seller application"
+    },
+    "organizerSelf": {
+      "title": "I can organize it myself: apply"
+    },
+    "organizerMember": {
+      "title": "Join a team: apply"
+    },
+    "organizerVenue": {
+      "title": "I have a fair venue: apply"
+    },
+    "mine": {
+      "title": "My requests"
+    },
+    "sent": "Request sent",
+    "tooLong": "Text is too long, please shorten it",
+    "mineEmpty": "No requests yet",
+    "appraisalRequest": {
+      "title": "Request an appraisal"
+    },
+    "joinClub": {
+      "title": "Join the club: form"
+    },
+    "becomeBlogger": {
+      "title": "Become a club blogger: apply"
+    },
+    "offerCourse": {
+      "title": "Offer a course: apply"
+    },
+    "newClub": {
+      "title": "Suggest a new club"
+    },
+    "farmApply": {
+      "title": "Add your farm: apply"
+    },
+    "supplierApply": {
+      "title": "Add a company: apply"
+    },
+    "marketRequest": {
+      "title": "New sales market request"
+    },
+    "helpBuyer": {
+      "title": "Offer help finding a buyer"
+    },
+    "addCompany": {
+      "title": "Add a company: apply"
+    },
+    "becomeRepresentative": {
+      "title": "Become a representative: fill in the form"
+    },
+    "commercialOffer": {
+      "title": "Create a commercial offer"
+    },
+    "routeCalc": {
+      "title": "Delivery quote request"
+    },
+    "shareStory": {
+      "title": "Share a cooperation story"
+    },
+    "addGrant": {
+      "title": "Add a grant or program"
+    },
+    "addOpportunity": {
+      "title": "Add a found opportunity"
+    },
+    "addSuccess": {
+      "title": "Add a success story"
+    },
+    "applyCourse": {
+      "title": "Enroll in a course"
+    },
+    "becomeAuthor": {
+      "title": "Become an author or host"
+    },
+    "becomeTester": {
+      "title": "Become a tester"
+    },
+    "createGroup": {
+      "title": "Create a study group"
+    },
+    "createTeam": {
+      "title": "Create a specialist team"
+    },
+    "dateRequest": {
+      "title": "Dating request"
+    },
+    "devApply": {
+      "title": "Specialist application"
+    },
+    "grantConsult": {
+      "title": "Grant consultation"
+    },
+    "grantFind": {
+      "title": "Grant search"
+    },
+    "grantIdea": {
+      "title": "Help with a project idea"
+    },
+    "grantOrg": {
+      "title": "Help for an organization"
+    },
+    "grantSpecialist": {
+      "title": "Become a grant specialist"
+    },
+    "grantWrite": {
+      "title": "Help writing an application"
+    },
+    "hostApply": {
+      "title": "Become a host or blogger"
+    },
+    "joinProject": {
+      "title": "Join a project"
+    },
+    "joinTeam": {
+      "title": "Join the team"
+    },
+    "nominate": {
+      "title": "Nominate a person"
+    },
+    "nominateOther": {
+      "title": "Nominate a person"
+    },
+    "participate": {
+      "title": "Participation request"
+    },
+    "proposeCoop": {
+      "title": "Propose cooperation"
+    },
+    "proposeProject": {
+      "title": "Propose a project"
+    },
+    "readyCoop": {
+      "title": "We are ready to cooperate"
+    },
+    "recordApply": {
+      "title": "Submit a record"
+    },
+    "recordOther": {
+      "title": "Submit someone else’s record"
+    },
+    "specialistApply": {
+      "title": "Specialist application"
+    },
+    "teamApply": {
+      "title": "Create your own team"
+    },
+    "stepRequired": "Fill in the required fields of this step",
+    "confirmRequired": "Please confirm the information is correct",
+    "review": "Review and confirm",
+    "reviewLead": "Check the request before publishing.",
+    "confirm": "I confirm the information is correct",
+    "step": "Step {n} of {total}",
+    "back": "Back",
+    "next": "Next",
+    "publish": "Publish request",
+    "history": "Status history",
+    "historyHide": "Hide history"
+  },
+  "fld": {
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "country": "Country",
+    "region": "Region",
+    "city": "City",
+    "address": "Address",
+    "desc": "Description",
+    "what": "What needs to be done",
+    "text": "Text or document description",
+    "exp": "Experience",
+    "services": "Services",
+    "character": "Animal temperament",
+    "care": "Care details",
+    "routes": "Routes",
+    "categories": "Product categories",
+    "delivery": "Delivery",
+    "goal": "Goal and need",
+    "resources": "Resources and capabilities",
+    "date": "Date",
+    "dateFrom": "Start date",
+    "dateTo": "End date",
+    "back": "Return date",
+    "title": "Title",
+    "budget": "Budget",
+    "deadline": "Deadline",
+    "term": "Term",
+    "site": "Website or social network",
+    "company": "Company",
+    "price": "Price",
+    "schedule": "Schedule",
+    "direction": "Direction",
+    "specialty": "Specialty",
+    "education": "Education",
+    "languagePairs": "Language pairs",
+    "srcLang": "From language",
+    "dstLang": "To language",
+    "docType": "Document type",
+    "pet": "Animal (kind, breed)",
+    "age": "Age",
+    "medical": "Health and notes",
+    "from": "From",
+    "to": "To",
+    "class": "Class",
+    "baggage": "Baggage",
+    "ages": "Travelers’ ages",
+    "purpose": "Purpose of trip",
+    "countries": "Countries",
+    "hotel": "Hotel",
+    "children": "Children (number, ages)",
+    "car": "Car (make, model)",
+    "jobWanted": "Desired job",
+    "salary": "Desired pay",
+    "startWhen": "When I can start",
+    "volumes": "Volumes",
+    "terms": "Terms",
+    "buy": "What you are looking for",
+    "product": "Product",
+    "amount": "Amount",
+    "shopName": "Shop name",
+    "products": "Products",
+    "cargo": "What you carry",
+    "org": "Organization",
+    "proof": "Proof of activity",
+    "report": "Reporting",
+    "parent": "Parent section",
+    "exportCountries": "Export countries",
+    "adults": "Adults",
+    "days": "Days",
+    "count": "Number of people",
+    "location": "Where you work",
+    "activity": "Type of activity",
+    "productKind": "Product kind",
+    "exportDocs": "Export documents",
+    "exportExp": "Export experience",
+    "hasStore": "Have a shop abroad",
+    "sellsUa": "Sell Ukrainian goods",
+    "restKind": "Type of holiday",
+    "need": "What you need",
+    "freq": "How often",
+    "supplier": "Where to look for a supplier",
+    "export": "Export",
+    "format": "Format",
+    "official": "Official certified translation",
+    "storeKind": "What you add",
+    "deptType": "Department type",
+    "placeLevel": "What you add",
+    "item": "Item or collection",
+    "district": "District or locality",
+    "interests": "About you and interests",
+    "courseKind": "Course type",
+    "duration": "Duration",
+    "farmName": "Farm name",
+    "productName": "Product name",
+    "category": "Category",
+    "sort": "Variety",
+    "quality": "Quality",
+    "volume": "Volume (tons or units)",
+    "minBatch": "Minimum batch",
+    "readyPeriod": "Readiness period",
+    "marketWhere": "Target market (Ukraine, regions, countries)",
+    "buyers": "Preferred buyers",
+    "transport": "Transport type",
+    "temp": "Temperature requirements",
+    "payTerms": "Payment terms",
+    "contactPerson": "Contact person",
+    "sphere": "Field of activity",
+    "source": "Source of information",
+    "comment": "Comment",
+    "languages": "Languages",
+    "help": "Help you can offer",
+    "area": "Area, ha",
+    "season": "Harvest period",
+    "supply": "Supply capability",
+    "buyer": "Buyer",
+    "prodForm": "Product form",
+    "applicant": "Applicant",
+    "bio": "Short biography",
+    "consent": "Consent to publish",
+    "devices": "Devices for testing",
+    "evidence": "Evidence (links)",
+    "live": "I run live sessions",
+    "merit": "Why notable",
+    "needs": "What the project needs",
+    "offerKind": "Offer type",
+    "orgType": "Who you are",
+    "place": "Place",
+    "portfolio": "Portfolio link",
+    "profession": "Profession / activity",
+    "recordDate": "Date",
+    "recordValue": "Result / value",
+    "regions": "Regions of work",
+    "seeking": "What you are looking for",
+    "skills": "Skills",
+    "teach": "I teach",
+    "termsKind": "Terms",
+    "topic": "Topic",
+    "want": "What you want to do",
+    "wishes": "Wishes",
+    "witnesses": "Witnesses / confirmation",
+    "regDocNumber": "Registration / permit document number"
+  },
+  "fopt": {
+    "location": {
+      "ua": "In Ukraine",
+      "abroad": "Abroad"
+    },
+    "activity": {
+      "producer": "Producer",
+      "seller": "Seller",
+      "shopOwner": "Shop owner",
+      "farm": "Farmer",
+      "master": "Craftsman",
+      "other": "Other"
+    },
+    "productKind": {
+      "food": "Food",
+      "meatDairy": "Meat and dairy",
+      "fish": "Fish",
+      "sweets": "Sweets",
+      "drinks": "Drinks",
+      "textile": "Textile and clothing",
+      "souvenirs": "Souvenirs",
+      "other": "Other"
+    },
+    "exportDocs": {
+      "yes": "Yes",
+      "no": "No",
+      "partly": "Partly"
+    },
+    "exportExp": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "hasStore": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "sellsUa": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "restKind": {
+      "sea": "Sea",
+      "family": "Family",
+      "romantic": "Romantic",
+      "excursion": "Sightseeing",
+      "active": "Active",
+      "mountain": "Mountains",
+      "other": "Other"
+    },
+    "need": {
+      "services": "Services",
+      "goods": "Goods",
+      "suppliers": "Suppliers",
+      "staff": "Staff",
+      "export": "Export",
+      "purchases": "Purchases",
+      "other": "Other"
+    },
+    "freq": {
+      "once": "One time",
+      "regular": "Regularly"
+    },
+    "supplier": {
+      "local": "In my country",
+      "abroad": "Abroad",
+      "any": "Any"
+    },
+    "export": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "format": {
+      "online": "Online",
+      "offline": "Offline",
+      "both": "Both"
+    },
+    "official": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "storeKind": {
+      "store": "Shop",
+      "warehouse": "Warehouse"
+    },
+    "deptType": {
+      "main": "Main department",
+      "sub": "Sub-department"
+    },
+    "placeLevel": {
+      "country": "Country",
+      "region": "Region",
+      "city": "City",
+      "breed": "Breed"
+    },
+    "courseKind": {
+      "amateur": "Amateur",
+      "certified": "Specialized with certificate"
+    },
+    "prodForm": {
+      "fresh": "Fresh",
+      "frozen": "Frozen",
+      "processed": "Processed",
+      "dried": "Dried",
+      "other": "Other"
+    },
+    "applicant": {
+      "person": "Individual",
+      "entrepreneur": "Entrepreneur",
+      "ngo": "NGO",
+      "fund": "Fund",
+      "veteran": "Veteran / military",
+      "other": "Other"
+    },
+    "consent": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "live": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "teach": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "offerKind": {
+      "land": "Land plot",
+      "house": "House / housing",
+      "village": "Abandoned village",
+      "farm": "Farm",
+      "program": "Support program"
+    },
+    "orgType": {
+      "organization": "Organization",
+      "business": "Business",
+      "team": "Team",
+      "person": "Person / specialist",
+      "community": "Community"
+    },
+    "termsKind": {
+      "free": "Free",
+      "preferential": "Preferential",
+      "rent": "Rent",
+      "buy": "Purchase"
+    }
+  },
+  "fh": {
+    "where": "Where you are",
+    "ifUa": "If you are in Ukraine",
+    "ifAbroad": "If you are abroad",
+    "contacts": "Contacts",
+    "product": "Step 1. Product",
+    "volume": "Step 2. Volume",
+    "form": "Step 3. Product form",
+    "place": "Step 4. Place of production",
+    "market": "Step 5. Sales market",
+    "terms": "Step 7. Logistics and commercial terms",
+    "buyers": "Step 6. Buyers",
+    "mrContacts": "Step 8. Contacts and documents"
+  },
+  "fnote": {
+    "privacy": "Do not enter passport or document numbers in the form. Hand originals directly to the translator after agreeing.",
+    "tradeNoGuarantee": "The application does not guarantee participation in a fair. Terms are agreed with the organizer.",
+    "marketNoGuarantee": "The platform does not guarantee finding a buyer and takes no part in deals; parties agree terms themselves. Check your data before submitting."
+  },
+  "drill": {
+    "showAll": "Show all",
+    "byPlace": "Choose by place",
+    "count": "{count} ads",
+    "pick": {
+      "country": "Choose a country",
+      "region": "Choose a region",
+      "city": "Choose a city",
+      "breed": "Choose a breed"
+    },
+    "add": {
+      "country": "Add a country",
+      "region": "Add a region",
+      "city": "Add a city",
+      "breed": "Add a breed"
+    }
+  },
+  "jobs": {
+    "text": {
+      "info_about": "Jobs for our people in different countries: vacancies and candidates in one catalog.",
+      "info_how": "Employers add vacancies by country and region. Job seekers browse or submit a request, which appears in “My requests”. Check the employer before traveling or paying for any services."
+    }
+  },
+  "cars": {
+    "text": {
+      "info_about": "Buying, renting and everything for cars: owner listings and specialized online shops.",
+      "info_how": "Choose a section, filter by country and region, contact the owner. Can’t find it — submit a selection request. Check the car and papers before buying."
+    }
+  },
+  "shops": {
+    "text": {
+      "info_about": "Ukrainian goods by department: food, clothing, household chemicals, souvenirs, electronics, plus delivery and partner shops and warehouses abroad.",
+      "info_how": "Open a department, pick a sub-department and a partner shop. Shop owners can apply for their own department. Order delivery via carriers in “Delivery and logistics”."
+    }
+  },
+  "health": {
+    "text": {
+      "info_about": "Doctors, nutrition, sport, psychology, recovery and health goods — specialists who understand our people.",
+      "info_how": "Choose a direction, find a specialist and request a consultation. Information here does not replace diagnosis or treatment: see a doctor for medical care."
+    },
+    "intro": "Doctors, nutrition, sport, psychology, recovery and health goods. This is information, not medical advice."
+  },
+  "helperHour": {
+    "text": {
+      "info_about": "Helper for an hour: masters, loaders and tool rental near you.",
+      "info_how": "Describe what needs doing and performers in your city will respond. Masters create a cabinet and form teams in a city, region or country. Agree terms and payment directly.",
+      "cabinet_create": "Submit the “Become a master or specialist” application. After administrator review you get a cabinet: profile, services, orders, reviews and settings."
+    }
+  },
+  "translator": {
+    "text": {
+      "info_about": "Translators and translation of documents and texts by language and country.",
+      "info_how": "Choose a language and submit a request with description and deadline. Send only a description via the form; hand over original documents directly to the translator after agreeing."
+    }
+  },
+  "turnkey": {
+    "text": {
+      "info_about": "Business Speed — a set of services to launch and grow a business: specialists, partners and other platform projects.",
+      "info_how": "Pick business specialists, request partner matching or find a sales market. Administrators will respond to your request."
+    },
+    "intro": "Business Speed — help starting and growing a business: specialists, partners, sales markets and platform projects."
+  },
+  "invest": {
+    "text": {
+      "info_about": "A place where project authors, investors and specialists meet. The platform only introduces parties, takes no part in deals and guarantees no funding or profit.",
+      "info_how": "Authors submit projects, investors create a profile (open or hidden), specialists offer services. Parties settle everything themselves; investing involves risk."
+    },
+    "intro": "Projects, investors and specialists. The platform only introduces parties; investing involves risk."
+  },
+  "travel": {
+    "text": {
+      "info_about": "Tours, hot offers, tickets and insurance for our people.",
+      "info_how": "Submit a request for a tour, holiday selection or tickets — the reply appears in “My requests”. Hot offers disappear after the date passes or when no seats remain."
+    },
+    "intro": "Tours, hot offers, tickets and insurance. Pick a holiday or submit a request."
+  },
+  "pets": {
+    "text": {
+      "info_about": "Everything for pets: animals, shops, vets, training, grooming, pet sitting, travel and help for animals.",
+      "info_how": "Choose an animal type and breed, shops or specialists, submit service requests. Check documents and terms before buying or boarding.",
+      "travel_docs": "Before traveling with an animal check destination rules: microchip, rabies vaccination, veterinary certificate. Rules change — confirm with official services.",
+      "travel_rules": "Carriers have their own rules on weight, carriers and breeds. Confirm terms with the airline or carrier in advance."
+    },
+    "intro": "Animals, shops, vets, training, grooming, pet sitting and help for animals — all in one place."
+  },
+  "trade": {
+    "text": {
+      "info_about": "Fairs of Ukrainian products worldwide: producer and seller applications and fair organizers.",
+      "info_how": "Producers apply, organizers in countries or cities form teams and venues. Participation in fairs is not guaranteed; details are agreed with the organizer."
+    },
+    "intro": "Fairs of Ukrainian products abroad: producers apply, organizers form teams and venues."
+  },
+  "clubs": {
+    "text": {
+      "info_about": "Interest clubs: hunters, anglers, pet lovers, drivers, motorcyclists, cyclists, knitting, cooking and pastry. Each club has communities by country and city, a bulletin board, shop, bloggers, courses, events and specialists.",
+      "info_how": "Pick a club, join a local community or apply for a branch or representation. Applications for leadership, new clubs and directions are moderated. Only lawful goods and services are allowed."
+    },
+    "intro": "Interest clubs: chat, ads, shops, training, events and specialists in your city and country."
+  },
+  "antiques": {
+    "text": {
+      "info_about": "The Antiques shop brings together owners of antique and precious items, collectors, buyers, shops, appraisers, experts and masters from different countries.",
+      "info_how": "Post listings in online shops, add an offline shop, find an appraiser or expert. The platform does not allow illegal trade in cultural property, archaeological finds or precious metals contrary to law; check provenance and export rules."
+    },
+    "intro": "Antiques and precious items: online and offline shops, appraisers, experts and masters. Illegal trade in cultural property is prohibited."
+  },
+  "exportAlliance": {
+    "text": {
+      "info_about": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets.",
+      "info_how": "Choose a folder: farmers, suppliers or sales markets. Add a farm or company, create a sales request, find a buyer or carrier. Check your partner and documents before a deal; the platform takes no part in payments."
+    },
+    "intro": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets."
+  },
+  "dating": {
+    "text": {
+      "info_about": "An international project for dating, communication and meetings for Ukrainians worldwide: meet people, find friends or a partner, travel and create new opportunities together.",
+      "info_earn": "Organizing events and dates, streams and themed broadcasts, growing your channel, advertising and attracting participants. Partner rewards follow program rules only; income is not guaranteed."
+    },
+    "intro": "An international project for dating, communication and meetings for Ukrainians worldwide."
+  },
+  "mystic": {
+    "text": {
+      "info_about": "An international platform for mystic, esoteric and spiritual specialists, bloggers and hosts. Find a specialist, join an open broadcast or book a consultation.",
+      "info_earn": "Own consultations, paid courses and workshops, themed events, live broadcasts, content, partner programs and advertising. Terms, commission and payouts are stated for each model; earnings are not guaranteed. Esoteric consultations are not medical, legal or financial help, and predictions are not guaranteed facts."
+    },
+    "intro": "Specialists, practitioners, broadcasts and training. Consultations do not replace medical, legal or financial help; predictions are not guaranteed facts."
+  },
+  "grants": {
+    "text": {
+      "donors_howto": "How to find grants, how grant support works, key rules and tips. Verify the grantor on its official site; nobody can guarantee a grant. Never pay for a “guaranteed grant”.",
+      "info_about": "Purpose and options of the Grants section: one place to find funding, a specialist, help with an idea, partners and success stories. User information is published after administrator review.",
+      "info_earn": "Specialists are paid for their services, consultants for consultations, partners for agreed partner services. Terms and commissions are transparent and agreed separately; income is not guaranteed.",
+      "info_learning": "Materials, instructions and training programs on preparing grant applications will appear here."
+    },
+    "intro": "Grants, grantors, grant writing specialists and success stories. The platform does not guarantee any grant."
+  },
+  "beauty": {
+    "text": {
+      "info_about": "An international platform for beauty masters, specialists, teachers, bloggers and shops. Find specialists, book services, learn and grow your own business.",
+      "info_earn": "Masters get clients and bookings, teachers sell training, bloggers get audience and advertising, shops sell goods. Partner programs, advertising and commissions apply only on agreed terms; income is not guaranteed.",
+      "info_teamTraining": "Instructions and training materials for the project team will appear here."
+    },
+    "intro": "Masters, training, shops and jobs in the beauty industry. A course document is not a medical license or permission for invasive procedures."
+  },
+  "notable": {
+    "text": {
+      "info_about": "An international publishing project about Ukrainians, their achievements, stories and records. Two publications: the magazine and the Ukrainian Book of Records; the magazine is issued quarterly with an annual special edition.",
+      "info_how": "Candidate selection, verification of information and evidence, editorial work and publication. Personal materials are published only with the person’s consent and editorial review; applying does not mean automatic recognition of a record.",
+      "info_earn": "Opportunities for editors, journalists, photographers, videographers, designers, managers, representatives and coordinators: job description, requirements, format and payment terms are stated separately. Registration or joining the team does not guarantee income."
+    },
+    "intro": "Stories of notable Ukrainians, their achievements and records. Materials are published only with the person’s consent."
+  },
+  "mediaNetwork": {
+    "text": {
+      "laws_howto": "Statuses are shown separately so a bill is not confused with a law in force: pending, adopted, rejected, in force. Each post names the author, country, date, source and date of verification.",
+      "info_about": "An international media network where every active person can become a news author, journalist or blogger for their community. Everyone can not only read but also create material and grow an audience.",
+      "info_earn": "Cooperation terms, partnerships and reward models are approved separately; earnings are not guaranteed."
+    },
+    "intro": "An international media network: authors, events, laws, community life. Materials are moderated."
+  },
+  "cooperatives": {
+    "text": {
+      "earn_business": "Creating enterprises and cooperative farms. Describes activity, cooperation terms, required resources, how to join and income principles, plus risks and costs. Income is not guaranteed by joining: it depends on the project, contracts and profit distribution.",
+      "earn_production": "Growing, processing and selling products within cooperative projects. Terms, risks and profit distribution are set per project; income is not guaranteed.",
+      "earn_building": "Works, services and joint construction projects. Payment terms and liabilities are fixed by contract; income is not guaranteed.",
+      "earn_partnership": "Finding partners, orders and clients. Parties agree cooperation terms; income is not guaranteed."
+    },
+    "intro": "Joint projects, land, housing, revival and specialist teams. Land and housing offers show the source and legal status; income is not guaranteed."
+  },
+  "apps": {
+    "text": {
+      "info_about": "An international platform uniting Ukrainians around apps, programs and games: share useful apps, propose ideas, find developers and testers, build teams.",
+      "info_earn": "Participation, reward and revenue-sharing rules are set for each joint project. Registration does not guarantee payment."
+    },
+    "intro": "Apps, ideas, developers and testers. The “Our developments” showcase contains the project’s own products only."
+  },
+  "rebuild": {
+    "text": {
+      "earn_building": "Participation in construction and restoration projects. Charity programs, paid work, commercial orders and investments are different things: terms and payment are stated separately; income is not guaranteed.",
+      "earn_production": "Creating enterprises and production. Describes needed resources, who can join, how pay or profit is formed and where to apply.",
+      "earn_supply": "Supply of building materials, equipment and products. Parties agree cooperation terms.",
+      "earn_partnership": "Cooperation with foreign funds and companies. Terms and documents are agreed separately."
+    },
+    "intro": "We unite international funds, organizations, businesses and people to rebuild Ukraine."
+  },
+  "board": {
+    "q": "Product (strawberries, apples, grain…)",
+    "country": "Country or region",
+    "search": "Find requests",
+    "empty": "No published requests match this search.",
+    "offer": "Suggest a buyer",
+    "privacy": "The producer’s contacts are not shown. The administration receives your offer and passes it on; the platform does not guarantee any reward."
+  },
+  "neg": {
+    "empty": "No negotiations yet.",
+    "to": "To",
+    "from": "From",
+    "pickPartner": "Choose a partner from the list",
+    "created": "Negotiation created",
+    "partner": "Partner (producer, buyer, representative)",
+    "change": "Change",
+    "search": "Search by company or name",
+    "titleField": "Negotiation topic",
+    "firstMessage": "First message (optional)",
+    "start": "Start negotiation",
+    "noMoney": "The platform does not process payments or guarantee a deal: it is a space for terms, messages and documents.",
+    "saveTerms": "Save terms",
+    "termsReset": "After terms change, both confirmations are reset.",
+    "accept": "Accept",
+    "editTerms": "Edit terms",
+    "agree": "I agree to the terms",
+    "decline": "Decline",
+    "youAgreed": "You confirmed the terms; waiting for the other party.",
+    "otherAgreed": "The other party confirmed the terms.",
+    "agreedNote": "Both parties confirmed the terms. Further arrangements and payment are between the parties outside the platform.",
+    "history": "History and messages",
+    "noMessages": "No messages yet.",
+    "termsChanged": "Terms changed",
+    "you": "You",
+    "write": "Message",
+    "attach": "Document (image)",
+    "send": "Send",
+    "attachNote": "Documents are attached as images (scans, certificate photos).",
+    "status": {
+      "open": "New",
+      "active": "Active",
+      "agreed": "Terms agreed",
+      "declined": "Declined",
+      "closed": "Closed"
+    },
+    "event": {
+      "agree": "Confirmed the terms",
+      "agreed": "Both parties confirmed the terms",
+      "active": "Accepted",
+      "declined": "Declined the negotiation",
+      "closed": "Closed the negotiation"
+    },
+    "f": {
+      "product": "Product",
+      "volume": "Volume",
+      "price": "Price and currency",
+      "payTerms": "Payment terms",
+      "delivery": "Delivery terms"
+    }
+  },
+  "cabinet": {
+    "title": "My cabinet",
+    "profile": "My profile",
+    "companies": "My farms and companies",
+    "products": "My products",
+    "requests": "My requests",
+    "offers": "My offers",
+    "contacts": "My buyers and contacts",
+    "negotiations": "My negotiations",
+    "partners": "My partners",
+    "documents": "My documents",
+    "saved": "Saved ads",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "map": {
+    "title": "Participants map",
+    "lead": "Only participants who allowed showing their location are listed. Exact addresses and contacts are not displayed.",
+    "empty": "No participants have allowed map display yet.",
+    "allCountries": "All countries",
+    "count": "Participants: {count}",
+    "open": "Open on map"
+  },
+  "tools": {
+    "cabinet": "Cabinet",
+    "search": "Search",
+    "map": "Map",
+    "talks": "Negotiations"
+  }
+}

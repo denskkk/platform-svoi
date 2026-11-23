@@ -19,6 +19,16 @@ import uk_catalog from '../../messages/uk/catalog.json'
 import uk_chat from '../../messages/uk/chat.json'
 import uk_favorites from '../../messages/uk/favorites.json'
 import uk_feed from '../../messages/uk/feed.json'
+import uk_projects from '../../messages/uk/projects.json'
+import uk_listings from '../../messages/uk/listings.json'
+import uk_business from '../../messages/uk/business.json'
+import uk_search from '../../messages/uk/search.json'
+import uk_staff from '../../messages/uk/staff.json'
+import uk_organizations from '../../messages/uk/organizations.json'
+import uk_companies from '../../messages/uk/companies.json'
+import uk_clubs from '../../messages/uk/clubs.json'
+import uk_deals from '../../messages/uk/deals.json'
+import uk_cabinet from '../../messages/uk/cabinet.json'
 import uk_contacts from '../../messages/uk/contacts.json'
 import uk_admin from '../../messages/uk/admin.json'
 import uk_api from '../../messages/uk/api.json'
@@ -44,6 +54,16 @@ import en_catalog from '../../messages/en/catalog.json'
 import en_chat from '../../messages/en/chat.json'
 import en_favorites from '../../messages/en/favorites.json'
 import en_feed from '../../messages/en/feed.json'
+import en_projects from '../../messages/en/projects.json'
+import en_listings from '../../messages/en/listings.json'
+import en_business from '../../messages/en/business.json'
+import en_search from '../../messages/en/search.json'
+import en_staff from '../../messages/en/staff.json'
+import en_organizations from '../../messages/en/organizations.json'
+import en_companies from '../../messages/en/companies.json'
+import en_clubs from '../../messages/en/clubs.json'
+import en_deals from '../../messages/en/deals.json'
+import en_cabinet from '../../messages/en/cabinet.json'
 import en_contacts from '../../messages/en/contacts.json'
 import en_admin from '../../messages/en/admin.json'
 import en_api from '../../messages/en/api.json'
@@ -73,6 +93,16 @@ const uk = {
   chat: uk_chat,
   favorites: uk_favorites,
   feed: uk_feed,
+  projects: uk_projects,
+  listings: uk_listings,
+  business: uk_business,
+  search: uk_search,
+  staff: uk_staff,
+  organizations: uk_organizations,
+  companies: uk_companies,
+  clubs: uk_clubs,
+  deals: uk_deals,
+  cabinet: uk_cabinet,
   contacts: uk_contacts,
   admin: uk_admin,
   api: uk_api,
@@ -101,6 +131,16 @@ const en = {
   chat: en_chat,
   favorites: en_favorites,
   feed: en_feed,
+  projects: en_projects,
+  listings: en_listings,
+  business: en_business,
+  search: en_search,
+  staff: en_staff,
+  organizations: en_organizations,
+  companies: en_companies,
+  clubs: en_clubs,
+  deals: en_deals,
+  cabinet: en_cabinet,
   contacts: en_contacts,
   admin: en_admin,
   api: en_api,
@@ -111,4 +151,14 @@ const dictionaries: Record<Locale, Messages> = { uk, en }
 
 export function getMessages(locale: Locale): Messages {
   return dictionaries[locale]
+}
+
+// Для браузера: без серверних повідомлень API (api.*) — вони не потрібні клієнту й зменшують кожну сторінку
+const clientDictionaries: Record<Locale, Messages> = {
+  uk: Object.fromEntries(Object.entries(uk).filter(([k]) => k !== 'api')) as unknown as Messages,
+  en: Object.fromEntries(Object.entries(en).filter(([k]) => k !== 'api')) as unknown as Messages,
+}
+
+export function getClientMessages(locale: Locale): Messages {
+  return clientDictionaries[locale]
 }

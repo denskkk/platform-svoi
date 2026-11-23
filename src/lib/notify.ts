@@ -5,6 +5,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { isBlockedBetween } from '@/lib/blocks';
 
 export type FeedNotificationType = 'post_like' | 'post_comment' | 'new_follower';
 
@@ -24,6 +25,7 @@ export async function notifyFeed(params: {
   const { type, recipientId, actorId, postId, message } = params;
   if (recipientId === actorId) return;
   try {
+    if (await isBlockedBetween(recipientId, actorId)) return;
     // Не спамимо: той самий лайк/підписка не дублюється, поки попереднє сповіщення не прочитане
     if (type !== 'post_comment') {
       const duplicate = await prisma.notification.findFirst({

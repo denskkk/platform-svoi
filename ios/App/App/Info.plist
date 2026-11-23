@@ -49,5 +49,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Камера потрібна, щоб знімати фото, відео та історії.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Мікрофон потрібен, щоб записувати звук у відео та історіях.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Доступ до галереї потрібен, щоб вибрати фото й відео для публікації.</string>
 </dict>
 </plist>

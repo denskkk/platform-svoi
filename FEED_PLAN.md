@@ -7,11 +7,12 @@ Branch: `feature/social-feed`. Not deployed, not published.
 - API: `GET /api/feed`, `POST /api/posts`, `DELETE /api/posts/:id`, `POST|DELETE /api/posts/:id/like`, `GET|POST|DELETE /api/posts/:id/comments`, `GET|POST|DELETE /api/follows`.
 - Permissions: viewers can read the feed and follow; basic/business can post, like and comment (`CREATE_POST`, `INTERACT_POST`, `FOLLOW_USER`, `VIEW_FEED`).
 - Also: edit own post (`PATCH /api/posts/:id`), single post page `/feed/:id`, posts block on profile pages (`/api/feed?authorId=`), reporting posts via the existing report flow (`contentType=post`), notifications (`/notifications`, bell in the navbar, `GET /api/notifications`, `POST /api/notifications/read`) for likes, comments and new followers. Notification text is built on the client by `type`, so it follows the viewer's language.
+- Blocking (store-review requirement for user content): `GET|POST|DELETE /api/blocks`, page `/blocked`, "Block" in the post menu and on profiles. Blocking works both ways: hides posts/comments, forbids likes, comments, follows, messages, notifications; removes follows.
 - Uploads: `/api/upload` accepts `type=posts` (aspect ratio kept, max 1440px).
 - i18n: `messages/{uk,en}/feed.json`, `api.feed.*`, `layout.navbar.feed`, `layout.mobileNav.feed`.
 
 ## Database (additive only)
-New tables: `posts`, `post_images`, `post_likes`, `post_comments`, `follows`. No existing table or column is changed.
+New tables: `posts`, `post_images`, `post_likes`, `post_comments`, `follows`, `user_blocks` (second file: `database/migrations/20261112_add_user_blocks.sql`). No existing table or column is changed.
 Apply with either `npx prisma db push` (as in HANDOVER.md) or `database/migrations/20261112_add_social_feed.sql`. Back up first.
 Rollback: `DROP TABLE follows, post_comments, post_likes, post_images, posts;`
 
@@ -27,3 +28,39 @@ A store update is only needed when native parts change (icons, permissions, vers
 - Post images cannot be changed when editing (text only).
 - Deleted posts remove their image files; comments/likes cascade in the DB.
 - Feed ranking is chronological; "For you" = all public posts.
+
+## Оголошення (Авто, Нерухомість)
+- Міграція: `database/migrations/20261113_add_listings.sql` (listings, listing_images, saved_listings, audit_log; активує проєкти cars/real-estate).
+- Публікація → модерація (`/admin/listings`) → каталог `/projects/<slug>`; кабінет `/my-listings`; картка `/listings/<id>`.
+
+## Заявка бізнесу
+- Міграція: `database/migrations/20261114_add_business_applications.sql`.
+- Користувач: `/business/apply` (форма + статус). Адмін: `/admin/business-applications` (схвалення з необов’язковим орієнтовним % — лише пропозиція, не гарантія; відхилення з причиною). Дії пишуться в `audit_logs`, заявник отримує сповіщення.
+
+## «Як заробити з нами?» і партнерські заявки
+- Міграція: `database/migrations/20261115_add_partner_pages.sql` (project_earn_pages, partner_applications).
+- Сторінка: `/projects/<slug>/earn` (кнопка на активних напрямках). Без запису в БД показується типовий текст з перекладів.
+- Адмін: `/admin/partners` — вкладки «Заявки» (схвалення/відхилення з причиною, аудит, сповіщення) та «Тексти сторінок» (uk/en, звичайний текст без HTML).
+
+## Єдиний пошук
+- `/search` + `GET /api/search?q=&type=all|people|business|listings` (лише для авторизованих; без нових таблиць).
+- Показує тільки публічні поля, ховає заблокованих і неактивні акаунти, обмеження 60 запитів/хв.
+- Усі міграції оновлення можна застосувати разом: `DATABASE_URL=... ./database/apply_social_update.sh` (скрипт безпечний для повторного запуску).
+
+## Ролі персоналу
+- Міграція: `database/migrations/20261116_add_admin_roles.sql` (нова таблиця `admin_roles`, таблиця `users` не змінюється).
+- Ролі: moderator (оголошення, скарги), business_manager (заявки бізнесу, партнерство, тексти), support (скарги). `User.isAdmin` лишається повним доступом.
+- Перевірки прав: `src/lib/adminAccess.ts` (`hasAdminPermission`), застосовані до адмін-API оголошень, заявок бізнесу, партнерських заявок, текстів «Як заробити» та скарг.
+- Призначення: `/admin/roles` (лише повний адмін, з записом в аудит). Кабінет: `/admin/staff` (посилання в меню профілю з’являється тільки у співробітників із роллю).
+
+## Рекомендації та збережені дописи
+- Міграція: `database/migrations/20261117_add_saved_posts.sql` (таблиця `saved_posts`; якщо її ще немає, стрічка працює без закладок).
+- `/api/recommendations` — «Можливі знайомі» та «Рекомендовані бізнеси» (спочатку з міста користувача, без тих, на кого вже підписаний, і без заблокованих); блок показується в стрічці після 3-го допису.
+- Закладки: кнопка на кожному дописі, сторінка `/saved`, `GET /api/feed?saved=1`.
+
+
+## Етап: оформлення як у Facebook
+- Верхня панель (пошук, вкладки-іконки, круглі кнопки), бейджі непрочитаних (чат, сповіщення, мобільна навігація)
+- Лайки та відповіді на коментарі (міграція 20261118)
+- Сторінка «Друзі» (/friends): підписки, підписники, взаємні, пошук
+- «Відео та історії» (/video) — сторінка «Скоро»; потрібне рішення щодо постійного сховища

@@ -305,16 +305,16 @@ function ChatPageContent() {
   const selectedConv = conversations.find(c => c.id === selectedConversation);
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="max-w-7xl mx-auto h-screen flex flex-col">
-        {/* Header */}
-        <div className="bg-white border-b border-neutral-200 px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link href={localizedPath('/', locale)} className="text-neutral-600 hover:text-neutral-900">
+    <div className="bg-neutral-100">
+      <div className="max-w-7xl mx-auto h-[calc(100dvh-9rem)] md:h-[calc(100dvh-4rem)] flex flex-col">
+        {/* Header: на телефоні ховаємо, коли відкрита розмова */}
+        <div className={`bg-white border-b border-neutral-200 px-4 py-3 ${selectedConv ? 'hidden md:block' : ''}`}>
+          <div className="flex items-center gap-3">
+            <Link href={localizedPath('/feed', locale)} className="text-neutral-600 hover:text-neutral-900" aria-label={t('chat.back')}>
               <ArrowLeft className="w-6 h-6" />
             </Link>
-            <MessageCircle className="w-6 h-6 text-primary-600" />
-            <h1 className="text-xl font-bold text-neutral-900">{t('chat.title')}</h1>
+            <h1 className="text-2xl font-bold text-neutral-900 flex-1">{t('chat.title')}</h1>
+            <Link href={localizedPath('/chat/groups', locale)} className="rounded-full bg-primary-500 hover:bg-primary-600 text-neutral-900 text-sm font-bold px-4 py-1.5">{t('cabinet.groupChats.tab')}</Link>
           </div>
         </div>
 
@@ -328,7 +328,7 @@ function ChatPageContent() {
 
         <div className="flex-1 flex overflow-hidden">
           {/* Список диалогов */}
-          <div className="w-full md:w-1/3 bg-white border-r border-neutral-200 overflow-y-auto">
+          <div className={`w-full md:w-96 md:shrink-0 bg-white border-r border-neutral-200 overflow-y-auto ${selectedConv ? 'hidden md:block' : ''}`}>
             {loading ? (
               <div className="p-4 text-center text-neutral-600">{t('chat.loading')}</div>
             ) : conversations.length === 0 ? (
@@ -344,7 +344,7 @@ function ChatPageContent() {
                 <div
                   key={conv.id}
                   onClick={() => setSelectedConversation(conv.id)}
-                  className={`p-4 border-b border-neutral-100 cursor-pointer hover:bg-neutral-50 transition-colors ${
+                  className={`px-3 py-2.5 mx-2 my-1 rounded-xl cursor-pointer hover:bg-neutral-100 transition-colors ${
                     selectedConversation === conv.id ? 'bg-primary-50' : ''
                   }`}
                 >
@@ -352,7 +352,7 @@ function ChatPageContent() {
                     <UserAvatar
                       src={conv.otherUser.avatarUrl}
                       alt={`${conv.otherUser.firstName} ${conv.otherUser.lastName}`}
-                      className="w-12 h-12 rounded-full"
+                      className="w-14 h-14 rounded-full shrink-0"
                       fallbackName={`${conv.otherUser.firstName} ${conv.otherUser.lastName}`}
                     />
                     <div className="flex-1 min-w-0">
@@ -368,12 +368,12 @@ function ChatPageContent() {
                       </div>
                       {conv.lastMessage && (
                         <div className="flex items-center justify-between mt-1">
-                          <p className="text-sm text-neutral-600 truncate">
+                          <p className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-semibold text-neutral-900' : 'text-neutral-600'}`}>
                             {conv.lastMessage.senderId === user.id && t('chat.you')}
                             {conv.lastMessage.content}
                           </p>
                           {conv.unreadCount > 0 && (
-                            <span className="bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 ml-2">
+                            <span className="bg-primary-600 text-white text-xs rounded-full min-w-[20px] text-center px-1.5 py-0.5 ml-2 shrink-0">
                               {conv.unreadCount}
                             </span>
                           )}
@@ -387,12 +387,15 @@ function ChatPageContent() {
           </div>
 
           {/* Окно чата */}
-          <div className="flex-1 flex flex-col bg-white">
+          <div className={`flex-1 min-w-0 flex-col bg-white ${selectedConv ? 'flex' : 'hidden md:flex'}`}>
             {selectedConv ? (
               <>
                 {/* Шапка чата */}
-                <div className="border-b border-neutral-200 p-4">
+                <div className="border-b border-neutral-200 px-3 py-2.5 shadow-sm">
                   <div className="flex items-center gap-3">
+                    <button type="button" onClick={() => setSelectedConversation(null)} className="md:hidden p-1.5 -ml-1 text-primary-600 hover:bg-neutral-100 rounded-full" aria-label={t('chat.back')}>
+                      <ArrowLeft className="w-6 h-6" />
+                    </button>
                     <UserAvatar
                       src={selectedConv.otherUser.avatarUrl}
                       alt={`${selectedConv.otherUser.firstName} ${selectedConv.otherUser.lastName}`}
@@ -423,7 +426,7 @@ function ChatPageContent() {
                 {/* Сообщения */}
                 <div
                   id="messages-container"
-                  className="flex-1 overflow-y-auto p-4 space-y-4"
+                  className="flex-1 overflow-y-auto p-4 space-y-1.5 bg-white"
                 >
                   {messages.map((message) => {
                     const isOwn = message.senderId === user.id;
@@ -433,7 +436,7 @@ function ChatPageContent() {
                         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                          className={`max-w-[80%] md:max-w-md px-3.5 py-2 rounded-3xl ${
                             isOwn
                               ? 'bg-primary-600 text-white'
                               : 'bg-neutral-100 text-neutral-900'
@@ -454,22 +457,22 @@ function ChatPageContent() {
                 </div>
 
                 {/* Форма отправки */}
-                <form onSubmit={sendMessage} className="border-t border-neutral-200 p-4">
+                <form onSubmit={sendMessage} className="border-t border-neutral-200 px-3 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] md:pb-2.5">
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={messageText}
                       onChange={(e) => setMessageText(e.target.value)}
                       placeholder={t('chat.placeholder')}
-                      className="flex-1 px-4 py-2 border border-neutral-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="flex-1 px-4 py-2.5 bg-neutral-100 rounded-full text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-300"
                       disabled={sending}
                     />
                     <button
                       type="submit"
                       disabled={sending || !messageText.trim()}
-                      className="bg-primary-600 text-white p-3 rounded-full hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="bg-primary-600 text-white h-10 w-10 flex items-center justify-center rounded-full hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      <Send className="w-5 h-5" />
+                      <Send className="w-4 h-4" />
                     </button>
                   </div>
                 </form>

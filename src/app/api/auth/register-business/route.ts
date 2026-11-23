@@ -10,6 +10,7 @@ import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { setAuthCookie, setRefreshCookie } from '@/lib/cookies';
 import { createSession } from '@/lib/session';
 import { getApiT } from '@/i18n/server';
+import { newRefCode, normalizeRefCode } from '@/lib/invites';
 
 export async function POST(request: NextRequest) {
   const t = getApiT(request);
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { user: userData, business: businessData } = body;
+    const { user: userData, business: businessData, ref } = body;
 
     // Валідація структури запиту
     if (!userData || !businessData) {
@@ -138,6 +139,14 @@ export async function POST(request: NextRequest) {
     // Хешування пароля
     const passwordHash = await hashPassword(password);
 
+    // Хто запросив (код із посилання/QR); невідомий код тихо ігноруємо
+    let referredById: number | null = null;
+    const refCodeIn = normalizeRefCode(ref);
+    if (refCodeIn) {
+      const inviter = await prisma.user.findUnique({ where: { refCode: refCodeIn }, select: { id: true } }).catch(() => null);
+      referredById = inviter?.id ?? null;
+    }
+
     // Створення користувача та бізнесу в транзакції
     const result = await prisma.$transaction(async (tx: any) => {
       // Створення користувача
@@ -151,6 +160,8 @@ export async function POST(request: NextRequest) {
           phone: phone || null,
           city: city || null,
           passwordHash,
+          referredById,
+          refCode: newRefCode(),
           isVerified: false,
           // підписка вимкнена — платформа безкоштовна
           subscriptionActive: false,
@@ -175,11 +186,6 @@ export async function POST(request: NextRequest) {
       });
 
       // Створення бізнес інформації
-      console.log('[Register Business API] Створення бізнес профілю з даними:', {
-        companyName,
-        logoUrl,
-        bannerUrl,
-      });
 
       const business = await tx.businessInfo.create({
         data: {
@@ -188,7 +194,7 @@ export async function POST(request: NextRequest) {
           companyCode: companyCode || null,
           city: city || null,
           businessCategory: businessCategory || null,
-          companyType: companyType || null,
+          companyType: ['fop', 'tov', 'other'].includes(companyType) ? companyType : null,
           offerType: offerType || null,
           description: description || null,
           website: website || null,

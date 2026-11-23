@@ -37,8 +37,8 @@ export function NotificationBell({ className = '' }: { className?: string }) {
   }, [refresh]);
 
   return (
-    <Link href="/notifications" aria-label={t('feed.notifications.title')} className={`relative p-2 hover:bg-neutral-100 rounded-lg transition-colors ${className}`}>
-      <Bell className="w-5 h-5 text-neutral-600" />
+    <Link href="/notifications" aria-label={t('feed.notifications.title')} className={`relative w-10 h-10 flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors ${className}`}>
+      <Bell className="w-5 h-5 text-neutral-700" />
       {count > 0 && (
         <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] leading-none rounded-full bg-red-500 text-white border-2 border-white">
           {count > 99 ? '99+' : count}

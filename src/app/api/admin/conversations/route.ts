@@ -43,29 +43,12 @@ async function handler(request: NextRequest) {
       select: {
         id: true,
         createdAt: true,
-        updatedAt: true,
-        participants: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatarUrl: true,
-                city: true
-              }
-            }
-          }
-        },
-        _count: {
-          select: {
-            messages: true
-          }
-        }
+        lastMessageAt: true,
+        user1: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, city: true } },
+        user2: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, city: true } },
+        _count: { select: { messages: true } }
       },
-      orderBy: {
-        updatedAt: 'desc'
-      },
+      orderBy: [{ lastMessageAt: { sort: 'desc', nulls: 'last' } }, { id: 'desc' }],
       take: limit
     });
     
@@ -106,12 +89,12 @@ async function handler(request: NextRequest) {
           avatarUrl: true,
           _count: {
             select: {
-              sentMessages: true
+              messagesSent: true
             }
           }
         },
         orderBy: {
-          sentMessages: {
+          messagesSent: {
             _count: 'desc'
           }
         },
@@ -121,14 +104,14 @@ async function handler(request: NextRequest) {
     
     // Форматувати бесіди
     const formattedConversations = conversations.map((conv: any) => {
-      const participantUsers = conv.participants.map((p: any) => p.user);
+      const participantUsers = [conv.user1, conv.user2];
       
       return {
         id: conv.id,
         participants: participantUsers,
         messagesCount: conv._count.messages,
         createdAt: conv.createdAt,
-        lastActivity: conv.updatedAt
+        lastActivity: conv.lastMessageAt || conv.createdAt
       };
     });
     
