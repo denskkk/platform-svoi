@@ -7,6 +7,7 @@
  *   npx tsx scripts/fill-folder-images.ts                    # лише папки БЕЗ картинки (ваші ручні не чіпає)
  *   npx tsx scripts/fill-folder-images.ts --project=dating   # один проєкт
  *   npx tsx scripts/fill-folder-images.ts --top              # лише папки верхнього рівня
+ *   npx tsx scripts/fill-folder-images.ts --banners          # лише банери карток проєктів (сторінка «Проєкти»)
  *   npx tsx scripts/fill-folder-images.ts --force            # перезаписати й наявні
  *   npx tsx scripts/fill-folder-images.ts --dry              # лише показати запити, нічого не качати
  *   npx tsx scripts/fill-folder-images.ts --force --only=pets/vet   # перезробити одну папку
@@ -102,7 +103,35 @@ function queriesFor(slug: string, p: string, label: string, parentQs: string[]):
   return { qs: [short ? `${c} ${theme}`.trim() : c, `${c} ${theme}`.trim(), ...parentQs.slice(0, 1), theme].filter(Boolean), generic: false };
 }
 
+async function banners() {
+  const only = opt('project');
+  const B: Record<string, string> = Q._banner || {};
+  const projects = await prisma.project.findMany({ select: { slug: true, bannerUrl: true } });
+  let n = 0;
+  for (const pr of projects) {
+    if (only && pr.slug !== only) continue;
+    if (pr.bannerUrl && !flag('force')) continue;
+    const q = B[pr.slug] || THEME[pr.slug] || pr.slug.replace(/-/g, ' ');
+    if (flag('dry')) { console.log(`БАНЕР ${pr.slug} → "${q}"`); continue; }
+    const list = await search(q);
+    const photo = list[0];
+    if (!photo) { console.log('— немає банера: ' + pr.slug); continue; }
+    const file = `project-${pr.slug}-${photo.id}.jpg`;
+    const dest = path.join(outDir, file);
+    if (!fs.existsSync(dest)) {
+      const buf = Buffer.from(await (await fetch(photo.url)).arrayBuffer());
+      await sharp(buf).resize(1200, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(dest);
+    }
+    await prisma.project.update({ where: { slug: pr.slug }, data: { bannerUrl: '/uploads/misc/' + file } });
+    n++;
+  }
+  saveCache();
+  console.log(`Банери проєктів: ${n}`);
+}
+
 async function main() {
+  if (flag('banners')) { await banners(); return; }
+  await banners();
   const only = opt('project');
   const one = opt('only'); // slug/path
   const existing = await prisma.folderImage.findMany();
