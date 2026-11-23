@@ -58,6 +58,14 @@ function en(key: string): string {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+/** fetch з повторами: обриви зв'язку (ECONNRESET) не мають зупиняти весь підбір. */
+async function fetchRetry(url: string, init?: any, tries = 4): Promise<Response> {
+  let last: any;
+  for (let i = 0; i < tries; i++) {
+    try { return await fetch(url, init); } catch (e) { last = e; await sleep(1500 * (i + 1)); }
+  }
+  throw last;
+}
 
 // ---- кеш пошуку на 24 год (вимога Pixabay) ----
 const cacheFile = path.join(process.cwd(), '.folder-images-cache.json');
@@ -75,7 +83,7 @@ async function search(q: string) {
   const url = PIX
     ? 'https://pixabay.com/api/?key=' + PIX + '&image_type=photo&orientation=horizontal&safesearch=true&min_width=800&per_page=30&lang=en&q=' + encodeURIComponent(q.slice(0, 100))
     : 'https://api.pexels.com/v1/search?per_page=15&orientation=landscape&size=medium&query=' + encodeURIComponent(q);
-  const r = await fetch(url, PIX ? {} : { headers: { Authorization: KEY! } });
+  const r = await fetchRetry(url, PIX ? {} : { headers: { Authorization: KEY! } });
   if (r.status === 429) { console.error('Ліміт запитів. Запустіть пізніше — вже збережене не втрачається.'); saveCache(); throw new Error('rate'); }
   if (!r.ok) { console.error('API', r.status, q); return []; }
   const j: any = await r.json();
@@ -119,7 +127,7 @@ async function banners() {
     const file = `project-${pr.slug}-${photo.id}.jpg`;
     const dest = path.join(outDir, file);
     if (!fs.existsSync(dest)) {
-      const buf = Buffer.from(await (await fetch(photo.url)).arrayBuffer());
+      const buf = Buffer.from(await (await fetchRetry(photo.url)).arrayBuffer());
       await sharp(buf).resize(1200, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(dest);
     }
     await prisma.project.update({ where: { slug: pr.slug }, data: { bannerUrl: '/uploads/misc/' + file } });
@@ -195,8 +203,13 @@ async function main() {
                 used.add(photo.id);
                 const dest = path.join(outDir, file);
                 if (!fs.existsSync(dest)) {
-                  const buf = Buffer.from(await (await fetch(photo.url)).arrayBuffer());
-                  await sharp(buf).resize(800, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(dest);
+                  try {
+                    const buf = Buffer.from(await (await fetchRetry(photo.url)).arrayBuffer());
+                    await sharp(buf).resize(800, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(dest);
+                  } catch (e: any) {
+                    // зв'язок обірвався навіть після повторів — пропускаємо папку, наступний запуск доробить
+                    miss++; console.log(`— пропущено (мережа): ${slug}/${p}`); continue;
+                  }
                 }
                 if (generic) genericFile[qs[0]] = file;
                 report.push(`${slug}/${p}\t${usedQ}\t${photo.id}\t${photo.tags || ''}\t${photo.page || ''}`);
