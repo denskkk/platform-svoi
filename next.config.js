@@ -55,6 +55,12 @@ const nextConfig = {
   // тому /uploads/* віддається через API-роут (див. src/app/api/uploads).
   async rewrites() {
     return {
+      // Файли для відкриття посилань у застосунку (iOS universal links / Android app links)
+      beforeFiles: [
+        { source: '/.well-known/apple-app-site-association', destination: '/api/well-known/aasa' },
+        { source: '/apple-app-site-association', destination: '/api/well-known/aasa' },
+        { source: '/.well-known/assetlinks.json', destination: '/api/well-known/assetlinks' },
+      ],
       fallback: [
         { source: '/uploads/:path*', destination: '/api/uploads/:path*' },
       ],

@@ -23,6 +23,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Посилання сайту (рілси, профілі, оголошення) відкриваються в застосунку. Потрібен /.well-known/assetlinks.json на сайті (docs/APP_LINKS.md) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="sviydlyasvoih.com.ua" android:pathPrefix="/feed/" />
+                <data android:scheme="https" android:host="sviydlyasvoih.com.ua" android:pathPrefix="/video" />
+                <data android:scheme="https" android:host="sviydlyasvoih.com.ua" android:pathPrefix="/profile/" />
+                <data android:scheme="https" android:host="sviydlyasvoih.com.ua" android:pathPrefix="/listings/" />
+                <data android:scheme="https" android:host="sviydlyasvoih.com.ua" android:pathPrefix="/clubs/" />
+                <data android:scheme="https" android:host="sviydlyasvoih.com.ua" android:pathPrefix="/companies/" />
+            </intent-filter>
+
         </activity>
 
         <provider

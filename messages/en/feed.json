@@ -330,5 +330,10 @@
     "empty": "No listings yet",
     "emptyHint": "Goods and services from all platform projects will appear here.",
     "projects": "Open projects"
+  },
+  "openApp": {
+    "title": "Open in the app",
+    "hint": "Better for reels and messages",
+    "action": "Open"
   }
 }

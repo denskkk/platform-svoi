@@ -4,6 +4,8 @@ import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { MobileNav } from '@/components/layout/MobileNav'
+import { OpenInAppBanner } from '@/components/layout/OpenInAppBanner'
+import { NativeLinkHandler } from '@/components/layout/NativeLinkHandler'
 import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
@@ -52,6 +54,8 @@ export default function RootLayout({
             <AuthSessionMonitor />
             <ServiceWorkerRegister />
             <AdminRedirect />
+            <NativeLinkHandler />
+            <OpenInAppBanner />
             <Navbar />
             <main className="min-h-[100dvh] pb-[calc(5rem+var(--safe-area-inset-bottom,0px))] md:pb-0">
               {children}
