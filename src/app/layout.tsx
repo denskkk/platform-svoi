@@ -31,6 +31,7 @@ export function generateMetadata(): Metadata {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover', // контент під вирізом/«острівцем»: відступи дають --safe-area-inset-*
   themeColor: '#FFCA00',
 }
 
@@ -52,7 +53,7 @@ export default function RootLayout({
             <ServiceWorkerRegister />
             <AdminRedirect />
             <Navbar />
-            <main className="min-h-screen pb-[calc(5rem+var(--safe-area-inset-bottom,0px))] md:pb-0">
+            <main className="min-h-[100dvh] pb-[calc(5rem+var(--safe-area-inset-bottom,0px))] md:pb-0">
               {children}
             </main>
             <Footer />

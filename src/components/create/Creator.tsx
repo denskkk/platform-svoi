@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ImageIcon, Loader2, Plus, RefreshCw, X } from 'lucide-react';
+import { Camera, ImageIcon, Loader2, Plus, RefreshCw, X } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
@@ -31,6 +31,16 @@ async function shrink(blob: Blob): Promise<Blob> {
   } catch { return blob; }
 }
 
+type CamState = 'starting' | 'on' | 'off' | 'ask' | 'denied';
+
+/** Стан дозволу камери без запиту (Permissions API є не скрізь — тоді 'unknown'). */
+async function cameraPermission(): Promise<'granted' | 'denied' | 'prompt' | 'unknown'> {
+  try {
+    const q = await (navigator as any).permissions?.query?.({ name: 'camera' });
+    return q?.state ?? 'unknown';
+  } catch { return 'unknown'; }
+}
+
 const pickMime = () => ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find((m) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported?.(m)) || '';
 
 /**
@@ -38,18 +48,18 @@ const pickMime = () => ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;c
  * перемикання камер, галерея, перегляд із підписом і публікація (історія, допис із фото, допис-відео у «Рілси»).
  * Якщо камера недоступна (немає дозволу / стара оболонка) — працюють системні вибір із галереї та знімок через системну камеру.
  */
-export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; onClose: () => void }) {
+export function Creator({ initialMode, initialCaption = '', onClose }: { initialMode: CreatorMode; initialCaption?: string; onClose: () => void }) {
   const { t, locale } = useI18n();
   const router = useRouter();
   const toast = useToast();
   const [mode, setMode] = useState<CreatorMode>(initialMode);
   const [facing, setFacing] = useState<'user' | 'environment'>('environment');
-  const [camera, setCamera] = useState<'starting' | 'on' | 'off'>('starting');
+  const [camera, setCamera] = useState<CamState>('starting');
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
   const [preview, setPreview] = useState(false);
-  const [caption, setCaption] = useState('');
+  const [caption, setCaption] = useState(initialCaption);
   const [busy, setBusy] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -67,28 +77,67 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
 
   const stopStream = useCallback(() => { streamRef.current?.getTracks().forEach((tr) => tr.stop()); streamRef.current = null; }, []);
 
+  const camAsked = useRef(false); // користувач уже дозволив камеру в цій сесії студії
+
   const startCamera = useCallback(async (face: 'user' | 'environment', withAudio: boolean) => {
     stopStream();
     if (!navigator.mediaDevices?.getUserMedia) { setCamera('off'); return; }
     setCamera('starting');
-    const video = { facingMode: face, width: { ideal: 1080 }, height: { ideal: 1920 } };
+    // 720p вистачає для рілсів і значно легший для телефона (пам’ять, нагрів, розмір файлу)
+    const video = { facingMode: face, width: { ideal: 720 }, height: { ideal: 1280 } };
+    const open = (audio: boolean) => navigator.mediaDevices.getUserMedia({ video, audio });
     try {
       let s: MediaStream;
-      try { s = await navigator.mediaDevices.getUserMedia({ video, audio: withAudio }); }
-      catch { s = await navigator.mediaDevices.getUserMedia({ video, audio: false }); } // без мікрофона — лише фото / відео без звуку
+      try { s = await open(withAudio); }
+      catch (e: any) {
+        const name = e?.name || '';
+        if (name === 'NotAllowedError' || name === 'SecurityError') {
+          // мікрофон заборонено, а камера дозволена — знімаємо без звуку; інакше показуємо екран «потрібен дозвіл» (без повторного запиту)
+          if (withAudio && (await cameraPermission()) === 'granted') s = await open(false);
+          else { setCamera('denied'); return; }
+        } else if (withAudio) { s = await open(false); } // немає мікрофона / не вдалося його відкрити
+        else throw e;
+      }
       streamRef.current = s;
-      if (videoRef.current) { videoRef.current.srcObject = s; await videoRef.current.play().catch(() => undefined); }
+      const el = videoRef.current;
+      if (el) { el.srcObject = s; await el.play().catch(() => undefined); }
       setCamera('on');
-    } catch { setCamera('off'); }
+    } catch (e: any) {
+      setCamera(e?.name === 'NotAllowedError' ? 'denied' : 'off');
+    }
   }, [stopStream]);
 
-  // Камера працює на екрані зйомки; на перегляді — вимкнена (звільняємо пристрій)
+  const allowCamera = () => { camAsked.current = true; startCamera(facing, mode !== 'photo'); };
+
+  // Камеру вмикаємо САМІ лише коли дозвіл уже є; інакше — спершу зрозумілий екран із кнопкою (не раптовий системний запит при відкритті студії)
   useEffect(() => {
     if (preview || mode === 'text') { stopStream(); return; }
-    startCamera(facing, mode !== 'photo');
-    return () => { /* зупинка при наступному старті / розмонтуванні */ };
+    let cancelled = false;
+    (async () => {
+      if (!camAsked.current) {
+        const st = await cameraPermission();
+        if (cancelled) return;
+        if (st === 'denied') { setCamera('denied'); return; }
+        if (st !== 'granted') { setCamera('ask'); return; }
+        camAsked.current = true;
+      }
+      startCamera(facing, mode !== 'photo');
+    })();
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preview, facing, mode === 'photo', mode === 'text']);
+
+  // Після системного запиту дозволу / згортання застосунку потік може обірватися — відновлюємо
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible' || !camAsked.current || preview || mode === 'text' || recRef.current) return;
+      const live = streamRef.current?.getTracks().some((tr) => tr.readyState === 'live');
+      if (!live) startCamera(facing, mode !== 'photo');
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [preview, mode, facing, startCamera]);
+
   useEffect(() => () => {
     stopStream();
     if (tickRef.current) clearInterval(tickRef.current);
@@ -127,7 +176,7 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
     if (!s || recRef.current || typeof MediaRecorder === 'undefined') { if (typeof MediaRecorder === 'undefined') cameraVideoRef.current?.click(); return; }
     const mimeType = pickMime();
     chunksRef.current = [];
-    const rec = new MediaRecorder(s, { ...(mimeType ? { mimeType } : {}), videoBitsPerSecond: 2_500_000 });
+    const rec = new MediaRecorder(s, { ...(mimeType ? { mimeType } : {}), videoBitsPerSecond: 2_000_000 });
     rec.ondataavailable = (e) => { if (e.data.size) chunksRef.current.push(e.data); };
     rec.onstop = () => {
       const type = (rec.mimeType || mimeType || 'video/webm').split(';')[0];
@@ -233,7 +282,7 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
   const nameOf = (m: CreatorMode) => (m === 'text' ? t('cabinet.studio.modeText') : m === 'photo' ? t('cabinet.studio.modePost') : m === 'story' ? t('cabinet.studio.modeStory') : t('cabinet.studio.modeReel'));
 
   return (
-    <div className="fixed inset-0 z-[80] bg-black text-white select-none" role="dialog" aria-modal="true" aria-label={nameOf(mode)}>
+    <div className="fixed inset-x-0 top-0 z-[80] h-[100dvh] bg-black text-white select-none overscroll-none" role="dialog" aria-modal="true" aria-label={nameOf(mode)}>
       <input ref={galleryRef} type="file" accept={acceptGallery} multiple={mode === 'photo'} hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
       <input ref={cameraPhotoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files, 'image'); e.target.value = ''; }} />
       <input ref={cameraVideoRef} type="file" accept="video/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
@@ -259,13 +308,20 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
         <>
           <video ref={videoRef} playsInline muted autoPlay className={`absolute inset-0 h-full w-full object-cover ${facing === 'user' ? '-scale-x-100' : ''}`} />
           {camera !== 'on' && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-neutral-900 px-8 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-y-auto bg-gradient-to-b from-[#0a1f44] to-neutral-900 px-8 py-24 text-center">
               {camera === 'starting' ? <Loader2 className="h-8 w-8 animate-spin" /> : (
                 <>
-                  <p className="text-sm text-white/80">{t('cabinet.studio.noCamera')}</p>
-                  {mode !== 'reel' && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full bg-primary-500 px-6 py-2.5 font-bold text-neutral-900">{t('cabinet.studio.systemCamera')}</button>}
-                  {mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full bg-primary-500 px-6 py-2.5 font-bold text-neutral-900">{t('cabinet.studio.systemVideo')}</button>}
-                  <button type="button" onClick={() => startCamera(facing, mode !== 'photo')} className="text-sm underline">{t('cabinet.studio.retry')}</button>
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10"><Camera className="h-8 w-8 text-primary-400" /></span>
+                  <p className="text-lg font-bold">{camera === 'ask' ? t('cabinet.studio.askTitle') : camera === 'denied' ? t('cabinet.studio.deniedTitle') : t('cabinet.studio.noCameraTitle')}</p>
+                  <p className="max-w-xs text-sm text-white/75">{camera === 'ask' ? t('cabinet.studio.askText') : camera === 'denied' ? t('cabinet.studio.denied') : t('cabinet.studio.noCamera')}</p>
+                  {camera === 'ask' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.allow')}</button>}
+                  {camera === 'denied' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.retry')}</button>}
+                  {camera === 'off' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.retry')}</button>}
+                  <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
+                    {mode !== 'reel' && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemCamera')}</button>}
+                    {mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
+                    <button type="button" onClick={() => galleryRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.gallery')}</button>
+                  </div>
                 </>
               )}
             </div>
@@ -329,10 +385,14 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
 /** Слухає подію svoi:create { mode } і відкриває студію; монтується один раз (нижнє меню). */
 export function CreatorHost() {
   const [mode, setMode] = useState<CreatorMode | null>(null);
+  const [caption, setCaption] = useState('');
   useEffect(() => {
-    const on = (e: Event) => { const m = (e as CustomEvent).detail?.mode; if (m === 'text' || m === 'photo' || m === 'story' || m === 'reel') setMode(m); };
+    const on = (e: Event) => {
+      const d = (e as CustomEvent).detail || {};
+      if (d.mode === 'text' || d.mode === 'photo' || d.mode === 'story' || d.mode === 'reel') { setCaption(typeof d.caption === 'string' ? d.caption : ''); setMode(d.mode); }
+    };
     window.addEventListener('svoi:create', on);
     return () => window.removeEventListener('svoi:create', on);
   }, []);
-  return <><span data-creator-host hidden />{mode ? <Creator key={mode} initialMode={mode} onClose={() => setMode(null)} /> : null}</>;
+  return <><span data-creator-host hidden />{mode ? <Creator key={mode} initialMode={mode} initialCaption={caption} onClose={() => setMode(null)} /> : null}</>;
 }

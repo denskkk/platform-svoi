@@ -454,6 +454,12 @@
     "addMore": "More photos",
     "remove": "Remove",
     "modeText": "Text",
-    "textPlaceholder": "What’s new?"
+    "textPlaceholder": "What’s new?",
+    "noCameraTitle": "Camera unavailable",
+    "askTitle": "Turn on the camera",
+    "askText": "To shoot photos, videos and stories, allow access to the camera and microphone. Or pick a file from your gallery.",
+    "allow": "Turn on camera",
+    "deniedTitle": "No camera access",
+    "denied": "Allow the camera and microphone in your phone settings (Settings → Sviy dlya Svoikh) and come back. You can also use the device camera or pick from the gallery."
   }
 }

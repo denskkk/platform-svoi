@@ -365,3 +365,38 @@ html, body { overflow-x: clip; }
 @media (max-width: 767px) { input, select, textarea { font-size: 16px; } }
 /* Плавне підсвічування при натисканні на мобільних */
 @media (hover: none) { a, button { -webkit-tap-highlight-color: transparent; } }
+
+
+/* ===== Мобільна адаптація (телефон / Capacitor) ===== */
+/* Запасні відступи під виріз/домашню смугу; у застосунку їх перевизначає плагін safe-area */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overflow-x: clip; -webkit-font-smoothing: antialiased; }
+/* без сірого блимання при натисканні та без затримки/подвійного тапу-зуму на кнопках і посиланнях */
+a, button, [role="button"], summary, label, input, select, textarea { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+/* iOS збільшує сторінку при фокусі в поле з шрифтом менше 16 px — на вузьких екранах тримаємо 16 px */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px; }
+}
+/* медіа ніколи не виходить за ширину екрана */
+img, video, canvas, svg { max-width: 100%; }
+/* на сенсорних екранах системний тонкий скрол замість товстого «десктопного» */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+  * { scrollbar-width: none; }
+  .card-hover:hover { transform: none; box-shadow: none; }   /* без «залипання» ховера після тапу */
+}
+/* горизонтальні стрічки (історії, фільтри): плавне прилипання і інерція */
+.snap-row { display: flex; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.snap-row > * { scroll-snap-align: start; flex-shrink: 0; }
+/* повага до налаштування «зменшити рух» */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+/* нижня шторка/студія не повинні «стрибати» від адресного рядка браузера */
+.vh-full { height: 100vh; height: 100dvh; }
