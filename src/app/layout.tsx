@@ -6,6 +6,8 @@ import { Footer } from '@/components/layout/Footer'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { OpenInAppBanner } from '@/components/layout/OpenInAppBanner'
 import { NativeLinkHandler } from '@/components/layout/NativeLinkHandler'
+import { ViewportSync } from '@/components/layout/ViewportSync'
+import { UpdateAppNotice } from '@/components/layout/UpdateAppNotice'
 import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
@@ -55,6 +57,8 @@ export default function RootLayout({
             <ServiceWorkerRegister />
             <AdminRedirect />
             <NativeLinkHandler />
+            <ViewportSync />
+            <UpdateAppNotice />
             <OpenInAppBanner />
             <Navbar />
             <main className="min-h-[100dvh] pb-[calc(5rem+var(--safe-area-inset-bottom,0px))] md:pb-0">

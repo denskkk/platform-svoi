@@ -335,5 +335,9 @@
     "title": "Open in the app",
     "hint": "Better for reels and messages",
     "action": "Open"
+  },
+  "updateApp": {
+    "text": "This is an old app version: the “Take Photo” option may close it. Photos from the gallery work.",
+    "action": "Update"
   }
 }

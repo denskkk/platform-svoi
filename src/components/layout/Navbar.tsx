@@ -3,7 +3,7 @@
 import { StaffLink } from './StaffLink';
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, User, Menu, LogOut, MessageCircle, Newspaper, FolderKanban, Users, Clapperboard } from 'lucide-react'
+import { Search, User, Menu, LogOut, MessageCircle, Newspaper, FolderKanban, Users, Clapperboard, ArrowLeft } from 'lucide-react'
 import { NotificationBell } from '@/components/feed/NotificationBell'
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
@@ -14,6 +14,7 @@ import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 import { useI18n } from '@/i18n/client'
 import { localizedPath } from '@/i18n/routes'
 import { performLogout } from '@/lib/client-auth'
+import { goBack, needsBackButton } from '@/lib/navBack'
 // create page handles opening the request modal when needed
 
 export function Navbar() {
@@ -161,6 +162,12 @@ export function Navbar() {
     <nav className={`sticky top-0 z-50 pt-[var(--safe-area-inset-top,0px)] bg-white/95 backdrop-blur-sm border-b-2 border-primary-500 shadow-sm ${(pathname || '').startsWith('/video') ? 'max-md:hidden' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-4">
+          {/* Назад (лише телефон, на сторінках без власної стрілки) */}
+          {needsBackButton(pathname || '/') && (
+            <button type="button" onClick={() => goBack(router, !!user)} aria-label={t('cabinet.shell.back')} className="md:hidden -ml-2 shrink-0 rounded-full p-2 text-neutral-800 active:bg-neutral-100">
+              <ArrowLeft className="h-6 w-6" />
+            </button>
+          )}
           {/* Лого */}
           <Link href={localizedPath('/', locale)} className="flex items-center space-x-2 group shrink-0" aria-label={t('layout.brand.homeAria')}>
             <Image
@@ -171,7 +178,7 @@ export function Navbar() {
               priority
               className="w-10 h-10 rounded-full"
             />
-            <span className={`font-display font-bold text-sm min-[400px]:text-base sm:text-lg leading-tight whitespace-nowrap ${user ? '' : 'max-[479px]:hidden'}`}>
+            <span className={`font-display font-bold text-sm min-[400px]:text-base sm:text-lg leading-tight whitespace-nowrap ${user ? '' : 'max-[479px]:hidden'} ${needsBackButton(pathname || '/') ? 'max-md:hidden' : ''}`}>
               {t('layout.brand.name')}
             </span>
           </Link>

@@ -71,7 +71,7 @@ export function MobileNav() {
 
   if (loading) {
     return (
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-lg">
+      <nav className="mobile-nav-bar md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-lg">
         <div className="grid grid-cols-6 h-16">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
@@ -92,7 +92,7 @@ export function MobileNav() {
   if (!isAuthed) {
     const tabs = [navItems[0], navItems[1], navItems[4]]
     return (
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-[0_-4px_20px_rgba(10,31,68,0.35)]">
+      <nav className="mobile-nav-bar md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-[0_-4px_20px_rgba(10,31,68,0.35)]">
         <div className="flex items-center h-16 px-1 gap-1">
           {tabs.map((item) => {
             const Icon = item.icon
@@ -118,7 +118,7 @@ export function MobileNav() {
   // Авторизованим — 6 кнопок
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-[0_-4px_20px_rgba(10,31,68,0.35)]">
+      <nav className="mobile-nav-bar md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[var(--safe-area-inset-bottom,0px)] bg-[#0a1f44] border-t border-white/10 shadow-[0_-4px_20px_rgba(10,31,68,0.35)]">
         <div className="grid grid-cols-6 h-16">
           {items.map((item) => {
             const Icon = item.icon
