@@ -11,7 +11,17 @@ UP="${2:-${UPLOADS_DIR:-$(envval UPLOADS_DIR)}}"
 UP="${UP:-$ROOT/public/uploads}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-unzip -q "$ZIP" -d "$TMP"
+# unzip exits with 1 on warnings (e.g. zips made on Windows with backslashes) - that is fine, we repair the names below
+unzip -q "$ZIP" -d "$TMP" || [ $? -eq 1 ]
+# Old Windows zips keep the backslash as part of the file name (uploads\misc\x.jpg): turn them into real folders
+shopt -s nullglob
+for f in "$TMP"/*\\*; do
+  b="$(basename "$f")"
+  rel="${b//\\//}"
+  mkdir -p "$TMP/$(dirname "$rel")"
+  mv "$f" "$TMP/$rel"
+done
+shopt -u nullglob
 mkdir -p "$UP"
 [ -d "$TMP/uploads" ] && { cp -rn "$TMP/uploads/." "$UP/" 2>/dev/null || cp -r "$TMP/uploads/." "$UP/"; }
 DB="${DATABASE_URL:-$(envval DATABASE_URL)}"
