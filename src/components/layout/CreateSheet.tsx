@@ -23,14 +23,8 @@ export function CreateSheet({ onClose }: { onClose: () => void }) {
 
   const choose = (kind: Kind) => {
     if (kind === 'live') { toast.info(t('cabinet.create.liveSoon')); onClose(); return }
-    if (kind === 'photo' || kind === 'video' || kind === 'story') {
-      // Повноекранна студія (камера + галерея) як у TikTok / Instagram
-      window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: kind === 'video' ? 'reel' : kind } }))
-    } else {
-      const onFeed = pathname === '/feed'
-      if (onFeed) window.dispatchEvent(new CustomEvent('svoi:compose', { detail: kind }))
-      else router.push('/feed?create=post')
-    }
+    // Усе створення — у повноекранній студії (текст, фото, історія, рілс), як у TikTok / Instagram
+    window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: kind === 'video' ? 'reel' : kind === 'post' ? 'text' : kind } }))
     onClose()
   }
 

@@ -1,11 +1,12 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2, Newspaper, Store, Wallet } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { saveToken, saveUser } from '@/lib/client-auth';
+import { LANG_CHOSEN_KEY, LanguageStep } from '@/components/auth/LanguageStep';
 
 const inputCls =
   'w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-[16px] text-neutral-900 placeholder:text-neutral-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200';
@@ -32,6 +33,9 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Перший екран реєстрації — вибір мови (як у TikTok); показується один раз на пристрої
+  const [langStep, setLangStep] = useState(false);
+  useEffect(() => { try { if (!localStorage.getItem(LANG_CHOSEN_KEY)) setLangStep(true); } catch { /* ignore */ } }, []);
 
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -81,6 +85,8 @@ export default function RegisterPage() {
     }
   };
 
+  if (langStep) return <LanguageStep onDone={() => setLangStep(false)} />;
+
   if (nextUrl) {
     return (
       <div className="min-h-screen bg-neutral-100 flex items-center justify-center px-4 py-8">
@@ -120,6 +126,7 @@ export default function RegisterPage() {
           <div>
             <h2 className="text-2xl font-bold text-neutral-900">{t('auth.register.simple.formTitle')}</h2>
             <p className="text-sm text-neutral-500">{t('auth.register.simple.formSubtitle')}</p>
+            <button type="button" onClick={() => setLangStep(true)} className="mt-1 text-sm font-semibold text-primary-700 hover:underline">🌐 {t('auth.language.change')}</button>
           </div>
           <hr className="border-neutral-200" />
 

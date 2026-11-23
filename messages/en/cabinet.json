@@ -452,6 +452,8 @@
     "tooLarge": "Video is too large (up to 50 MB)",
     "badFile": "This file is not supported",
     "addMore": "More photos",
-    "remove": "Remove"
+    "remove": "Remove",
+    "modeText": "Text",
+    "textPlaceholder": "What’s new?"
   }
 }

@@ -8,7 +8,7 @@ import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 import { localizedPath } from '@/i18n/routes';
 
-export type CreatorMode = 'photo' | 'story' | 'reel';
+export type CreatorMode = 'text' | 'photo' | 'story' | 'reel';
 interface Item { id: number; kind: 'image' | 'video'; blob: Blob; url: string }
 
 const MAX_SECONDS = 60;        // збігається з VIDEO_LIMITS.maxSeconds на сервері
@@ -84,11 +84,11 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
 
   // Камера працює на екрані зйомки; на перегляді — вимкнена (звільняємо пристрій)
   useEffect(() => {
-    if (preview) { stopStream(); return; }
+    if (preview || mode === 'text') { stopStream(); return; }
     startCamera(facing, mode !== 'photo');
     return () => { /* зупинка при наступному старті / розмонтуванні */ };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preview, facing, mode === 'photo']);
+  }, [preview, facing, mode === 'photo', mode === 'text']);
   useEffect(() => () => {
     stopStream();
     if (tickRef.current) clearInterval(tickRef.current);
@@ -204,12 +204,16 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
   };
 
   const publish = async () => {
-    if (busy || !items.length) return;
+    if (busy || (mode !== 'text' && !items.length)) return;
+    if (mode === 'text' && !caption.trim()) return;
     setBusy(t('cabinet.studio.uploading'));
     try {
       const first = items[0];
       let go = '/feed';
-      if (mode === 'story') {
+      if (mode === 'text') {
+        const r = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content: caption.trim() }) });
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
+      } else if (mode === 'story') {
         const body: Record<string, unknown> = { caption: caption.trim() };
         if (first.kind === 'video') body.videoId = await uploadVideo(first.blob); else body.imageUrl = await uploadImage(first.blob);
         const r = await fetch('/api/stories', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(body) });
@@ -233,11 +237,11 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
     }
   };
 
-  const tabs: Array<[CreatorMode, string]> = [['photo', t('cabinet.studio.modePost')], ['story', t('cabinet.studio.modeStory')], ['reel', t('cabinet.studio.modeReel')]];
+  const tabs: Array<[CreatorMode, string]> = [['text', t('cabinet.studio.modeText')], ['photo', t('cabinet.studio.modePost')], ['story', t('cabinet.studio.modeStory')], ['reel', t('cabinet.studio.modeReel')]];
   const acceptGallery = mode === 'photo' ? 'image/*' : mode === 'story' ? 'image/*,video/mp4,video/quicktime,video/webm' : 'video/mp4,video/quicktime,video/webm';
   const circ = 2 * Math.PI * 38;
   const hint = mode === 'story' ? t('cabinet.studio.hintStory') : mode === 'reel' ? t('cabinet.studio.hintReel') : t('cabinet.studio.hintPhoto');
-  const nameOf = (m: CreatorMode) => (m === 'photo' ? t('cabinet.studio.modePost') : m === 'story' ? t('cabinet.studio.modeStory') : t('cabinet.studio.modeReel'));
+  const nameOf = (m: CreatorMode) => (m === 'text' ? t('cabinet.studio.modeText') : m === 'photo' ? t('cabinet.studio.modePost') : m === 'story' ? t('cabinet.studio.modeStory') : t('cabinet.studio.modeReel'));
 
   return (
     <div className="fixed inset-0 z-[80] bg-black text-white select-none" role="dialog" aria-modal="true" aria-label={nameOf(mode)}>
@@ -245,7 +249,24 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
       <input ref={cameraPhotoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files, 'image'); e.target.value = ''; }} />
       <input ref={cameraVideoRef} type="file" accept="video/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
 
-      {!preview && (
+      {mode === 'text' && (
+        <div className="absolute inset-0 flex flex-col bg-white text-neutral-900">
+          <div className="flex items-center justify-between p-4 pt-[calc(1rem+var(--safe-area-inset-top,0px))] border-b border-neutral-200">
+            <button type="button" onClick={onClose} disabled={!!busy} aria-label={t('cabinet.create.close')} className="rounded-full p-2 hover:bg-neutral-100"><X className="h-6 w-6" /></button>
+            <span className="font-bold">{nameOf('text')}</span>
+            <button type="button" onClick={publish} disabled={!!busy || !caption.trim()} className="rounded-full bg-primary-500 px-5 py-2 font-extrabold text-neutral-900 disabled:opacity-50 inline-flex items-center gap-2">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{t('cabinet.studio.publish')}</button>
+          </div>
+          <textarea autoFocus value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={2000} disabled={!!busy} placeholder={t('cabinet.studio.textPlaceholder')} aria-label={t('cabinet.studio.textPlaceholder')} className="flex-1 resize-none p-4 text-lg focus:outline-none" />
+          <p className="px-4 pb-1 text-right text-xs text-neutral-400">{caption.length}/2000</p>
+          <div className="flex justify-center gap-6 border-t border-neutral-200 py-3 pb-[calc(0.75rem+var(--safe-area-inset-bottom,0px))] text-sm font-bold">
+            {tabs.map(([m, label]) => (
+              <button key={m} type="button" disabled={!!busy} onClick={() => setMode(m)} className={`px-1 pb-1 border-b-2 ${mode === m ? 'border-neutral-900 text-neutral-900' : 'border-transparent text-neutral-400'}`}>{label}</button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!preview && mode !== 'text' && (
         <>
           <video ref={videoRef} playsInline muted autoPlay className={`absolute inset-0 h-full w-full object-cover ${facing === 'user' ? '-scale-x-100' : ''}`} />
           {camera !== 'on' && (
@@ -286,7 +307,7 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
         </>
       )}
 
-      {preview && (
+      {preview && mode !== 'text' && (
         <>
           <div className="absolute inset-0 bg-black">
             {items[0]?.kind === 'video'
@@ -320,7 +341,7 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
 export function CreatorHost() {
   const [mode, setMode] = useState<CreatorMode | null>(null);
   useEffect(() => {
-    const on = (e: Event) => { const m = (e as CustomEvent).detail?.mode; if (m === 'photo' || m === 'story' || m === 'reel') setMode(m); };
+    const on = (e: Event) => { const m = (e as CustomEvent).detail?.mode; if (m === 'text' || m === 'photo' || m === 'story' || m === 'reel') setMode(m); };
     window.addEventListener('svoi:create', on);
     return () => window.removeEventListener('svoi:create', on);
   }, []);

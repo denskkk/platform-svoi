@@ -21,7 +21,7 @@ const DAY = 24 * 3600 * 1000;
 const ago = (d: number, h = 0) => new Date(Date.now() - d * DAY - h * 3600 * 1000);
 const pick = <T,>(a: T[], i: number): T => a[((i % a.length) + a.length) % a.length];
 const rnd = (seed: number) => { const x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); };
-const ROOT = process.env.UPLOADS_DIR || path.join(process.cwd(), 'public', 'uploads');
+let ROOT = '';
 const msg = (loc: string, f: string) => JSON.parse(fs.readFileSync(path.join(process.cwd(), 'messages', loc, f), 'utf8'));
 const L = msg('uk', 'listings.json');
 const SECTION_LABEL: Record<string, string> = L.options.section;
@@ -86,6 +86,10 @@ const POOL: Record<string, string[]> = {
 function readEnv() {
   for (const f of ['.env.local', '.env']) {
     try {
+      const up = fs.readFileSync(path.join(process.cwd(), f), 'utf8').match(/^\s*UPLOADS_DIR\s*=\s*"?([^"\r\n]+)"?/m);
+      if (up && !process.env.UPLOADS_DIR) process.env.UPLOADS_DIR = up[1].trim();
+    } catch { /* немає файлу */ }
+    try {
       const m = fs.readFileSync(path.join(process.cwd(), f), 'utf8').match(/^\s*DATABASE_URL\s*=\s*"?([^"\r\n]+)"?/m);
       if (m && !process.env.DATABASE_URL) process.env.DATABASE_URL = m[1];
     } catch { /* немає файлу */ }
@@ -94,6 +98,8 @@ function readEnv() {
 
 async function main() {
   readEnv();
+  ROOT = process.env.UPLOADS_DIR || path.join(process.cwd(), 'public', 'uploads');
+  console.log(`Папка завантажень: ${ROOT}`);
   const dbUrl = process.env.DATABASE_URL || '';
   const force = process.argv.includes('--force');
   const local = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(dbUrl) || /^postgres(ql)?:\/\/(localhost|127\.0\.0\.1)/.test(dbUrl);
