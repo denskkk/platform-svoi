@@ -29,8 +29,16 @@
     "videoFailed": "Could not process the video",
     "videoUploading": "Uploading video…",
     "removeVideo": "Remove video",
-    "videoTooLarge": "Video is too large — maximum 50 MB",
-    "videoLimits": "up to 60 s, up to 50 MB"
+    "videoTooLarge": "Video is too large — maximum {max} MB",
+    "videoLimits": "up to 60 s, up to 150 MB",
+    "uploadNetwork": "Connection lost while uploading. Please try again (Wi‑Fi works best)",
+    "videoSlow": "The video is taking longer than usual to process. Check back soon — it will appear when ready",
+    "videoErr": {
+      "unreadable": "Could not read the video. Try another file or record it again",
+      "encode_failed": "Could not convert the video. Try a shorter clip or another format",
+      "ffmpeg_missing": "Video processing is temporarily unavailable. We are working on it"
+    },
+    "videoUploadFailed": "Could not upload the video. Check your connection and try again"
   },
   "post": {
     "follow": "Follow",

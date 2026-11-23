@@ -6,13 +6,13 @@ import { ImageIcon, Loader2, Plus, RefreshCw, X } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
+import { uploadVideo, waitVideoReady, VIDEO_MAX_BYTES } from '@/lib/videoClient';
 import { localizedPath } from '@/i18n/routes';
 
 export type CreatorMode = 'text' | 'photo' | 'story' | 'reel';
 interface Item { id: number; kind: 'image' | 'video'; blob: Blob; url: string }
 
 const MAX_SECONDS = 60;        // збігається з VIDEO_LIMITS.maxSeconds на сервері
-const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 const MAX_PHOTOS = 6;          // як у PostComposer
 const HOLD_MS = 350;
 let seq = 0;
@@ -135,7 +135,7 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
       recRef.current = null; setRecording(false); setSeconds(0);
       if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null; }
       if (blob.size < 1000) return;
-      if (blob.size > MAX_VIDEO_BYTES) { toast.error(t('cabinet.studio.tooLarge')); return; }
+      if (blob.size > VIDEO_MAX_BYTES) { toast.error(t('cabinet.studio.tooLarge')); return; }
       addItem('video', blob);
     };
     recRef.current = rec; rec.start(500); setRecording(true); setSeconds(0);
@@ -165,7 +165,7 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
     const list = Array.from(files);
     const vid = list.find((f) => f.type.startsWith('video/'));
     if (vid && forceKind !== 'image' && mode !== 'photo') {
-      if (vid.size > MAX_VIDEO_BYTES) { toast.error(t('cabinet.studio.tooLarge')); return; }
+      if (vid.size > VIDEO_MAX_BYTES) { toast.error(t('cabinet.studio.tooLarge')); return; }
       addItem('video', vid); return;
     }
     const imgs = list.filter((f) => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
@@ -186,21 +186,10 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
     if (!r.ok || !d.url) throw new Error(d.error);
     return d.url as string;
   };
-  const uploadVideo = async (blob: Blob) => {
-    const type = (blob.type || 'video/mp4').split(';')[0];
-    const r = await fetch('/api/videos/upload', { method: 'POST', credentials: 'include', headers: { ...authHeaders(), 'Content-Type': type }, body: blob });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok || !d.video?.id) throw new Error(d.error);
-    const id = d.video.id as number;
+  const uploadVideoItem = async (blob: Blob) => {
+    const id = await uploadVideo(blob, t, (pct) => setBusy(`${t('cabinet.studio.uploading')} ${pct}%`));
     setBusy(t('cabinet.studio.processing'));
-    for (let i = 0; i < 100; i++) { // до ~5 хвилин
-      await new Promise((res) => setTimeout(res, 3000));
-      const st = await fetch(`/api/videos/${id}`, { credentials: 'include', headers: authHeaders() });
-      const sd = await st.json().catch(() => ({}));
-      if (sd.video?.status === 'ready') return id;
-      if (sd.video?.status === 'failed' || !st.ok) throw new Error(t('feed.composer.videoFailed'));
-    }
-    throw new Error(t('feed.composer.videoFailed'));
+    return waitVideoReady(id, t);
   };
 
   const publish = async () => {
@@ -215,13 +204,13 @@ export function Creator({ initialMode, onClose }: { initialMode: CreatorMode; on
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
       } else if (mode === 'story') {
         const body: Record<string, unknown> = { caption: caption.trim() };
-        if (first.kind === 'video') body.videoId = await uploadVideo(first.blob); else body.imageUrl = await uploadImage(first.blob);
+        if (first.kind === 'video') body.videoId = await uploadVideoItem(first.blob); else body.imageUrl = await uploadImage(first.blob);
         const r = await fetch('/api/stories', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(body) });
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
         window.dispatchEvent(new Event('svoi:stories-changed'));
       } else {
         const body: Record<string, unknown> = { content: caption.trim() };
-        if (first.kind === 'video') { body.videoId = await uploadVideo(first.blob); go = '/video'; }
+        if (first.kind === 'video') { body.videoId = await uploadVideoItem(first.blob); go = '/video'; }
         else { const urls: string[] = []; for (const it of items.filter((x) => x.kind === 'image')) urls.push(await uploadImage(it.blob)); body.images = urls; }
         const r = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(body) });
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
