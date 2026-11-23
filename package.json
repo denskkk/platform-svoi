@@ -16,6 +16,7 @@
     "db:seed": "node prisma/seed.js",
     "db:seed-demo": "node prisma/seed-demo.js",
     "db:seed-projects": "tsx prisma/seed-projects.ts",
+    "db:fill-folder-images": "tsx scripts/fill-folder-images.ts",
     "db:create-admin": "node scripts/create-admin.js",
     "db:clear": "node scripts/clear-database.js",
     "test:auth": "tsx --test tests/auth-api.test.mjs",
