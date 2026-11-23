@@ -23,12 +23,13 @@ export function CreateSheet({ onClose }: { onClose: () => void }) {
 
   const choose = (kind: Kind) => {
     if (kind === 'live') { toast.info(t('cabinet.create.liveSoon')); onClose(); return }
-    const onFeed = pathname === '/feed' || pathname.startsWith('/feed/')
-    if (onFeed && pathname === '/feed') {
-      // Усе в одному жесті користувача, щоб браузер дозволив відкрити вибір файлу
-      window.dispatchEvent(new CustomEvent(kind === 'story' ? 'svoi:story-pick' : 'svoi:compose', { detail: kind }))
+    if (kind === 'photo' || kind === 'video' || kind === 'story') {
+      // Повноекранна студія (камера + галерея) як у TikTok / Instagram
+      window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: kind === 'video' ? 'reel' : kind } }))
     } else {
-      router.push(`/feed?create=${kind === 'story' ? 'story' : 'post'}`)
+      const onFeed = pathname === '/feed'
+      if (onFeed) window.dispatchEvent(new CustomEvent('svoi:compose', { detail: kind }))
+      else router.push('/feed?create=post')
     }
     onClose()
   }

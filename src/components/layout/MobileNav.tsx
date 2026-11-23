@@ -10,6 +10,7 @@ import { checkAuth } from '@/lib/silentFetch'
 import { useI18n } from '@/i18n/client'
 import { localizedPath, splitLocalePrefix } from '@/i18n/routes'
 import { CreateSheet } from '@/components/layout/CreateSheet'
+import { CreatorHost } from '@/components/create/Creator'
 
 // Низ як у TikTok/Facebook: Стрічка · Рілси · «+» · Чат · Проєкти · Кабінет (пошуку тут немає — він угорі стрічки та в проєктах)
 const navItems = [
@@ -153,6 +154,7 @@ export function MobileNav() {
         </div>
       </nav>
       {sheet && <CreateSheet onClose={() => setSheet(false)} />}
+      <CreatorHost />
     </>
   )
 }

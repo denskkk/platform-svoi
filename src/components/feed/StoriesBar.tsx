@@ -32,8 +32,9 @@ export function StoriesBar({ me }: { me: { firstName?: string; lastName?: string
   useEffect(() => {
     const onPick = () => fileRef.current?.click();
     window.addEventListener('svoi:story-pick', onPick);
+    window.addEventListener('svoi:stories-changed', load);
     if (new URLSearchParams(window.location.search).get('create') === 'story') toast.info(t('cabinet.create.storyHint'));
-    return () => window.removeEventListener('svoi:story-pick', onPick);
+    return () => { window.removeEventListener('svoi:story-pick', onPick); window.removeEventListener('svoi:stories-changed', load); };
   }, []);
 
   const create = async (body: Record<string, unknown>) => {
@@ -80,6 +81,11 @@ export function StoriesBar({ me }: { me: { firstName?: string; lastName?: string
     }
   };
 
+  // Студія (камера + галерея) змонтована в нижньому меню; на екранах без неї лишається системний вибір файлу
+  const openStudio = () => {
+    if (document.querySelector('[data-creator-host]')) window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: 'story' } }));
+    else fileRef.current?.click();
+  };
   const own = groups.find((g) => g.author.isOwn);
   const others = groups.filter((g) => !g.author.isOwn);
   const name = `${me?.firstName ?? ''} ${me?.lastName ?? ''}`.trim();
@@ -95,11 +101,11 @@ export function StoriesBar({ me }: { me: { firstName?: string; lastName?: string
       <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 flex gap-3 overflow-x-auto" aria-label={t('feed.stories.title')}>
         <div className="shrink-0 w-[72px] text-center">
           <div className="relative mx-auto w-16 h-16">
-            <button type="button" onClick={() => (own ? open(own) : fileRef.current?.click())} disabled={!!busy} aria-label={own ? t('feed.stories.mine') : t('feed.stories.add')}
+            <button type="button" onClick={() => (own ? open(own) : openStudio())} disabled={!!busy} aria-label={own ? t('feed.stories.mine') : t('feed.stories.add')}
               className={`w-16 h-16 rounded-full p-[2px] ${own ? 'bg-gradient-to-tr from-primary-500 to-accent-500' : 'bg-neutral-200'}`}>
               <UserAvatar src={me?.avatarUrl} alt={name} fallbackName={name || '?'} className="w-full h-full rounded-full border-2 border-white" />
             </button>
-            <button type="button" onClick={() => fileRef.current?.click()} disabled={!!busy} aria-label={t('feed.stories.add')}
+            <button type="button" onClick={openStudio} disabled={!!busy} aria-label={t('feed.stories.add')}
               className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-primary-500 text-white border-2 border-white flex items-center justify-center">
               {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-4 h-4" />}
             </button>
