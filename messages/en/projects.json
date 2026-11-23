@@ -686,6 +686,93 @@
     },
     "shareStory": {
       "title": "Share a cooperation story"
+    },
+    "addGrant": {
+      "title": "Add a grant or program"
+    },
+    "addOpportunity": {
+      "title": "Add a found opportunity"
+    },
+    "addSuccess": {
+      "title": "Add a success story"
+    },
+    "applyCourse": {
+      "title": "Enroll in a course"
+    },
+    "becomeAuthor": {
+      "title": "Become an author or host"
+    },
+    "becomeTester": {
+      "title": "Become a tester"
+    },
+    "createGroup": {
+      "title": "Create a study group"
+    },
+    "createTeam": {
+      "title": "Create a specialist team"
+    },
+    "dateRequest": {
+      "title": "Dating request"
+    },
+    "devApply": {
+      "title": "Specialist application"
+    },
+    "grantConsult": {
+      "title": "Grant consultation"
+    },
+    "grantFind": {
+      "title": "Grant search"
+    },
+    "grantIdea": {
+      "title": "Help with a project idea"
+    },
+    "grantOrg": {
+      "title": "Help for an organization"
+    },
+    "grantSpecialist": {
+      "title": "Become a grant specialist"
+    },
+    "grantWrite": {
+      "title": "Help writing an application"
+    },
+    "hostApply": {
+      "title": "Become a host or blogger"
+    },
+    "joinProject": {
+      "title": "Join a project"
+    },
+    "joinTeam": {
+      "title": "Join the team"
+    },
+    "nominate": {
+      "title": "Nominate a person"
+    },
+    "nominateOther": {
+      "title": "Nominate a person"
+    },
+    "participate": {
+      "title": "Participation request"
+    },
+    "proposeCoop": {
+      "title": "Propose cooperation"
+    },
+    "proposeProject": {
+      "title": "Propose a project"
+    },
+    "readyCoop": {
+      "title": "We are ready to cooperate"
+    },
+    "recordApply": {
+      "title": "Submit a record"
+    },
+    "recordOther": {
+      "title": "Submit someone else’s record"
+    },
+    "specialistApply": {
+      "title": "Specialist application"
+    },
+    "teamApply": {
+      "title": "Create your own team"
     }
   },
   "fld": {
@@ -804,7 +891,31 @@
     "season": "Harvest period",
     "supply": "Supply capability",
     "buyer": "Buyer",
-    "prodForm": "Product form"
+    "prodForm": "Product form",
+    "applicant": "Applicant",
+    "bio": "Short biography",
+    "consent": "Consent to publish",
+    "devices": "Devices for testing",
+    "evidence": "Evidence (links)",
+    "live": "I run live sessions",
+    "merit": "Why notable",
+    "needs": "What the project needs",
+    "offerKind": "Offer type",
+    "orgType": "Who you are",
+    "place": "Place",
+    "portfolio": "Portfolio link",
+    "profession": "Profession / activity",
+    "recordDate": "Date",
+    "recordValue": "Result / value",
+    "regions": "Regions of work",
+    "seeking": "What you are looking for",
+    "skills": "Skills",
+    "teach": "I teach",
+    "termsKind": "Terms",
+    "topic": "Topic",
+    "want": "What you want to do",
+    "wishes": "Wishes",
+    "witnesses": "Witnesses / confirmation"
   },
   "fopt": {
     "location": {
@@ -910,6 +1021,46 @@
       "processed": "Processed",
       "dried": "Dried",
       "other": "Other"
+    },
+    "applicant": {
+      "person": "Individual",
+      "entrepreneur": "Entrepreneur",
+      "ngo": "NGO",
+      "fund": "Fund",
+      "veteran": "Veteran / military",
+      "other": "Other"
+    },
+    "consent": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "live": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "teach": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "offerKind": {
+      "land": "Land plot",
+      "house": "House / housing",
+      "village": "Abandoned village",
+      "farm": "Farm",
+      "program": "Support program"
+    },
+    "orgType": {
+      "organization": "Organization",
+      "business": "Business",
+      "team": "Team",
+      "person": "Person / specialist",
+      "community": "Community"
+    },
+    "termsKind": {
+      "free": "Free",
+      "preferential": "Preferential",
+      "rent": "Rent",
+      "buy": "Purchase"
     }
   },
   "fh": {
@@ -1041,5 +1192,77 @@
       "info_how": "Choose a folder: farmers, suppliers or sales markets. Add a farm or company, create a sales request, find a buyer or carrier. Check your partner and documents before a deal; the platform takes no part in payments."
     },
     "intro": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets."
+  },
+  "dating": {
+    "text": {
+      "info_about": "An international project for dating, communication and meetings for Ukrainians worldwide: meet people, find friends or a partner, travel and create new opportunities together.",
+      "info_earn": "Organizing events and dates, streams and themed broadcasts, growing your channel, advertising and attracting participants. Partner rewards follow program rules only; income is not guaranteed."
+    },
+    "intro": "An international project for dating, communication and meetings for Ukrainians worldwide."
+  },
+  "mystic": {
+    "text": {
+      "info_about": "An international platform for mystic, esoteric and spiritual specialists, bloggers and hosts. Find a specialist, join an open broadcast or book a consultation.",
+      "info_earn": "Own consultations, paid courses and workshops, themed events, live broadcasts, content, partner programs and advertising. Terms, commission and payouts are stated for each model; earnings are not guaranteed. Esoteric consultations are not medical, legal or financial help, and predictions are not guaranteed facts."
+    },
+    "intro": "Specialists, practitioners, broadcasts and training. Consultations do not replace medical, legal or financial help; predictions are not guaranteed facts."
+  },
+  "grants": {
+    "text": {
+      "donors_howto": "How to find grants, how grant support works, key rules and tips. Verify the grantor on its official site; nobody can guarantee a grant. Never pay for a “guaranteed grant”.",
+      "info_about": "Purpose and options of the Grants section: one place to find funding, a specialist, help with an idea, partners and success stories. User information is published after administrator review.",
+      "info_earn": "Specialists are paid for their services, consultants for consultations, partners for agreed partner services. Terms and commissions are transparent and agreed separately; income is not guaranteed.",
+      "info_learning": "Materials, instructions and training programs on preparing grant applications will appear here."
+    },
+    "intro": "Grants, grantors, grant writing specialists and success stories. The platform does not guarantee any grant."
+  },
+  "beauty": {
+    "text": {
+      "info_about": "An international platform for beauty masters, specialists, teachers, bloggers and shops. Find specialists, book services, learn and grow your own business.",
+      "info_earn": "Masters get clients and bookings, teachers sell training, bloggers get audience and advertising, shops sell goods. Partner programs, advertising and commissions apply only on agreed terms; income is not guaranteed.",
+      "info_teamTraining": "Instructions and training materials for the project team will appear here."
+    },
+    "intro": "Masters, training, shops and jobs in the beauty industry. A course document is not a medical license or permission for invasive procedures."
+  },
+  "notable": {
+    "text": {
+      "info_about": "An international publishing project about Ukrainians, their achievements, stories and records. Two publications: the magazine and the Ukrainian Book of Records; the magazine is issued quarterly with an annual special edition.",
+      "info_how": "Candidate selection, verification of information and evidence, editorial work and publication. Personal materials are published only with the person’s consent and editorial review; applying does not mean automatic recognition of a record.",
+      "info_earn": "Opportunities for editors, journalists, photographers, videographers, designers, managers, representatives and coordinators: job description, requirements, format and payment terms are stated separately. Registration or joining the team does not guarantee income."
+    },
+    "intro": "Stories of notable Ukrainians, their achievements and records. Materials are published only with the person’s consent."
+  },
+  "mediaNetwork": {
+    "text": {
+      "laws_howto": "Statuses are shown separately so a bill is not confused with a law in force: pending, adopted, rejected, in force. Each post names the author, country, date, source and date of verification.",
+      "info_about": "An international media network where every active person can become a news author, journalist or blogger for their community. Everyone can not only read but also create material and grow an audience.",
+      "info_earn": "Cooperation terms, partnerships and reward models are approved separately; earnings are not guaranteed."
+    },
+    "intro": "An international media network: authors, events, laws, community life. Materials are moderated."
+  },
+  "cooperatives": {
+    "text": {
+      "earn_business": "Creating enterprises and cooperative farms. Describes activity, cooperation terms, required resources, how to join and income principles, plus risks and costs. Income is not guaranteed by joining: it depends on the project, contracts and profit distribution.",
+      "earn_production": "Growing, processing and selling products within cooperative projects. Terms, risks and profit distribution are set per project; income is not guaranteed.",
+      "earn_building": "Works, services and joint construction projects. Payment terms and liabilities are fixed by contract; income is not guaranteed.",
+      "earn_partnership": "Finding partners, orders and clients. Parties agree cooperation terms; income is not guaranteed."
+    },
+    "intro": "Joint projects, land, housing, revival and specialist teams. Land and housing offers show the source and legal status; income is not guaranteed."
+  },
+  "apps": {
+    "text": {
+      "info_about": "An international platform uniting Ukrainians around apps, programs and games: share useful apps, propose ideas, find developers and testers, build teams.",
+      "info_earn": "Participation, reward and revenue-sharing rules are set for each joint project. Registration does not guarantee payment."
+    },
+    "intro": "Apps, ideas, developers and testers. The “Our developments” showcase contains the project’s own products only."
+  },
+  "rebuild": {
+    "text": {
+      "earn_building": "Participation in construction and restoration projects. Charity programs, paid work, commercial orders and investments are different things: terms and payment are stated separately; income is not guaranteed.",
+      "earn_production": "Creating enterprises and production. Describes needed resources, who can join, how pay or profit is formed and where to apply.",
+      "earn_supply": "Supply of building materials, equipment and products. Parties agree cooperation terms.",
+      "earn_partnership": "Cooperation with foreign funds and companies. Terms and documents are agreed separately."
+    },
+    "intro": "We unite international funds, organizations, businesses and people to rebuild Ukraine."
   }
 }
