@@ -4,12 +4,12 @@
 #
 # Використання (на VPS, у папці проєкту):
 #   bash scripts/deploy.sh
-#   PM2_APP=sviy-platform bash scripts/deploy.sh
+#   PM2_APP=sviy bash scripts/deploy.sh
 
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PM2_APP="${PM2_APP:-sviy-platform}"
+PM2_APP="${PM2_APP:-sviy}"
 cd "$APP_DIR"
 
 echo "▶ Папка: $APP_DIR"
