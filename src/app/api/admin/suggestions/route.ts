@@ -7,8 +7,8 @@ import { logAudit } from '@/lib/audit';
 import { getApiT } from '@/i18n/server';
 
 export const dynamic = 'force-dynamic';
-const STATUSES = ['new', 'review', 'offers', 'clarify', 'done', 'rejected', 'closed'];
-const STATUS_UK: Record<string, string> = { new: 'Нова', review: 'На розгляді', offers: 'Є пропозиції', clarify: 'Потрібне уточнення', done: 'Опрацьована', rejected: 'Відхилена', closed: 'Закрита' };
+const STATUSES = ['new', 'review', 'offers', 'clarify', 'published', 'done', 'rejected', 'closed'];
+const STATUS_UK: Record<string, string> = { new: 'Нова', review: 'На розгляді', offers: 'Є пропозиції', clarify: 'Потрібне уточнення', published: 'Опубліковано', done: 'Опрацьована', rejected: 'Відхилена', closed: 'Закрита' };
 
 async function list(request: NextRequest) {
   const t = getApiT(request);

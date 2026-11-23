@@ -35,7 +35,7 @@ export default function AdminSuggestionsPage() {
       <Link href="/admin" className="inline-flex items-center gap-2 text-sm text-neutral-600"><ArrowLeft className="w-4 h-4" />{t('admin.suggestions.back')}</Link>
       <h1 className="text-2xl font-bold">{t('admin.suggestions.title')}</h1>
       <div className="flex flex-wrap gap-2">
-        {['new', 'review', 'offers', 'clarify', 'done', 'rejected', 'closed'].map((s) => (
+        {['new', 'review', 'offers', 'clarify', 'published', 'done', 'rejected', 'closed'].map((s) => (
           <button key={s} onClick={() => setFilter(s)} className={`rounded-full px-4 py-1.5 text-sm font-semibold ${filter === s ? 'bg-primary-500' : 'bg-neutral-100'}`}>{t(`admin.suggestions.status.${s}`)}</button>
         ))}
       </div>
@@ -47,7 +47,7 @@ export default function AdminSuggestionsPage() {
           <label className="flex items-center gap-2 text-sm">
             <span className="text-neutral-500">{t('admin.suggestions.statusLabel')}</span>
             <select value={i.status} onChange={(e) => setStatus(i.id, e.target.value)} className="rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-sm">
-              {['new', 'review', 'offers', 'clarify', 'done', 'rejected', 'closed'].map((s) => <option key={s} value={s}>{t(`admin.suggestions.status.${s}`)}</option>)}
+              {['new', 'review', 'offers', 'clarify', 'published', 'done', 'rejected', 'closed'].map((s) => <option key={s} value={s}>{t(`admin.suggestions.status.${s}`)}</option>)}
             </select>
           </label>
         </article>

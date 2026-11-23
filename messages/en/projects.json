@@ -773,7 +773,18 @@
     },
     "teamApply": {
       "title": "Create your own team"
-    }
+    },
+    "stepRequired": "Fill in the required fields of this step",
+    "confirmRequired": "Please confirm the information is correct",
+    "review": "Review and confirm",
+    "reviewLead": "Check the request before publishing.",
+    "confirm": "I confirm the information is correct",
+    "step": "Step {n} of {total}",
+    "back": "Back",
+    "next": "Next",
+    "publish": "Publish request",
+    "history": "Status history",
+    "historyHide": "Hide history"
   },
   "fld": {
     "name": "Name",
@@ -1072,8 +1083,10 @@
     "volume": "Step 2. Volume",
     "form": "Step 3. Product form",
     "place": "Step 4. Place of production",
-    "market": "Step 5–6. Market and buyers",
-    "terms": "Step 7. Logistics and commercial terms"
+    "market": "Step 5. Sales market",
+    "terms": "Step 7. Logistics and commercial terms",
+    "buyers": "Step 6. Buyers",
+    "mrContacts": "Step 8. Contacts and documents"
   },
   "fnote": {
     "privacy": "Do not enter passport or document numbers in the form. Hand originals directly to the translator after agreeing.",
@@ -1264,5 +1277,13 @@
       "earn_partnership": "Cooperation with foreign funds and companies. Terms and documents are agreed separately."
     },
     "intro": "We unite international funds, organizations, businesses and people to rebuild Ukraine."
+  },
+  "board": {
+    "q": "Product (strawberries, apples, grain…)",
+    "country": "Country or region",
+    "search": "Find requests",
+    "empty": "No published requests match this search.",
+    "offer": "Suggest a buyer",
+    "privacy": "The producer’s contacts are not shown. The administration receives your offer and passes it on; the platform does not guarantee any reward."
   }
 }

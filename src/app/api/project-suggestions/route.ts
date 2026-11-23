@@ -6,6 +6,7 @@ import { requireAuth } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { getProject } from '@/lib/projects';
+import { logAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,8 +26,9 @@ export async function POST(request: NextRequest) {
     if (!kind || text.length < 5 || text.length > 3000 || !(kind === 'unlock' && slug === 'platform') && !(await getProject(slug))) {
       return NextResponse.json({ error: t('api.common.invalidData') }, { status: 400 });
     }
-    await prisma.projectSuggestion.create({ data: { userId, projectSlug: slug, kind, text } });
-    return NextResponse.json({ success: true }, { status: 201 });
+    const row = await prisma.projectSuggestion.create({ data: { userId, projectSlug: slug, kind, text }, select: { id: true } });
+    await logAudit({ actorId: userId, action: 'suggestion.create', entityType: 'project_suggestion', entityId: row.id, details: { kind, projectSlug: slug } });
+    return NextResponse.json({ success: true, id: row.id }, { status: 201 });
   } catch (e) {
     console.error('[project-suggestions POST]', e);
     return NextResponse.json({ error: t('api.common.serverError') }, { status: 500 });

@@ -126,7 +126,8 @@
       "review": "In review",
       "offers": "Offers received",
       "clarify": "Needs clarification",
-      "closed": "Closed"
+      "closed": "Closed",
+      "published": "Published"
     },
     "kind": {
       "suggestion": "Suggestion",

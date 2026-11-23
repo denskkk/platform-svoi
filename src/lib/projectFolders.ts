@@ -492,7 +492,7 @@ const SPECS: Record<string, Spec[]> = {
       ? expGroup(c, icon, subs, ['supplierApply', 'newDirection'], { drill: ['country', 'region'] })
       : leaf(c, icon, { business: true, drill: ['country', 'region'], acts: ['supplierApply', 'newDirection'] })).concat([fx('newCategory', '➕', 'newDirection')]) },
     { key: 'markets', icon: '🌍', kids: [
-      { key: 'requests', icon: '📝', kids: [fx('create', '➕', 'marketRequest'), leaf('all', '🔎', { drill: GEO, acts: ['helpBuyer'] }), fx('helpBuyer', '🤝', 'helpBuyer'), view('mine', '📂', 'mine:request,market')] },
+      { key: 'requests', icon: '📝', kids: [fx('create', '➕', 'marketRequest'), view('all', '🔎', 'board:market'), fx('helpBuyer', '🤝', 'helpBuyer'), view('mine', '📂', 'mine:request,market')] },
       { key: 'ua', icon: '🇺🇦', kids: EXP_BUYERS.map((b) => leaf(b, '🏢', { business: true, drill: ['region', 'city'], acts: ['addCompany'] })).concat([view('rep', '🏛️', 'repapply:open')]) },
       { key: 'intl', icon: '🌐', kids: EXP_INTL.map((b) => leaf(b, '🌐', { business: true, drill: ['country', 'region', 'city'], acts: ['addCompany'] })).concat([view('rep', '🏛️', 'repapply:open'), fx('newMarket', '➕', 'newDirection')]) },
       { key: 'companies', icon: '🏭', kids: EXP_COMPANIES.map((b) => leaf(b, '🏢', { business: true, drill: GEO, acts: ['addCompany'] })) },

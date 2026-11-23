@@ -13,6 +13,8 @@ export interface FormDef {
   fields: string[];
   /** Після заголовка показати пояснення projects.fnote.<ключ> */
   note?: string;
+  /** Багатокрокова анкета: кожен «#заголовок» — окремий крок, наприкінці перегляд і підтвердження */
+  wizard?: boolean;
 }
 
 const YN = ['yes', 'no'];
@@ -161,7 +163,7 @@ export const FORMS: Record<string, FormDef> = {
   // Український експортний альянс
   farmApply: base('request', 'farmName*', 'country*', 'region', 'city', 'direction', 'area', 'products*', 'volume', 'season', 'delivery', 'site', 'photos', ...P),
   supplierApply: base('request', 'company*', 'country*', 'city', 'categories*', 'desc*', 'delivery', 'site', 'photos', ...P),
-  marketRequest: { kind: 'request', fields: ['#product', 'productName*', 'category', 'sort', 'quality', 'desc', '#volume', 'volume*', 'minBatch', 'readyPeriod', '#form', 'prodForm*', '#place', 'country*', 'region', 'city', '#market', 'marketWhere*', 'buyers', '#terms', 'transport', 'temp', 'price', 'payTerms', 'delivery', '#contacts', 'company', 'contactPerson*', 'phone*', 'email', 'photos'], note: 'marketNoGuarantee' },
+  marketRequest: { kind: 'request', fields: ['#product', 'productName*', 'category', 'sort', 'quality', 'desc', '#volume', 'volume*', 'minBatch', 'readyPeriod', '#form', 'prodForm*', '#place', 'country*', 'region', 'city', '#market', 'marketWhere*', '#buyers', 'buyers', '#terms', 'transport', 'temp', 'price', 'payTerms', 'delivery', '#mrContacts', 'company', 'contactPerson*', 'phone*', 'email', 'photos'], note: 'marketNoGuarantee', wizard: true },
   helpBuyer: base('request', 'desc*', 'country', 'phone*'),
   addCompany: base('request', 'company*', 'country*', 'city*', 'address', 'sphere', 'buy', 'site', 'source', 'comment', 'photos', ...P),
   becomeRepresentative: base('specialist', 'name*', 'country*', 'region', 'city*', 'languages', 'exp*', 'categories', 'countries', 'help', 'email', ...P),
