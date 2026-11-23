@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Loader2, Newspaper, Store, Wallet } from 'lucide-react';
+import { Eye, EyeOff, Globe, Loader2, Newspaper, Store, Wallet } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { readInviteRef } from '@/lib/inviteRef';
 import { saveToken, saveUser } from '@/lib/client-auth';
@@ -18,7 +18,7 @@ const inputCls =
  */
 export default function RegisterPage() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', age: '', gender: '' });
   // Після успішної реєстрації пропонуємо доповнити профіль; next — куди йти, якщо «пізніше»
   const [nextUrl, setNextUrl] = useState('');
@@ -99,7 +99,12 @@ export default function RegisterPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-100 flex items-center justify-center px-4 py-8">
+    <div className="relative min-h-screen bg-neutral-100 flex items-center justify-center px-4 py-8">
+      {/* Мову можна змінити будь-коли, навіть якщо вже обирали */}
+      <button type="button" onClick={() => setLangStep(true)} aria-label={t('common.language.label')}
+        className="absolute right-3 top-[calc(0.75rem+var(--safe-area-inset-top,0px))] inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 shadow-sm ring-1 ring-neutral-200 hover:bg-neutral-50">
+        <Globe className="h-4 w-4" aria-hidden />{locale.toUpperCase()}
+      </button>
       <div className="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
         <div className="text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-extrabold text-primary-600">{t('auth.register.simple.heroTitle')}</h1>
