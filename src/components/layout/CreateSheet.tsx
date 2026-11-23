@@ -37,7 +37,7 @@ export function CreateSheet({ onClose }: { onClose: () => void }) {
   ]
 
   return (
-    <div className="fixed inset-0 z-[60] md:hidden" role="dialog" aria-modal="true" aria-label={t('cabinet.create.title')}>
+    <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label={t('cabinet.create.title')}>
       <button type="button" aria-label={t('cabinet.create.close')} onClick={onClose} className="absolute inset-0 bg-black/60" />
       <div className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-white p-4 pb-[calc(1.25rem+var(--safe-area-inset-bottom,0px))] shadow-2xl">
         <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-neutral-300" aria-hidden />

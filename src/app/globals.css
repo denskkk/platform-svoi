@@ -407,3 +407,10 @@ img, video, canvas, svg { max-width: 100%; }
 /* Поки друкуєте, нижнє меню не з'їдає екран над клавіатурою */
 html[data-keyboard="open"] .mobile-nav-bar { display: none; }
 html[data-keyboard="open"] main { padding-bottom: 0.5rem; }
+
+/* ===== Адаптація: висота екрана без «стрибків» адресного рядка (iOS/Android) ===== */
+.min-h-screen { min-height: 100vh; min-height: 100dvh; }
+.h-screen { height: 100vh; height: 100dvh; }
+.max-h-screen { max-height: 100vh; max-height: 100dvh; }
+/* планшети: контент не розтягується на всю ширину */
+@media (min-width: 768px) and (max-width: 1023px) { .md-readable { max-width: 42rem; margin-inline: auto; } }

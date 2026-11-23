@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bookmark, Grid3x3, Heart, Loader2, Lock, Play, Repeat2 } from 'lucide-react';
+import { Bookmark, Copy, Grid3x3, Heart, Loader2, Lock, Play, Repeat2 } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
@@ -110,13 +110,28 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
               return (
                 <li key={post.id} className="bg-white">
                   <Link href={`/feed/${post.id}`} className="relative block aspect-[3/4] bg-neutral-900 overflow-hidden">
-                    {m.kind === 'poster' || m.kind === 'image'
+                    {m.kind === 'image' && post.images.length > 1 && !post.video
+                      ? (
+                        // два-чотири фото показуємо колажем у плитці (як у стрічці), а не лише перше
+                        <span className={cn('grid h-full w-full gap-px bg-neutral-900', post.images.length === 2 ? 'grid-cols-2' : post.images.length === 3 ? 'grid-cols-2 grid-rows-2' : 'grid-cols-2 grid-rows-2')}>
+                          {post.images.slice(0, 4).map((im, i) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img key={im.id} src={im.url} alt="" loading="lazy" className={cn('h-full w-full object-cover', post.images.length === 3 && i === 0 && 'row-span-2')} />
+                          ))}
+                        </span>
+                      )
+                    : m.kind === 'poster' || m.kind === 'image'
                       // eslint-disable-next-line @next/next/no-img-element
                       ? <img src={m.src} alt="" loading="lazy" className="h-full w-full object-cover" />
                       : m.kind === 'video'
                         ? <video src={`${m.src}#t=0.1`} preload="metadata" muted playsInline className="h-full w-full object-cover" />
                         : <span className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-500 to-space-700 p-2 text-center text-xs font-semibold text-white line-clamp-6">{post.content}</span>}
                     {post.repostOf && <Repeat2 className="absolute top-1.5 right-1.5 w-4 h-4 text-white drop-shadow" aria-hidden />}
+                    {!post.repostOf && post.images.length > 1 && !post.video && (
+                      <span className="absolute top-1.5 right-1.5 inline-flex items-center gap-0.5 rounded-full bg-black/55 px-1.5 py-0.5 text-[11px] font-bold text-white" aria-label={`${post.images.length}`}>
+                        <Copy className="w-3 h-3" aria-hidden />{post.images.length}
+                      </span>
+                    )}
                     {post.isPrivate && <Lock className="absolute top-1.5 left-1.5 w-4 h-4 text-white drop-shadow" aria-hidden />}
                     <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-6 text-xs font-semibold text-white">
                       {m.isVideo ? <Play className="w-3.5 h-3.5 fill-white" aria-hidden /> : <Heart className="w-3.5 h-3.5" aria-hidden />}
