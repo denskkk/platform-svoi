@@ -165,7 +165,15 @@
     "invoicePayerMarked": "Платник відмітив, що сплатив рахунок",
     "invoiceUpdated": "Статус рахунку змінено",
     "unlockDone": "Заявку на відкриття функції схвалено",
-    "unlockRejected": "Заявку на відкриття функції поки відхилено"
+    "unlockRejected": "Заявку на відкриття функції поки відхилено",
+    "negotiation_new": "Нові переговори",
+    "negotiation_message": "Нове повідомлення в переговорах",
+    "negotiation_terms": "Змінено умови переговорів",
+    "negotiation_agree": "Сторона підтвердила умови",
+    "negotiation_agreed": "Умови погоджено обома сторонами",
+    "negotiation_active": "Переговори прийнято в роботу",
+    "negotiation_declined": "Переговори відхилено",
+    "negotiation_closed": "Переговори закрито"
   },
   "profile": {
     "title": "Дописи",

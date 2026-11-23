@@ -926,7 +926,8 @@
     "topic": "Topic",
     "want": "What you want to do",
     "wishes": "Wishes",
-    "witnesses": "Witnesses / confirmation"
+    "witnesses": "Witnesses / confirmation",
+    "regDocNumber": "Registration / permit document number"
   },
   "fopt": {
     "location": {
@@ -1285,5 +1286,87 @@
     "empty": "No published requests match this search.",
     "offer": "Suggest a buyer",
     "privacy": "The producer’s contacts are not shown. The administration receives your offer and passes it on; the platform does not guarantee any reward."
+  },
+  "neg": {
+    "empty": "No negotiations yet.",
+    "to": "To",
+    "from": "From",
+    "pickPartner": "Choose a partner from the list",
+    "created": "Negotiation created",
+    "partner": "Partner (producer, buyer, representative)",
+    "change": "Change",
+    "search": "Search by company or name",
+    "titleField": "Negotiation topic",
+    "firstMessage": "First message (optional)",
+    "start": "Start negotiation",
+    "noMoney": "The platform does not process payments or guarantee a deal: it is a space for terms, messages and documents.",
+    "saveTerms": "Save terms",
+    "termsReset": "After terms change, both confirmations are reset.",
+    "accept": "Accept",
+    "editTerms": "Edit terms",
+    "agree": "I agree to the terms",
+    "decline": "Decline",
+    "youAgreed": "You confirmed the terms; waiting for the other party.",
+    "otherAgreed": "The other party confirmed the terms.",
+    "agreedNote": "Both parties confirmed the terms. Further arrangements and payment are between the parties outside the platform.",
+    "history": "History and messages",
+    "noMessages": "No messages yet.",
+    "termsChanged": "Terms changed",
+    "you": "You",
+    "write": "Message",
+    "attach": "Document (image)",
+    "send": "Send",
+    "attachNote": "Documents are attached as images (scans, certificate photos).",
+    "status": {
+      "open": "New",
+      "active": "Active",
+      "agreed": "Terms agreed",
+      "declined": "Declined",
+      "closed": "Closed"
+    },
+    "event": {
+      "agree": "Confirmed the terms",
+      "agreed": "Both parties confirmed the terms",
+      "active": "Accepted",
+      "declined": "Declined the negotiation",
+      "closed": "Closed the negotiation"
+    },
+    "f": {
+      "product": "Product",
+      "volume": "Volume",
+      "price": "Price and currency",
+      "payTerms": "Payment terms",
+      "delivery": "Delivery terms"
+    }
+  },
+  "cabinet": {
+    "title": "My cabinet",
+    "profile": "My profile",
+    "companies": "My farms and companies",
+    "products": "My products",
+    "requests": "My requests",
+    "offers": "My offers",
+    "contacts": "My buyers and contacts",
+    "negotiations": "My negotiations",
+    "partners": "My partners",
+    "documents": "My documents",
+    "saved": "Saved ads",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "map": {
+    "title": "Participants map",
+    "lead": "Only participants who allowed showing their location are listed. Exact addresses and contacts are not displayed.",
+    "empty": "No participants have allowed map display yet.",
+    "allCountries": "All countries",
+    "count": "Participants: {count}",
+    "open": "Open on map"
+  },
+  "tools": {
+    "cabinet": "Cabinet",
+    "search": "Search",
+    "map": "Map",
+    "talks": "Negotiations"
   }
 }

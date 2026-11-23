@@ -47,6 +47,7 @@ export const FIELDS: Record<string, FieldDef> = {
   farmName: { t: 'text' }, productName: { t: 'text' }, category: { t: 'text' }, sort: { t: 'text' }, quality: { t: 'text' }, volume: { t: 'text' }, minBatch: { t: 'text' }, readyPeriod: { t: 'text' },
   marketWhere: { t: 'area' }, buyers: { t: 'area' }, transport: { t: 'text' }, temp: { t: 'text' }, payTerms: { t: 'text' }, contactPerson: { t: 'text' }, sphere: { t: 'text' }, source: { t: 'text' }, comment: { t: 'area' },
   languages: { t: 'text' }, help: { t: 'area' }, area: { t: 'text' }, season: { t: 'text' }, supply: { t: 'text' }, buyer: { t: 'text' },
+  regDocNumber: { t: 'text' },
   applicant: { t: 'sel', opts: ['person', 'entrepreneur', 'ngo', 'fund', 'veteran', 'other'] },
   skills: { t: 'area' }, portfolio: { t: 'text' }, devices: { t: 'text' }, want: { t: 'area' }, wishes: { t: 'area' }, consent: { t: 'sel', opts: YN },
   profession: { t: 'text' }, bio: { t: 'area' }, merit: { t: 'area' }, evidence: { t: 'area' }, witnesses: { t: 'area' }, recordValue: { t: 'text' }, recordDate: { t: 'date' }, place: { t: 'text' },
@@ -162,7 +163,7 @@ export const FORMS: Record<string, FormDef> = {
   readyCoop: base('request', 'org*', 'orgType*', 'country*', 'city*', 'direction*', 'exp', 'resources', 'seeking', 'site', ...P),
   // Український експортний альянс
   farmApply: base('request', 'farmName*', 'country*', 'region', 'city', 'direction', 'area', 'products*', 'volume', 'season', 'delivery', 'site', 'photos', ...P),
-  supplierApply: base('request', 'company*', 'country*', 'city', 'categories*', 'desc*', 'delivery', 'site', 'photos', ...P),
+  supplierApply: base('request', 'company*', 'country*', 'city', 'categories*', 'regDocNumber', 'desc*', 'delivery', 'site', 'photos', ...P),
   marketRequest: { kind: 'request', fields: ['#product', 'productName*', 'category', 'sort', 'quality', 'desc', '#volume', 'volume*', 'minBatch', 'readyPeriod', '#form', 'prodForm*', '#place', 'country*', 'region', 'city', '#market', 'marketWhere*', '#buyers', 'buyers', '#terms', 'transport', 'temp', 'price', 'payTerms', 'delivery', '#mrContacts', 'company', 'contactPerson*', 'phone*', 'email', 'photos'], note: 'marketNoGuarantee', wizard: true },
   helpBuyer: base('request', 'desc*', 'country', 'phone*'),
   addCompany: base('request', 'company*', 'country*', 'city*', 'address', 'sphere', 'buy', 'site', 'source', 'comment', 'photos', ...P),

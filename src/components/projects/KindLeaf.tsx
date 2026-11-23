@@ -5,6 +5,7 @@ import { ProjectFolder } from '@/lib/projectFolders';
 import { ProjectForm, FormKind } from './ProjectForm';
 import { FieldsForm } from './FieldsForm';
 import { MyRequests } from './MyRequests';
+import { Negotiations } from './Negotiations';
 import { RequestBoard } from './RequestBoard';
 import { RepApplyFlow } from './RepApplyFlow';
 import { RepTree } from './RepTree';
@@ -19,6 +20,7 @@ export function KindLeaf({ project, node, path }: { project: string; node: Proje
   const [type, arg] = (node.kind || '').split(':');
   if (type === 'fx') return <FieldsForm projectSlug={project} formId={arg} label={t(node.labelKey)} />;
   if (type === 'mine') return <MyRequests projectSlug={project} kinds={arg ? arg.split(',') : undefined} />;
+  if (type === 'neg') return <Negotiations project={project} mode={arg as 'active' | 'received' | 'new'} />;
   if (type === 'board') return <RequestBoard project={project} kind={arg || 'market'} offerForm="helpBuyer" label={t(node.labelKey)} />;
   if (type === 'reptree') return <RepTree project={project} />;
   if (type === 'repapply') return <RepApplyFlow project={project} kind={arg as RepKind} />;

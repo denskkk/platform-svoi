@@ -165,7 +165,15 @@
     "invoicePayerMarked": "The payer marked the invoice as paid",
     "invoiceUpdated": "Invoice status changed",
     "unlockDone": "Your feature unlock request was approved",
-    "unlockRejected": "Your feature unlock request was declined for now"
+    "unlockRejected": "Your feature unlock request was declined for now",
+    "negotiation_new": "New negotiation",
+    "negotiation_message": "New negotiation message",
+    "negotiation_terms": "Negotiation terms changed",
+    "negotiation_agree": "A party confirmed the terms",
+    "negotiation_agreed": "Terms agreed by both parties",
+    "negotiation_active": "Negotiation accepted",
+    "negotiation_declined": "Negotiation declined",
+    "negotiation_closed": "Negotiation closed"
   },
   "profile": {
     "title": "Posts",

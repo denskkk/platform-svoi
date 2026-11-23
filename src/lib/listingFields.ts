@@ -288,6 +288,8 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'reportUrl', type: 'url', maxLength: 255 },
   ],
   'export-alliance': [
+    { key: 'showOnMap', type: 'select', options: ['yes', 'no'] },
+    { key: 'regDocNumber', type: 'text', maxLength: 100 },
     { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
     { key: 'region', type: 'text', maxLength: 100, filter: 'text' },
     { key: 'area', type: 'text', maxLength: 100 },
@@ -501,6 +503,8 @@ const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
     seatsFree: { sections: ['travel_join'].concat(ids('travel', 'travel_hot_')) }, oldPrice: { sections: ids('travel', 'travel_hot_') }, validUntil: { sections: ids('travel', 'travel_hot_') },
   },
   'export-alliance': {
+    showOnMap: { sections: EXA('agro', 'suppliers', 'markets_ua', 'markets_intl', 'markets_companies', 'markets_reps', 'markets_logistics') },
+    regDocNumber: { sections: EXA('suppliers_fertilizers', 'suppliers_seeds', 'suppliers_protection'), requiredIn: EXA('suppliers_fertilizers', 'suppliers_seeds', 'suppliers_protection') },
     country: { sections: EXA('agro', 'suppliers', 'markets_requests_all', 'markets_ua', 'markets_intl', 'markets_companies', 'markets_reps', 'markets_logistics', 'markets_deals') },
     region: { sections: EXA('agro', 'suppliers', 'markets_requests_all', 'markets_ua', 'markets_intl', 'markets_companies', 'markets_reps', 'markets_logistics', 'markets_deals') },
     area: { sections: EXA('agro') }, producedGoods: { sections: EXA('agro', 'suppliers') }, volume: { sections: EXA('agro', 'markets_requests_all') }, season: { sections: EXA('agro') },

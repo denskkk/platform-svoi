@@ -104,6 +104,7 @@ export default function NotificationsPage() {
     if (n.relatedEntityType === 'invoice') return '/invoices';
     if (n.relatedEntityType === 'club' && n.relatedEntityId) return `/clubs/${n.relatedEntityId}`;
     if (n.relatedEntityType === 'business_application') return '/business/apply';
+    if (n.relatedEntityType === 'negotiation') return '/projects/export-alliance?folder=markets.talks.active';
     if (n.relatedEntityType === 'deal') return n.type === 'deal_new' ? '/business/clients' : '/earnings';
     if (n.relatedEntityType === 'partner_application') return '/projects';
     if (n.type === 'new_follower' && n.actor) return `/profile/${n.actor.id}`;
@@ -133,6 +134,7 @@ export default function NotificationsPage() {
     if (n.type === 'deal_disputed') return t('feed.notifications.dealDisputed');
     if (n.type === 'partner_approved') return t('feed.notifications.partnerApproved');
     if (n.type === 'partner_rejected') return t('feed.notifications.partnerRejected');
+    if (n.type.startsWith('negotiation_')) return `${t(`feed.notifications.${n.type}`)}: ${n.title}`;
     if (n.type === 'unlock_done') return t('feed.notifications.unlockDone');
     if (n.type === 'unlock_rejected') return t('feed.notifications.unlockRejected');
     return n.title;

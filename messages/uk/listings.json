@@ -439,7 +439,9 @@
       "routes": "Напрямки доставки",
       "cargoInfo": "Транспорт і режими",
       "country": "Країна",
-      "region": "Область / регіон"
+      "region": "Область / регіон",
+      "showOnMap": "Показувати моє місце на карті учасників",
+      "regDocNumber": "Номер реєстраційного / дозвільного документа"
     },
     "dating": {
       "adKind": "Тип",
@@ -1849,7 +1851,11 @@
       "rebuild_feedback_platform": "Пропозиції щодо розвитку платформи",
       "rebuild_feedback_complaintProject": "Скарги на проєкти та організації",
       "rebuild_feedback_complaintMember": "Скарги на учасників та партнерів",
-      "rebuild_feedback_admin": "Звернення до адміністрації"
+      "rebuild_feedback_admin": "Звернення до адміністрації",
+      "export_alliance_markets_talks_send": "Надіслати пропозицію покупцю",
+      "export_alliance_markets_talks_organize": "Організувати переговори",
+      "export_alliance_markets_talks_active": "Активні переговори",
+      "export_alliance_markets_talks_received": "Отримані пропозиції"
     },
     "rentPeriod": {
       "month": "За місяць",
@@ -2028,6 +2034,10 @@
       "team": "Команда",
       "person": "Людина / спеціаліст",
       "community": "Громада"
+    },
+    "showOnMap": {
+      "yes": "Так",
+      "no": "Ні"
     }
   },
   "notFound": "Оголошення не знайдено",

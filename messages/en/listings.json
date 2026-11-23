@@ -439,7 +439,9 @@
       "routes": "Delivery routes",
       "cargoInfo": "Transport and modes",
       "country": "Country",
-      "region": "Region"
+      "region": "Region",
+      "showOnMap": "Show my location on the participants map",
+      "regDocNumber": "Registration / permit document number"
     },
     "dating": {
       "adKind": "Type",
@@ -1849,7 +1851,11 @@
       "rebuild_feedback_platform": "Platform development suggestions",
       "rebuild_feedback_complaintProject": "Complaints about projects and organizations",
       "rebuild_feedback_complaintMember": "Complaints about members and partners",
-      "rebuild_feedback_admin": "Contact the administration"
+      "rebuild_feedback_admin": "Contact the administration",
+      "export_alliance_markets_talks_send": "Send an offer to a buyer",
+      "export_alliance_markets_talks_organize": "Organize negotiations",
+      "export_alliance_markets_talks_active": "Active negotiations",
+      "export_alliance_markets_talks_received": "Received offers"
     },
     "rentPeriod": {
       "month": "Per month",
@@ -2028,6 +2034,10 @@
       "team": "Team",
       "person": "Person / specialist",
       "community": "Community"
+    },
+    "showOnMap": {
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "notFound": "Listing not found",

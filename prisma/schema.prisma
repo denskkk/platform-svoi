@@ -272,6 +272,9 @@ model User {
   storyViews           StoryView[]
   referralProgram      ReferralProgram?  @relation("ProgramBusiness")
   dealsAsBusiness      Deal[]  @relation("DealBusiness")
+  negotiationsStarted  Negotiation[] @relation("NegCreator")
+  negotiationsReceived Negotiation[] @relation("NegPartner")
+  negotiationMessages  NegotiationMessage[]
   dealsAsReferrer      Deal[]  @relation("DealReferrer")
   dealsAsCustomer      Deal[]  @relation("DealCustomer")
   clubMemberships      ClubMember[]
@@ -1707,4 +1710,47 @@ model RepApplication {
   @@index([status, createdAt])
   @@index([userId, createdAt])
   @@map("rep_applications")
+}
+
+// Переговори між двома учасниками проєкту (напр. виробник ↔ покупець): умови, листування, документи (зображення), статус. Грошей не рухає.
+model Negotiation {
+  id             Int      @id @default(autoincrement()) @map("negotiation_id")
+  projectSlug    String   @map("project_slug") @db.VarChar(60)
+  creatorId      Int      @map("creator_id")
+  partnerId      Int      @map("partner_id")
+  title          String   @db.VarChar(150)
+  product        String?  @db.VarChar(150)
+  volume         String?  @db.VarChar(100)
+  price          String?  @db.VarChar(100)
+  payTerms       String?  @map("pay_terms") @db.VarChar(200)
+  delivery       String?  @db.VarChar(200)
+  status         String   @default("open") @db.VarChar(16)
+  creatorAgreed  Boolean  @default(false) @map("creator_agreed")
+  partnerAgreed  Boolean  @default(false) @map("partner_agreed")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  creator  User                 @relation("NegCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  partner  User                 @relation("NegPartner", fields: [partnerId], references: [id], onDelete: Cascade)
+  messages NegotiationMessage[]
+
+  @@index([creatorId, updatedAt(sort: Desc)])
+  @@index([partnerId, updatedAt(sort: Desc)])
+  @@map("negotiations")
+}
+
+model NegotiationMessage {
+  id            Int      @id @default(autoincrement()) @map("message_id")
+  negotiationId Int      @map("negotiation_id")
+  authorId      Int      @map("author_id")
+  kind          String   @default("text") @db.VarChar(10)
+  text          String   @db.VarChar(2000)
+  attachmentUrl String?  @map("attachment_url") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  negotiation Negotiation @relation(fields: [negotiationId], references: [id], onDelete: Cascade)
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([negotiationId, id])
+  @@map("negotiation_messages")
 }

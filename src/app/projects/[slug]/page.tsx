@@ -115,6 +115,14 @@ export default function ProjectPage() {
                 if (folders.length > 0 && (!found || (found.folder.children && found.folder.children.length > 0))) {
                   return (
                     <div className="space-y-3">
+                      {!found && project.slug === 'export-alliance' && (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          {([['cabinet', '🗂️', `/projects/${project.slug}/cabinet`], ['search', '🔎', `/search?project=${project.slug}`], ['map', '🗺️', `/projects/${project.slug}/map`]] as Array<[string, string, string]>).map(([k, icon, href]) => (
+                            <Link key={k} href={href} className="flex items-center justify-center gap-1.5 rounded-full bg-white/90 text-sm font-bold text-neutral-900 px-3 py-2"><span aria-hidden>{icon}</span>{t(`projects.tools.${k}`)}</Link>
+                          ))}
+                          <button type="button" onClick={() => openFolder('markets.talks.active')} className="flex items-center justify-center gap-1.5 rounded-full bg-white/90 text-sm font-bold text-neutral-900 px-3 py-2"><span aria-hidden>💬</span>{t('projects.tools.talks')}</button>
+                        </div>
+                      )}
                       {!found && INTRO_SLUGS.indexOf(project.slug) !== -1 && <p className="rounded-2xl bg-black/30 backdrop-blur text-sm text-white p-3 whitespace-pre-line">{t(`projects.${nsOf(project.slug)}.intro`)}</p>}
                       {found && (
                         <button type="button" onClick={() => openFolder(parentOf(folderPath))} className="inline-flex items-center gap-2 rounded-full bg-white/90 text-sm font-semibold text-neutral-800 px-3 py-1.5">

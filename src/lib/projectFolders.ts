@@ -498,7 +498,7 @@ const SPECS: Record<string, Spec[]> = {
       { key: 'companies', icon: '🏭', kids: EXP_COMPANIES.map((b) => leaf(b, '🏢', { business: true, drill: GEO, acts: ['addCompany'] })) },
       { key: 'reps', icon: '🤝', kids: [fx('become', '➕', 'becomeRepresentative'), leaf('offers', '🔎', { drill: GEO, acts: ['becomeRepresentative'] }), view('mine', '📂', 'mine:specialist,request'), std('reward', '💰')] },
       { key: 'logistics', icon: '🚚', kids: EXP_LOGISTICS.map((b) => leaf(b, '🚚', { business: true, drill: GEO, acts: ['carrierAdd', 'routeCalc'] })).concat([fx('calc', '🧮', 'routeCalc')]) },
-      { key: 'talks', icon: '💬', kids: [fx('offer', '📄', 'commercialOffer'), view('mine', '📂', 'mine:request'), std('terms', '📃'), std('docs', '📎')] },
+      { key: 'talks', icon: '💬', kids: [fx('offer', '📄', 'commercialOffer'), view('send', '📨', 'neg:new'), view('organize', '🤝', 'neg:new'), view('active', '💬', 'neg:active'), view('received', '📥', 'neg:received'), view('mine', '📂', 'mine:request'), std('terms', '📃'), std('docs', '📎')] },
       { key: 'deals', icon: '🏆', kids: [leaf('stories', '📖', { drill: GEO }), fx('share', '➕', 'shareStory')] },
     ] },
     INFO([S_ABOUT, std('mission', '🎯'), S_HOW, std('howProducers', '🌾'), S_EARN, S_PARTNER, S_REP, stdFx('intlRep', '🌐', 'becomeRepresentative'), std('withProducers', '🤝'), stdFx('withLogistics', '🚚', 'carrierAdd'), S_TEAM, S_NEWS]),
