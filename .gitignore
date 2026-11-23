@@ -91,3 +91,6 @@ ios_distribution/error_log.json
 
 # App Store review account credentials
 /materials/app_store/text_account_credentials.txt
+
+.folder-images-cache.json
+folder-images-report.tsv

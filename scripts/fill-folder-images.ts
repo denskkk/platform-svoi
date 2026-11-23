@@ -9,6 +9,8 @@
  *   npx tsx scripts/fill-folder-images.ts --top              # лише папки верхнього рівня
  *   npx tsx scripts/fill-folder-images.ts --force            # перезаписати й наявні
  *   npx tsx scripts/fill-folder-images.ts --dry              # лише показати запити, нічого не качати
+ *   npx tsx scripts/fill-folder-images.ts --force --only=pets/vet   # перезробити одну папку
+ * Точні запити: scripts/folder-image-queries.json (правте й запускайте --force). Звіт: folder-images-report.tsv
  *
  * Файли лягають у <UPLOADS_DIR>/misc, адреси — у таблицю folder_images (як з адмінки).
  */
@@ -55,73 +57,111 @@ function en(key: string): string {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const results: Record<string, any[]> = {};
-const used = new Set<number>();
-let calls = 0;
+
+// ---- кеш пошуку на 24 год (вимога Pixabay) ----
+const cacheFile = path.join(process.cwd(), '.folder-images-cache.json');
+let sc: Record<string, { t: number; v: any[] }> = {};
+try { sc = JSON.parse(fs.readFileSync(cacheFile, 'utf8')); } catch { sc = {}; }
+const saveCache = () => { try { fs.writeFileSync(cacheFile, JSON.stringify(sc)); } catch { /* ignore */ } };
+
+const Q = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'scripts', 'folder-image-queries.json'), 'utf8'));
+const THEME: Record<string, string> = Q._theme || {};
+const GENERIC: Record<string, string> = Q._generic || {};
 
 async function search(q: string) {
-  if (results[q]) return results[q];
-  calls++;
+  const hit = sc[q];
+  if (hit && Date.now() - hit.t < 24 * 3600 * 1000) return hit.v;
   const url = PIX
-    ? 'https://pixabay.com/api/?key=' + PIX + '&image_type=photo&orientation=horizontal&safesearch=true&min_width=800&per_page=20&lang=en&q=' + encodeURIComponent(q)
+    ? 'https://pixabay.com/api/?key=' + PIX + '&image_type=photo&orientation=horizontal&safesearch=true&min_width=800&per_page=30&lang=en&q=' + encodeURIComponent(q.slice(0, 100))
     : 'https://api.pexels.com/v1/search?per_page=15&orientation=landscape&size=medium&query=' + encodeURIComponent(q);
   const r = await fetch(url, PIX ? {} : { headers: { Authorization: KEY! } });
-  if (r.status === 429) { console.error('Ліміт запитів. Запустіть пізніше — вже збережене не втрачається.'); throw new Error('rate'); }
-  if (!r.ok) { console.error('API', r.status, q); results[q] = []; return []; }
+  if (r.status === 429) { console.error('Ліміт запитів. Запустіть пізніше — вже збережене не втрачається.'); saveCache(); throw new Error('rate'); }
+  if (!r.ok) { console.error('API', r.status, q); return []; }
   const j: any = await r.json();
-  // уніфікуємо: { id, url }
-  results[q] = PIX ? (j.hits || []).map((h: any) => ({ id: h.id, url: h.largeImageURL || h.webformatURL })) : (j.photos || []).map((x: any) => ({ id: x.id, url: x.src.large }));
+  const v = PIX
+    ? (j.hits || []).map((h: any) => ({ id: h.id, url: h.largeImageURL || h.webformatURL, tags: h.tags, page: h.pageURL }))
+    : (j.photos || []).map((x: any) => ({ id: x.id, url: x.src.large, tags: x.alt || '', page: x.url }));
+  sc[q] = { t: Date.now(), v };
   await sleep(PIX ? 700 : 350);
-  return results[q];
+  return v;
+}
+
+const clean = (l: string) => l.replace(/[“”"«»:.,()]/g, ' ').replace(/\b(online|offline|other|others|apply|create|cabinet|submit|a|an|the|and|for|of|your|our|with|us)\b/gi, ' ').replace(/\s+/g, ' ').trim();
+
+/** Запити для папки в порядку пріоритету. */
+function queriesFor(slug: string, p: string, label: string, parentQs: string[]): { qs: string[]; generic: boolean } {
+  const last = p.split('.').pop()!;
+  const own = Q[slug + '/' + p];
+  if (own) return { qs: [own], generic: false };
+  if ((last === 'other' || last === 'list') && parentQs.length) return { qs: parentQs, generic: false };
+  if (last === 'shop' && parentQs.length) return { qs: [`${parentQs[0]} shop`, ...parentQs], generic: false };
+  if (GENERIC[last]) return { qs: [GENERIC[last]], generic: true };
+  const theme = THEME[slug] || '';
+  const c = clean(label);
+  const short = c.split(' ').length <= 1;
+  return { qs: [short ? `${c} ${theme}`.trim() : c, `${c} ${theme}`.trim(), ...parentQs.slice(0, 1), theme].filter(Boolean), generic: false };
 }
 
 async function main() {
   const only = opt('project');
-  const projects = await prisma.project.findMany({ select: { slug: true, nameEn: true } });
-  const names: Record<string, string> = {}; projects.forEach((p) => { names[p.slug] = p.nameEn; });
+  const one = opt('only'); // slug/path
   const existing = await prisma.folderImage.findMany();
   const have = new Set(existing.map((e) => e.project + '|' + e.path));
+  const report: string[] = ['project/path\tquery\tphoto\ttags\tpage'];
+  const genericFile: Record<string, string> = {};
 
   let done = 0, skipped = 0, miss = 0;
   for (const slug of Object.keys(PROJECT_FOLDERS)) {
     if (only && slug !== only) continue;
-    const walk = async (nodes: any[], trail: string[]) => {
+    const used = new Set<number>();
+    const walk = async (nodes: any[], trail: string[], parentQs: string[]) => {
       for (const n of nodes) {
         const p = trail.concat(n.key).join('.');
         const label = en(n.labelKey) || n.key;
-        if (!(flag('top') && trail.length)) {
+        const { qs, generic } = queriesFor(slug, p, label, parentQs);
+        const skipHere = (flag('top') && trail.length) || (one && one !== slug + '/' + p);
+        if (!skipHere) {
           if (have.has(slug + '|' + p) && !flag('force')) { skipped++; }
+          else if (flag('dry')) { console.log(`${slug}/${p} → "${qs[0]}"${generic ? ' (спільна)' : ''}`); done++; }
           else {
-            const proj = names[slug] || slug.replace(/-/g, ' ');
-            const queries = [label, `${label} ${proj}`, proj];
-            if (flag('dry')) { console.log(`${slug}/${p} → "${queries[0]}"`); done++; }
+            let photo: any = null, usedQ = '';
+            if (generic && genericFile[qs[0]]) { photo = genericFile[qs[0]]; usedQ = qs[0]; }
             else {
-              let photo: any = null;
-              for (const q of queries) {
+              for (const q of qs) {
                 const list = await search(q);
-                photo = list.find((x) => !used.has(x.id));
-                if (photo) break;
+                photo = generic ? list[0] : list.find((x: any) => !used.has(x.id));
+                if (photo) { usedQ = q; break; }
               }
-              if (!photo) { miss++; console.log(`— немає знімка: ${slug}/${p} (${label})`); }
-              else {
+            }
+            if (!photo) { miss++; console.log(`— немає знімка: ${slug}/${p} (${label})`); }
+            else {
+              const isFile = typeof photo === 'string';
+              const file = isFile ? photo : `folder-${photo.id}.jpg`;
+              if (!isFile) {
                 used.add(photo.id);
-                const buf = Buffer.from(await (await fetch(photo.url)).arrayBuffer());
-                const file = `folder-${slug}-${p.replace(/\./g, '-')}-${photo.id}.jpg`;
-                await sharp(buf).resize(800, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(path.join(outDir, file));
-                const imageUrl = '/uploads/misc/' + file;
-                await prisma.folderImage.upsert({ where: { project_path: { project: slug, path: p } }, create: { project: slug, path: p, imageUrl }, update: { imageUrl } });
-                done++;
-                if (done % 10 === 0) console.log(`… ${done} готово`);
-              }
+                const dest = path.join(outDir, file);
+                if (!fs.existsSync(dest)) {
+                  const buf = Buffer.from(await (await fetch(photo.url)).arrayBuffer());
+                  await sharp(buf).resize(800, 600, { fit: 'cover' }).jpeg({ quality: 78 }).toFile(dest);
+                }
+                if (generic) genericFile[qs[0]] = file;
+                report.push(`${slug}/${p}\t${usedQ}\t${photo.id}\t${photo.tags || ''}\t${photo.page || ''}`);
+              } else report.push(`${slug}/${p}\t${usedQ}\t(спільна)\t\t`);
+              const imageUrl = '/uploads/misc/' + file;
+              await prisma.folderImage.upsert({ where: { project_path: { project: slug, path: p } }, create: { project: slug, path: p, imageUrl }, update: { imageUrl } });
+              done++;
+              if (done % 25 === 0) { console.log(`… ${done} готово`); saveCache(); }
             }
           }
         }
-        if (n.children) await walk(n.children, trail.concat(n.key));
+        if (n.children) await walk(n.children, trail.concat(n.key), qs);
       }
     };
-    await walk(PROJECT_FOLDERS[slug], []);
+    await walk(PROJECT_FOLDERS[slug], [], []);
   }
+  saveCache();
+  if (!flag('dry')) { try { fs.writeFileSync(path.join(process.cwd(), 'folder-images-report.tsv'), report.join('\n')); } catch { /* ignore */ } }
   console.log(`Готово: ${done}, пропущено (вже є): ${skipped}, без знімка: ${miss}. Папка: ${outDir}`);
-  console.log('Фото: Pixabay/Pexels, вільна ліцензія без обов'язкової атрибуції. Змінити будь-яку можна в адмінці.');
+  console.log('Звіт (запит → фото → теги): folder-images-report.tsv. Фото: Pixabay/Pexels, вільна ліцензія.');
 }
 main().catch((e) => { console.error(e.message === 'rate' ? '' : e); process.exit(1); }).finally(() => prisma.$disconnect());
