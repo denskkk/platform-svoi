@@ -101,3 +101,11 @@ and import it on the other Mac, or ask a team member to do so.
 - Xcode with the iOS platform installed.
 - Signing certificates in the keychain and profiles in `ios_code_signing/`.
 - For upload: the `.p8` key and `.env` with `ASC_ISSUER_ID` in this folder. The app record for `com.sviy-dlya-svoih.ios` must exist in App Store Connect.
+
+## Upload store listing (texts + screenshots)
+
+```
+./upload_listing_to_appstore.py [--version X.Y] [--locale uk] [--only texts|screenshots] [--screenshots DIR] [--dry-run]
+```
+
+Reads `materials/app_store/listing_texts.txt` and the newest `screenshots/vN` folder (`iphone_6.9/` and `ipad_13/` subfolders), and writes them to the editable App Store version (created if `--version` is given and none exists). Uses the same API key as `upload_to_appstore.py`. Nothing is submitted for review. `What's New` is rejected on an app's first version, so remove that block then.

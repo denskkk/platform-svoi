@@ -155,6 +155,42 @@ npx prisma generate
 5. Підписати keystore.
 6. Завантажити в Google Play Console.
 
+## Скрипти збірки та публікації
+
+Усі скрипти запускаються з кореня репозиторію. Деталі та автентифікація — у `android_distribution/README.md` та `ios_distribution/README.md`.
+
+### Android (`android_distribution/`)
+
+| Скрипт | Призначення |
+|---|---|
+| `android_apk_build.py` | підписаний release APK для прямого встановлення → `binaries/` |
+| `android_play_store_build.py` | підписаний AAB для Google Play → `binaries/` |
+| `android_bump.py build [N]` / `version major\|minor\|patch\|X.Y` | змінює `versionCode` / `versionName` у `android/app/build.gradle` і перейменовує файли в `binaries/` |
+| `upload_to_google_play.py app.aab [--track internal] [--status draft]` | завантажує AAB через Play Developer API |
+| `upload_listing_to_google_play.py [--lang uk\|en-US] [--only texts\|screenshots] [--dry-run]` | завантажує назву, описи та скриншоти з `materials/google_play/` |
+| `android_screenshots.py [--install] [-s SERIAL]` | знімає скриншоти з підключеного Android-пристрою |
+
+### iOS (`ios_distribution/`)
+
+| Скрипт | Призначення |
+|---|---|
+| `ios_app_store_build_and_archive.py` | підписаний App Store IPA → `binaries/` |
+| `ios_ad_hoc_build_and_archive.py` | підписаний Ad Hoc IPA → `binaries/` |
+| `ios_bump.py build [N]` / `version major\|minor\|patch\|X.Y.Z` | змінює номер збірки / версію в `project.pbxproj` і перейменовує IPA |
+| `ios_run_on_device.py [-d UDID\|name] [--console]` | збирає Debug, встановлює та запускає застосунок на підключеному iPhone/iPad |
+| `upload_to_appstore.py app.ipa [--apple-id]` | завантажує IPA в App Store Connect |
+| `upload_listing_to_appstore.py [--version X.Y] [--only texts\|screenshots] [--dry-run]` | завантажує тексти та скриншоти з `materials/app_store/` |
+| `ios_screenshots.py [-d UDID\|name] [--only 03 05]` | керований знімок екранів з iPhone |
+
+### Матеріали (`materials/`)
+
+| Скрипт | Призначення |
+|---|---|
+| `google_play/compose_screenshots.mjs` | оформлені скриншоти Google Play (1080×1920) з `screenshots/v2/source/` |
+| `app_store/compose_screenshots.mjs` | оформлені скриншоти App Store (iPhone 6.9″ та iPad 13″) з `screenshots/v2/source/` |
+
+Обидва `.mjs` запускаються з `FONT_DIR=<папка з Roboto-Bold.ttf> node materials/<store>/compose_screenshots.mjs`.
+
 ## Проект готовий до передачі
 
 Після очищення репозиторія цей проект можна передати другому розробнику для клону, установки залежностей та сборки. Важливо передати секрети окремо, не через GitHub.
