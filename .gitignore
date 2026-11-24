@@ -98,3 +98,13 @@ demo-info.txt
 demo-message.txt
 logs/
 scripts/.bin/
+
+# Android code signing (keep only .gitkeep)
+android_code_signing/*
+!android_code_signing/.gitkeep
+
+# Android distribution (secrets, logs, build outputs)
+android_distribution/__pycache__/
+android_distribution/play_service_account*.json
+android_distribution/error_log.json
+android_distribution/binaries/

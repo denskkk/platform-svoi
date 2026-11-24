@@ -8,6 +8,15 @@ Run all commands from the repository root.
 > [Getting the secret files](#getting-the-secret-files) below. The build scripts also need the
 > signing files in `ios_code_signing/` and the distribution certificate with its private key in your keychain.
 
+## Bump build / version
+
+Edits `CURRENT_PROJECT_VERSION` / `MARKETING_VERSION` in `App.xcodeproj/project.pbxproj`.
+
+```sh
+python3 ios_distribution/ios_bump.py build            # build number +1 (or: build 12)
+python3 ios_distribution/ios_bump.py version patch    # major | minor | patch | X.Y.Z
+```
+
 ## Build
 
 ```sh
@@ -30,6 +39,7 @@ Use the App Store IPA, not the Ad Hoc one.
 
 ## Files
 
+- `ios_bump.py` / `bump.py` - build/version bump script and its shared helpers (also used by Android).
 - `ios_build.py` - shared build logic used by the two build scripts.
 - `ios_ad_hoc_build_and_archive.py` - builds the Ad Hoc IPA.
 - `ios_app_store_build_and_archive.py` - builds the App Store IPA.
