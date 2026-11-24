@@ -1,4 +1,5 @@
 """Version-bump helpers shared by ios_bump.py and android_bump.py (not meant to be run directly)."""
+import os
 import re
 import sys
 
@@ -38,6 +39,19 @@ def next_version(old, arg):
 
 def bump_version(path, pattern, arg):
     _edit(path, pattern, lambda old: next_version(old, arg))
+
+
+def rename_binaries(binaries_dir, old, new):
+    """Rename binaries/*_<oldName>_<oldCode>.* to the new version and build number."""
+    for f in sorted(os.listdir(binaries_dir)) if os.path.isdir(binaries_dir) else []:
+        stem, ext = os.path.splitext(f)
+        prefix, name, code = stem.rsplit("_", 2) if stem.count("_") >= 2 else (None, None, None)
+        if (name, code) == old:
+            dest = f"{prefix}_{new[0]}_{new[1]}{ext}"
+            if os.path.exists(os.path.join(binaries_dir, dest)):
+                sys.exit(f"Cannot rename {f}: {dest} already exists.")
+            os.rename(os.path.join(binaries_dir, f), os.path.join(binaries_dir, dest))
+            print(f"Renamed {f} -> {dest} (contents still carry the old version)")
 
 
 if __name__ == "__main__":
