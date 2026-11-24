@@ -4,7 +4,7 @@ Scripts for building signed Android binaries and uploading them to Google Play.
 Run all commands from the repository root.
 
 > **Note:** the upload script only works with the gitignored service account key
-> `play_service_account.json` in this folder (see [Getting the secret file](#getting-the-secret-file)).
+> `android_code_signing/play_service_account.json` (see [Getting the secret file](#getting-the-secret-file)).
 > The build scripts need the signing files in `android_code_signing/`
 > (`key.properties`, `release-keystore.jks`); they are the source of truth and are copied to `android/` automatically when missing or different.
 > After each build the script checks that the output is signed with that keystore's release key and fails otherwise.
@@ -40,21 +40,31 @@ python3 android_distribution/upload_to_google_play.py android_distribution/binar
 Use the `.aab`, not the APK. The default creates a draft release on the internal track; finish the rollout in Play Console
 or pass `--status completed`.
 
+## Screenshots
+
+```sh
+python3 android_distribution/android_screenshots.py            # launch the installed app, press Enter per screenshot
+python3 android_distribution/android_screenshots.py --install  # install the newest APK from binaries/ first
+```
+
+Needs a USB-debugging device (or emulator) visible in `adb devices`. Files go to `android_distribution/screenshots/` (gitignored).
+
 ## Files
 
 - `android_bump.py` - build/version bump script (helpers live in `ios_distribution/bump.py`).
 - `android_build.py` - shared build logic (`npx cap sync android` + Gradle).
 - `android_play_store_build.py` - builds the AAB.
 - `android_apk_build.py` - builds the APK.
+- `android_screenshots.py` - launches the app on a connected device and captures screenshots via `adb`.
 - `upload_to_google_play.py` - uploads an AAB via the Google Play Developer API.
 - `error_log.py` - error handling shared by the scripts; failures are appended to `error_log.json` (gitignored).
-- `play_service_account.json` - service account key (gitignored).
 - `binaries/` - generated files (gitignored).
 
 ## Code signing files
 
 `android_code_signing/` (gitignored except `.gitkeep`) holds `key.properties`, `release-keystore.jks`, `key_finger_prints.txt`
-(SHA1/SHA256 for Firebase, Google Sign-In, assetlinks.json) and `google_play_testers.csv`. The key is the Play **upload key**;
+(SHA1/SHA256 for Firebase, Google Sign-In, assetlinks.json), `google_play_testers.csv`, `google_cloud_api_key.txt` (a Google Cloud
+API key, not used by these scripts) and `play_service_account.json` (see below). The key is the Play **upload key**;
 back it up with its passwords, because without it you can't ship updates.
 
 ## Getting the secret file
@@ -62,7 +72,8 @@ back it up with its passwords, because without it you can't ship updates.
 Ask a team member for `play_service_account.json` (secure channel, never git), or create one:
 
 1. Google Cloud Console -> create/choose a project -> enable **Google Play Android Developer API**.
-2. **IAM -> Service accounts** -> create an account -> **Keys -> Add key -> JSON**; save as `android_distribution/play_service_account.json`.
+2. **IAM -> Service accounts** -> create an account -> **Keys -> Add key -> JSON**; save as `android_code_signing/play_service_account.json`. The current service account is
+   `sviy-dlya-svoih-android-app@poised-charger-515708-g0.iam.gserviceaccount.com`.
 3. Play Console -> **Users and permissions** -> invite the service account email and grant release permissions for the app
    (`com.sviy_dlya_svoih.android`). It can take a few minutes to take effect.
 
@@ -72,4 +83,4 @@ The app must already exist in Play Console, and the first release must be upload
 
 - Java and the Android SDK (`android/local.properties`), Node (`npx cap`).
 - Signing files in `android_code_signing/`.
-- For upload: `play_service_account.json`, system `openssl`.
+- For upload: `android_code_signing/play_service_account.json`, system `openssl`.

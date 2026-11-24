@@ -105,6 +105,7 @@ android_code_signing/*
 
 # Android distribution (secrets, logs, build outputs)
 android_distribution/__pycache__/
-android_distribution/play_service_account*.json
 android_distribution/error_log.json
 android_distribution/binaries/
+
+android_distribution/screenshots/
