@@ -29,6 +29,16 @@ python3 ios_distribution/ios_app_store_build_and_archive.py
 
 The scripts are executable, so `./ios_distribution/ios_app_store_build_and_archive.py` also works.
 
+## Run the debug app on a device
+
+```bash
+python3 ios_distribution/ios_run_on_device.py            # build Debug, install, launch
+python3 ios_distribution/ios_run_on_device.py --console  # ...and stream app output
+python3 ios_distribution/ios_run_on_device.py -d <UDID|name>  # when several devices are connected
+```
+
+Needs an unlocked, paired device with Developer Mode on, and the device UDID in `ios_code_signing/Sviy_Dlya_Svoih_iOS_Development.mobileprovision` and its "Apple Development" certificate in the keychain (manual signing, no Xcode login needed).
+
 ## Upload to App Store Connect
 
 ```sh

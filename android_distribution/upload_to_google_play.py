@@ -3,7 +3,9 @@
 
 Authentication: a Google Cloud service account JSON key that has been invited in
 Play Console -> Users and permissions with release access to the app. The key is read from
-play_service_account*.json next to this script (override: GOOGLE_PLAY_KEY_PATH).
+android_code_signing/play_service_account*.json (override: GOOGLE_PLAY_KEY_PATH).
+The service account is sviy-dlya-svoih-android-app@poised-charger-515708-g0.iam.gserviceaccount.com. Note that
+google_cloud_api_key.txt (an "AIza..." API key) cannot publish apps; the JSON private key of the service account is required.
 
 Usage:
     ./upload_to_google_play.py path/to/app.aab [--track internal] [--status draft]
@@ -29,6 +31,7 @@ import urllib.request
 from error_log import GoogleApiError, guarded
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SIGNING_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "android_code_signing")
 PACKAGE = "com.sviy_dlya_svoih.android"
 API = f"https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{PACKAGE}"
 UPLOAD_API = f"https://androidpublisher.googleapis.com/upload/androidpublisher/v3/applications/{PACKAGE}"
@@ -42,9 +45,9 @@ def b64url(data: bytes) -> str:
 def find_key():
     path = os.environ.get("GOOGLE_PLAY_KEY_PATH")
     if not path:
-        keys = sorted(glob.glob(os.path.join(SCRIPT_DIR, "play_service_account*.json")))
+        keys = sorted(glob.glob(os.path.join(SIGNING_DIR, "play_service_account*.json")))
         if not keys:
-            sys.exit(f"No play_service_account*.json found in {SCRIPT_DIR}; set GOOGLE_PLAY_KEY_PATH.")
+            sys.exit(f"No play_service_account*.json found in {SIGNING_DIR}. In Google Cloud Console open the service account -> Keys -> Add key -> JSON and save it there (an API key is not enough); or set GOOGLE_PLAY_KEY_PATH.")
         path = keys[0]
     with open(os.path.expanduser(path)) as f:
         return json.load(f)
