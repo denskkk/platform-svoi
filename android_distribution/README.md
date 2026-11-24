@@ -84,3 +84,11 @@ The app must already exist in Play Console, and the first release must be upload
 - Java and the Android SDK (`android/local.properties`), Node (`npx cap`).
 - Signing files in `android_code_signing/`.
 - For upload: `android_code_signing/play_service_account.json`, system `openssl`.
+
+## Upload store listing (texts + screenshots)
+
+```
+./upload_listing_to_google_play.py [--lang uk|en-US] [--only texts|screenshots] [--screenshots DIR] [--dry-run]
+```
+
+Reads `materials/google_play/` (`listing_texts.txt` for uk, `listing_en.md` for en-US) and the newest `screenshots/vN` folder, and replaces that language's title, descriptions and phone screenshots in one edit. Text lengths are checked against the `≤ N` limits in the headers before anything is sent.
