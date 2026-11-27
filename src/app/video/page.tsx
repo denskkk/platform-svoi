@@ -217,6 +217,7 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
         visibleRef.current = true;
         userPausedRef.current = false;
         if (video.currentTime > 0.5) video.currentTime = 0;
+        video.preload = 'auto';
         video.play().then(() => setPaused(false)).catch(() => setPaused(true));
         if (nearEndFlag.current) nearEndRef.current();
       } else {
@@ -225,7 +226,13 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
       }
     }, { threshold: [0, 0.65, 1] });
     io.observe(el);
-    return () => io.disconnect();
+    // Підвантажуємо відео наперед: поточний рілс і наступний (за екран униз) вантажаться вже зараз, тож старт миттєвий, без «прогрузилось — і потім пішло»
+    const root = el.parentElement;
+    const pre = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && video.preload !== 'auto') { video.preload = 'auto'; }
+    }, { root, rootMargin: '0px 0px 100% 0px', threshold: 0 });
+    pre.observe(el);
+    return () => { io.disconnect(); pre.disconnect(); };
   }, []);
 
   // Дозавантаження, коли «близько до кінця» стало true вже після показу рілса
@@ -272,7 +279,7 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
 
   return (
     <div ref={ref} className="relative h-full snap-start snap-always bg-black overflow-hidden select-none [contain:layout_paint] [transform:translateZ(0)]">
-      <video ref={vref} src={`${post.video.url}#t=0.1`} poster={post.video.posterUrl || undefined} loop playsInline muted={muted} preload="metadata"
+      <video ref={vref} src={post.video.url} poster={post.video.posterUrl || undefined} loop playsInline muted={muted} preload="metadata"
         onLoadedData={onLoaded} onTimeUpdate={onTime} className="absolute inset-0 h-full w-full object-contain bg-black" />
       {/* Область тапу (пауза / подвійний тап) */}
       <div onClick={onTap} className="absolute inset-0 z-10" aria-hidden />

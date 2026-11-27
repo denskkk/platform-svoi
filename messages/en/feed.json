@@ -302,7 +302,8 @@
       "following": "You aren't following anyone yet",
       "followers": "No followers yet",
       "mutual": "No mutual follows yet"
-    }
+    },
+    "private": "This user keeps their following and followers private"
   },
   "video": {
     "title": "Video",

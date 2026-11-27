@@ -53,7 +53,7 @@ export function LanguageSwitcher({ variant = 'buttons', className = '' }: Langua
       aria-label={t('common.language.label')}
     >
       <Globe className="h-4 w-4 text-gray-500" aria-hidden="true" />
-      {locales.map((code) => (
+      {locales.filter((code) => code !== 'ru' || locale === 'ru').map((code) => (
         <button
           key={code}
           type="button"

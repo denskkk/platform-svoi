@@ -185,7 +185,7 @@ export default function GroupChatPage() {
             ))}
             <div ref={bottom} />
           </div>
-          <form onSubmit={send} className="sticky bottom-[calc(4.5rem+var(--safe-area-inset-bottom,0px))] lg:bottom-4 flex gap-2 bg-neutral-50 pt-2">
+          <form onSubmit={send} className="kb-sticky sticky bottom-[calc(4.5rem+var(--safe-area-inset-bottom,0px))] lg:bottom-4 flex gap-2 bg-neutral-50 pt-2">
             <input value={text} onChange={(e) => setText(e.target.value)} maxLength={2000} placeholder={t('cabinet.groupChats.write')} className="min-w-0 flex-1 rounded-full border border-neutral-300 bg-white px-4 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
             <button type="submit" disabled={sending || !text.trim()} aria-label={t('cabinet.groupChats.send')} className="rounded-full bg-primary-500 w-11 h-11 flex items-center justify-center disabled:opacity-50"><Send className="w-5 h-5" /></button>
           </form>
