@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
+import { authHeaders } from '@/lib/feedClient';
 import { projectTheme, projectWallpaper } from '@/lib/projectThemes';
 
 interface Project { slug: string; bannerUrl: string | null; nameUk: string; nameEn: string; descriptionUk: string | null; descriptionEn: string | null; status: 'active' | 'coming_soon' | 'hidden' }
@@ -12,11 +13,22 @@ interface Project { slug: string; bannerUrl: string | null; nameUk: string; name
 export function ProjectsStrip() {
   const { t, locale } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [matched, setMatched] = useState(false);
   useEffect(() => {
     let off = false;
     fetch('/api/projects', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d) => { if (!off) setProjects((d.projects || []).filter((p: Project) => p.status === 'active')); })
+      .then(async (d) => {
+        const active: Project[] = (d.projects || []).filter((p: Project) => p.status === 'active');
+        // Порядок за інтересами людини (якщо вдалося отримати); інакше — звичайний
+        try {
+          const r = await fetch('/api/recommendations', { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
+          const rec = r.ok ? await r.json() : null;
+          const order: string[] = rec?.projectSlugs ?? [];
+          if (order.length) { active.sort((a, b) => (order.indexOf(a.slug) + 1 || 999) - (order.indexOf(b.slug) + 1 || 999)); if (!off) setMatched(!!rec.projectsMatched); }
+        } catch { /* лишаємо звичайний порядок */ }
+        if (!off) setProjects(active);
+      })
       .catch(() => undefined);
     return () => { off = true; };
   }, []);
@@ -24,10 +36,10 @@ export function ProjectsStrip() {
   const nm = (p: Project) => (locale === 'uk' ? p.nameUk : p.nameEn || p.nameUk);
   const ds = (p: Project) => (locale === 'uk' ? p.descriptionUk : p.descriptionEn || p.descriptionUk);
   return (
-    <section className="space-y-2 rounded-lg bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.12)]" aria-label={t('feed.projectsStrip.title')}>
+    <section className="space-y-2 rounded-lg bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.12)]" aria-label={matched ? t('feed.projectsStrip.titleInterest') : t('feed.projectsStrip.title')}>
       <div className="flex items-end justify-between px-0.5">
         <div>
-          <h3 className="text-base font-bold text-neutral-900">{t('feed.projectsStrip.title')}</h3>
+          <h3 className="text-base font-bold text-neutral-900">{matched ? t('feed.projectsStrip.titleInterest') : t('feed.projectsStrip.title')}</h3>
           <p className="text-xs text-neutral-500">{t('feed.projectsStrip.hint')}</p>
         </div>
         <Link href="/projects" className="text-sm font-semibold text-primary-700 hover:underline">{t('feed.recommendations.seeAll')}</Link>

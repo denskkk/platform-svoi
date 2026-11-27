@@ -359,6 +359,7 @@
   },
   "projectsStrip": {
     "title": "Projects",
-    "hint": "Platform directions: services, trade, clubs and more"
+    "hint": "Platform directions: services, trade, clubs and more",
+    "titleInterest": "Projects you may like"
   }
 }
