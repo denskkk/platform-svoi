@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     const settings = await getSettings(userId);
     const profileText = [me?.bio, me?.profession, settings.feed.interests, (me?.childrenCount ?? 0) > 0 ? 'діти дитина сім’я' : '' /* i18n-ignore */].join(' ').toLowerCase();
     const stem = (w: string) => (w.length >= 7 ? w.slice(0, -2) : w.length >= 5 ? w.slice(0, -1) : w);
-    const myWords = Array.from(new Set(profileText.split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4).map(stem)));
+    const myWords = Array.from(new Set(profileText.split(/[^a-zа-яіїєґ0-9]+/i).filter((w) => w.length >= 4).map(stem)));
     const projectList = (await listProjects()).filter((p: any) => p.status === 'active');
     const scored = projectList.map((p: any) => {
       const hay = `${p.nameUk} ${p.descriptionUk ?? ''} ${p.nameEn} ${p.descriptionEn ?? ''}`.toLowerCase();
