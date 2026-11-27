@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 import { PostCard } from './PostCard';
 import { Recommendations } from './Recommendations';
+import { ProjectsStrip } from './ProjectsStrip';
 import { FeedMenuDrawer, FeedSidebar } from './FeedSidebar';
 import { StoriesBar } from './StoriesBar';
 import { PostComposer } from './PostComposer';
@@ -293,6 +294,7 @@ export function FeedPage() {
             onBlocked={removeByAuthor}
           />
           {!isGuest && !isDesktop && scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
+          {!isGuest && !isDesktop && scope === 'all' && index === Math.min(5, posts.length - 1) && <ProjectsStrip />}
           </Fragment>
         ))}
 
@@ -315,6 +317,7 @@ export function FeedPage() {
         {isDesktop && !isGuest && (
           <aside className="sticky top-20 self-start space-y-3 max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain [scrollbar-width:thin]">
             <Recommendations vertical canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />
+            <ProjectsStrip />
           </aside>
         )}
       </div>
