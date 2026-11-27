@@ -14,7 +14,7 @@ export default function AboutTopicPage() {
   const { t } = useI18n();
   const { topic } = useParams<{ topic: string }>();
   const known = (TOPICS as readonly string[]).includes(topic);
-  const paragraphs = topic === 'contacts' ? ['p1'] : ['p1', 'p2'];
+  const paragraphs = ['p1', 'p2'];
   return (
     <MenuShell title={known ? t(`cabinet.about.${topic}.title`) : t('cabinet.about.title')} backHref="/menu/about">
       {known && (

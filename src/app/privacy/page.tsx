@@ -1,3 +1,4 @@
+import { OperatorInfo } from '@/components/legal/OperatorInfo';
 import { getT } from '@/i18n/server'
 import { localizedPath } from '@/i18n/routes'
 
@@ -50,6 +51,7 @@ export default function PrivacyPolicyPage() {
           <div className="space-y-3">
             <h2 className="text-xl font-semibold text-gray-900">{s('controller.title')}</h2>
             <p>{s('controller.p1')}</p>
+            <OperatorInfo compact />
             <p>
               {s('controller.contactsBefore')}{' '}
               <a className={linkClass} href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">{TELEGRAM_URL}</a>{' '}

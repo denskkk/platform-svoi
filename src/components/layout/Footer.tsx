@@ -69,7 +69,10 @@ export function Footer() {
         </div>
 
         <div className="border-t border-neutral-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-400">
-          <p>{t('layout.footer.copyright', { year: currentYear })}</p>
+          <div>
+            <p>{t('layout.footer.copyright', { year: currentYear })}</p>
+            <p className="mt-1 text-xs text-neutral-500">{t('layout.footer.operator')}</p>
+          </div>
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 mt-4 md:mt-0">
             <Link href={localizedPath('/privacy', locale)} className="hover:text-primary-400 transition-colors">
               {t('layout.footer.privacy')}

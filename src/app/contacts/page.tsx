@@ -2,6 +2,7 @@
  * Contacts page. Title/description metadata comes from the central i18n metadata (meta.pages.contacts).
  */
 
+import { OperatorInfo } from '@/components/legal/OperatorInfo';
 import Link from 'next/link';
 import { Mail, Send } from 'lucide-react';
 import { getT } from '@/i18n/server';
@@ -73,6 +74,8 @@ export default function ContactsPage() {
             </div>
           </div>
         </div>
+
+        <OperatorInfo className="mb-8 bg-white shadow-md" />
 
         <div className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">
