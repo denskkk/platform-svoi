@@ -30,7 +30,7 @@ export default function GlobalError({
     setLocale(detectLocale())
   }, [])
 
-  const t = createTranslator(locale, dictionaries[locale])
+  const t = createTranslator(locale, (dictionaries as Record<string, typeof dictionaries.uk>)[locale] ?? (locale === 'ru' ? dictionaries.uk : dictionaries.en))
   const homePath = locale === 'en' ? '/en' : '/'
 
   return (

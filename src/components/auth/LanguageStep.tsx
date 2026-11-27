@@ -10,8 +10,8 @@ import { setLocaleCookie } from '@/components/ui/LanguageSwitcher';
 
 export const LANG_CHOSEN_KEY = 'svoi_lang_chosen';
 
-const NATIVE: Record<Locale, string> = { uk: 'Українська', en: 'English' };
-const FLAG: Record<Locale, string> = { uk: '🇺🇦', en: '🇬🇧' };
+const NATIVE: Record<Locale, string> = { uk: 'Українська', en: 'English', ru: 'Русский', cs: 'Čeština', pl: 'Polski', de: 'Deutsch' }; // i18n-ignore
+const FLAG: Record<Locale, string> = { uk: '🇺🇦', en: '🇬🇧', ru: '🇷🇺', cs: '🇨🇿', pl: '🇵🇱', de: '🇩🇪' };
 
 /** Екран вибору мови перед реєстрацією (як у TikTok): список мов, галочка біля обраної, кнопка «Продовжити». Мова застосовується одразу. */
 export function LanguageStep({ onDone }: { onDone: () => void }) {

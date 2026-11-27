@@ -33,6 +33,10 @@ import uk_contacts from '../../messages/uk/contacts.json'
 import uk_admin from '../../messages/uk/admin.json'
 import uk_api from '../../messages/uk/api.json'
 import uk_enums from '../../messages/uk/enums.json'
+import ru_core from '../../messages/ru/core.json'
+import cs_core from '../../messages/cs/core.json'
+import pl_core from '../../messages/pl/core.json'
+import de_core from '../../messages/de/core.json'
 import en_common from '../../messages/en/common.json'
 import en_layout from '../../messages/en/layout.json'
 import en_meta from '../../messages/en/meta.json'
@@ -147,7 +151,23 @@ const en = {
   enums: en_enums,
 } as unknown as Messages
 
-const dictionaries: Record<Locale, Messages> = { uk, en }
+/** Накладає переклад ядра (екрани мови, входу, реєстрації, меню) на повний словник; усе інше береться з базової мови. */
+function overlay(base: Messages, core: unknown): Messages {
+  const merge = (a: any, b: any): any => {
+    const out: any = { ...a }
+    for (const k of Object.keys(b)) out[k] = b[k] && typeof b[k] === 'object' && a?.[k] && typeof a[k] === 'object' ? merge(a[k], b[k]) : b[k]
+    return out
+  }
+  return merge(base, core) as Messages
+}
+
+// ru спирається на українську, cs/pl/de — на англійську; повний переклад решти — окремий етап
+const ru = overlay(uk, ru_core)
+const cs = overlay(en, cs_core)
+const pl = overlay(en, pl_core)
+const de = overlay(en, de_core)
+
+const dictionaries: Record<Locale, Messages> = { uk, en, ru, cs, pl, de }
 
 export function getMessages(locale: Locale): Messages {
   return dictionaries[locale]
@@ -157,6 +177,10 @@ export function getMessages(locale: Locale): Messages {
 const clientDictionaries: Record<Locale, Messages> = {
   uk: Object.fromEntries(Object.entries(uk).filter(([k]) => k !== 'api')) as unknown as Messages,
   en: Object.fromEntries(Object.entries(en).filter(([k]) => k !== 'api')) as unknown as Messages,
+  ru: Object.fromEntries(Object.entries(ru).filter(([k]) => k !== 'api')) as unknown as Messages,
+  cs: Object.fromEntries(Object.entries(cs).filter(([k]) => k !== 'api')) as unknown as Messages,
+  pl: Object.fromEntries(Object.entries(pl).filter(([k]) => k !== 'api')) as unknown as Messages,
+  de: Object.fromEntries(Object.entries(de).filter(([k]) => k !== 'api')) as unknown as Messages,
 }
 
 export function getClientMessages(locale: Locale): Messages {

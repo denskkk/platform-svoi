@@ -48,7 +48,7 @@ export function LanguageSwitcher({ variant = 'buttons', className = '' }: Langua
 
   return (
     <div
-      className={`inline-flex items-center gap-1 ${className}`}
+      className={`inline-flex flex-wrap items-center gap-1 ${className}`}
       role="group"
       aria-label={t('common.language.label')}
     >

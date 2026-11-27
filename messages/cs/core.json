@@ -1,0 +1,157 @@
+{
+  "layout": {
+    "mobileNav": {
+      "home": "Domů",
+      "search": "Hledat",
+      "messages": "Zprávy",
+      "profile": "Profil",
+      "favorites": "Oblíbené",
+      "register": "Vytvořit profil",
+      "viewer": "Vstoupit jako divák",
+      "feed": "Příspěvky",
+      "projects": "Projekty",
+      "video": "Video"
+    }
+  },
+  "common": {
+    "language": {
+      "label": "Jazyk rozhraní",
+      "switchTo": "Změnit jazyk: {language}"
+    },
+    "actions": {
+      "retry": "Opakovat",
+      "close": "Zavřít",
+      "cancel": "Zrušit",
+      "confirm": "Potvrdit",
+      "tryAgain": "Zkusit znovu",
+      "goHome": "Na úvod"
+    },
+    "states": {
+      "loading": "Načítání..."
+    },
+    "auth": {
+      "unavailable": "Nepodařilo se ověřit relaci. Zkontrolujte připojení a zkuste to znovu.",
+      "loginFailed": "Chyba přihlášení",
+      "registerFailed": "Chyba registrace",
+      "logoutFailed": "Nepodařilo se ukončit relaci na serveru"
+    },
+    "consent": {
+      "before": "Přečetl(a) jsem si a souhlasím s",
+      "terms": "Podmínkami použití",
+      "and": "a",
+      "privacy": "Zásadami ochrany osobních údajů",
+      "after": "."
+    },
+    "guest": {
+      "title": "Přihlaste se nebo se zaregistrujte",
+      "text": "Chcete-li lajkovat, komentovat, sledovat a otevírat profily a sekce, potřebujete bezplatný účet.",
+      "register": "Zaregistrovat se",
+      "login": "Přihlásit se",
+      "bannerTitle": "Prohlížíte jako host",
+      "bannerText": "Prohlížet můžete bez přihlášení. Chcete-li jednat (lajkovat, psát, sledovat), vytvořte si bezplatný účet."
+    },
+    "errorPage": {
+      "title": "Něco se pokazilo",
+      "description": "Došlo k dočasné chybě. Zkuste to znovu — vaše data i přihlášení jsou zachovány.",
+      "globalDescription": "Došlo k dočasné chybě. Přihlášení je zachováno — zkuste to znovu."
+    },
+    "notFound": {
+      "title": "Stránka nenalezena",
+      "description": "Možná byla odstraněna nebo je odkaz zastaralý.",
+      "toCatalog": "Do katalogu"
+    }
+  },
+  "auth": {
+    "login": {
+      "errors": {
+        "network": "Žádné připojení k serveru. Zkontrolujte internet a zkuste to znovu.",
+        "serverUnavailable": "Server je dočasně nedostupný. Zkuste to za minutu.",
+        "loginFailed": "Chyba přihlášení",
+        "invalidResponse": "Server vrátil neplatnou odpověď. Zkuste to znovu.",
+        "generic": "Přihlášení se nezdařilo"
+      },
+      "welcomeBack": "Vítejte zpět!",
+      "subtitle": "Přihlaste se a pokračujte",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Heslo",
+      "rememberMe": "Zapamatovat si mě",
+      "needHelp": "Potřebujete pomoc?",
+      "submit": "Přihlásit se",
+      "submitting": "Přihlašujeme...",
+      "noAccount": "Ještě nemáte profil?",
+      "createProfile": "Vytvořit profil"
+    },
+    "register": {
+      "simple": {
+        "heroTitle": "Svůj pro své",
+        "heroText": "Najděte lidi, firmy, inzeráty a možnosti výdělku — na jednom místě.",
+        "formTitle": "Vytvořit účet",
+        "formSubtitle": "Je to zdarma a zabere to minutu.",
+        "firstName": "Jméno",
+        "lastName": "Příjmení",
+        "email": "E-mail",
+        "password": "Heslo (minimálně 6 znaků)",
+        "showPassword": "Zobrazit heslo",
+        "hidePassword": "Skrýt heslo",
+        "submit": "Zaregistrovat se",
+        "submitting": "Vytváříme účet…",
+        "haveAccount": "Už máte účet?",
+        "signIn": "Přihlásit se",
+        "agreePrefix": "Registrací souhlasíte s",
+        "terms": "Podmínkami použití",
+        "and": "a",
+        "privacy": "Zásadami ochrany osobních údajů",
+        "errors": {
+          "required": "Vyplňte všechna pole",
+          "email": "Zadejte platný e-mail",
+          "password": "Heslo musí mít alespoň 6 znaků",
+          "network": "Žádné připojení k serveru. Zkontrolujte internet a zkuste to znovu.",
+          "failed": "Účet se nepodařilo vytvořit",
+          "age": "Uveďte věk od 14 let",
+          "gender": "Vyberte pohlaví",
+          "consent": "Potvrďte souhlas s Podmínkami použití a Zásadami ochrany osobních údajů"
+        },
+        "perks": {
+          "people": "Komunikujte a sdílejte příspěvky",
+          "business": "Najděte firmy poblíž",
+          "earn": "Vydělávejte na získaných klientech"
+        },
+        "age": "Věk",
+        "gender": "Pohlaví",
+        "genderMale": "Muž",
+        "genderFemale": "Žena",
+        "genderOther": "Jiné",
+        "doneTitle": "Vítejte!",
+        "doneText": "Účet je vytvořen. Vyplňte profil celý: město, fotku, zájmy. Snáze vás pak najdou a nabídnou užitečné.",
+        "doneComplete": "Doplnit profil",
+        "doneLater": "Později"
+      }
+    },
+    "restore": {
+      "failedTitle": "Nepodařilo se připojit",
+      "failedText": "Zkontrolujte internet — vaše přihlášení je zachováno.",
+      "retry": "Zkusit znovu",
+      "restoring": "Obnovujeme přihlášení…"
+    },
+    "language": {
+      "title": "Vyberte jazyk",
+      "subtitle": "Lze jej později změnit v nastavení",
+      "continue": "Pokračovat",
+      "hint": "Jazyk rozhraní aplikace",
+      "change": "Změnit jazyk"
+    }
+  },
+  "home": {
+    "welcome": {
+      "title": "Svůj pro své",
+      "subtitle": "Sociální síť, kde můžete komunikovat, hledat služby a vydělávat.",
+      "p1": "Příspěvky, přátelé a novinky",
+      "p2": "Videa a reely",
+      "p3": "Projekty, inzeráty a firmy",
+      "p4": "Kluby a komunity",
+      "register": "Zaregistrovat se",
+      "login": "Přihlásit se",
+      "note": "Registrace je zdarma: jméno, e-mail a heslo."
+    }
+  }
+}
