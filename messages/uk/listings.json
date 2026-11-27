@@ -499,6 +499,11 @@
       "delivery": "Умови доставки",
       "country": "Країна",
       "region": "Область / регіон"
+    },
+    "consumer-platform": {
+      "adKind": "Тип",
+      "country": "Країна",
+      "region": "Область / регіон"
     }
   },
   "options": {

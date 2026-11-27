@@ -211,6 +211,11 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
     { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
   ],
+  'consumer-platform': [
+    { key: 'adKind', type: 'select', options: ['offer', 'request'], filter: 'select' },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 100, filter: 'text' },
+  ],
   'comfort-home': [
     { key: 'adKind', type: 'select', options: ['offer', 'request'], filter: 'select' },
     { key: 'brand', type: 'text', maxLength: 100, filter: 'text' },
