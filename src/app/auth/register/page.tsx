@@ -42,7 +42,7 @@ export default function RegisterPage() {
     const email = form.email.trim();
     if (!firstName || !lastName || !email || !form.password) { setError(t('auth.register.simple.errors.required')); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError(t('auth.register.simple.errors.email')); return; }
-    if (form.password.length < 6) { setError(t('auth.register.simple.errors.password')); return; }
+    if (form.password.length < 8) { setError(t('auth.register.simple.errors.password')); return; }
     const age = Number(form.age);
     if (!form.age || !Number.isInteger(age) || age < 14 || age > 120) { setError(t('auth.register.simple.errors.age')); return; }
     if (!form.gender) { setError(t('auth.register.simple.errors.gender')); return; }

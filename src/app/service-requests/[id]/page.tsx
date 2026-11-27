@@ -11,6 +11,7 @@ import { ReportButton } from '@/components/ui/ReportButton';
 import { useI18n } from '@/i18n/client';
 import { translateServiceRequestStatus, translateCategory } from '@/lib/translations';
 import { getCityName } from '@/lib/constants';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 const statusColors: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',
@@ -120,7 +121,7 @@ export default function ServiceRequestDetailPage({ params }: { params: { id: str
   };
 
   const handleSelectExecutor = async (responseId: number) => {
-    if (!confirm(t('serviceRequests.detail.selectConfirm'))) return;
+    if (!(await askConfirm(t('serviceRequests.detail.selectConfirm')))) return;
     
     setSelectingExecutor(true);
     try {

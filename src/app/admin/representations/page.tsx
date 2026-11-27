@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 import { childLevel, RepLevel, RepPerson } from '@/lib/rep';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 const PROJECT = 'lawyers';
 interface Unit { id: number; parentId: number | null; level: RepLevel; name: string; flag: string | null; isActive: boolean; leader: RepPerson | null }
@@ -75,7 +76,7 @@ export default function AdminRepresentationsPage() {
             <span className="font-semibold text-neutral-900">{u.flag ? `${u.flag} ` : ''}{u.name}</span>
             <span className="text-xs text-neutral-500">{t(`projects.rep.levels.${u.level}`)}</span>
             <span className="text-xs text-neutral-600 ml-auto">{u.leader ? `${t('projects.rep.admin.leader')}: ${u.leader.name}` : t('projects.rep.admin.noLeader')}</span>
-            <button type="button" aria-label={t('projects.rep.admin.delete')} title={t('projects.rep.admin.delete')} onClick={() => { if (window.confirm(t('projects.rep.admin.confirmDelete', { name: u.name }))) call(`/api/admin/rep/units/${u.id}`, 'DELETE'); }} className="rounded-lg border border-red-200 p-1.5 text-red-600 hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
+            <button type="button" aria-label={t('projects.rep.admin.delete')} title={t('projects.rep.admin.delete')} onClick={async () => { if (await askConfirm(t('projects.rep.admin.confirmDelete', { name: u.name }))) call(`/api/admin/rep/units/${u.id}`, 'DELETE'); }} className="rounded-lg border border-red-200 p-1.5 text-red-600 hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
           </div>
           <div className="flex flex-wrap gap-2 items-center">
             <input type="email" value={emails[u.id] ?? ''} onChange={(e) => setEmails((p) => ({ ...p, [u.id]: e.target.value }))} placeholder={t('projects.rep.admin.leaderEmail')} className={`${inputCls} flex-1 min-w-[10rem]`} />

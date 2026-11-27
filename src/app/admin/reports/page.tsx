@@ -7,6 +7,7 @@ import { ArrowLeft, Flag } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { parseReportRef } from '@/lib/reportRef';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 interface ReportItem {
   id: number;
@@ -73,7 +74,7 @@ export default function AdminReportsPage() {
   }, [load, router]);
 
   const act = async (reportId: number, action: string) => {
-    if (!window.confirm(t('admin.reports.confirmAction'))) return;
+    if (!(await askConfirm(t('admin.reports.confirmAction')))) return;
     try {
       const res = await fetch('/api/admin/reports/action', {
         method: 'POST',

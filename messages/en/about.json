@@ -146,7 +146,7 @@
     "title": "📝 How registration works",
     "steps": {
       "choose": "Open the registration page and choose a profile type: viewer, regular or business.",
-      "fill": "Fill in the form: first name, last name, email and password (at least 6 characters). Phone, city and profile photo are optional.",
+      "fill": "Fill in the form: first name, last name, email and password (at least 8 characters). Phone, city and profile photo are optional.",
       "done": "After registering, you are signed in right away and can complete your profile.",
       "login": "Next time, sign in with your email and password."
     },

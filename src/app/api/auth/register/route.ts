@@ -93,10 +93,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Валідація пароля (мінімум 6 символів для всіх типів)
-    if (password.length < 6) {
+    // Валідація пароля (мінімум 8 символів для всіх типів)
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: t('api.auth.passwordMin', { min: 6 }) },
+        { error: t('api.auth.passwordMin', { min: 8 }) },
         { status: 400 }
       );
     }

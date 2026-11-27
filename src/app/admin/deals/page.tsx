@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 interface Program { businessUserId: number; name: string; percent: number; status: string; contractRef: string | null }
 interface Candidate { businessUserId: number; name: string; approvedPercent: number | null; offeredPercent: number | null; offeredTerms: string | null }
@@ -132,9 +133,9 @@ export default function AdminDealsPage() {
                   {d.disputeReason && <p className="text-xs text-amber-800">{t('deals.disputeReason')}: {d.disputeReason}</p>}
                   <div className="flex flex-wrap gap-2 pt-1">
                     {d.status === 'confirmed' && <button type="button" disabled={busy === `d${d.id}`} onClick={() => dealAction(d.id, 'accrue')} className={cn(btn, 'bg-green-600 text-white hover:bg-green-700')}>{t('deals.admin.accrue')}</button>}
-                    {d.status === 'accrued' && <button type="button" disabled={busy === `d${d.id}`} onClick={() => { if (window.confirm(t('deals.admin.payoutConfirm'))) dealAction(d.id, 'payout'); }} className={cn(btn, 'bg-emerald-700 text-white hover:bg-emerald-800')}>{t('deals.admin.payout')}</button>}
+                    {d.status === 'accrued' && <button type="button" disabled={busy === `d${d.id}`} onClick={async () => { if (await askConfirm(t('deals.admin.payoutConfirm'))) dealAction(d.id, 'payout'); }} className={cn(btn, 'bg-emerald-700 text-white hover:bg-emerald-800')}>{t('deals.admin.payout')}</button>}
                     {d.status === 'disputed' && <button type="button" disabled={busy === `d${d.id}`} onClick={() => dealAction(d.id, 'restore')} className={cn(btn, 'bg-primary-500 text-white hover:bg-primary-600')}>{t('deals.admin.restore')}</button>}
-                    {d.status !== 'paid_out' && d.status !== 'rejected' && <button type="button" disabled={busy === `d${d.id}`} onClick={() => { if (window.confirm(t('deals.admin.rejectConfirm'))) dealAction(d.id, 'reject'); }} className={cn(btn, 'bg-red-50 text-red-700 hover:bg-red-100')}>{t('deals.clients.reject')}</button>}
+                    {d.status !== 'paid_out' && d.status !== 'rejected' && <button type="button" disabled={busy === `d${d.id}`} onClick={async () => { if (await askConfirm(t('deals.admin.rejectConfirm'))) dealAction(d.id, 'reject'); }} className={cn(btn, 'bg-red-50 text-red-700 hover:bg-red-100')}>{t('deals.clients.reject')}</button>}
                   </div>
                 </li>
               ))}

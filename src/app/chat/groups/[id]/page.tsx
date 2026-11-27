@@ -2,13 +2,14 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, Plus, Send, UserPlus } from 'lucide-react';
+import { Loader2, Pencil, Plus, Send, Trash2, UserPlus } from 'lucide-react';
 import { MenuShell } from '@/components/cabinet/MenuShell';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 import { cn } from '@/lib/utils';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 interface Msg { id: number; content: string; createdAt: string; mine: boolean; sender: { id: number; name: string; avatarUrl: string | null } }
 interface Member { id: number; name: string; avatarUrl: string | null }
@@ -28,6 +29,8 @@ export default function GroupChatPage() {
   const [sending, setSending] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState('');
   const [q, setQ] = useState('');
   const [found, setFound] = useState<Found[]>([]);
   const [addBusy, setAddBusy] = useState<number | null>(null);
@@ -93,6 +96,27 @@ export default function GroupChatPage() {
     } catch { toast.error(t('feed.toast.actionFailed')); } finally { setAddBusy(null); }
   };
 
+  const rename = async () => {
+    const v = draft.trim();
+    setEditing(false);
+    if (!v || v === title) return;
+    try {
+      const res = await fetch(`/api/group-chats/${id}`, { method: 'PATCH', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ title: v }) });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error);
+      setTitle(d.title || v);
+    } catch (e: any) { toast.error(e?.message || t('feed.toast.actionFailed')); }
+  };
+
+  const deleteGroup = async () => {
+    if (!(await askConfirm(t('cabinet.groupChats.deleteConfirm')))) return;
+    try {
+      const res = await fetch(`/api/group-chats/${id}`, { method: 'DELETE', credentials: 'include', headers: authHeaders() });
+      if (!res.ok) throw new Error();
+      router.push('/chat/groups');
+    } catch { toast.error(t('feed.toast.actionFailed')); }
+  };
+
   const leaveOrRemove = async (userId?: number) => {
     try {
       const res = await fetch(`/api/group-chats/${id}/members`, { method: 'DELETE', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(userId ? { userId } : {}) });
@@ -109,9 +133,19 @@ export default function GroupChatPage() {
         <>
           <div className="flex items-center justify-between text-sm">
             <button type="button" onClick={() => setShowMembers((v) => !v)} className="font-semibold text-space-600">{members.length} {t('cabinet.groupChats.members')}</button>
+            {isOwner && <span className="inline-flex items-center gap-1">
+              <button type="button" onClick={() => { setDraft(title); setEditing(true); }} aria-label={t('cabinet.groupChats.rename')} title={t('cabinet.groupChats.rename')} className="rounded-full p-2 hover:bg-neutral-100"><Pencil className="w-4 h-4" /></button>
+              <button type="button" onClick={deleteGroup} aria-label={t('cabinet.groupChats.delete')} title={t('cabinet.groupChats.delete')} className="rounded-full p-2 text-red-600 hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
+            </span>}
             {isOwner && <button type="button" onClick={() => { setAdding((v) => !v); setShowMembers(true); }} className="inline-flex items-center gap-1 rounded-full bg-primary-500 px-3 py-1.5 font-bold text-neutral-900"><UserPlus className="w-4 h-4" />{t('cabinet.groupChats.addShort')}</button>}
             {!isOwner && <button type="button" onClick={() => leaveOrRemove()} className="text-red-600 font-semibold">{t('cabinet.groupChats.leave')}</button>}
           </div>
+          {isOwner && editing && (
+            <form onSubmit={(e) => { e.preventDefault(); rename(); }} className="flex gap-2">
+              <input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} minLength={2} maxLength={100} placeholder={t('cabinet.groupChats.renamePrompt')} aria-label={t('cabinet.groupChats.renamePrompt')} className="min-w-0 flex-1 rounded-xl border border-neutral-300 px-3 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+              <button type="submit" className="rounded-full bg-primary-500 px-4 font-bold text-neutral-900">OK</button>
+            </form>
+          )}
           {isOwner && adding && (
             <div className="rounded-2xl bg-white border border-neutral-200 p-3 space-y-2">
               <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} maxLength={80} placeholder={t('cabinet.groupChats.search')} className="w-full rounded-xl border border-neutral-300 px-3 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />

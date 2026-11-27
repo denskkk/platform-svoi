@@ -9,10 +9,12 @@ import { cities, getCityName } from '@/lib/constants';
 import { translateCategory } from '@/lib/translations';
 import { useI18n } from '@/i18n/client';
 import { PRICE_UNIT_VALUES, priceUnitLabel } from '../../priceUnits';
+import { useToast } from '@/components/ui/Toast';
 
 export default function EditServicePage() {
   const { t, locale } = useI18n();
   const router = useRouter();
+  const toast = useToast();
   const params = useParams();
   const serviceId = params?.id as string;
   
@@ -52,7 +54,7 @@ export default function EditServicePage() {
     setToken(storedToken);
 
     if (userData.accountType === 'viewer') {
-      alert(t('services.edit.viewerCannotEdit'));
+      toast.info(t('services.edit.viewerCannotEdit'));
       router.push('/services');
       return;
     }
@@ -89,7 +91,7 @@ export default function EditServicePage() {
       // Перевірка, чи це послуга користувача
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       if (svc.userId !== userData.id) {
-        alert(t('services.edit.ownOnly'));
+        toast.info(t('services.edit.ownOnly'));
         router.push('/services');
         return;
       }

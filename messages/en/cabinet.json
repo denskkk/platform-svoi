@@ -346,7 +346,11 @@
     "tab": "Groups",
     "added": "{name} added to the group",
     "addShort": "Add",
-    "nobody": "Nobody found"
+    "nobody": "Nobody found",
+    "rename": "Rename group",
+    "renamePrompt": "New group name",
+    "delete": "Delete group",
+    "deleteConfirm": "Delete the group with all its messages? This cannot be undone."
   },
   "suggest": {
     "button": "Suggestion or complaint",

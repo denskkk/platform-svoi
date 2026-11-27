@@ -11,11 +11,13 @@ import { cities, getCityName } from '@/lib/constants';
 import { translateCategory } from '@/lib/translations';
 import { useI18n } from '@/i18n/client';
 import { PRICE_UNIT_VALUES, priceUnitLabel } from '../priceUnits';
+import { useToast } from '@/components/ui/Toast';
 const CreateRequestModal = dynamic(() => import('@/components/requests/CreateRequestModal'), { ssr: false });
 
 export default function CreateServicePage() {
   const { t, locale } = useI18n();
   const router = useRouter();
+  const toast = useToast();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
   const [categories, setCategories] = useState<any[]>([]);
@@ -54,7 +56,7 @@ export default function CreateServicePage() {
 
     // Глядачі не можуть створювати послуги
     if (userData.accountType === 'viewer') {
-      alert(t('services.create.viewerCannotCreate'));
+      toast.info(t('services.create.viewerCannotCreate'));
       router.push('/services');
       return;
     }
