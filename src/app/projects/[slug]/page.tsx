@@ -61,6 +61,13 @@ export default function ProjectPage() {
   const folderImages = useFolderImages(params.slug);
   const parentOf = (path: string | null) => { const parts = (path || '').split('.'); parts.pop(); return parts.length ? parts.join('.') : null; };
   const nsOf = (slug: string) => slug.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase());
+  // Короткий підпис плитки (projects.<ns>.sub.<шлях>) і опис папки (projects.<ns>.desc.<шлях>) — лише якщо текст заданий
+  const textAt = (kind: 'sub' | 'desc', slug: string, path: string | null): string | null => {
+    if (!path) return null;
+    const key = `projects.${nsOf(slug)}.${kind}.${path.replace(/\./g, '_')}`;
+    const v = t(key);
+    return v === key ? null : v;
+  };
 
   useEffect(() => { setLoggedIn(!!readStoredUser()); }, []);
 
@@ -128,12 +135,13 @@ export default function ProjectPage() {
                           <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')}
                         </button>
                       )}
+                      {found && textAt('desc', project.slug, folderPath) && <p className="rounded-2xl bg-white/90 text-sm text-neutral-800 p-3 whitespace-pre-line">{textAt('desc', project.slug, folderPath)}</p>}
                       <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {(list || []).map((f) => {
                           const childPath = folderPath ? `${folderPath}.${f.key}` : f.key;
                           const img = folderImages[childPath];
                           const tileCls = folderTileCls(img);
-                          const inner = <FolderTileInner image={img} icon={f.icon} label={t(f.labelKey)} arrow={!!f.children} />;
+                          const inner = <FolderTileInner image={img} icon={f.icon} label={t(f.labelKey)} arrow={!!f.children} sub={textAt('sub', project.slug, childPath)} />;
                           // Заявка (кабінет, команда, новий напрям) і посилання в інший розділ — це не каталог, а перехід
                           const target = f.href ? f.href : f.apply
                             ? `/projects/${project.slug}/earn?apply=${encodeURIComponent(applyIdOf(project.slug, childPath.split('.')))}`
@@ -159,6 +167,7 @@ export default function ProjectPage() {
                         <ArrowLeft className="w-4 h-4" /> {t('cabinet.foldersUi.back')} · {t(found.folder.labelKey)}
                       </button>
                     )}
+                    {found && textAt('desc', project.slug, folderPath) && <p className="rounded-2xl bg-white/90 text-sm text-neutral-800 p-3 whitespace-pre-line">{textAt('desc', project.slug, folderPath)}</p>}
                     {found?.folder.kind && <KindLeaf project={project.slug} node={found.folder} path={folderPath || ''} />}
                     {found?.folder.kind ? null : (<>
                     {project.slug === 'real-estate' && found?.folder.sectionId === 'real_estate_home_moving' && <MovingActions />}

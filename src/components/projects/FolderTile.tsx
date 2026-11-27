@@ -5,20 +5,21 @@ export function folderTileCls(image?: string): string {
     : 'w-full h-full min-h-[6.5rem] rounded-3xl bg-white/90 shadow-md ring-1 ring-black/5 hover:shadow-lg active:scale-[0.98] transition p-4 flex flex-col items-center justify-center gap-1 text-center';
 }
 
-export function FolderTileInner({ image, label, arrow }: { image?: string; icon?: string; label: string; arrow?: boolean }) {
+export function FolderTileInner({ image, label, arrow, sub }: { image?: string; icon?: string; label: string; arrow?: boolean; sub?: string | null }) {
   if (image) {
     return (
       <>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
         <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-        <span className="relative w-full px-3 pb-3.5 pt-12 text-sm sm:text-base font-bold text-white leading-snug drop-shadow">{label}{arrow ? ' ›' : ''}</span>
+        <span className="relative w-full px-3 pb-3.5 pt-12 text-sm sm:text-base font-bold text-white leading-snug drop-shadow">{label}{arrow ? ' ›' : ''}{sub && <span className="mt-0.5 block text-xs font-normal text-white/80 leading-snug">{sub}</span>}</span>
       </>
     );
   }
   return (
     <>
       <span className="text-sm sm:text-base font-bold text-neutral-900 leading-snug">{label}</span>
+      {sub && <span className="text-xs text-neutral-500 leading-snug">{sub}</span>}
       {arrow && <span aria-hidden className="text-neutral-400 text-xs">›</span>}
     </>
   );

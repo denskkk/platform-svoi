@@ -1261,7 +1261,51 @@
       "earn_building": "Works, services and joint construction projects. Payment terms and liabilities are fixed by contract; income is not guaranteed.",
       "earn_partnership": "Finding partners, orders and clients. Parties agree cooperation terms; income is not guaranteed."
     },
-    "intro": "Joint projects, land, housing, revival and specialist teams. Land and housing offers show the source and legal status; income is not guaranteed."
+    "intro": "We unite people, deliver projects, rebuild the country and create opportunities worldwide.\nAn international platform for joint cooperatives, finding land, housing and farms to restore, business projects and teams of specialists. Income is not guaranteed by joining alone.",
+    "sub": {
+      "projects": "Current and planned projects",
+      "land": "Opportunities in Ukraine and other countries",
+      "specialists": "Find specialists and build teams",
+      "earn": "Cooperation and earning opportunities",
+      "feedback": "Ideas, requests and feedback",
+      "land_plots": "For construction and cooperative development",
+      "land_houses": "Free, affordable or preferential programs",
+      "land_villages": "Settlements to restore",
+      "land_farms": "Farms to restore",
+      "land_programs": "State, municipal and private programs in different countries",
+      "land_add": "Tell the community about a new offer",
+      "specialists_builders": "Construction, design, repair and restoration",
+      "specialists_agro": "Agronomists, farmers, vets, technologists",
+      "specialists_managers": "Organizing, managing and developing cooperatives",
+      "specialists_lawyers": "Registration, contracts, legal support",
+      "specialists_finance": "Financial planning, accounting and economics",
+      "specialists_it": "Platform development, automation and digital solutions",
+      "specialists_logistics": "Transport, supply and delivery",
+      "specialists_other": "All other professions needed to deliver projects",
+      "specialists_createTeam": "Propose your own team for a specific cooperative project",
+      "earn_business": "Creating enterprises and cooperative farms",
+      "earn_production": "Growing, processing and selling products",
+      "earn_building": "Works, services and joint construction projects",
+      "earn_partnership": "Finding partners, orders and clients",
+      "earn_own": "Start your own cooperative project"
+    },
+    "desc": {
+      "projects": "Cooperative projects that are already being developed, organized or implemented are published here. Open a project, read the full details and join the team.",
+      "projects_list": "Each project includes: name; country and city; short description and goal; stage; required resources and specialists; number of participants (if public); contacts of the responsible organizer.\n\nHow to join: open the project → read the information → press “Join the team” → state your skills, experience and availability → the request goes to the organizer, who contacts you and decides.",
+      "land": "An international base of opportunities for Ukrainians looking for land, housing, settlements, farms or territories to create cooperatives and live and work together.\n\nFilters: country; city or locality; type of opportunity; free, preferential, rent or purchase; housing available; land available; possibility to create a cooperative; terms for Ukrainians; state or municipal support.\n\nReliability labels: official program, confirmed offer, private listing, information under review.",
+      "land_add": "Found a program offering Ukrainians houses, land plots or abandoned settlements? Tell the community.\n\nIn the form state: country; city or locality; what is offered (land, houses, village, farm, relocation program); link to the original source or official site; organization contacts; participation terms; photos and documents; whether a cooperative can be created; your contact details.\n\nAfter submission the request goes to the administration for review (statuses: “Under review”, “Confirmed”, “Not confirmed”, “Archive”). Once confirmed, the information is published in the shared database.",
+      "specialists": "A shared base of specialists who can take part in cooperative projects. Choose a section, find a specialist or join a team as a specialist.",
+      "specialists_builders": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_agro": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_managers": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_lawyers": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_finance": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_it": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_logistics": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "specialists_other": "Find a specialist: browse profiles, search by country, city and profession, check experience and qualifications, send a cooperation request.\nJoin a team: fill in a profile with your specialty, experience, country of residence and field; the request goes to the team leader.",
+      "earn": "Here we explain how you can earn by taking part in cooperative projects: apply your knowledge, profession, resources, business skills or investment.\n\nEach section covers: how the direction works, what it opens up, required skills, how to join, terms of cooperation, how income is formed, and risks and costs to consider.\n\nIncome is not guaranteed by joining alone: it depends on the specific project, contracts, results and profit sharing.",
+      "feedback": "An open channel between cooperative members, organizers and the administration. Choose a category, describe the situation and attach documents or photos if needed. You get a request number and can track its status: new, accepted, needs clarification, reviewed, closed. Requests are confidential and visible only to authorized administrators."
+    }
   },
   "apps": {
     "text": {
