@@ -31,6 +31,7 @@ const THEMES: Record<string, Theme> = {
   cooperatives: { from: '#0a2a5e', to: '#0f766e', glyph: '🤲', accent: '#ffca00' },
   grants: { from: '#0a1f44', to: '#a16207', glyph: '🎓', accent: '#ffca00' },
   turnkey: { from: '#0a1f44', to: '#0a3d62', glyph: '🔑', accent: '#ffca00' },
+  'comfort-home': { from: '#3b2a1a', to: '#b45309', glyph: '🏠', accent: '#fde68a' },
   'consumer-platform': { from: '#0a1f44', to: '#334155', glyph: '🧾', accent: '#ffca00' },
   apps: { from: '#0a1f44', to: '#1d4ed8', glyph: '📱', accent: '#7ee0ff' },
   translator: { from: '#0a2a5e', to: '#0e7490', glyph: '🌐', accent: '#ffca00' },

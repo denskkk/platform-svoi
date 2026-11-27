@@ -211,6 +211,17 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
     { key: 'experience', type: 'number', min: 0, max: 70, filter: 'range' },
     { key: 'serviceFormat', type: 'select', options: ['online', 'offline', 'both'], filter: 'select' },
   ],
+  'comfort-home': [
+    { key: 'adKind', type: 'select', options: ['offer', 'request'], filter: 'select' },
+    { key: 'brand', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'model', type: 'text', maxLength: 100 },
+    { key: 'material', type: 'text', maxLength: 100, filter: 'text' },
+    { key: 'dimensions', type: 'text', maxLength: 100 },
+    { key: 'warranty', type: 'text', maxLength: 100 },
+    { key: 'delivery', type: 'text', maxLength: 200 },
+    { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
+    { key: 'region', type: 'text', maxLength: 100, filter: 'text' },
+  ],
   'apps': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
     { key: 'platform', type: 'select', required: true, options: ['android', 'ios', 'web', 'other'], filter: 'select' },
