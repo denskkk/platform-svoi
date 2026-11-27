@@ -36,7 +36,7 @@ interface Project {
 }
 
 /** Проєкти зі вступним текстом (головний текст концепції) над папками першого рівня */
-const INTRO_SLUGS = ['trade', 'turnkey', 'health', 'pets', 'travel', 'invest', 'antiques', 'clubs', 'export-alliance', 'dating', 'mystic', 'grants', 'beauty', 'notable', 'media-network', 'cooperatives', 'apps', 'rebuild'];
+const INTRO_SLUGS = ['trade', 'turnkey', 'health', 'pets', 'travel', 'invest', 'antiques', 'clubs', 'export-alliance', 'dating', 'mystic', 'grants', 'beauty', 'notable', 'media-network', 'cooperatives', 'apps', 'rebuild', 'consumer-platform'];
 
 export default function ProjectPage() {
   const params = useParams<{ slug: string }>();
