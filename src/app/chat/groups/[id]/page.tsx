@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Plus, Send, UserPlus } from 'lucide-react';
 import { MenuShell } from '@/components/cabinet/MenuShell';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useToast } from '@/components/ui/Toast';
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 interface Msg { id: number; content: string; createdAt: string; mine: boolean; sender: { id: number; name: string; avatarUrl: string | null } }
 interface Member { id: number; name: string; avatarUrl: string | null }
+interface Found { id: number; name: string; avatarUrl: string | null }
 
 export default function GroupChatPage() {
   const { t } = useI18n();
@@ -26,6 +27,10 @@ export default function GroupChatPage() {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [q, setQ] = useState('');
+  const [found, setFound] = useState<Found[]>([]);
+  const [addBusy, setAddBusy] = useState<number | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
   const lastId = useRef(0);
 
@@ -62,6 +67,32 @@ export default function GroupChatPage() {
     } catch { toast.error(t('feed.toast.actionFailed')); } finally { setSending(false); }
   };
 
+  // Пошук людей для додавання (власник може додавати учасників і після створення групи)
+  useEffect(() => {
+    const v = q.trim();
+    if (!adding || v.length < 2) { setFound([]); return; }
+    const h = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?type=people&q=${encodeURIComponent(v)}`, { credentials: 'include', headers: authHeaders() });
+        const d = res.ok ? await res.json() : { people: [] };
+        setFound((d.people || []).slice(0, 8).map((p: any) => ({ id: p.id, name: p.name, avatarUrl: p.avatarUrl ?? null })));
+      } catch { setFound([]); }
+    }, 300);
+    return () => clearTimeout(h);
+  }, [q, adding]);
+
+  const addMember = async (p: Found) => {
+    if (addBusy) return;
+    setAddBusy(p.id);
+    try {
+      const res = await fetch(`/api/group-chats/${id}/members`, { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ userId: p.id }) });
+      if (!res.ok) throw new Error();
+      setMembers((m) => (m.some((x) => x.id === p.id) ? m : [...m, p]));
+      setQ(''); setFound([]);
+      toast.success(t('cabinet.groupChats.added', { name: p.name }));
+    } catch { toast.error(t('feed.toast.actionFailed')); } finally { setAddBusy(null); }
+  };
+
   const leaveOrRemove = async (userId?: number) => {
     try {
       const res = await fetch(`/api/group-chats/${id}/members`, { method: 'DELETE', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(userId ? { userId } : {}) });
@@ -78,8 +109,24 @@ export default function GroupChatPage() {
         <>
           <div className="flex items-center justify-between text-sm">
             <button type="button" onClick={() => setShowMembers((v) => !v)} className="font-semibold text-space-600">{members.length} {t('cabinet.groupChats.members')}</button>
+            {isOwner && <button type="button" onClick={() => { setAdding((v) => !v); setShowMembers(true); }} className="inline-flex items-center gap-1 rounded-full bg-primary-500 px-3 py-1.5 font-bold text-neutral-900"><UserPlus className="w-4 h-4" />{t('cabinet.groupChats.addShort')}</button>}
             {!isOwner && <button type="button" onClick={() => leaveOrRemove()} className="text-red-600 font-semibold">{t('cabinet.groupChats.leave')}</button>}
           </div>
+          {isOwner && adding && (
+            <div className="rounded-2xl bg-white border border-neutral-200 p-3 space-y-2">
+              <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} maxLength={80} placeholder={t('cabinet.groupChats.search')} className="w-full rounded-xl border border-neutral-300 px-3 py-2.5 text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+              {q.trim().length >= 2 && found.filter((p) => !members.some((m) => m.id === p.id)).length === 0 && <p className="text-sm text-neutral-500">{t('cabinet.groupChats.nobody')}</p>}
+              <ul className="divide-y divide-neutral-100">
+                {found.filter((p) => !members.some((m) => m.id === p.id)).map((p) => (
+                  <li key={p.id} className="flex items-center gap-2.5 py-2">
+                    <UserAvatar src={p.avatarUrl} alt={p.name} fallbackName={p.name} className="w-8 h-8 rounded-full" />
+                    <span className="flex-1 truncate text-sm font-medium">{p.name}</span>
+                    <button type="button" disabled={addBusy === p.id} onClick={() => addMember(p)} className="inline-flex items-center gap-1 rounded-full bg-primary-500 px-3 py-1 text-xs font-bold text-neutral-900 disabled:opacity-50">{addBusy === p.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}{t('cabinet.groupChats.addShort')}</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {showMembers && (
             <ul className="rounded-2xl bg-white border border-neutral-200 divide-y divide-neutral-100">
               {members.map((m) => (

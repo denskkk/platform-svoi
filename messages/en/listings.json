@@ -1973,7 +1973,17 @@
       "comfort_home_producers_private": "Private craftsmen",
       "comfort_home_producers_carpentry": "Carpentry workshops",
       "comfort_home_producers_designers": "Designers and planners",
-      "comfort_home_producers_install": "Installation and service companies"
+      "comfort_home_producers_install": "Installation and service companies",
+      "comfort_home_logHouses": "Log houses and gazebos",
+      "comfort_home_logHouses_gazebos": "Log gazebos and pavilions",
+      "comfort_home_logHouses_houses": "Log houses",
+      "comfort_home_logHouses_bathhouses": "Log bathhouses and saunas",
+      "comfort_home_logHouses_canopies": "Canopies and barbecue pavilions",
+      "comfort_home_logHouses_playhouses": "Children’s playhouses",
+      "comfort_home_logHouses_outbuildings": "Outbuildings and cabins",
+      "comfort_home_logHouses_logs": "Logs and timber",
+      "comfort_home_logHouses_turnkey": "Turnkey construction",
+      "comfort_home_logHouses_makers": "Log-house and gazebo makers"
     },
     "rentPeriod": {
       "month": "Per month",
