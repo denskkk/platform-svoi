@@ -69,6 +69,8 @@ export const FORMS: Record<string, FormDef> = {
   service: base('request', 'desc*', 'country*', 'city*', 'date', ...P),
   training: base('request', 'desc*', 'country', 'city', 'format', ...P),
   newDirection: base('suggestion', 'title*', 'desc*', 'country', 'phone'),
+  referralApply: base('request', 'name*', 'country*', 'region', 'city', 'count', 'desc', ...P),
+  communityApply: base('request', 'name*', 'country*', 'region*', 'district', 'city*', 'count*', 'desc*', 'help', ...P),
   partnerApply: base('request', 'name*', 'company', 'country*', 'region', 'city', 'desc*', 'site', 'photos', ...P),
   shopApply: base('request', 'shopName*', 'country*', 'region', 'categories', 'desc*', 'site', 'delivery', 'photos', ...P),
   carrierAdd: base('request', 'name*', 'country*', 'city*', 'routes*', 'cargo', 'schedule', 'price', 'photos', ...P),
