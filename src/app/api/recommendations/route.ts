@@ -10,7 +10,8 @@ import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { getApiT } from '@/i18n/server';
 import { getBlockedIds } from '@/lib/blocks';
-import { DEFAULT_SETTINGS, normalizeSettings } from '@/lib/userSettings';
+import { DEFAULT_SETTINGS, getSettings, normalizeSettings } from '@/lib/userSettings';
+import { listProjects } from '@/lib/projects';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
     const userId = Number(auth.user.userId);
 
     const [me, blocked, follows] = await Promise.all([
-      prisma.user.findUnique({ where: { id: userId }, select: { city: true, region: true, gender: true, age: true } }),
+      prisma.user.findUnique({ where: { id: userId }, select: { city: true, region: true, gender: true, age: true, bio: true, profession: true, childrenCount: true } }),
       getBlockedIds(userId),
       prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
     ]);
@@ -90,7 +91,21 @@ export async function GET(request: NextRequest) {
       return true;
     }).filter((c: any) => !shownIds.has(c.userId)).slice(0, LIMIT);
 
+    // «Проєкти, які вам будуть цікаві»: збіг слів з анкети (про себе, професія, інтереси) з назвою й описом проєкту
+    const settings = await getSettings(userId);
+    const profileText = [me?.bio, me?.profession, settings.feed.interests, (me?.childrenCount ?? 0) > 0 ? 'діти дитина сім’я' : '' /* i18n-ignore */].join(' ').toLowerCase();
+    const stem = (w: string) => (w.length >= 7 ? w.slice(0, -2) : w.length >= 5 ? w.slice(0, -1) : w);
+    const myWords = Array.from(new Set(profileText.split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4).map(stem)));
+    const projectList = (await listProjects()).filter((p: any) => p.status === 'active');
+    const scored = projectList.map((p: any) => {
+      const hay = `${p.nameUk} ${p.descriptionUk ?? ''} ${p.nameEn} ${p.descriptionEn ?? ''}`.toLowerCase();
+      return { slug: p.slug, score: myWords.filter((w) => hay.includes(w)).length };
+    });
+    const projectSlugs = [...scored].sort((a, b) => b.score - a.score).map((x) => x.slug);
+    const projectsMatched = scored.some((x) => x.score > 0);
+
     return NextResponse.json({
+      projectSlugs, projectsMatched,
       interesting: interesting.map((c: any) => { const b = c.user.businessInfo; return { id: c.userId, name: b.companyName, avatarUrl: b.logoUrl, bannerUrl: b.bannerUrl, city: b.city, subtitle: b.businessType, isVerified: c.user.isVerified }; }),
       people: people.map((u: any) => ({ id: u.id, name: `${u.firstName} ${u.lastName}`.trim(), avatarUrl: u.avatarUrl, city: u.city, subtitle: u.profession, isVerified: u.isVerified })),
       business: business.map((b: any) => ({ id: b.userId, name: b.companyName, avatarUrl: b.logoUrl, bannerUrl: b.bannerUrl, city: b.city, subtitle: b.businessType, isVerified: b.user.isVerified })),
