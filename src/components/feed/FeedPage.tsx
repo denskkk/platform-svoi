@@ -24,6 +24,15 @@ type Scope = 'all' | 'following';
 type Tab = 'live' | 'market' | 'following' | 'all';
 const TABS: Tab[] = ['live', 'market', 'following', 'all'];
 
+/** Нерівні проміжки між блоками (3, 5, 4, 6…), як у великих соцмережах: блок «вибиває» час від часу, а не за годинником. */
+const BLOCK_GAPS = [3, 5, 4, 6, 5, 7];
+function blockSlot(index: number): number {
+  let pos = BLOCK_GAPS[0] - 1;
+  let n = 0;
+  while (pos < index) { n += 1; pos += BLOCK_GAPS[n % BLOCK_GAPS.length]; }
+  return pos === index ? n : -1;
+}
+
 function PostSkeleton() {
   return (
     <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-4 space-y-3" aria-hidden>
@@ -295,9 +304,9 @@ export function FeedPage() {
             onBlocked={removeByAuthor}
           />
           {!isGuest && !isDesktop && scope === 'all' && posts.length < 3 && index === posts.length - 1 && <Recommendations only="people" canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
-          {!isGuest && !isDesktop && scope === 'all' && index % 3 === 2 && (() => {
-            // Кожні 3 дописи — новий блок по черзі, потім коло повторюється з іншими людьми/бізнесами/оголошеннями
-            const slot = (index - 2) / 3;
+          {!isGuest && !isDesktop && scope === 'all' && blockSlot(index) >= 0 && (() => {
+            // Через нерівні проміжки (3–7 дописів) — новий блок по черзі, потім коло повторюється з іншими людьми/бізнесами/оголошеннями
+            const slot = blockSlot(index);
             const round = Math.floor(slot / 5);
             const follow = (id: number) => setFollowing(id, true);
             switch (slot % 5) {
