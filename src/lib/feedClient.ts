@@ -27,7 +27,7 @@ export interface FeedAuthor {
 
 export type FeedMedia =
   | { type: 'image'; id: number; url: string }
-  | { type: 'video'; id: number; url: string; posterUrl: string | null; durationSec: number | null };
+  | { type: 'video'; id: number; url: string; posterUrl: string | null; durationSec: number | null; isVertical?: boolean | null };
 
 export interface FeedPost {
   id: number;
@@ -38,7 +38,7 @@ export interface FeedPost {
   createdAt: string;
   edited?: boolean;
   images: { id: number; url: string }[];
-  video?: { id: number; url: string; posterUrl: string | null; durationSec: number | null } | null;
+  video?: { id: number; url: string; posterUrl: string | null; durationSec: number | null; isVertical?: boolean | null } | null;
   /** Фото і відео разом, у порядку каруселі */
   media?: FeedMedia[];
   repostsCount?: number;

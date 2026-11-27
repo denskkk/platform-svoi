@@ -978,6 +978,9 @@ model PostVideo {
   url         String?  @db.VarChar(255)
   posterUrl   String?  @map("poster_url") @db.VarChar(255)
   durationSec Int?     @map("duration_sec")
+  width       Int?
+  height      Int?
+  isVertical  Boolean? @map("is_vertical") // true — вертикальне (рілси), false — горизонтальне (стрічка), null — невідомо (старі)
   sizeBytes   Int?     @map("size_bytes")
   error       String?  @db.VarChar(120)
   createdAt   DateTime @default(now()) @map("created_at")

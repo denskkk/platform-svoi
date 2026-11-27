@@ -34,22 +34,22 @@ const VIDEO_ORDER = [{ position: 'asc' }, { id: 'asc' }] as Array<{ position: 'a
 export const postInclude = {
   author: { select: authorSelect },
   images: { orderBy: { position: 'asc' as const }, select: { id: true, url: true, position: true } },
-  videos: { orderBy: VIDEO_ORDER, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
+  videos: { orderBy: VIDEO_ORDER, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true, isVertical: true } },
   repostOf: {
     select: {
       id: true, content: true, isHidden: true,
       author: { select: authorSelect },
       images: { orderBy: { position: 'asc' as const }, take: 4, select: { id: true, url: true, position: true } },
-      videos: { orderBy: VIDEO_ORDER, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
+      videos: { orderBy: VIDEO_ORDER, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true, isVertical: true } },
     },
   },
 } as const;
 
-type RawVideo = { id: number; status: string; url: string | null; posterUrl: string | null; durationSec: number | null; position?: number };
+type RawVideo = { id: number; status: string; url: string | null; posterUrl: string | null; durationSec: number | null; position?: number; isVertical?: boolean | null };
 
 export type MediaItem =
   | { type: 'image'; id: number; url: string }
-  | { type: 'video'; id: number; url: string; posterUrl: string | null; durationSec: number | null };
+  | { type: 'video'; id: number; url: string; posterUrl: string | null; durationSec: number | null; isVertical?: boolean | null };
 
 /**
  * Єдина карусель допису: фото й відео в порядку, який вибрав автор (спільна нумерація position).
@@ -59,7 +59,7 @@ export function buildMedia(images: { id: number; url: string; position?: number 
   const out: { pos: number; kind: number; item: MediaItem }[] = [];
   images.forEach((im, i) => out.push({ pos: im.position ?? i, kind: 1, item: { type: 'image', id: im.id, url: im.url } }));
   (videos ?? []).forEach((v) => {
-    if (v.status === 'ready' && v.url) out.push({ pos: v.position ?? 0, kind: 0, item: { type: 'video', id: v.id, url: v.url, posterUrl: v.posterUrl, durationSec: v.durationSec } });
+    if (v.status === 'ready' && v.url) out.push({ pos: v.position ?? 0, kind: 0, item: { type: 'video', id: v.id, url: v.url, posterUrl: v.posterUrl, durationSec: v.durationSec, isVertical: v.isVertical ?? null } });
   });
   out.sort((a, b) => a.pos - b.pos || a.kind - b.kind);
   return out.map((o) => o.item);
@@ -92,7 +92,7 @@ type PostRow = {
 
 function firstVideo(videos: RawVideo[] | undefined) {
   const v = (videos ?? []).find((x) => x.status === 'ready' && x.url);
-  return v ? { id: v.id, url: v.url as string, posterUrl: v.posterUrl, durationSec: v.durationSec } : null;
+  return v ? { id: v.id, url: v.url as string, posterUrl: v.posterUrl, durationSec: v.durationSec, isVertical: v.isVertical ?? null } : null;
 }
 
 export function serializePost(post: PostRow, viewer: { liked: Set<number>; following: Set<number>; saved?: Set<number>; reactions?: Map<number, string>; userId: number }) {

@@ -51,7 +51,8 @@ export async function GET(request: NextRequest) {
     // Вкладка «Бізнес» у рілсах: лише відео бізнес-акаунтів
     if (params.get('scope') === 'business') where.author = { isActive: true, accountType: 'business' } as any;
     if (cursor) where.id = { lt: cursor };
-    if (params.get('videos') === '1') where.videos = { some: { status: 'ready' } };
+    // Рілси — лише вертикальні (невідомі старі теж); горизонтальні живуть у стрічці
+    if (params.get('videos') === '1') where.videos = { some: { status: 'ready', OR: [{ isVertical: true }, { isVertical: null }] } };
     // Вкладки профілю «Фото» й «Відео» окремо
     if (params.get('media') === 'photo') where.images = { some: {} };
     if (params.get('media') === 'video') where.videos = { some: { status: 'ready' } };
@@ -93,6 +94,11 @@ export async function GET(request: NextRequest) {
           (where as any).AND = [{ OR: [...near, { authorId: { in: [userId, ...follows.map((f: any) => f.followingId)] } }] }];
         }
       }
+    }
+
+    // Загальна стрічка («Для вас» / «Підписки»): вертикальні відео не показуємо — вони у «Рілсах» (профіль, збережене, власні — без змін)
+    if (!clubParam && params.get('videos') !== '1' && !authorId && !privateTab && params.get('saved') !== '1' && params.get('reacted') !== '1' && params.get('reposts') !== '1' && !params.get('media')) {
+      (where as any).NOT = [{ videos: { some: { status: 'ready', isVertical: true } } }];
     }
 
     const rows = await prisma.post.findMany({
