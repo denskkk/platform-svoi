@@ -7,6 +7,7 @@ import { checkAuth as checkSession } from '@/lib/silentFetch';
 import { useI18n } from '@/i18n/client';
 import { translateServiceRequestStatus, translateCategory } from '@/lib/translations';
 import { getCityName } from '@/lib/constants';
+import { useToast } from '@/components/ui/Toast';
 
 interface ServiceRequest {
   id: number;
@@ -44,6 +45,7 @@ const statusColors: Record<string, string> = {
 
 export default function ServiceRequestsPage() {
   const router = useRouter();
+  const toast = useToast();
   const { t, locale, formatDate, formatNumber } = useI18n();
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,6 +101,7 @@ export default function ServiceRequestsPage() {
       setRequests(data.requests || []);
     } catch (error) {
       console.error(error);
+      toast.error(t('common.states.loadFailed'));
     } finally {
       setLoading(false);
     }

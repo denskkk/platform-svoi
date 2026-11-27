@@ -10,6 +10,7 @@ import { ensureToken } from '@/lib/silentFetch';
 import { useI18n } from '@/i18n/client';
 import { translateCategory } from '@/lib/translations';
 import { getCityName } from '@/lib/constants';
+import { useToast } from '@/components/ui/Toast';
 
 interface PublicRequest {
   id: number;
@@ -32,6 +33,7 @@ interface PublicRequest {
 
 export default function PublicRequestsPage() {
   const router = useRouter();
+  const toast = useToast();
   const { t, locale } = useI18n();
   const [requests, setRequests] = useState<PublicRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<PublicRequest[]>([]);
@@ -90,6 +92,7 @@ export default function PublicRequestsPage() {
       setRequests(data.requests || []);
     } catch (error) {
       console.error('Public requests load error:', error);
+      toast.error(t('common.states.loadFailed'));
     } finally {
       setLoading(false);
     }

@@ -82,9 +82,14 @@ export default function CreateRequestModal({ open, onClose }: { open: boolean; o
           const upData = await upRes.json();
           if (upRes.ok && upData.url) {
             body.imageUrl = upData.url.split('?')[0];
+          } else {
+            throw new Error(upData?.error || t('serviceRequests.createModal.errors.imageFailed'));
           }
-        } catch (ue) {
-          console.warn('[CreateRequestModal] image upload failed', ue);
+        } catch (ue: any) {
+          // Не надсилаємо заявку мовчки без фото: людина має знати, що фото не завантажилось
+          setError(ue?.message || t('serviceRequests.createModal.errors.imageFailed'));
+          setLoading(false);
+          return;
         }
       }
 

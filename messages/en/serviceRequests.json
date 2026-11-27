@@ -174,7 +174,8 @@
       "required": "Please fill in the title and description",
       "notImage": "Please choose an image",
       "tooLarge": "The file is too large. Maximum 10MB",
-      "generic": "Error"
+      "generic": "Error",
+      "imageFailed": "Could not upload the photo. Try another photo or send without it."
     }
   },
   "respondModal": {
