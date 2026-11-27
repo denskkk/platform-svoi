@@ -1973,7 +1973,17 @@
       "comfort_home_producers_private": "Приватні майстри",
       "comfort_home_producers_carpentry": "Столярні майстерні",
       "comfort_home_producers_designers": "Дизайнери та проєктувальники",
-      "comfort_home_producers_install": "Монтажні та сервісні компанії"
+      "comfort_home_producers_install": "Монтажні та сервісні компанії",
+      "comfort_home_logHouses": "Будинки та альтанки зі зрубу",
+      "comfort_home_logHouses_gazebos": "Альтанки та бесідки зі зрубу",
+      "comfort_home_logHouses_houses": "Будинки зі зрубу",
+      "comfort_home_logHouses_bathhouses": "Лазні та сауни зі зрубу",
+      "comfort_home_logHouses_canopies": "Навіси, мангальні зони та альтанки-барбекю",
+      "comfort_home_logHouses_playhouses": "Дитячі будиночки та майданчики",
+      "comfort_home_logHouses_outbuildings": "Господарські споруди та хатини",
+      "comfort_home_logHouses_logs": "Зруб, брус і колоди",
+      "comfort_home_logHouses_turnkey": "Будівництво під ключ",
+      "comfort_home_logHouses_makers": "Виробники зрубів та бесідок"
     },
     "rentPeriod": {
       "month": "За місяць",

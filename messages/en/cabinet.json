@@ -343,7 +343,10 @@
     "noMessages": "No messages yet. Be the first to write!",
     "loadFailed": "Failed to load the chat",
     "owner": "owner",
-    "tab": "Groups"
+    "tab": "Groups",
+    "added": "{name} added to the group",
+    "addShort": "Add",
+    "nobody": "Nobody found"
   },
   "suggest": {
     "button": "Suggestion or complaint",

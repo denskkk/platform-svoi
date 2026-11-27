@@ -1035,6 +1035,17 @@ const SPECS: Record<string, Spec[]> = {
       leaf('finishing', '🎨', { drill: GEO }),
       leaf('suppliers', '🚚', { business: true, acts: ['consult', 'join'], drill: GEO }),
     ] },
+    { key: 'logHouses', icon: '🛖', kids: [
+      leaf('gazebos', '🛖', { drill: GEO }),
+      leaf('houses', '🏡', { drill: GEO }),
+      leaf('bathhouses', '🧖', { drill: GEO }),
+      leaf('canopies', '⛺', { drill: GEO }),
+      leaf('playhouses', '🧸', { drill: GEO }),
+      leaf('outbuildings', '🏚️', { drill: GEO }),
+      leaf('logs', '🪵', { drill: GEO }),
+      leaf('turnkey', '🔑', { business: true, acts: ['consult', 'join'], drill: GEO }),
+      leaf('makers', '🏭', { business: true, acts: ['consult', 'join'], drill: GEO }),
+    ] },
     { key: 'producers', icon: '🏭', kids: [
       leaf('furnFactories', '🏭', { business: true, drill: GEO }),
       leaf('furnPlants', '🏗️', { business: true, drill: GEO }),
