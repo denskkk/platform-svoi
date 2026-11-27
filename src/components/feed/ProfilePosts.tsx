@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bookmark, Copy, Grid3x3, Heart, Loader2, Lock, Play, Repeat2 } from 'lucide-react';
+import { Bookmark, Clapperboard, Copy, Grid3x3, Heart, Image as ImageIcon, Loader2, Lock, Play, Repeat2 } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 
-type Tab = 'posts' | 'reposts' | 'private' | 'saved' | 'reacted';
+type Tab = 'posts' | 'photos' | 'videos' | 'reposts' | 'private' | 'saved' | 'reacted';
 
-const ICONS = { posts: Grid3x3, reposts: Repeat2, private: Lock, saved: Bookmark, reacted: Heart } as const;
+const ICONS = { posts: Grid3x3, photos: ImageIcon, videos: Clapperboard, reposts: Repeat2, private: Lock, saved: Bookmark, reacted: Heart } as const;
 
 /** Обкладинка плитки: відео, фото, медіа репосту або кольорова плитка з текстом. */
 function mediaOf(post: FeedPost): { kind: 'poster' | 'video' | 'image' | 'text'; src?: string; isVideo: boolean } {
@@ -45,6 +45,8 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
     else if (which === 'private') qs.set('private', '1');
     else qs.set('authorId', String(authorId));
     if (which === 'reposts') qs.set('reposts', '1');
+    if (which === 'photos') qs.set('media', 'photo');
+    if (which === 'videos') qs.set('media', 'video');
     if (after) qs.set('cursor', String(after));
     return fetch(`/api/feed?${qs}`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
   }, [authorId]);
@@ -78,7 +80,7 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
 
   if (!available) return null;
 
-  const tabs: Tab[] = ['posts'];
+  const tabs: Tab[] = ['posts', 'photos', 'videos'];
   if (hasReposts) tabs.push('reposts');
   if (isMe) tabs.push('private', 'saved', 'reacted');
   const active: Tab = tabs.indexOf(tab) === -1 ? 'posts' : tab;

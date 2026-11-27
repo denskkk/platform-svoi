@@ -109,7 +109,13 @@ export async function GET(request: NextRequest) {
     });
 
     // Форматируем ответ
-    const formattedConversations = conversations.map((conv: any) => {
+    const formattedConversations = conversations.filter((conv: any) => {
+      // Чат, очищений мною, не показуємо, доки в ньому не з'явиться нове повідомлення
+      const clearedAt = conv.user1Id === userId ? conv.user1ClearedAt : conv.user2ClearedAt;
+      if (!clearedAt) return true;
+      const last = conv.messages[0];
+      return !!last && new Date(last.createdAt) > new Date(clearedAt);
+    }).map((conv: any) => {
       const otherUser = conv.user1Id === userId ? conv.user2 : conv.user1;
       const lastMessage = conv.messages[0] || null;
       const unreadCount = conv._count.messages;

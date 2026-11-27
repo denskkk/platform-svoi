@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bell, Heart, Loader2, MessageCircle, Settings, UserPlus } from 'lucide-react';
@@ -74,6 +74,16 @@ export default function NotificationsPage() {
   }, [router, t]);
 
   useEffect(() => { load(null); }, [load]);
+
+  // Як у Facebook: відкрили «дзвіночок» і подивилися — лічильник гасне. Самі повідомлення лишаємо виділеними до виходу зі сторінки.
+  const autoRead = useRef(false);
+  useEffect(() => {
+    if (loading || autoRead.current || unread === 0) return;
+    autoRead.current = true;
+    const timer = setTimeout(() => { markRead({ all: true }); }, 1200);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, unread]);
 
   const markRead = async (body: { all: true } | { ids: number[] }) => {
     try {

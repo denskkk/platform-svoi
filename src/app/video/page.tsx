@@ -15,7 +15,7 @@ import { FeedPost, authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedCl
 import { cn } from '@/lib/utils';
 import { useGuestGate } from '@/components/ui/GuestGate';
 
-type Tab = 'all' | 'following';
+type Tab = 'all' | 'following' | 'business' | 'live';
 
 /** Рілси «як у TikTok»: повний екран, автозапуск, подвійний тап = лайк, бокова панель дій, коментарі знизу, вкладки «Підписки / Для вас». */
 export default function VideoPage() {
@@ -58,7 +58,12 @@ export default function VideoPage() {
     }
   }, []);
 
-  useEffect(() => { setLoading(true); setPosts([]); setDone(false); listRef.current?.scrollTo({ top: 0 }); load(null, tab); }, [tab, load]);
+  useEffect(() => {
+    setPosts([]); setDone(false); listRef.current?.scrollTo({ top: 0 });
+    // LIVE поки що без стрімінг-сервісу: порожній екран-заглушка, без запитів
+    if (tab === 'live') { setLoading(false); return; }
+    setLoading(true); load(null, tab);
+  }, [tab, load]);
 
   const patch = useCallback((id: number, fn: (p: FeedPost) => Partial<FeedPost>) => setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, ...fn(p) } : p))), []);
 
@@ -130,11 +135,11 @@ export default function VideoPage() {
     <div onClickCapture={gate.onClickCapture} className="fixed inset-x-0 top-0 bottom-[calc(4rem+var(--safe-area-inset-bottom,0px))] z-40 bg-black md:relative md:inset-auto md:z-auto md:h-[calc(100dvh-4rem)]">
       {gate.modal}
       {/* Вкладки зверху */}
-      <div data-guest-ok className="absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-6 pt-[calc(0.75rem+var(--safe-area-inset-top,0px))] pb-3 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
-        {(['following', 'all'] as Tab[]).map((k) => (
+      <div data-guest-ok className="absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-4 pr-14 pt-[calc(0.75rem+var(--safe-area-inset-top,0px))] pb-3 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
+        {(['following', 'all', 'business', 'live'] as Tab[]).map((k) => (
           <button key={k} type="button" onClick={() => { if (!me && k === 'following') { gate.show(); return; } setTab(k); }} aria-pressed={tab === k}
-            className={cn('pointer-events-auto text-[17px] font-bold drop-shadow transition', tab === k ? 'text-white border-b-2 border-white pb-0.5' : 'text-white/60')}>
-            {k === 'all' ? t('cabinet.reels.forYou') : t('cabinet.reels.following')}
+            className={cn('pointer-events-auto text-[15px] font-bold drop-shadow transition whitespace-nowrap', tab === k ? 'text-white border-b-2 border-white pb-0.5' : 'text-white/60')}>
+            {k === 'all' ? t('cabinet.reels.forYou') : k === 'following' ? t('cabinet.reels.following') : k === 'business' ? t('cabinet.reels.business') : t('cabinet.reels.live')}
           </button>
         ))}
         <button type="button" onClick={() => setMuted((m) => !m)} aria-label={muted ? t('feed.video.unmute') : t('feed.video.mute')}
@@ -145,10 +150,10 @@ export default function VideoPage() {
 
       {empty ? (
         <div className="h-full flex items-center justify-center px-4 bg-neutral-100">
-          <EmptyState icon={Clapperboard} title={tab === 'following' ? t('cabinet.reels.emptyFollowing') : t('feed.video.empty')}
-            description={tab === 'following' ? t('cabinet.reels.emptyFollowingHint') : t('feed.video.emptyHint')}
-            actionLabel={tab === 'following' ? t('cabinet.reels.seeAll') : t('feed.video.add')}
-            actionHref={tab === 'following' || (typeof document !== 'undefined' && document.querySelector('[data-creator-host]')) ? undefined : '/feed?create=post'} actionOnClick={tab === 'following' ? () => setTab('all') : () => window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: 'reel' } }))} />
+          <EmptyState icon={Clapperboard} title={tab === 'live' ? t('cabinet.reels.liveSoon') : tab === 'following' ? t('cabinet.reels.emptyFollowing') : t('feed.video.empty')}
+            description={tab === 'live' ? t('cabinet.reels.liveSoonHint') : tab === 'following' ? t('cabinet.reels.emptyFollowingHint') : t('feed.video.emptyHint')}
+            actionLabel={tab === 'following' || tab === 'live' ? t('cabinet.reels.seeAll') : t('feed.video.add')}
+            actionHref={tab === 'following' || tab === 'live' || (typeof document !== 'undefined' && document.querySelector('[data-creator-host]')) ? undefined : '/feed?create=post'} actionOnClick={tab === 'following' || tab === 'live' ? () => setTab('all') : () => window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: 'reel' } }))} />
         </div>
       ) : (
         <div ref={listRef} className="mx-auto max-w-md h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none overscroll-contain">
@@ -199,6 +204,9 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
   const userPausedRef = useRef(false);
   const nearEndRef = useRef(onNearEnd);
   nearEndRef.current = onNearEnd;
+  // Прапорець «близько до кінця» тримаємо в ref: інакше при дозавантаженні списку ефект нижче перепідписувався б і перезапускав відео з нуля (це й давало ривки)
+  const nearEndFlag = useRef(nearEnd);
+  nearEndFlag.current = nearEnd;
 
   // Автозапуск, коли рілс займає екран; пауза, коли його прокрутили
   useEffect(() => {
@@ -208,9 +216,9 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
       if (entry.isIntersecting && entry.intersectionRatio > 0.65) {
         visibleRef.current = true;
         userPausedRef.current = false;
-        video.currentTime = 0;
+        if (video.currentTime > 0.5) video.currentTime = 0;
         video.play().then(() => setPaused(false)).catch(() => setPaused(true));
-        if (nearEnd) nearEndRef.current();
+        if (nearEndFlag.current) nearEndRef.current();
       } else {
         visibleRef.current = false;
         video.pause();
@@ -218,7 +226,10 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
     }, { threshold: [0, 0.65, 1] });
     io.observe(el);
     return () => io.disconnect();
-  }, [nearEnd]);
+  }, []);
+
+  // Дозавантаження, коли «близько до кінця» стало true вже після показу рілса
+  useEffect(() => { if (nearEnd && visibleRef.current) nearEndRef.current(); }, [nearEnd]);
 
   // Перший рілс: відео могло ще не завантажитись, коли він став видимим — запускаємо, щойно дані готові
   const onLoaded = () => {
@@ -260,7 +271,7 @@ function Reel({ post, muted, signedIn, nearEnd, onUnmute, onLike, onFollow, onSa
   const showFollow = !post.viewer.isOwn && !post.viewer.following;
 
   return (
-    <div ref={ref} className="relative h-full snap-start snap-always bg-black overflow-hidden select-none">
+    <div ref={ref} className="relative h-full snap-start snap-always bg-black overflow-hidden select-none [contain:layout_paint] [transform:translateZ(0)]">
       <video ref={vref} src={`${post.video.url}#t=0.1`} poster={post.video.posterUrl || undefined} loop playsInline muted={muted} preload="metadata"
         onLoadedData={onLoaded} onTimeUpdate={onTime} className="absolute inset-0 h-full w-full object-contain bg-black" />
       {/* Область тапу (пауза / подвійний тап) */}

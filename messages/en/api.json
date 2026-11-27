@@ -92,7 +92,8 @@
     "invalidBusinessType": "Invalid business account type",
     "businessPasswordMin": "Password must be at least {min} characters long",
     "businessCreated": "Business account created successfully!",
-    "businessRegisterError": "Server error while registering the business"
+    "businessRegisterError": "Server error while registering the business",
+    "termsRequired": "Please accept the Terms of Use and Privacy Policy"
   },
   "businessInfo": {
     "exists": "Business profile already exists",
@@ -280,7 +281,7 @@
     "cannotPost": "Only the owner or a member with write access can post here",
     "membersOnly": "This community is closed to non-members",
     "notOwner": "Only the community owner can do this",
-    "businessOnly": "Only business accounts (trainers, doctors, project leaders) can create communities and group chats"
+    "businessOnly": "Communities can be created after full registration"
   },
   "deals": {
     "companyNotFound": "Company not found",

@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       avatarBase64,
       socialLinks,
       ref,
+      acceptTerms,
       gender: rawGender,
       age: rawAge,
     } = body;
@@ -63,6 +64,11 @@ export async function POST(request: NextRequest) {
     const age = Number.isInteger(ageNum) && ageNum >= 14 && ageNum <= 120 ? ageNum : null;
     // Email зберігаємо у нижньому регістрі без пробілів: мобільні клавіатури самі міняють регістр
     const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
+
+    // Без явної згоди з Умовами та Політикою конфіденційності реєстрація неможлива (як у всіх соцмережах)
+    if (acceptTerms !== true) {
+      return NextResponse.json({ error: t('api.auth.termsRequired') }, { status: 400 });
+    }
 
     // Валідація обов'язкових полів
     if (!firstName || !lastName || !email || !password) {
@@ -173,6 +179,7 @@ export async function POST(request: NextRequest) {
       const newUser = await tx.user.create({
         data: {
           role: 'user',
+          termsAcceptedAt: new Date(),
           accountType,
           firstName,
           middleName: middleName || null,

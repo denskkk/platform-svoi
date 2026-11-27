@@ -16,7 +16,7 @@ import { authHeaders, jsonHeaders } from '@/lib/feedClient';
 import { formatRating } from '@/lib/format';
 import { translateEducation } from '@/lib/translations';
 
-interface Stats { followers: number; following: number; isFollowing: boolean; likes?: number }
+interface Stats { followers: number; following: number; isFollowing: boolean; likes?: number; invited?: number; completedDeals?: number; isActiveParticipant?: boolean }
 
 const splitTags = (v: unknown): string[] =>
   String(v ?? '').split(/[,\n;]+/).map((s) => s.trim()).filter(Boolean).slice(0, 10);
@@ -41,6 +41,8 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
   const [menu, setMenu] = useState(false);
   const [coverBusy, setCoverBusy] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const editRef = useRef<HTMLDivElement>(null);
+  const [editMenu, setEditMenu] = useState(false);
 
   useEffect(() => {
     let off = false;
@@ -50,6 +52,13 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
       .catch(() => undefined);
     return () => { off = true; };
   }, [userId]);
+
+  useEffect(() => {
+    if (!editMenu) return;
+    const close = (e: MouseEvent) => { if (editRef.current && !editRef.current.contains(e.target as Node)) setEditMenu(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [editMenu]);
 
   useEffect(() => {
     if (!menu) return;
@@ -134,21 +143,14 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
   return (
     <section className="overflow-hidden rounded-2xl bg-white shadow-md">
       {/* Обкладинка */}
-      <div className="relative h-32 sm:h-44 bg-gradient-to-br from-primary-300 via-primary-200 to-accent-200">
+      <div className="relative h-24 sm:h-40 bg-gradient-to-br from-primary-300 via-primary-200 to-accent-200">
         {profile.coverUrl && <ServiceImage src={profile.coverUrl} alt="" className="h-full w-full object-cover" />}
-        {isOwn && (
-          <label className="absolute bottom-2 right-2 inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-black/70">
-            <input type="file" accept="image/*" hidden onChange={(e) => { changeCover(e.target.files?.[0]); e.target.value = ''; }} />
-            {coverBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
-            {t('profile.view.cover.change')}
-          </label>
-        )}
       </div>
 
       <div className="px-4 pb-5 sm:px-6">
         {/* Аватарка накладається на обкладинку, праворуч — дії */}
-        <div className="-mt-12 flex items-end justify-between gap-3">
-          <UserAvatar src={profile.avatarUrl} alt={name} fallbackName={name} className="h-24 w-24 shrink-0 rounded-full ring-4 ring-white shadow-md" />
+        <div className="relative z-10 -mt-12 flex items-end justify-between gap-3">
+          <UserAvatar src={profile.avatarUrl} alt={name} fallbackName={name} className="relative z-10 h-24 w-24 shrink-0 rounded-full ring-4 ring-white shadow-md" />
           <div className="flex items-center gap-2 pb-1">
             <button type="button" onClick={share} aria-label={t('profile.cabinet.share')} className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200">
               <Share2 className="h-[18px] w-[18px]" />
@@ -202,6 +204,14 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
           ))}
         </dl>
 
+        {/* Лише власнику: скільки людей запросив і закритих угод */}
+        {isOwn && stats?.invited !== undefined && (
+          <Link href="/menu/balance" className="mt-3 grid grid-cols-2 divide-x divide-primary-200 rounded-xl bg-primary-50 py-3 text-center ring-1 ring-primary-100">
+            <span className="px-2"><b className="block text-xl leading-none text-neutral-900">{stats.invited}</b><span className="mt-1 block text-xs text-neutral-600">{t('profile.cabinet.invited')}</span></span>
+            <span className="px-2"><b className="block text-xl leading-none text-neutral-900">{stats.completedDeals ?? 0}</b><span className="mt-1 block text-xs text-neutral-600">{t('profile.cabinet.deals')}</span></span>
+          </Link>
+        )}
+
         {/* Про мене */}
         {profile.bio && <p className="mt-4 whitespace-pre-line break-words text-[15px] leading-relaxed text-neutral-800">{profile.bio}</p>}
         {facts.length > 0 && (
@@ -233,10 +243,21 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
         {/* Основні дії */}
         <div className="mt-5 flex flex-wrap gap-2">
           {isOwn ? (
-            <>
-              <Link href="/profile/edit" className={cn(btn, 'flex-1 bg-primary-500 text-white hover:bg-primary-600')}><Pencil className="h-4 w-4" />{t('profile.view.actions.edit')}</Link>
-              <Link href="/menu/viewers" className={cn(btn, 'flex-1 bg-neutral-100 text-neutral-800 hover:bg-neutral-200')}><Eye className="h-4 w-4" />{t('feed.profile.viewers')}</Link>
-            </>
+            <div ref={editRef} className="relative w-full">
+              <button type="button" onClick={() => setEditMenu((v) => !v)} aria-expanded={editMenu} className={cn(btn, 'w-full bg-primary-500 text-white hover:bg-primary-600')}>
+                <Pencil className="h-4 w-4" />{t('profile.view.actions.edit')}
+              </button>
+              {editMenu && (
+                <div className="absolute inset-x-0 bottom-14 z-20 space-y-1 rounded-xl border border-neutral-200 bg-white p-2 shadow-xl">
+                  <Link href="/profile/edit" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-800 hover:bg-neutral-50"><Pencil className="h-4 w-4 text-neutral-500" />{t('profile.cabinet.editProfile')}</Link>
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-800 hover:bg-neutral-50">
+                    <input type="file" accept="image/*" hidden onChange={(e) => { changeCover(e.target.files?.[0]); e.target.value = ''; setEditMenu(false); }} />
+                    {coverBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4 text-neutral-500" />}{t('profile.view.cover.change')}
+                  </label>
+                  <Link href="/menu/viewers" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-800 hover:bg-neutral-50"><Eye className="h-4 w-4 text-neutral-500" />{t('feed.profile.viewers')}</Link>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               {canFollow && (

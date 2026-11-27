@@ -128,6 +128,7 @@ model User {
   avatarUrl    String?  @map("avatar_url") @db.VarChar(255)
   coverUrl     String?  @map("cover_url") @db.VarChar(255)
   refCode      String?  @unique @map("ref_code") @db.VarChar(16)
+  termsAcceptedAt DateTime? @map("terms_accepted_at") @db.Timestamptz(6)
   referredById Int?     @map("referred_by_id")
   referredBy   User?    @relation("UserInvites", fields: [referredById], references: [id], onDelete: SetNull)
   invitedUsers User[]   @relation("UserInvites")
@@ -775,6 +776,8 @@ model Conversation {
   
   // Метаданные
   lastMessageAt   DateTime? @map("last_message_at")
+  user1ClearedAt  DateTime? @map("user1_cleared_at") @db.Timestamptz(6)
+  user2ClearedAt  DateTime? @map("user2_cleared_at") @db.Timestamptz(6)
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
   

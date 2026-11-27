@@ -3,7 +3,7 @@
 import { performLogout } from '@/lib/client-auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart3, Banknote, Bookmark, Building2, ClipboardList, Clapperboard, Heart, Inbox, Receipt, Eye, Handshake, Info, MessagesSquare, QrCode, Settings, Store, UserCircle, UserPlus, Users, UsersRound, Wallet, Wrench, Ban, LogOut, Pencil } from 'lucide-react';
+import { BarChart3, Banknote, Bookmark, Building2, ClipboardList, Clapperboard, Heart, Inbox, Receipt, Eye, Handshake, MessagesSquare, QrCode, Settings, Store, UserCircle, UserPlus, Users, UsersRound, Wallet, Wrench, Ban, LogOut, Pencil } from 'lucide-react';
 import { MenuGroup, MenuRow, MenuShell } from '@/components/cabinet/MenuShell';
 import { AccountSwitcher } from '@/components/cabinet/AccountSwitcher';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
@@ -81,7 +81,6 @@ export default function MenuPage() {
 
       <MenuGroup>
         <MenuRow href="/menu/settings" icon={<Settings className="w-5 h-5" />} label={t('cabinet.menu.settings')} />
-        <MenuRow href="/menu/about" icon={<Info className="w-5 h-5" />} label={t('cabinet.menu.about')} />
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <span className="font-semibold text-neutral-900">{t('cabinet.menu.language')}</span>
           <LanguageSwitcher variant="buttons" />
