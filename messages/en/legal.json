@@ -10,7 +10,7 @@
     "sections": {
       "controller": {
         "title": "1. Who is the data controller and how to contact us",
-        "p1": "The controller (operator) of personal data is the “Sviy dlya Svoikh” project team.",
+        "p1": "Controller of personal data: individual entrepreneur Mila Volodymyrivna Timashova, registered address: Ukraine, Odesa, 25 Stanislava Uzikova St.",
         "contactsBefore": "Contact details for privacy-related inquiries:",
         "contactsOr": "or e-mail"
       },
@@ -208,7 +208,8 @@
         "p3PrivacyLink": "Privacy Policy",
         "p3Middle": ". To delete your account, follow the instructions on the",
         "p3DeletionLink": "account deletion",
-        "p3After": " page."
+        "p3After": " page.",
+        "pOperator": "The “Sviy dlya Svoikh” service (website and mobile app) is owned and provided by individual entrepreneur Mila Volodymyrivna Timashova (registered address: Ukraine, Odesa, 25 Stanislava Uzikova St.; e-mail: support@sviydlyasvoih.com.ua). These terms are a public offer to enter into an agreement on the use of the service on the stated terms."
       },
       "platform": {
         "title": "2. Role of the service",
@@ -312,5 +313,11 @@
       }
     },
     "footnote": "These terms describe how the service operates and how it interacts with users. The terms of a specific service or agreement between users are agreed by them separately."
+  },
+  "operator": {
+    "title": "Service owner",
+    "nameLabel": "Owner and operator",
+    "status": "individual entrepreneur (sole proprietor)",
+    "addressLabel": "Registered address"
   }
 }

@@ -1,3 +1,4 @@
+import { OperatorInfo } from '@/components/legal/OperatorInfo';
 import Link from 'next/link'
 import { getT } from '@/i18n/server'
 import { localizedPath } from '@/i18n/routes'
@@ -112,6 +113,8 @@ export default function TermsOfUsePage() {
               <section id="general" className="scroll-mt-8 space-y-4">
                 {heading('general')}
                 <p>{s('general.p1')}</p>
+                <p>{s('general.pOperator')}</p>
+                <OperatorInfo />
                 <p>{s('general.p2')}</p>
                 <p>
                   {s('general.p3Before')}{' '}
@@ -232,6 +235,7 @@ export default function TermsOfUsePage() {
                   {telegramLink(s('contact.p1Link'))}
                   {s('contact.p1After')}
                 </p>
+                <OperatorInfo />
                 <p>{s('contact.p2')}</p>
               </section>
 
