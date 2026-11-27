@@ -1,4 +1,4 @@
-export const locales = ['uk', 'en'] as const
+export const locales = ['uk', 'en', 'ru', 'cs', 'pl', 'de'] as const
 export type Locale = (typeof locales)[number]
 
 export const defaultLocale: Locale = 'uk'
@@ -14,17 +14,32 @@ export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 export const intlLocales: Record<Locale, string> = {
   uk: 'uk-UA',
   en: 'en-GB',
+  ru: 'ru-RU',
+  cs: 'cs-CZ',
+  pl: 'pl-PL',
+  de: 'de-DE',
 }
 
 export const localeLabels: Record<Locale, string> = {
-  uk: 'Українська',
+  uk: 'Українська', // i18n-ignore
   en: 'English',
+  ru: 'Русский', // i18n-ignore
+  cs: 'Čeština',
+  pl: 'Polski',
+  de: 'Deutsch',
 }
 
 export const ogLocales: Record<Locale, string> = {
   uk: 'uk_UA',
   en: 'en_US',
+  ru: 'ru_RU',
+  cs: 'cs_CZ',
+  pl: 'pl_PL',
+  de: 'de_DE',
 }
+
+/** Мови з власним префіксом у URL публічних сторінок (/en/...). Інші (ru, cs, pl, de) визначаються cookie й Accept-Language. */
+export const prefixedLocales: readonly Locale[] = ['en']
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (locales as readonly string[]).includes(value)

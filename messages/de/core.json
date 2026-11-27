@@ -1,0 +1,157 @@
+{
+  "layout": {
+    "mobileNav": {
+      "home": "Start",
+      "search": "Suche",
+      "messages": "Nachrichten",
+      "profile": "Profil",
+      "favorites": "Favoriten",
+      "register": "Profil erstellen",
+      "viewer": "Als Zuschauer eintreten",
+      "feed": "Feed",
+      "projects": "Projekte",
+      "video": "Video"
+    }
+  },
+  "common": {
+    "language": {
+      "label": "Sprache der Oberfläche",
+      "switchTo": "Sprache wechseln: {language}"
+    },
+    "actions": {
+      "retry": "Wiederholen",
+      "close": "Schließen",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen",
+      "tryAgain": "Erneut versuchen",
+      "goHome": "Zur Startseite"
+    },
+    "states": {
+      "loading": "Wird geladen..."
+    },
+    "auth": {
+      "unavailable": "Die Sitzung konnte nicht geprüft werden. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+      "loginFailed": "Anmeldefehler",
+      "registerFailed": "Registrierungsfehler",
+      "logoutFailed": "Die Sitzung konnte auf dem Server nicht beendet werden"
+    },
+    "consent": {
+      "before": "Ich habe gelesen und akzeptiere die",
+      "terms": "Nutzungsbedingungen",
+      "and": "und die",
+      "privacy": "Datenschutzerklärung",
+      "after": "."
+    },
+    "guest": {
+      "title": "Anmelden oder registrieren",
+      "text": "Zum Liken, Kommentieren, Folgen und zum Öffnen von Profilen und Bereichen brauchen Sie ein kostenloses Konto.",
+      "register": "Registrieren",
+      "login": "Anmelden",
+      "bannerTitle": "Sie schauen als Gast",
+      "bannerText": "Ansehen ist ohne Anmeldung möglich. Um aktiv zu werden (liken, schreiben, folgen), erstellen Sie ein kostenloses Konto."
+    },
+    "errorPage": {
+      "title": "Etwas ist schiefgelaufen",
+      "description": "Es ist ein vorübergehender Fehler aufgetreten. Versuchen Sie es erneut — Ihre Daten und Ihre Anmeldung bleiben erhalten.",
+      "globalDescription": "Es ist ein vorübergehender Fehler aufgetreten. Ihre Anmeldung bleibt erhalten — versuchen Sie es erneut."
+    },
+    "notFound": {
+      "title": "Seite nicht gefunden",
+      "description": "Vielleicht wurde sie gelöscht oder der Link ist veraltet.",
+      "toCatalog": "Zum Katalog"
+    }
+  },
+  "auth": {
+    "login": {
+      "errors": {
+        "network": "Keine Verbindung zum Server. Prüfen Sie das Internet und versuchen Sie es erneut.",
+        "serverUnavailable": "Der Server ist vorübergehend nicht erreichbar. Versuchen Sie es in einer Minute.",
+        "loginFailed": "Anmeldefehler",
+        "invalidResponse": "Der Server hat eine ungültige Antwort geliefert. Versuchen Sie es erneut.",
+        "generic": "Anmeldung nicht möglich"
+      },
+      "welcomeBack": "Willkommen zurück!",
+      "subtitle": "Melden Sie sich an, um fortzufahren",
+      "emailLabel": "E-Mail",
+      "passwordLabel": "Passwort",
+      "rememberMe": "Angemeldet bleiben",
+      "needHelp": "Brauchen Sie Hilfe?",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung läuft...",
+      "noAccount": "Noch kein Profil?",
+      "createProfile": "Profil erstellen"
+    },
+    "register": {
+      "simple": {
+        "heroTitle": "Einer von uns",
+        "heroText": "Finden Sie Menschen, Unternehmen, Anzeigen und Verdienstmöglichkeiten — an einem Ort.",
+        "formTitle": "Konto erstellen",
+        "formSubtitle": "Das ist kostenlos und dauert eine Minute.",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail-Adresse",
+        "password": "Passwort (mindestens 6 Zeichen)",
+        "showPassword": "Passwort anzeigen",
+        "hidePassword": "Passwort verbergen",
+        "submit": "Registrieren",
+        "submitting": "Konto wird erstellt…",
+        "haveAccount": "Schon ein Konto?",
+        "signIn": "Anmelden",
+        "agreePrefix": "Mit der Registrierung akzeptieren Sie die",
+        "terms": "Nutzungsbedingungen",
+        "and": "und die",
+        "privacy": "Datenschutzerklärung",
+        "errors": {
+          "required": "Füllen Sie alle Felder aus",
+          "email": "Geben Sie eine gültige E-Mail-Adresse ein",
+          "password": "Das Passwort muss mindestens 6 Zeichen lang sein",
+          "network": "Keine Verbindung zum Server. Prüfen Sie das Internet und versuchen Sie es erneut.",
+          "failed": "Das Konto konnte nicht erstellt werden",
+          "age": "Geben Sie ein Alter ab 14 Jahren an",
+          "gender": "Wählen Sie das Geschlecht",
+          "consent": "Bestätigen Sie die Zustimmung zu den Nutzungsbedingungen und der Datenschutzerklärung"
+        },
+        "perks": {
+          "people": "Chatten und Beiträge teilen",
+          "business": "Unternehmen in der Nähe finden",
+          "earn": "Mit vermittelten Kunden verdienen"
+        },
+        "age": "Alter",
+        "gender": "Geschlecht",
+        "genderMale": "Männlich",
+        "genderFemale": "Weiblich",
+        "genderOther": "Divers",
+        "doneTitle": "Willkommen!",
+        "doneText": "Das Konto ist erstellt. Vervollständigen Sie Ihr Profil: Stadt, Foto, Interessen. So werden Sie leichter gefunden und bekommen passende Angebote.",
+        "doneComplete": "Profil vervollständigen",
+        "doneLater": "Später"
+      }
+    },
+    "restore": {
+      "failedTitle": "Verbindung fehlgeschlagen",
+      "failedText": "Prüfen Sie das Internet — Ihre Anmeldung bleibt erhalten.",
+      "retry": "Erneut versuchen",
+      "restoring": "Anmeldung wird wiederhergestellt…"
+    },
+    "language": {
+      "title": "Sprache wählen",
+      "subtitle": "Sie können sie später in den Einstellungen ändern",
+      "continue": "Weiter",
+      "hint": "Sprache der App-Oberfläche",
+      "change": "Sprache ändern"
+    }
+  },
+  "home": {
+    "welcome": {
+      "title": "Einer von uns",
+      "subtitle": "Ein soziales Netzwerk zum Chatten, Finden von Dienstleistungen und Verdienen.",
+      "p1": "Feed, Freunde und Neuigkeiten",
+      "p2": "Videos und Reels",
+      "p3": "Projekte, Anzeigen und Unternehmen",
+      "p4": "Clubs und Communities",
+      "register": "Registrieren",
+      "login": "Anmelden",
+      "note": "Die Registrierung ist kostenlos: Name, E-Mail und Passwort."
+    }
+  }
+}

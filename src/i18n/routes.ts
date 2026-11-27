@@ -1,4 +1,7 @@
-import { Locale, defaultLocale, isLocale } from './config'
+import { Locale } from './config'
+
+// Префікс у URL мають лише uk (застарілий) та en
+const isPrefix = (v: string): v is Locale => v === 'en' || v === 'uk'
 
 /** Pages that exist under a dedicated `/en/...` URL (public, indexable, shared with Google Play). */
 export const PUBLIC_LOCALIZED_PATHS = [
@@ -24,7 +27,7 @@ export function isPublicLocalizedPath(path: string): boolean {
 /** Splits `/en/about` into `{ locale: 'en', path: '/about' }`. `/uk/...` is treated as a legacy prefix too. */
 export function splitLocalePrefix(pathname: string): { locale: Locale | null; path: string } {
   const match = pathname.match(/^\/([a-z]{2})(\/.*)?$/)
-  if (match && isLocale(match[1])) {
+  if (match && isPrefix(match[1])) {
     return { locale: match[1], path: match[2] || '/' }
   }
   return { locale: null, path: pathname || '/' }
@@ -33,7 +36,7 @@ export function splitLocalePrefix(pathname: string): { locale: Locale | null; pa
 /** Builds the canonical URL path of a page for a locale (only public pages get an `/en` prefix). */
 export function localizedPath(path: string, locale: Locale): string {
   const normalized = normalizePath(path.split(/[?#]/)[0])
-  if (locale === defaultLocale || !isPublicLocalizedPath(normalized)) return path
+  if (locale !== 'en' || !isPublicLocalizedPath(normalized)) return path
   const suffix = path.slice(path.split(/[?#]/)[0].length)
   return `${normalized === '/' ? '/en' : `/en${normalized}`}${suffix}`
 }

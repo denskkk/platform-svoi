@@ -1,0 +1,157 @@
+{
+  "layout": {
+    "mobileNav": {
+      "home": "Główna",
+      "search": "Szukaj",
+      "messages": "Wiadomości",
+      "profile": "Profil",
+      "favorites": "Ulubione",
+      "register": "Utwórz profil",
+      "viewer": "Wejdź jako widz",
+      "feed": "Aktualności",
+      "projects": "Projekty",
+      "video": "Wideo"
+    }
+  },
+  "common": {
+    "language": {
+      "label": "Język interfejsu",
+      "switchTo": "Zmień język: {language}"
+    },
+    "actions": {
+      "retry": "Powtórz",
+      "close": "Zamknij",
+      "cancel": "Anuluj",
+      "confirm": "Potwierdź",
+      "tryAgain": "Spróbuj ponownie",
+      "goHome": "Na stronę główną"
+    },
+    "states": {
+      "loading": "Ładowanie..."
+    },
+    "auth": {
+      "unavailable": "Nie udało się zweryfikować sesji. Sprawdź połączenie i spróbuj ponownie.",
+      "loginFailed": "Błąd logowania",
+      "registerFailed": "Błąd rejestracji",
+      "logoutFailed": "Nie udało się zakończyć sesji na serwerze"
+    },
+    "consent": {
+      "before": "Przeczytałem(-am) i akceptuję",
+      "terms": "Regulamin",
+      "and": "oraz",
+      "privacy": "Politykę prywatności",
+      "after": "."
+    },
+    "guest": {
+      "title": "Zaloguj się lub zarejestruj",
+      "text": "Aby polubić, komentować, obserwować oraz otwierać profile i działy, potrzebne jest bezpłatne konto.",
+      "register": "Zarejestruj się",
+      "login": "Zaloguj się",
+      "bannerTitle": "Przeglądasz jako gość",
+      "bannerText": "Przeglądać można bez logowania. Aby działać (lajkować, pisać, obserwować), załóż bezpłatne konto."
+    },
+    "errorPage": {
+      "title": "Coś poszło nie tak",
+      "description": "Wystąpił tymczasowy błąd. Spróbuj ponownie — Twoje dane i logowanie są zachowane.",
+      "globalDescription": "Wystąpił tymczasowy błąd. Logowanie jest zachowane — spróbuj ponownie."
+    },
+    "notFound": {
+      "title": "Nie znaleziono strony",
+      "description": "Być może została usunięta lub link jest nieaktualny.",
+      "toCatalog": "Do katalogu"
+    }
+  },
+  "auth": {
+    "login": {
+      "errors": {
+        "network": "Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie.",
+        "serverUnavailable": "Serwer jest chwilowo niedostępny. Spróbuj za minutę.",
+        "loginFailed": "Błąd logowania",
+        "invalidResponse": "Serwer zwrócił nieprawidłową odpowiedź. Spróbuj ponownie.",
+        "generic": "Nie udało się zalogować"
+      },
+      "welcomeBack": "Witamy ponownie!",
+      "subtitle": "Zaloguj się, aby kontynuować",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Hasło",
+      "rememberMe": "Zapamiętaj mnie",
+      "needHelp": "Potrzebujesz pomocy?",
+      "submit": "Zaloguj się",
+      "submitting": "Logowanie...",
+      "noAccount": "Nie masz jeszcze profilu?",
+      "createProfile": "Utwórz profil"
+    },
+    "register": {
+      "simple": {
+        "heroTitle": "Swój dla swoich",
+        "heroText": "Znajdź ludzi, firmy, ogłoszenia i możliwości zarobku — w jednym miejscu.",
+        "formTitle": "Utwórz konto",
+        "formSubtitle": "To bezpłatne i zajmie minutę.",
+        "firstName": "Imię",
+        "lastName": "Nazwisko",
+        "email": "Adres e-mail",
+        "password": "Hasło (minimum 6 znaków)",
+        "showPassword": "Pokaż hasło",
+        "hidePassword": "Ukryj hasło",
+        "submit": "Zarejestruj się",
+        "submitting": "Tworzymy konto…",
+        "haveAccount": "Masz już konto?",
+        "signIn": "Zaloguj się",
+        "agreePrefix": "Rejestrując się, akceptujesz",
+        "terms": "Regulamin",
+        "and": "oraz",
+        "privacy": "Politykę prywatności",
+        "errors": {
+          "required": "Wypełnij wszystkie pola",
+          "email": "Podaj poprawny adres e-mail",
+          "password": "Hasło musi mieć co najmniej 6 znaków",
+          "network": "Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie.",
+          "failed": "Nie udało się utworzyć konta",
+          "age": "Podaj wiek od 14 lat",
+          "gender": "Wybierz płeć",
+          "consent": "Potwierdź zgodę na Regulamin i Politykę prywatności"
+        },
+        "perks": {
+          "people": "Rozmawiaj i dziel się wpisami",
+          "business": "Znajdź firmy w pobliżu",
+          "earn": "Zarabiaj na pozyskanych klientach"
+        },
+        "age": "Wiek",
+        "gender": "Płeć",
+        "genderMale": "Mężczyzna",
+        "genderFemale": "Kobieta",
+        "genderOther": "Inna",
+        "doneTitle": "Witamy!",
+        "doneText": "Konto zostało utworzone. Uzupełnij profil: miasto, zdjęcie, zainteresowania. Łatwiej Cię wtedy znaleźć i zaproponować coś pożytecznego.",
+        "doneComplete": "Uzupełnij profil",
+        "doneLater": "Później"
+      }
+    },
+    "restore": {
+      "failedTitle": "Nie udało się połączyć",
+      "failedText": "Sprawdź internet — Twoje logowanie jest zachowane.",
+      "retry": "Spróbuj ponownie",
+      "restoring": "Przywracamy logowanie…"
+    },
+    "language": {
+      "title": "Wybierz język",
+      "subtitle": "Można go później zmienić w ustawieniach",
+      "continue": "Kontynuuj",
+      "hint": "Język interfejsu aplikacji",
+      "change": "Zmień język"
+    }
+  },
+  "home": {
+    "welcome": {
+      "title": "Swój dla swoich",
+      "subtitle": "Sieć społecznościowa, w której możesz rozmawiać, znajdować usługi i zarabiać.",
+      "p1": "Aktualności, znajomi i wiadomości",
+      "p2": "Wideo i rolki",
+      "p3": "Projekty, ogłoszenia i firmy",
+      "p4": "Kluby i społeczności",
+      "register": "Zarejestruj się",
+      "login": "Zaloguj się",
+      "note": "Rejestracja jest bezpłatna: imię, e-mail i hasło."
+    }
+  }
+}
