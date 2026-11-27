@@ -13,6 +13,7 @@ import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { useI18n } from '@/i18n/client';
 import { localizedPath } from '@/i18n/routes';
 import { askConfirm } from '@/components/ui/ConfirmHost';
+import { SwipeRow } from '@/components/chat/SwipeRow';
 
 interface Conversation {
   id: number;
@@ -107,15 +108,14 @@ function ChatPageContent() {
   }, [router]);
 
   // «Видалити чат» ховає історію лише для мене; співрозмовник її не втрачає
-  const deleteConversation = async () => {
-    if (!selectedConversation) return;
+  const deleteConversation = async (convId: number | null = selectedConversation) => {
+    if (!convId) return;
     if (!(await askConfirm(t('chat.deleteConfirm')))) return;
     try {
-      const res = await fetch(`/api/conversations/${selectedConversation}`, { method: 'DELETE', credentials: 'include', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      const res = await fetch(`/api/conversations/${convId}`, { method: 'DELETE', credentials: 'include', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (!res.ok) throw new Error();
-      setConversations((prev) => prev.filter((c) => c.id !== selectedConversation));
-      setSelectedConversation(null);
-      setMessages([]);
+      setConversations((prev) => prev.filter((c) => c.id !== convId));
+      if (selectedConversation === convId) { setSelectedConversation(null); setMessages([]); }
     } catch {
       setError(t('chat.errors.deleteFailed'));
     }
@@ -330,7 +330,7 @@ function ChatPageContent() {
 
   return (
     <div className="bg-neutral-100">
-      <div className="max-w-7xl mx-auto h-[calc(100dvh-9rem)] md:h-[calc(100dvh-4rem)] flex flex-col">
+      <div className="chat-box max-w-7xl mx-auto h-[calc(100dvh-9rem)] md:h-[calc(100dvh-4rem)] flex flex-col">
         {/* Header: на телефоні ховаємо, коли відкрита розмова */}
         <div className={`bg-white border-b border-neutral-200 px-4 py-3 ${selectedConv ? 'hidden md:block' : ''}`}>
           <div className="flex items-center gap-3">
@@ -396,13 +396,14 @@ function ChatPageContent() {
               </div>
             ) : (
               conversations.map((conv) => (
-                <div
+                <SwipeRow
                   key={conv.id}
-                  onClick={() => setSelectedConversation(conv.id)}
-                  className={`px-3 py-2.5 mx-2 my-1 rounded-xl cursor-pointer hover:bg-neutral-100 transition-colors ${
-                    selectedConversation === conv.id ? 'bg-primary-50' : ''
-                  }`}
+                  onOpen={() => setSelectedConversation(conv.id)}
+                  onDelete={() => deleteConversation(conv.id)}
+                  label={t('chat.deleteChat')}
+                  className="mx-2 my-1"
                 >
+                  <div className={`px-3 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors ${selectedConversation === conv.id ? 'bg-primary-50' : ''}`}>
                   <div className="flex items-center gap-3">
                     <UserAvatar
                       src={conv.otherUser.avatarUrl}
@@ -436,7 +437,8 @@ function ChatPageContent() {
                       )}
                     </div>
                   </div>
-                </div>
+                  </div>
+                </SwipeRow>
               ))
             )}
           </div>
@@ -469,7 +471,7 @@ function ChatPageContent() {
                       </Link>
                     </div>
                     <div className="ml-auto flex items-center gap-1">
-                      <button type="button" onClick={deleteConversation} aria-label={t('chat.deleteChat')} title={t('chat.deleteChat')}
+                      <button type="button" onClick={() => deleteConversation()} aria-label={t('chat.deleteChat')} title={t('chat.deleteChat')}
                         className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 hover:bg-red-50 hover:text-red-600">
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -548,9 +550,9 @@ function ChatPageContent() {
         </div>
       </div>
       {newGroup && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={t('cabinet.groupChats.new')}>
+        <div style={{ top: 'var(--vv-top, 0px)', height: 'var(--vvh, 100%)' }} className="fixed inset-x-0 z-[70] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={t('cabinet.groupChats.new')}>
           <button type="button" className="absolute inset-0 bg-black/50" aria-label={t('chat.back')} onClick={() => setNewGroup(false)} />
-          <div className="relative max-h-[90%] w-full overflow-y-auto rounded-t-2xl bg-white p-4 pb-[calc(1rem+var(--safe-area-inset-bottom,0px))] sm:max-w-md sm:rounded-2xl">
+          <div className="relative max-h-full w-full overflow-y-auto overscroll-contain rounded-t-2xl bg-white p-4 pb-[calc(1rem+var(--safe-area-inset-bottom,0px))] sm:max-w-md sm:rounded-2xl">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-bold text-neutral-900">{t('cabinet.groupChats.new')}</h2>
               <button type="button" onClick={() => setNewGroup(false)} aria-label={t('chat.back')} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-neutral-100"><X className="h-5 w-5" /></button>

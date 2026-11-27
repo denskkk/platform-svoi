@@ -27,9 +27,21 @@ export default function FriendsPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
+  const [ready, setReady] = useState(false);          // параметри з адреси прочитані
+  const [target, setTarget] = useState<number | null>(null); // чия це сторінка: null = моя
+  const [ownerName, setOwnerName] = useState<string | null>(null);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const meId = readStoredUser()?.id ?? null;
 
   useEffect(() => {
-    if (!readStoredUser()) router.replace('/auth/login?returnUrl=/friends');
+    if (!readStoredUser()) { router.replace('/auth/login?returnUrl=/friends'); return; }
+    // ?tab=followers|following&userId=<id> — відкривається з лічильників на профілі
+    const sp = new URLSearchParams(window.location.search);
+    const tb = sp.get('tab');
+    const uid = Number(sp.get('userId'));
+    if (tb === 'followers' || tb === 'following' || tb === 'mutual') setTab(tb);
+    if (Number.isInteger(uid) && uid > 0 && uid !== Number(readStoredUser()?.id)) setTarget(uid);
+    setReady(true);
   }, [router]);
 
   // Невелика затримка, щоб не робити запит на кожну літеру
@@ -40,13 +52,17 @@ export default function FriendsPage() {
 
   const load = useCallback(async (after: number | null) => {
     const qs = new URLSearchParams({ tab });
+    if (target) qs.set('userId', String(target));
     if (query) qs.set('q', query);
     if (after) qs.set('cursor', String(after));
     try {
       const res = await fetch(`/api/friends?${qs}`, { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
       if (res.status === 401) { router.replace('/auth/login?returnUrl=/friends'); return; }
+      if (res.status === 403) { const d = await res.json().catch(() => ({})); setIsPrivate(true); setOwnerName(d.ownerName ?? null); setPeople([]); setCursor(null); setError(false); return; }
       if (!res.ok) throw new Error();
       const data = await res.json();
+      setIsPrivate(false);
+      setOwnerName(data.ownerName ?? null);
       setPeople((prev) => (after ? [...prev, ...data.users] : data.users));
       setCursor(data.nextCursor ?? null);
       setCounts(data.counts);
@@ -57,9 +73,9 @@ export default function FriendsPage() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [tab, query, router]);
+  }, [tab, query, router, target]);
 
-  useEffect(() => { setLoading(true); load(null); }, [load]);
+  useEffect(() => { if (!ready) return; setLoading(true); load(null); }, [load, ready]);
 
   const toggle = async (p: Person) => {
     const next = !p.isFollowing;
@@ -77,16 +93,16 @@ export default function FriendsPage() {
     }
   };
 
-  const tabs: { key: Tab; label: string }[] = [
+  const tabs: { key: Tab; label: string }[] = ([
     { key: 'following', label: `${t('feed.friends.following')} · ${counts.following}` },
     { key: 'followers', label: `${t('feed.friends.followers')} · ${counts.followers}` },
     { key: 'mutual', label: t('feed.friends.mutual') },
-  ];
+  ] as { key: Tab; label: string }[]).filter((x) => !(target && x.key === 'mutual'));
 
   return (
     <div className="min-h-screen bg-neutral-100">
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 space-y-3">
-        <h1 className="text-2xl font-bold text-neutral-900 flex items-center gap-2"><Users className="w-6 h-6 text-primary-600" />{t('feed.friends.title')}</h1>
+        <h1 className="text-2xl font-bold text-neutral-900 flex items-center gap-2"><Users className="w-6 h-6 text-primary-600" />{target && ownerName ? ownerName : t('feed.friends.title')}</h1>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" />
@@ -114,6 +130,8 @@ export default function FriendsPage() {
           <div className="space-y-2" aria-hidden>
             {[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-white animate-pulse" />)}
           </div>
+        ) : isPrivate ? (
+          <EmptyState icon={Users} title={t('feed.friends.private')} description="" />
         ) : error ? (
           <EmptyState icon={Users} title={t('feed.errors.load')} description="" />
         ) : people.length === 0 ? (
@@ -129,11 +147,11 @@ export default function FriendsPage() {
                     {p.subtitle && <span className="block text-sm text-neutral-500 truncate">{p.subtitle}</span>}
                   </span>
                 </Link>
-                <button type="button" onClick={() => toggle(p)}
+                {Number(meId) !== p.id && <button type="button" onClick={() => toggle(p)}
                   className={cn('inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition active:scale-95 shrink-0', p.isFollowing ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300' : 'bg-primary-500 text-white hover:bg-primary-600')}>
                   {p.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
                   {p.isFollowing ? t('feed.post.following') : t('feed.post.follow')}
-                </button>
+                </button>}
               </li>
             ))}
           </ul>

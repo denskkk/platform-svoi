@@ -64,6 +64,8 @@ export function parseAcceptLanguage(header: string | null | undefined): Locale |
 
   for (const { tag } of ranked) {
     const primary = tag.split('-')[0]
+    // Російську автоматично не вмикаємо (її обирають лише вручну в «Інших мовах»): тоді діє українська за замовчуванням
+    if (primary === 'ru') continue
     if (isLocale(primary)) return primary
   }
   return null

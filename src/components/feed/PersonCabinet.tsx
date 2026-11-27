@@ -115,9 +115,9 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
   };
 
   const counters = [
-    { label: t('feed.profile.stats.following'), value: stats?.following ?? 0 },
-    { label: t('feed.profile.stats.followers'), value: stats?.followers ?? 0 },
-    { label: t('feed.profile.stats.likes'), value: stats?.likes ?? 0 },
+    { label: t('feed.profile.stats.following'), value: stats?.following ?? 0, href: `/friends?tab=following${isOwn ? '' : `&userId=${userId}`}` },
+    { label: t('feed.profile.stats.followers'), value: stats?.followers ?? 0, href: `/friends?tab=followers${isOwn ? '' : `&userId=${userId}`}` },
+    { label: t('feed.profile.stats.likes'), value: stats?.likes ?? 0, href: '' },
   ];
 
   // Факти про людину — один компактний ряд замість схованих анкетних блоків
@@ -196,12 +196,12 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
 
         {/* Лічильники */}
         <dl className="mt-4 grid grid-cols-3 divide-x divide-neutral-200 rounded-xl bg-neutral-50 py-3 text-center">
-          {counters.map((c) => (
-            <div key={c.label} className="px-2">
-              <dd className="text-xl font-bold leading-none text-neutral-900">{c.value}</dd>
-              <dt className="mt-1 text-xs text-neutral-500">{c.label}</dt>
-            </div>
-          ))}
+          {counters.map((c) => {
+            const inner = (<><dd className="text-xl font-bold leading-none text-neutral-900">{c.value}</dd><dt className="mt-1 text-xs text-neutral-500">{c.label}</dt></>);
+            return c.href
+              ? <Link key={c.label} href={c.href} className="block rounded-lg px-2 transition hover:bg-neutral-100 active:bg-neutral-200">{inner}</Link>
+              : <div key={c.label} className="px-2">{inner}</div>;
+          })}
         </dl>
 
         {/* Лише власнику: скільки людей запросив і закритих угод */}

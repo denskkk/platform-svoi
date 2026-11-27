@@ -64,7 +64,7 @@ async function processOne(video: { id: number; rawName: string | null }): Promis
 
     const L = VIDEO_LIMITS.maxLongSide;
     const scale = `scale='if(gt(iw,ih),min(${L},iw),-2)':'if(gt(iw,ih),-2,min(${L},ih))'`;
-    const enc = await run(FFMPEG, ['-y', '-i', input, '-t', String(VIDEO_LIMITS.maxSeconds), '-vf', scale, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '28', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart', '-threads', '1', output], 15 * 60_000);
+    const enc = await run(FFMPEG, ['-y', '-i', input, '-t', String(VIDEO_LIMITS.maxSeconds), '-vf', scale, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '28', '-pix_fmt', 'yuv420p', '-g', '30', '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart', '-threads', '1', output], 15 * 60_000);
     if (enc.code !== 0) { await unlink(output).catch(() => undefined); return fail('encode_failed'); }
 
     const poster = await run(FFMPEG, ['-y', '-ss', String(Math.min(1, duration / 2)), '-i', output, '-frames:v', '1', '-vf', 'scale=480:-2', '-q:v', '4', join(videosDir(), posterName)], 60_000);

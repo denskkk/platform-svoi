@@ -79,7 +79,7 @@
       "hearts": "Hearts"
     },
     "myDeals": "My deals and earnings",
-    "invite": "Invite people",
+    "invite": "Add friends",
     "unlockTitle": "Unlock a feature for yourself",
     "unlockNote": "Live streams, referral payouts and other features are opened by region and case by case. Tell us what you need: we will review the request and reply within a few days.",
     "unlockPh": "What do you want unlocked? Where do you live, how many followers or invited people do you have, how will you use it.",
@@ -109,10 +109,10 @@
   },
   "earn": {
     "title": "Earn with your own",
-    "intro": "Invite people with your QR code or link, use other businesses’ services and complete deals — this gives you active member status and unlocks rewards.",
-    "s1": "Invite people with your QR code or link",
-    "s2": "Use the platform’s businesses and complete deals",
-    "s3": "Get active member status and rewards for referred customers",
+    "intro": "Add friends with your QR code or link and use the platform’s businesses yourself — you earn a reward from every completed deal made by the friends you invited.",
+    "s1": "Add friends with your QR code or link",
+    "s2": "Use the platform’s businesses yourself",
+    "s3": "Earn a reward from every completed deal of your invited friends",
     "byProject": "How to earn in each project",
     "byProjectHint": "Every project has its own “Earn with your own” page written for it.",
     "open": "Open",
@@ -255,7 +255,7 @@
     "online": "Online business",
     "onlineHint": "Search online projects and services",
     "earnTile": "Earn with your own",
-    "earnHint": "Active member status and rewards",
+    "earnHint": "Friends and rewards from their deals",
     "taxi": {
       "order": "Order a taxi",
       "orderHint": "Call a car right from the project",
@@ -350,7 +350,8 @@
     "rename": "Rename group",
     "renamePrompt": "New group name",
     "delete": "Delete group",
-    "deleteConfirm": "Delete the group with all its messages? This cannot be undone."
+    "deleteConfirm": "Delete the group with all its messages? This cannot be undone.",
+    "leaveConfirm": "Leave this group?"
   },
   "suggest": {
     "button": "Suggestion or complaint",
