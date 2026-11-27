@@ -257,6 +257,22 @@
       "payment_receipts": "Receipts will appear after the first rides.",
       "payment_settlements": "The platform does not transfer money itself. The settlement procedure with drivers will be announced before launch in the city.",
       "payment_fees": "Fees and payment terms are set separately before launch in the city. The platform does not transfer money itself."
+    },
+    "sub": {
+      "order": "Order now or for a date and time, choose a car class",
+      "driver": "Registration, documents, car and driver cabinet",
+      "team": "A team in your city, representatives and network growth",
+      "transfers": "Airports, stations, intercity and international trips",
+      "info": "About the project, partner programme and earnings",
+      "help": "Help for passengers and drivers, cancellations, lost items",
+      "payment": "Tariffs, payment methods, receipts and refunds",
+      "feedback": "Reviews, complaints and ideas for the project"
+    },
+    "desc": {
+      "order": "Order a taxi now or in advance for a date and time, pickup and destination addresses, car class, extra trip wishes.",
+      "driver": "New driver registration, documents, car registration, driver and car requirements, personal cabinet, my orders and trips, income and payouts.",
+      "team": "Create a team in your city, become a regional representative, open a direction in your country, invite drivers, find coordinators and partners, grow the network.",
+      "transfers": "Transfers to airports and stations, intercity and international trips, group transport and minivans, individual orders and special needs."
     }
   },
   "rep": {
@@ -1461,42 +1477,128 @@
       "info_about": "Fairs of Ukrainian products worldwide: producer and seller applications and fair organizers.",
       "info_how": "Producers apply, organizers in countries or cities form teams and venues. Participation in fairs is not guaranteed; details are agreed with the organizer."
     },
-    "intro": "Fairs of Ukrainian products abroad: producers apply, organizers form teams and venues."
+    "intro": "Fairs of Ukrainian products abroad: producers apply, organizers form teams and venues.",
+    "sub": {
+      "producers": "Taking part in international fairs",
+      "organizers": "In your country or city",
+      "info": "Opportunities to participate and cooperate",
+      "feedback": "Your ideas and feedback",
+      "organizers_self": "I have experience and am ready to organize events",
+      "organizers_member": "I want to be part of the international team",
+      "organizers_venue": "I can offer a location for a future event"
+    },
+    "desc": {
+      "producers": "A form for Ukrainian producers, entrepreneurs, farmers, craftsmen, shop owners and sellers: where you are (in Ukraine or abroad), your activity, which products you offer; from Ukraine — export documents, experience and target countries; from abroad — country, region, city, shop or warehouse, contacts and photos. Submitting does not mean automatic admission to sale: the requirements of the fair’s country apply.",
+      "organizers": "For Ukrainians in Ukraine and abroad who want to organize fairs in their cities: “I can organize on my own”, “Join the team”, “I have a venue”. The form: country, region, city, experience, readiness, venue, resources, contacts and links to past events. Applications are stored in the organizers’ base linked to country and city."
+    }
   },
   "clubs": {
     "text": {
       "info_about": "Interest clubs: hunters, anglers, pet lovers, drivers, motorcyclists, cyclists, knitting, cooking and pastry. Each club has communities by country and city, a bulletin board, shop, bloggers, courses, events and specialists.",
       "info_how": "Pick a club, join a local community or apply for a branch or representation. Applications for leadership, new clubs and directions are moderated. Only lawful goods and services are allowed."
     },
-    "intro": "Interest clubs: chat, ads, shops, training, events and specialists in your city and country."
+    "intro": "Interest clubs: chat, ads, shops, training, events and specialists in your city and country.",
+    "sub": {
+      "interest": "Find like-minded people, chat and create communities",
+      "shops": "Goods, shops and purchases by interest",
+      "info": "Cooperation, partnership and team growth",
+      "feedback": "Users’ requests and suggestions"
+    },
+    "desc": {
+      "interest": "Each club is a separate themed page with the same base: countries and communities (country → region → city, only those with members are shown), bulletin board, club shop, bloggers and live streams, online courses (amateur and certified), events and meetups, experts and specialists, joining the team. “Join the club” is a form; the geographic structure is added automatically after the application is confirmed. Applications to lead a branch or to represent the club are approved by the administration. A course certificate is not equivalent to a state qualification or licence.",
+      "shops": "Themed online shops for club interests: hunters, anglers, animals, cars, motorcycles, cyclists, knitting, cooking, pastry. Buttons: “View goods”, “Find a shop”, “Add a product”, “Open your own shop”, “Become a club partner”. Legal restrictions apply to regulated goods."
+    }
   },
   "antiques": {
     "text": {
       "info_about": "The Antiques shop brings together owners of antique and precious items, collectors, buyers, shops, appraisers, experts and masters from different countries.",
       "info_how": "Post listings in online shops, add an offline shop, find an appraiser or expert. The platform does not allow illegal trade in cultural property, archaeological finds or precious metals contrary to law; check provenance and export rules."
     },
-    "intro": "Antiques and precious items: online and offline shops, appraisers, experts and masters. Illegal trade in cultural property is prohibited."
+    "intro": "Antiques and precious items: online and offline shops, appraisers, experts and masters. Illegal trade in cultural property is prohibited.",
+    "sub": {
+      "things": "Online and offline shops, antiques, collections and listings",
+      "experts": "Appraisers, experts and specialists",
+      "info": "About the platform, cooperation, partnership and earnings",
+      "feedback": "Feedback, new direction suggestions, requests to the administration",
+      "things_online": "Catalogue of online shops and private sellers",
+      "things_offline": "Real antique shops by country and city",
+      "experts_appraisers": "Valuing antique and collectible items",
+      "experts_authors": "Art, antiquity, history and authenticity of items",
+      "experts_masters": "Craftsmen, restorers and other specialists"
+    },
+    "desc": {
+      "things": "Categories: art, coins and banknotes, antiquities, jewelry and precious items, porcelain and ceramics, watches, antique furniture, books and documents, collectibles, other. Buttons: “View listings”, “Post your listing” (title, category and subcategory, photos, description and period, condition, documents and provenance, price or “By agreement”, country and city, contacts, sale or exchange), “Open an online shop”, “Suggest a new subsection” (after administration review). Categories also offer “Find an appraiser” and “Request a valuation”.",
+      "things_offline": "First the countries that already have registered shops, then region (if given) and city. Shops without a region are not hidden. A shop page has name, logo, photos, address and map, description, categories, catalogue, contacts, hours, website and social links. “Add your offline shop” is an application; after administration review the shop appears in the list, and the owner may also open an online shop with a seller’s cabinet.",
+      "experts": "Themed folders with specialists’ profiles: appraisers (antiques, coins and banknotes, jewelry, precious metals and stones, paintings, watches, furniture, porcelain), experts, craftsmen and restorers. You can suggest a new profession or specialty."
+    }
   },
   "exportAlliance": {
     "text": {
       "info_about": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets.",
       "info_how": "Choose a folder: farmers, suppliers or sales markets. Add a farm or company, create a sales request, find a buyer or carrier. Check your partner and documents before a deal; the platform takes no part in payments."
     },
-    "intro": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets."
+    "intro": "The Ukrainian Export Alliance unites farmers, producers, suppliers, buyers, trade representatives and logistics partners. We unite. We cooperate. We reach world markets.",
+    "sub": {
+      "agro": "Farmers, farms, land and produce",
+      "suppliers": "Machinery, seeds, fertilizers, equipment",
+      "markets": "Buyers, export, negotiations, logistics",
+      "info": "Partnership, representation, earning",
+      "feedback": "Feedback, new ideas and support"
+    },
+    "desc": {
+      "agro": "Unites farmers, landowners and producers. Inside each field there are categories (for example berries: strawberry, raspberry, blueberry…), a producer catalogue with search and filters (country, region, city, volume, season). Buttons: “Add your farm”, “Find producers”, “Post products”, “Submit a sales-search request”, “Suggest a new category”. A farm card: name, logo or photo, region, areas, product types and volumes, harvest period, supply ability, certificates, contacts.",
+      "suppliers": "A catalogue of companies selling goods, equipment, machinery and materials to farmers. Subcategories (for example fertilizers: mineral, organic, NPK, micronutrients…). Buttons: “Find a product”, “View suppliers”, “Add a company”, “Post a product”, “Suggest a new category”. A product card: name, photo, characteristics, manufacturer, price or price request, wholesale terms, availability, certificates. Permits are checked for agrochemicals, seeds and plant protection products.",
+      "markets": "The main working part: “Create a sales-search request”, “Find a buyer”, “Offer help to a producer”. Eight folders: requests, markets in Ukraine, international markets, companies and buyers, representatives and partners, logistics, negotiations and commercial offers, successful deals. A request has 8 steps: product, volume, form, place of production, target market, buyers, logistics and terms, contacts and documents."
+    }
   },
   "dating": {
     "text": {
       "info_about": "An international project for dating, communication and meetings for Ukrainians worldwide: meet people, find friends or a partner, travel and create new opportunities together.",
       "info_earn": "Organizing events and dates, streams and themed broadcasts, growing your channel, advertising and attracting participants. Partner rewards follow program rules only; income is not guaranteed."
     },
-    "intro": "An international project for dating, communication and meetings for Ukrainians worldwide."
+    "intro": "An international project for dating, communication and meetings for Ukrainians worldwide.",
+    "sub": {
+      "profiles": "Browse profiles and submit your own",
+      "dates": "Online and offline dates",
+      "hosts": "Find streams and hosts and join",
+      "travel": "Travel agency for your own",
+      "info": "How to join the team and earn",
+      "feedback": "Feedback to the administration",
+      "profiles_view": "Open catalogue of profiles",
+      "profiles_add": "Create your own profile",
+      "dates_online10": "Chatting with ten different people online",
+      "dates_offline10": "Real meetings in cities of Ukraine and other countries",
+      "dates_groups": "Individual and group dates, themed evenings",
+      "dates_trips": "For those who live in different cities or countries"
+    },
+    "desc": {
+      "profiles": "“Browse listings” shows profiles of people looking to meet. “Post a dating listing” creates your own: photo and short video, name, age, country and city, who you look for, about you and interests, format (online, offline or both). A profile has the button “I want to meet”. A profile can be edited, hidden or deleted.",
+      "dates": "Organized events. “10 online dates”: short form, age, country, city and wishes, application, organizers form groups and pairs. “10 offline dates”: choose a country and city, view planned meetings, apply (individual or group). “Individual and group dates”, “Romantic trips and meetings” (via the travel agency; terms and payment are agreed separately).",
+      "hosts": "A catalogue of dating hosts and organizers, bloggers and content authors, streamers and channels. A user can view a host’s profile and past streams, open the channel, subscribe and join a live stream. Hosts and bloggers apply and create their own page in the catalogue.",
+      "travel": "A separate service for meeting in person even if people are in different countries: romantic trips for two, a meeting in another city, flights and accommodation, group trips, a trip organization request. Terms, payment and booking are agreed separately.",
+      "info": "The idea of the project, how it works, how to earn (events and dates, streams, your own channel, advertising, attracting members, partner and referral rewards under programme rules), how to become an organizer in your city, a host or blogger, a partner, and apply to the team."
+    }
   },
   "mystic": {
     "text": {
       "info_about": "An international platform for mystic, esoteric and spiritual specialists, bloggers and hosts. Find a specialist, join an open broadcast or book a consultation.",
       "info_earn": "Own consultations, paid courses and workshops, themed events, live broadcasts, content, partner programs and advertising. Terms, commission and payouts are stated for each model; earnings are not guaranteed. Esoteric consultations are not medical, legal or financial help, and predictions are not guaranteed facts."
     },
-    "intro": "Specialists, practitioners, broadcasts and training. Consultations do not replace medical, legal or financial help; predictions are not guaranteed facts."
+    "intro": "Specialists, practitioners, broadcasts and training. Consultations do not replace medical, legal or financial help; predictions are not guaranteed facts.",
+    "sub": {
+      "experts": "Find a specialist, browse profiles, attend a stream or submit your own profile",
+      "info": "About the project, cooperation, partnership and earning",
+      "feedback": "Feedback, requests to the administration and problem reports",
+      "experts_tarot": "Tarot readings and themed streams",
+      "experts_astro": "Horoscopes, natal charts and consultations",
+      "experts_numerology": "Numerology calculations and consultations",
+      "experts_esoterics": "Esoteric fields and spiritual-cognitive practices",
+      "experts_practices": "Other practices and author methods with clearly described services",
+      "experts_bloggers": "Content authors, hosts of streams and themed programs"
+    },
+    "desc": {
+      "experts": "A catalogue of specialists by field. A card has photo, name or pseudonym, country and city, description, fields, format (online or offline), upcoming streams, “View profile”. Search and filters: name or field, country, city, language, format, live streams, sorting. A specialist page: “Watch live”, “Book a consultation”, “Message the specialist”, “Schedule of streams and events”, “My courses and training”. Streams: live now, scheduled, recordings, educational, questions to the specialist. Booking: service, terms, date and time, message; the price is shown before confirmation. “Submit a specialist profile” is for those who want to present themselves on the platform."
+    }
   },
   "grants": {
     "text": {
@@ -1505,7 +1607,33 @@
       "info_earn": "Specialists are paid for their services, consultants for consultations, partners for agreed partner services. Terms and commissions are transparent and agreed separately; income is not guaranteed.",
       "info_learning": "Materials, instructions and training programs on preparing grant applications will appear here."
     },
-    "intro": "Grants, grantors, grant writing specialists and success stories. The platform does not guarantee any grant."
+    "intro": "Grants, grantors, grant writing specialists and success stories. The platform does not guarantee any grant.",
+    "sub": {
+      "donors": "Where to find grants and who gives them",
+      "writers": "Specialists, consultants, help",
+      "success": "Completed projects and results",
+      "help": "Help preparing a grant application",
+      "info": "Opportunities to participate and cooperate",
+      "feedback": "Feedback and support",
+      "donors_state": "State programs, employment centres",
+      "donors_international": "European and international programs",
+      "donors_funds": "Funds, charities and donors",
+      "donors_ngo": "NGOs, charitable and civic initiatives",
+      "donors_business": "Entrepreneurs, small and medium business",
+      "donors_startups": "New projects, innovation and development",
+      "success_ngo": "Grants received for civic initiatives",
+      "success_veterans": "Support for veterans and their initiatives",
+      "success_business": "Grants to start and grow a business",
+      "success_farming": "Development of farms and agribusiness",
+      "success_education": "Education, support and social initiatives",
+      "success_international": "Programs supported by international donors"
+    },
+    "desc": {
+      "donors": "Pinned info: how to search for grants and how grant support works. Then state, international, NGO, business, ideas and startups, and funds. Each grantor is a separate card: name, country or region, purposes, who may apply, amount, deadlines, website, application link, contacts, terms. Buttons: “Details”, “Go to site”, “Apply”, “Save to favourites”, “Share”, “Suggest an update”. “Add a grant or grantor” is open to members; everything is moderated to prevent fake grants.",
+      "writers": "Specialists by field: agriculture, business, NGOs, veteran projects, education, medicine, ecology, culture and sport, IT, territorial communities. A card has name, specialty, services (grant search, consultations, writing applications, support), experience, “Message the specialist”, “View profile”. The profile has services, reviews, contacts, “Ask for help”. “Become a grant specialist” is a profile application.",
+      "success": "Real stories and results. A post has the organization or project, the problem solved, the funder, the amount, what the money was spent on, who helped with the application, photos of implementation, the result. “Add a successful project” goes through moderation.",
+      "help": "Help preparing a grant application: “Help me write a grant”, “I have a grant idea”, “Help me find a grant”, “I represent an organization”, “I need a consultation”, “My applications”."
+    }
   },
   "beauty": {
     "text": {
@@ -1513,7 +1641,21 @@
       "info_earn": "Masters get clients and bookings, teachers sell training, bloggers get audience and advertising, shops sell goods. Partner programs, advertising and commissions apply only on agreed terms; income is not guaranteed.",
       "info_teamTraining": "Instructions and training materials for the project team will appear here."
     },
-    "intro": "Masters, training, shops and jobs in the beauty industry. A course document is not a medical license or permission for invasive procedures."
+    "intro": "Masters, training, shops and jobs in the beauty industry. A course document is not a medical license or permission for invasive procedures.",
+    "sub": {
+      "specialists": "Find a master, browse profiles, book a service",
+      "education": "Courses, teachers, study groups and events",
+      "shops": "Goods, equipment, shops and suppliers",
+      "work": "Vacancies, job search, clients and workplace rental",
+      "info": "Team, partnership, development and opportunities",
+      "feedback": "Ideas, requests and contact with the administration",
+      "cabinet": "My bookings, messages, profile and settings"
+    },
+    "desc": {
+      "specialists": "A catalogue of beauty fields. Search: profession, service or name, country, city, online or offline. Each field (for example “Manicure and pedicure”) has the same structure: masters with profiles, prices and booking, portfolios, teachers and trainers, bloggers, live streams, a bulletin board, shops and goods, “Add yourself”. A profile has photo, name and profession, verification status, country, city and address, map, services and prices, photos of work, video, reviews, schedule; buttons “Choose date and time”, “Message the specialist”, “Add to favourites”.",
+      "education": "Professional programs, teachers, training centres and international events. Search by country, city, field, format (online or offline) and date. Fields: medical cosmetology, injection, skin care, hairdressing, manicure, make-up, device-based cosmetology and others.",
+      "shops": "Cosmetics and care, goods for nails and hairdressers, equipment, professional products, salon furniture, manufacturers, news and professional discounts. “Add your shop” is an application."
+    }
   },
   "notable": {
     "text": {
@@ -1521,7 +1663,22 @@
       "info_how": "Candidate selection, verification of information and evidence, editorial work and publication. Personal materials are published only with the person’s consent and editorial review; applying does not mean automatic recognition of a record.",
       "info_earn": "Opportunities for editors, journalists, photographers, videographers, designers, managers, representatives and coordinators: job description, requirements, format and payment terms are stated separately. Registration or joining the team does not guarantee income."
     },
-    "intro": "Stories of notable Ukrainians, their achievements and records. Materials are published only with the person’s consent."
+    "intro": "Stories of notable Ukrainians, their achievements and records. Materials are published only with the person’s consent.",
+    "sub": {
+      "magazine": "“Ukrainians we are proud of”",
+      "records": "“Ukrainians among the best”",
+      "archive": "Digital archive of publications",
+      "info": "Cooperation and partnership",
+      "feedback": "Feedback to the project administration",
+      "magazine_nextIssue": "Candidates who passed selection and are being prepared for publication",
+      "magazine_team": "Editorial team, journalists, photographers, designers",
+      "magazine_apply": "Tell about yourself or suggest another person"
+    },
+    "desc": {
+      "magazine": "A publication about outstanding Ukrainians: stories, achievements, career path, civic and volunteer work. Three folders: Ukrainians of the next issue (a card has photo, name, country and city, field, achievements, link to the page; a personal page with biography, merits, materials), editorial specialists (editor-in-chief, editors, journalists, photographers, designers and others), an application for publication — about yourself or another person.",
+      "records": "A chronicle of Ukrainians’ records and achievements. Folders: Ukrainians of the next issue, chronicle specialists, an application for a record or a record-holder suggestion, my applications and statuses.",
+      "archive": "A digital archive of published magazines and books."
+    }
   },
   "mediaNetwork": {
     "text": {
@@ -1529,7 +1686,21 @@
       "info_about": "An international media network where every active person can become a news author, journalist or blogger for their community. Everyone can not only read but also create material and grow an audience.",
       "info_earn": "Cooperation terms, partnerships and reward models are approved separately; earnings are not guaranteed."
     },
-    "intro": "An international media network: authors, events, laws, community life. Materials are moderated."
+    "intro": "An international media network: authors, events, laws, community life. Materials are moderated.",
+    "sub": {
+      "authors": "People who tell interesting stories and run their own blogs",
+      "events": "Events from different countries, videos and reports",
+      "laws": "Laws, changes and explanations of their status",
+      "life": "Practical information for life in different countries and cities",
+      "info": "Opportunities for cooperation, participation and team growth",
+      "feedback": "Feedback, requests and platform improvements"
+    },
+    "desc": {
+      "authors": "A catalogue of authors with their own pages (not a general feed). An author page: photo and name, about, country, region, city, blog and materials, “Subscribe”, “Bulletin board”, new posts. Search by name or topic; filters by country, region, city and field.",
+      "events": "An international feed of events: good news, important problems, reports. “+ Add event”: video, photos, title, description, date and time, country, region, city, community, place, category. Statuses: “Under review” → approved or rejected with an explanation. Posts appear in the country, region and city; search and geographic filters are available.",
+      "laws": "Laws and bills with an explanation of their status.",
+      "life": "Practical information: work, housing, documents and community life in different countries and cities."
+    }
   },
   "cooperatives": {
     "text": {
@@ -1589,7 +1760,20 @@
       "info_about": "An international platform uniting Ukrainians around apps, programs and games: share useful apps, propose ideas, find developers and testers, build teams.",
       "info_earn": "Participation, reward and revenue-sharing rules are set for each joint project. Registration does not guarantee payment."
     },
-    "intro": "Apps, ideas, developers and testers. The “Our developments” showcase contains the project’s own products only."
+    "intro": "Apps, ideas, developers and testers. The “Our developments” showcase contains the project’s own products only.",
+    "sub": {
+      "apps": "Interesting and useful apps from different countries",
+      "ideas": "Ideas, finding partners and joint development",
+      "people": "Developers, designers, specialists and testers",
+      "info": "Cooperation, teams and earning opportunities",
+      "feedback": "Feedback to the administration",
+      "ours": "Our apps, games and digital products"
+    },
+    "desc": {
+      "apps": "First the countries where apps have been published, then a feed: finance, travel and navigation, learning, other. “+ Add an app”: name, link, the country where you use it; the author is taken from the profile. If the country is missing, you can suggest adding it; after review it becomes available.",
+      "ideas": "A place for ideas, unfinished apps and games: “I have an app idea”, “I want to create a game”, “I have an unfinished app”, “Looking for partners”. “+ Add your idea”: title, what to create, detailed description, a new idea or a ready development.",
+      "people": "Developers, designers, game developers, testers. “Apply as a specialist” and “I want to become a tester”."
+    }
   },
   "rebuild": {
     "text": {
@@ -1598,7 +1782,27 @@
       "earn_supply": "Supply of building materials, equipment and products. Parties agree cooperation terms.",
       "earn_partnership": "Cooperation with foreign funds and companies. Terms and documents are agreed separately."
     },
-    "intro": "We unite international funds, organizations, businesses and people to rebuild Ukraine."
+    "intro": "We unite international funds, organizations, businesses and people to rebuild Ukraine.",
+    "sub": {
+      "intl": "Who wants to help and enter Ukraine",
+      "ua": "Who is ready to cooperate and unite",
+      "projects": "Completed and current projects and formed teams",
+      "earn": "Opportunities for cooperation and earning",
+      "feedback": "Your ideas, requests and feedback",
+      "intl_funds": "Funds ready to finance Ukraine’s rebuilding",
+      "intl_ngos": "Organizations seeking partners for humanitarian and social programs",
+      "intl_investors": "Companies that want to open enterprises and invest in Ukraine",
+      "intl_builders": "Construction, manufacturing, engineering and technology companies",
+      "intl_suppliers": "Equipment, food, materials, machinery and other resources",
+      "ua_ngos": "Organizations ready to carry out international aid programs",
+      "ua_business": "Companies ready to cooperate with international business and funds",
+      "ua_teams": "People who can organize help on the ground"
+    },
+    "desc": {
+      "intl": "An international base of funds, charities, NGOs, investors and companies that want to help and enter Ukraine. A card has name, country and city, logo, description, fields, contacts, website, documents, what they offer and which Ukrainian partners they seek. “Submit a cooperation offer”: field, what help is offered, which partners and regions are needed, contacts, links, presentations.",
+      "ua": "A base of Ukrainian organizations, enterprises, teams and people ready to join international aid and rebuilding programs. It complements the first folder: there, who seeks partners; here, who can become them.",
+      "projects": "Completed projects, ongoing projects, formed teams and directions."
+    }
   },
   "board": {
     "q": "Product (strawberries, apples, grain…)",
