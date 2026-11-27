@@ -85,6 +85,8 @@ for (const [key, value] of uk) {
 }
 for (const [key, value] of en) {
   if (stringsOf(value).some((s) => !s.trim())) errors.push(`Empty en value: ${key}`)
+  // Описи папок проєктів (projects.<ns>.desc.*) — дослівні тексти замовника українською; англійського перекладу поки немає
+  if (/^projects\.[A-Za-z]+\.desc\./.test(key)) continue
   if (stringsOf(value).some((s) => cyrillic.test(s))) errors.push(`Cyrillic text in en value: ${key}`)
 }
 
