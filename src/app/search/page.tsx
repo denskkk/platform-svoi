@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BadgeCheck, Loader2, MapPin, Search as SearchIcon, X } from 'lucide-react';
@@ -9,6 +9,7 @@ import { ListingCardData } from '@/components/listings/helpers';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { matchDirections, directionHref } from '@/lib/directionSearch';
 import { authHeaders, readStoredUser } from '@/lib/feedClient';
 
 interface Person { id: number; name: string; avatarUrl: string | null; city: string | null; profession?: string | null; businessType?: string | null; isVerified: boolean }
@@ -85,6 +86,7 @@ export default function SearchPage() {
 
   const total = results.people.length + results.business.length + results.listings.length + results.clubs.length + results.posts.length;
   const tabs: Tab[] = ['all', 'posts', 'people', 'business', 'listings', 'clubs'];
+  const hits = useMemo(() => matchDirections(q), [q]);
   const hasQuery = q.trim().length >= 2 || city.trim().length > 0 || !!project;
 
   return (
@@ -133,8 +135,20 @@ export default function SearchPage() {
         {!hasQuery && <p className="text-center text-sm text-neutral-500 py-10">{t('search.hint')}</p>}
         {loading && <div className="flex justify-center py-6"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
         {error && !loading && <p className="text-center text-sm text-red-600 py-6">{t('search.failed')}</p>}
-        {searched && !loading && !error && total === 0 && <p className="text-center text-neutral-600 py-10">{t('search.empty')}</p>}
+        {searched && !loading && !error && total === 0 && hits.length === 0 && <p className="text-center text-neutral-600 py-10">{t('search.empty')}</p>}
 
+        {hits.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="font-semibold text-neutral-900">{t('search.hits.title')}</h2>
+            <ul className="space-y-2">{hits.map((h) => (
+              <li key={`${h.slug}:${h.folder ?? ''}`}>
+                <Link href={directionHref(h)} className="flex items-center justify-between gap-2 rounded-2xl bg-primary-50 border border-primary-200 p-3 text-sm font-semibold text-primary-800 hover:bg-primary-100 transition">
+                  <span className="truncate">{t(h.labelKey)}</span><span aria-hidden>→</span>
+                </Link>
+              </li>
+            ))}</ul>
+          </section>
+        )}
         {!error && results.posts.length > 0 && (
           <section className="space-y-2">
             <h2 className="font-semibold text-neutral-900">{t('search.tabs.posts')}</h2>
