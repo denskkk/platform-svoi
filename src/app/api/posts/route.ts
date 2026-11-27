@@ -14,6 +14,9 @@ import { FEED_LIMITS, isOwnPostImage, loadViewerState, postInclude, serializePos
 
 export const dynamic = 'force-dynamic';
 
+/** Недавні requestId → id допису (один процес PM2; захист від дублів при повторі) */
+const RECENT_REQUESTS = new Map<string, { postId: number; at: number }>();
+
 export async function POST(request: NextRequest) {
   const t = getApiT(request);
   try {
@@ -82,17 +85,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: t('api.feed.postTooLong', { max: FEED_LIMITS.postMaxLength }) }, { status: 400 });
     }
 
-    const post = await prisma.post.create({
-      data: {
-        authorId: userId,
-        clubId,
-        content,
-        images: { create: images },
-      },
-      include: postInclude,
+    // Повторне надсилання того самого запиту (обрив мережі, повторний тап) не створює дубль допису
+    const requestId = typeof body?.requestId === 'string' && body.requestId ? `${userId}:${body.requestId.slice(0, 64)}` : null;
+    if (requestId) {
+      const seen = RECENT_REQUESTS.get(requestId);
+      if (seen && Date.now() - seen.at < 15 * 60_000) {
+        const existing = await prisma.post.findUnique({ where: { id: seen.postId }, include: postInclude });
+        if (existing) {
+          existing.videos = await prisma.postVideo.findMany({ where: { postId: existing.id }, orderBy: [{ position: 'asc' }, { id: 'asc' }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } });
+          const st = await loadViewerState(userId, [existing.id], [userId]);
+          return NextResponse.json({ success: true, post: serializePost(existing, st), message: t('api.feed.postCreated') }, { status: 200 });
+        }
+      }
+    }
+
+    // Допис і прив’язка відео — в одній транзакції: або все, або нічого (інакше помилка після створення давала дублі при повторі)
+    const post = await prisma.$transaction(async (tx) => {
+      const created = await tx.post.create({
+        data: {
+          authorId: userId,
+          clubId,
+          content,
+          images: { create: images },
+        },
+        include: postInclude,
+      });
+      for (const v of videos) await tx.postVideo.update({ where: { id: v.id }, data: { postId: created.id, position: v.position } });
+      return created;
     });
+    if (requestId) {
+      RECENT_REQUESTS.set(requestId, { postId: post.id, at: Date.now() });
+      if (RECENT_REQUESTS.size > 500) for (const [k, v] of RECENT_REQUESTS) if (Date.now() - v.at > 15 * 60_000) RECENT_REQUESTS.delete(k);
+    }
     if (videos.length) {
-      await Promise.all(videos.map((v) => prisma.postVideo.update({ where: { id: v.id }, data: { postId: post.id, position: v.position } })));
       post.videos = await prisma.postVideo.findMany({ where: { postId: post.id }, orderBy: [{ position: 'asc' }, { id: 'asc' }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } });
     }
 
