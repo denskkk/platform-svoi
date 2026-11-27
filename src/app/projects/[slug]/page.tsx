@@ -66,7 +66,14 @@ export default function ProjectPage() {
     if (!path) return null;
     const key = `projects.${nsOf(slug)}.${kind}.${path.replace(/\./g, '_')}`;
     const v = t(key);
-    return v === key ? null : v;
+    if (v !== key) return v;
+    // Спільні підписи й описи для «Інформація…» і «Пропозиції та скарги» (однакові в усіх проєктах)
+    if (/^(info|feedback)(\.|$)/.test(path)) {
+      const sk = `projects.std.${kind}.${path.replace(/\./g, '_')}`;
+      const sv = t(sk);
+      return sv === sk ? null : sv;
+    }
+    return null;
   };
 
   useEffect(() => { setLoggedIn(!!readStoredUser()); }, []);
