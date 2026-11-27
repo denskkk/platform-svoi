@@ -1,0 +1,28 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      JWT_SECRET: ci-jwt-secret-not-for-production
+      REFRESH_TOKEN_SECRET: ci-refresh-secret-not-for-production
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - name: i18n (uk/en parity)
+        run: node scripts/check-i18n.mjs
+      - name: Type check
+        run: npx tsc --noEmit
+      - name: Build
+        run: npm run build

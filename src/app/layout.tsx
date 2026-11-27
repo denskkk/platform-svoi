@@ -9,6 +9,7 @@ import { NativeLinkHandler } from '@/components/layout/NativeLinkHandler'
 import { ViewportSync } from '@/components/layout/ViewportSync'
 import AdminRedirect from '@/components/AdminRedirect'
 import { ToastProvider } from '@/components/ui/Toast'
+import { ConfirmHost } from '@/components/ui/ConfirmHost'
 import { AuthSessionMonitor } from '@/components/ui/AuthSessionMonitor'
 import { ServiceWorkerRegister } from '@/components/ui/ServiceWorkerRegister'
 import { I18nProvider } from '@/i18n/client'
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${montserrat.variable} font-sans`}>
         <I18nProvider locale={locale} messages={messages}>
           <ToastProvider>
+            <ConfirmHost />
             <SafeAreaInit />
             <AuthSessionMonitor />
             <ServiceWorkerRegister />

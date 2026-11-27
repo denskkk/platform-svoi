@@ -18,6 +18,7 @@ import {
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { getCityName } from '@/lib/constants';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 const DATE_OPTIONS: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
 
@@ -103,7 +104,7 @@ export default function AdminUsersManagePage() {
     const newStatus = !user.isVerified;
 
     const name = `${user.firstName} ${user.lastName}`;
-    if (!confirm(t(newStatus ? 'admin.users.confirmVerify' : 'admin.users.confirmUnverify', { name }))) {
+    if (!(await askConfirm(t(newStatus ? 'admin.users.confirmVerify' : 'admin.users.confirmUnverify', { name })))) {
       return;
     }
 

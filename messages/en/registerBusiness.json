@@ -16,7 +16,7 @@
     "email": "Email *",
     "phone": "Phone",
     "password": "Password *",
-    "passwordPlaceholder": "At least 6 characters",
+    "passwordPlaceholder": "At least 8 characters",
     "confirmPassword": "Confirm password *",
     "confirmPasswordPlaceholder": "Repeat your password"
   },
@@ -144,7 +144,7 @@
     "requiredPersonal": "Please fill in all required personal details",
     "companyNameRequired": "Enter the company name",
     "passwordMismatch": "Passwords do not match",
-    "passwordTooShort": "Password must be at least 6 characters long",
+    "passwordTooShort": "Password must be at least 8 characters long",
     "consentRequired": "Please confirm your agreement to the Terms of Use and Privacy Policy",
     "registrationFailed": "Registration failed"
   },

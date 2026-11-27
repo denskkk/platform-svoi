@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { authHeaders, jsonHeaders, readStoredUser } from '@/lib/feedClient';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 interface Club { id: number; name: string; description: string; category: string; city: string | null; membersCount: number; joined: boolean; isOwner: boolean; ownerId?: number; membership?: 'active' | 'pending' | null; joinMode?: string; postMode?: string; visibility?: string; canPost?: boolean; canSeeBoard?: boolean }
 interface Member { id: number; name: string; avatarUrl: string | null }
@@ -68,7 +69,7 @@ export default function ClubPage() {
   };
 
   const remove = async () => {
-    if (!window.confirm(t('clubs.deleteConfirm'))) return;
+    if (!(await askConfirm(t('clubs.deleteConfirm')))) return;
     try {
       const res = await fetch(`/api/clubs/${club.id}`, { method: 'DELETE', credentials: 'include', headers: authHeaders() });
       if (!res.ok) throw new Error();

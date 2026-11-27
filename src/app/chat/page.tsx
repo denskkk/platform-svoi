@@ -12,6 +12,7 @@ import { ReportButton } from '@/components/ui/ReportButton';
 import { ViewerUpgradeNotice } from '@/components/ui/ViewerUpgradeNotice';
 import { useI18n } from '@/i18n/client';
 import { localizedPath } from '@/i18n/routes';
+import { askConfirm } from '@/components/ui/ConfirmHost';
 
 interface Conversation {
   id: number;
@@ -108,7 +109,7 @@ function ChatPageContent() {
   // «Видалити чат» ховає історію лише для мене; співрозмовник її не втрачає
   const deleteConversation = async () => {
     if (!selectedConversation) return;
-    if (!window.confirm(t('chat.deleteConfirm'))) return;
+    if (!(await askConfirm(t('chat.deleteConfirm')))) return;
     try {
       const res = await fetch(`/api/conversations/${selectedConversation}`, { method: 'DELETE', credentials: 'include', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
       if (!res.ok) throw new Error();

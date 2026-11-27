@@ -53,7 +53,7 @@ export default function CreateServiceRequestPage() {
 
       // Глядачі не можуть створювати заявки
       if ((session.user as { accountType?: string } | undefined)?.accountType === 'viewer') {
-        alert(t('serviceRequests.create.viewerBlocked'));
+        toast.info(t('serviceRequests.create.viewerBlocked'));
         router.push('/service-requests');
         return;
       }

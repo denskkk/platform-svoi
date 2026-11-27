@@ -72,7 +72,7 @@ function RegisterIndividualForm() {
       return
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8) {
       setError(t('registerIndividual.errors.passwordTooShort'))
       return
     }

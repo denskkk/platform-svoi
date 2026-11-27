@@ -21,7 +21,7 @@
     "city": "Місто",
     "cityPlaceholder": "Київ",
     "password": "Пароль *",
-    "passwordPlaceholder": "Мінімум 6 символів",
+    "passwordPlaceholder": "Мінімум 8 символів",
     "confirmPassword": "Підтвердіть пароль *",
     "confirmPasswordPlaceholder": "Повторіть пароль"
   },
@@ -46,7 +46,7 @@
     "fileTooLarge": "Файл занадто великий. Максимум 5MB",
     "requiredFields": "Заповніть всі обов'язкові поля",
     "passwordMismatch": "Паролі не співпадають",
-    "passwordTooShort": "Пароль має містити мінімум 6 символів",
+    "passwordTooShort": "Пароль має містити мінімум 8 символів",
     "consentRequired": "Підтвердьте згоду з Умовами використання та Політикою конфіденційності",
     "registrationFailed": "Помилка реєстрації"
   }
