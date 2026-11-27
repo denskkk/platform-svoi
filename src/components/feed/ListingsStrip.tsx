@@ -7,7 +7,7 @@ import { ListingCard } from '@/components/listings/ListingCard';
 import type { ListingCardData } from '@/components/listings/helpers';
 
 /** «Дошка оголошень» у стрічці: свіжі оголошення з усіх проєктів, гортаються вбік; «Усе» відкриває вкладку «Товари/Послуги». */
-export function ListingsStrip({ canSave, onSeeAll }: { canSave: boolean; onSeeAll: () => void }) {
+export function ListingsStrip({ canSave, onSeeAll, round = 0 }: { canSave: boolean; onSeeAll: () => void; round?: number }) {
   const { t } = useI18n();
   const [items, setItems] = useState<ListingCardData[]>([]);
   useEffect(() => {
@@ -19,6 +19,7 @@ export function ListingsStrip({ canSave, onSeeAll }: { canSave: boolean; onSeeAl
     return () => { off = true; };
   }, []);
   if (items.length === 0) return null;
+  const shown = Array.from({ length: Math.min(4, items.length) }, (_, i) => items[(round * 3 + i) % items.length]);
   return (
     <section className="space-y-2 rounded-lg bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.12)]" aria-label={t('feed.listingsStrip.title')}>
       <div className="flex items-end justify-between px-0.5">
@@ -29,7 +30,7 @@ export function ListingsStrip({ canSave, onSeeAll }: { canSave: boolean; onSeeAl
         <button type="button" onClick={onSeeAll} className="text-sm font-semibold text-primary-700 hover:underline">{t('feed.recommendations.seeAll')}</button>
       </div>
       <ul className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [scrollbar-width:none]">
-        {items.map((l) => (
+        {shown.map((l) => (
           <li key={l.id} className="w-44 shrink-0 snap-start">
             <ListingCard listing={l} canSave={canSave} onSavedChange={(id, saved) => setItems((prev) => prev.map((x) => (x.id === id ? { ...x, saved } : x)))} />
           </li>

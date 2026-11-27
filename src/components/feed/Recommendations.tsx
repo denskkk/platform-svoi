@@ -106,7 +106,22 @@ function BusinessSquares({ title, hint, items, followed, busyId, onFollow, follo
   );
 }
 
-export function Recommendations({ canFollow, onFollowed, vertical = false }: { canFollow: boolean; onFollowed?: (userId: number) => void; vertical?: boolean }) {
+// Кілька блоків у стрічці беруть дані одним запитом (кеш на хвилину)
+let recCache: { at: number; p: Promise<any> } | null = null;
+function loadRecs(): Promise<any> {
+  if (!recCache || Date.now() - recCache.at > 60_000) {
+    const p = fetch('/api/recommendations', { credentials: 'include', headers: authHeaders(), cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    recCache = { at: Date.now(), p };
+  }
+  return recCache.p;
+}
+const rotate = <T,>(list: T[], by: number, take: number): T[] => (list.length === 0 ? list : Array.from({ length: Math.min(take, list.length) }, (_, i) => list[(by + i) % list.length]));
+
+/**
+ * `only` — показати лише один блок («people» | «business» | «interesting»), `round` — котре це повторення у стрічці:
+ * кожне наступне показує інші люди/бізнеси, а не ті самі.
+ */
+export function Recommendations({ canFollow, onFollowed, vertical = false, only, round = 0 }: { canFollow: boolean; onFollowed?: (userId: number) => void; vertical?: boolean; only?: 'people' | 'business' | 'interesting'; round?: number }) {
   const { t } = useI18n();
   const toast = useToast();
   const [data, setData] = useState<{ people: Rec[]; business: Rec[]; interesting?: Rec[] } | null>(null);
@@ -117,10 +132,8 @@ export function Recommendations({ canFollow, onFollowed, vertical = false }: { c
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch('/api/recommendations', { credentials: 'include', headers: authHeaders(), cache: 'no-store' });
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!cancelled) setData(json);
+        const json = await loadRecs();
+        if (json && !cancelled) setData(json);
       } catch { /* рекомендації необов’язкові */ }
     })();
     return () => { cancelled = true; };
@@ -142,13 +155,18 @@ export function Recommendations({ canFollow, onFollowed, vertical = false }: { c
     }
   };
 
-  if (!data || (data.people.length === 0 && data.business.length === 0 && !(data.interesting && data.interesting.length))) return null;
+  if (!data) return null;
+  const take = only ? 3 : 6;
+  const people = only && only !== 'people' ? [] : rotate(data.people, round * 3, take);
+  const business = only && only !== 'business' ? [] : rotate(data.business, round * 2, only ? 3 : 6);
+  const interesting = only && only !== 'interesting' ? [] : rotate(data.interesting ?? [], round * 2, only ? 3 : 6);
+  if (people.length === 0 && business.length === 0 && interesting.length === 0) return null;
   const common = { vertical, followed, busyId, onFollow: follow, followLabel: t('feed.recommendations.follow'), followedLabel: t('feed.recommendations.followed') };
   return (
     <section className={vertical ? 'bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-3 space-y-3' : 'bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.12)] p-4 space-y-4'} aria-label={t('feed.recommendations.title')}>
-      <Row title={t('feed.recommendations.people')} items={data.people} {...common} />
-      <BusinessSquares title={t('feed.recommendations.business')} hint={t('feed.recommendations.businessHint')} items={data.business} {...common} />
-      <BusinessSquares title={t('feed.recommendations.interesting')} hint={t('feed.recommendations.interestingHint')} items={data.interesting ?? []} {...common} />
+      <Row title={t('feed.recommendations.people')} items={people} {...common} />
+      <BusinessSquares title={t('feed.recommendations.business')} hint={t('feed.recommendations.businessHint')} items={business} {...common} />
+      <BusinessSquares title={t('feed.recommendations.interesting')} hint={t('feed.recommendations.interestingHint')} items={interesting} {...common} />
     </section>
   );
 }

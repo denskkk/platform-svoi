@@ -294,9 +294,20 @@ export function FeedPage() {
             onDeleted={removePost}
             onBlocked={removeByAuthor}
           />
-          {!isGuest && !isDesktop && scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
-          {!isGuest && !isDesktop && scope === 'all' && index === Math.min(5, posts.length - 1) && <ProjectsStrip />}
-          {!isGuest && !isDesktop && scope === 'all' && index === Math.min(8, posts.length - 1) && <ListingsStrip canSave={canInteract} onSeeAll={() => { setView('market'); window.scrollTo({ top: 0 }); }} />}
+          {!isGuest && !isDesktop && scope === 'all' && posts.length < 3 && index === posts.length - 1 && <Recommendations only="people" canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
+          {!isGuest && !isDesktop && scope === 'all' && index % 3 === 2 && (() => {
+            // Кожні 3 дописи — новий блок по черзі, потім коло повторюється з іншими людьми/бізнесами/оголошеннями
+            const slot = (index - 2) / 3;
+            const round = Math.floor(slot / 5);
+            const follow = (id: number) => setFollowing(id, true);
+            switch (slot % 5) {
+              case 0: return <Recommendations only="people" round={round} canFollow={canInteract} onFollowed={follow} />;
+              case 1: return <ProjectsStrip round={round} />;
+              case 2: return <Recommendations only="business" round={round} canFollow={canInteract} onFollowed={follow} />;
+              case 3: return <ListingsStrip round={round} canSave={canInteract} onSeeAll={() => { setView('market'); window.scrollTo({ top: 0 }); }} />;
+              default: return <Recommendations only="interesting" round={round} canFollow={canInteract} onFollowed={follow} />;
+            }
+          })()}
           </Fragment>
         ))}
 
