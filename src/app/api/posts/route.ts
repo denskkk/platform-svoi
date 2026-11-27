@@ -6,6 +6,7 @@
 
 import { getClubAccess } from '@/lib/clubAccess';
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { requireAuthWithPermission } from '@/lib/api-middleware';
 import { checkRateLimit } from '@/lib/rateLimit';
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Допис і прив’язка відео — в одній транзакції: або все, або нічого (інакше помилка після створення давала дублі при повторі)
-    const post = await prisma.$transaction(async (tx) => {
+    const post = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const created = await tx.post.create({
         data: {
           authorId: userId,
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
     });
     if (requestId) {
       RECENT_REQUESTS.set(requestId, { postId: post.id, at: Date.now() });
-      if (RECENT_REQUESTS.size > 500) for (const [k, v] of RECENT_REQUESTS) if (Date.now() - v.at > 15 * 60_000) RECENT_REQUESTS.delete(k);
+      if (RECENT_REQUESTS.size > 500) Array.from(RECENT_REQUESTS.entries()).forEach(([k, v]) => { if (Date.now() - v.at > 15 * 60_000) RECENT_REQUESTS.delete(k); });
     }
     if (videos.length) {
       post.videos = await prisma.postVideo.findMany({ where: { postId: post.id }, orderBy: [{ position: 'asc' }, { id: 'asc' }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } });
