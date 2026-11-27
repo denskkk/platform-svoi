@@ -12,6 +12,7 @@ import { FeedPost, authHeaders, readStoredUser } from '@/lib/feedClient';
 import { PostCard } from './PostCard';
 import { Recommendations } from './Recommendations';
 import { ProjectsStrip } from './ProjectsStrip';
+import { ListingsStrip } from './ListingsStrip';
 import { FeedMenuDrawer, FeedSidebar } from './FeedSidebar';
 import { StoriesBar } from './StoriesBar';
 import { PostComposer } from './PostComposer';
@@ -295,6 +296,7 @@ export function FeedPage() {
           />
           {!isGuest && !isDesktop && scope === 'all' && index === Math.min(2, posts.length - 1) && <Recommendations canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />}
           {!isGuest && !isDesktop && scope === 'all' && index === Math.min(5, posts.length - 1) && <ProjectsStrip />}
+          {!isGuest && !isDesktop && scope === 'all' && index === Math.min(8, posts.length - 1) && <ListingsStrip canSave={canInteract} onSeeAll={() => { setView('market'); window.scrollTo({ top: 0 }); }} />}
           </Fragment>
         ))}
 
@@ -318,6 +320,7 @@ export function FeedPage() {
           <aside className="sticky top-20 self-start space-y-3 max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain [scrollbar-width:thin]">
             <Recommendations vertical canFollow={canInteract} onFollowed={(id) => setFollowing(id, true)} />
             <ProjectsStrip />
+            <ListingsStrip canSave={canInteract} onSeeAll={() => { setView('market'); window.scrollTo({ top: 0 }); }} />
           </aside>
         )}
       </div>

@@ -361,5 +361,9 @@
     "title": "Projects",
     "hint": "Platform directions: services, trade, clubs and more",
     "titleInterest": "Projects you may like"
+  },
+  "listingsStrip": {
+    "title": "Classifieds board",
+    "hint": "Fresh offers from your own people"
   }
 }
