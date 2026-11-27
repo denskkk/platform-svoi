@@ -161,6 +161,42 @@
         "customs": "Duties and clearance",
         "other": "Other"
       }
+    },
+    "sub": {
+      "search": "We will find where and from whom to buy the products profitably",
+      "brand": "Creating your own brand and made-to-order production",
+      "rep": "Representatives, negotiations, partner search and cooperation support",
+      "quality": "Checking products, samples, production and finished orders",
+      "finance": "Yuan rate, supplier settlements and payment arrangements",
+      "logistics": "Air, rail, sea and road transport",
+      "warehouse": "Receiving, consolidation, packing, cargo preparation and customs support",
+      "wholesale": "Regular purchases, wholesale lots, assortment for shops and marketplaces",
+      "trips": "Exhibitions, partner search, factory visits and business trips",
+      "consult": "Help for beginners, support for entrepreneurs and non-standard requests",
+      "search_product": "By name, photo, link or description",
+      "search_manufacturer": "Finding a factory that makes the product",
+      "search_analogs": "Similar products, alternative manufacturers and offers",
+      "search_compare": "Analysis of manufacturers, purchase terms and specifications",
+      "search_suppliers": "Wholesale bases, trading companies and production partners",
+      "search_custom": "Leave a request to search for any product",
+      "brand_create": "Launching your own trademark",
+      "brand_design": "Brand style, name, product design",
+      "brand_packaging": "Boxes, labels and packaging with your brand",
+      "brand_production": "A factory to make products under your brand",
+      "brand_custom": "From drawings, samples and technical specifications",
+      "brand_newProduct": "From idea to finished product",
+      "brand_samples": "Checking products before launching a large batch",
+      "logistics_air": "Fast cargo transport",
+      "logistics_rail": "Rail transport",
+      "logistics_sea": "Containers and large lots",
+      "logistics_road": "Road cargo transport",
+      "logistics_express": "Delivery of small shipments",
+      "logistics_groupage": "Small lots within a shared cargo",
+      "logistics_quote": "Choosing the best route"
+    },
+    "desc": {
+      "search": "Choose a subsection and submit a request: product name, photo or link, requirements, quantity, budget, contacts. The project team selects manufacturers and suppliers in China.",
+      "consult": "Choose your situation (starting business with China, already working, need purchasing help, turnkey calculation, non-standard request) or become a project partner. The request goes to the project team."
     }
   },
   "taxi": {
@@ -390,22 +426,38 @@
       "sent": "Request sent",
       "inCity": "Performers in {city}",
       "noneInCity": "No performers in {city} yet. We will let you know when they appear."
+    },
+    "sub": {
+      "sale": "Apartments · houses and land · commercial · garages",
+      "rent": "Apartments · houses · rooms · offices · short-term rent",
+      "home": "Sell · give away · loaders and movers",
+      "home_sell": "Furniture, appliances, electronics, dishes, interior",
+      "home_free": "Free, pick-up only",
+      "home_moving": "Loaders, furniture dismantlers and assemblers, movers"
+    },
+    "desc": {
+      "sale": "Choose a property type. A listing shows photos and video, price and description, country, city and district, area, rooms and features, and the owner’s or agent’s contacts. Buttons: “Contact the seller”, “Book a viewing”, “Save to favorites”. For owners: “Sell property”. Filters: country, city, district, type, price, area.",
+      "rent": "Choose what to rent. A listing shows photos and description, price per month or day, country, city and district, rooms, area, amenities, rental terms and contacts. Buttons: “Contact the owner”, “Apply to rent”, “Save to favorites”. For owners: “Let property”. Filters: country, city, district, price, type, rental term.",
+      "home": "For people who are moving, leaving the country, vacating a flat, selling furniture or giving things away. Three folders: “Sell”, “Give away for pick-up” and “Loaders, dismantlers and movers”.",
+      "home_sell": "Listings for furniture, household appliances, electronics, dishes, lighting, decor, tools and other home items. Form: photos, title, description, price, country, city, contacts.",
+      "home_free": "For people giving things away who cannot deliver them: furniture, appliances, dishes, textiles. Form: photos, description, city, district, condition, pick-up terms, contacts. An interested user presses “Arrange pick-up”.",
+      "home_moving": "A directory of movers: loaders, furniture dismantlers and assemblers, carriers (vans, trucks), full moves and removal of old furniture. A performer registers and adds services (city, vehicle, capacity, workers, photos, price). A customer submits a request: city, address, what to do, photos, date and time, phone."
     }
   },
   "std": {
-    "info": "Information",
+    "info": "Project information, earn with your own",
     "about": "About the project",
-    "how": "How it works",
-    "earn": "How to earn here",
-    "rep": "Representatives by country and city",
-    "team": "Team",
-    "partner": "For partners: cooperation",
+    "how": "How the platform works",
+    "earn": "Earn with your own",
+    "rep": "Become a project representative",
+    "team": "Team building",
+    "partner": "Partnership and cooperation",
     "inviteEmployer": "Invite an employer",
-    "news": "Project news",
+    "news": "News and announcements",
     "feedback": "Suggestions and complaints",
-    "suggest": "Suggest an improvement",
+    "suggest": "Suggest a platform improvement",
     "review": "Leave a review",
-    "direction": "Suggest a new direction",
+    "direction": "Suggest a new direction of development",
     "addDept": "Add your department: apply",
     "newDirection": "Suggest a new direction: submit a request",
     "newCategory": "Suggest a new category: submit a request",
@@ -471,7 +523,23 @@
     "howProducers": "How producers find sales markets",
     "intlRep": "Become an international trade representative",
     "withProducers": "Cooperation with producers",
-    "withLogistics": "Cooperation with logistics companies"
+    "withLogistics": "Cooperation with logistics companies",
+    "sub": {
+      "info": "About the project, partnership, representatives, cooperation, news",
+      "feedback": "Reviews, requests, complaints, suggestions",
+      "info_about": "Concept, goal, principles and opportunities of the project",
+      "info_how": "How to use the platform",
+      "info_earn": "Cooperation opportunities and rewards on agreed terms",
+      "info_rep": "Develop the project in your country, region or city",
+      "info_partner": "Cooperation with companies, specialists and owners",
+      "info_invite": "Offer cooperation and invite new members",
+      "info_news": "Development, new features and platform updates",
+      "info_team": "Attracting partners and responsible representatives"
+    },
+    "desc": {
+      "feedback": "Feedback to improve the platform. Choose the request type, describe the situation or suggestion, leave your contacts and attach photos or documents if needed, then press “Send request”.",
+      "info": "About the project, its opportunities and the growth of the partner network. Partnership and representative applications use forms with contacts, country, city and a description of the proposal."
+    }
   },
   "f": {
     "consult": {
@@ -1115,18 +1183,78 @@
     "text": {
       "info_about": "Jobs for our people in different countries: vacancies and candidates in one catalog.",
       "info_how": "Employers add vacancies by country and region. Job seekers browse or submit a request, which appears in “My requests”. Check the employer before traveling or paying for any services."
+    },
+    "sub": {
+      "vacancies": "Browse current job offers",
+      "apply": "We will find a job that fits your wishes",
+      "info": "About the project, partnership, teams, representatives",
+      "feedback": "Reviews, complaints, requests, suggestions",
+      "apply_request": "Candidate form",
+      "apply_candidates": "Candidates by country and region",
+      "apply_mine": "Status, offers, messages"
+    },
+    "desc": {
+      "vacancies": "The main vacancy catalogue: country → region → (district if needed) → vacancies. Filters: city or district, profession, salary, schedule, hours, experience, employer housing, requirements. An employer adds a vacancy with “Add vacancy”: country, region, position, duties, pay, schedule, requirements, housing and meals, contacts. It is published after administration review. New countries and regions are created by authorized representatives with the administration’s approval.",
+      "apply": "For people who did not find a suitable vacancy and want the team to help match offers. It contains the candidate form, the catalogue of requests and “My requests”.",
+      "apply_request": "Form: name, phone, country, region, city or district, what job you seek, desired pay and schedule, experience and skills, when you can start. After “Send job request” it goes to the candidate catalogue and the responsible manager.",
+      "apply_candidates": "Same structure: country → region → requests. A card shows the job sought, country and region, city, experience, schedule, expected pay and start date. Button “Offer a vacancy”. Candidates’ contacts are not shown to everyone: only with their consent or via a protected channel.",
+      "apply_mine": "My request, review status, offered vacancies, manager messages, interview invitations, history. Statuses: “New”, “Under review”, “Offers available”, “Clarification needed”, “Closed”."
     }
   },
   "cars": {
     "text": {
       "info_about": "Buying, renting and everything for cars: owner listings and specialized online shops.",
       "info_how": "Choose a section, filter by country and region, contact the owner. Can’t find it — submit a selection request. Check the car and papers before buying."
+    },
+    "sub": {
+      "buy": "Country → region → listing or search request",
+      "rent": "Country → region → offers or rental request",
+      "shops": "Category → shop → product catalogue",
+      "shops_newParts": "Engines, filters, brakes, batteries, suspension",
+      "shops_usedParts": "From dismantlers: engines, gearboxes, lights, doors, body",
+      "shops_accessories": "Mats, covers, organizers, deflectors, holders",
+      "shops_tires": "Summer and winter tires, rims, complete wheels",
+      "shops_care": "Shampoos, polishes, interior chemicals",
+      "shops_electronics": "Dash cams, head units, cameras, parking sensors",
+      "shops_tools": "Jacks, compressors, chargers, tool sets",
+      "shops_other": "Roof racks, tow bars, lighting and more"
+    },
+    "desc": {
+      "buy": "Choose a country, then a region (only those with listings are shown) and browse cars. Filters: make and model, year, price, body, fuel, gearbox, mileage, condition, new or used. A card shows photos, make, model, year, price, mileage, features, location and the “Contact the seller” button. “Sell a car” — your own listing (published after review). “Leave a car search request”: country and region, make or type, year, budget, wishes, contacts.",
+      "rent": "Works like buying: country → region → available cars. Filters: make and model, price per day, week or month, type, gearbox, seats, rental dates, terms, deposit, with or without driver. A card shows photos, price, pick-up place, terms, contacts and the “Contact and arrange rental” button. “Rent out a car” — your own listing. “Leave a search request”: country and region, car needed, date and term, budget, wishes, contacts.",
+      "shops": "A separate section for online shops and sellers of auto parts, accessories and car goods. Choose a category → shop → catalogue: photos, description, price, availability; contact the seller or order. For owners: “Add your online shop” (name, country and region, categories, description, photos and logo, contacts, website, delivery and payment terms). Each shop has its own page and catalogue."
     }
   },
   "shops": {
     "text": {
       "info_about": "Ukrainian goods by department: food, clothing, household chemicals, souvenirs, electronics, plus delivery and partner shops and warehouses abroad.",
       "info_how": "Open a department, pick a sub-department and a partner shop. Shop owners can apply for their own department. Order delivery via carriers in “Delivery and logistics”."
+    },
+    "sub": {
+      "food": "Food and grocery stores",
+      "clothes": "Clothes, shoes, accessories",
+      "chemistry": "Laundry, cleaning, hygiene",
+      "souvenirs": "Gifts and Ukrainian symbols",
+      "electro": "Appliances, electronics, equipment",
+      "delivery": "Carriers and delivery requests",
+      "abroad": "Network of partner shops and warehouses",
+      "info": "Earn with your own",
+      "feedback": "Feedback",
+      "addSection": "Creating new categories",
+      "delivery_fromUa": "Parcels, goods and cargo from Ukraine",
+      "delivery_europe": "Transport between European and other countries",
+      "abroad_stores": "Country → region → city → shop",
+      "abroad_warehouses": "Country → region → city → warehouse"
+    },
+    "desc": {
+      "food": "A catalogue of departments opens: meat, fish, dairy, vegetables and fruit, groceries, bakery, sweets, preserves, drinks. Each department has search, filters by price, country and city, shops and sellers, and the buttons “Add listing” and “Add your own department”. A listing has a title, photos, description, price, quantity, country, region, city, contacts and delivery terms; from a department it lands there, from the section home page — after choosing a department.",
+      "clothes": "A catalogue of clothing categories; each has listings from different sellers and shops, search and filters, “Add listing” and “Add your own department”. A card shows photos, title, description, sizes, colour, price, availability, country, city, contacts and delivery terms.",
+      "chemistry": "A catalogue of household chemicals and home goods. Each folder has listings from different shops and sellers, an “Add listing” button and the option to suggest a new category.",
+      "souvenirs": "Ukrainian souvenirs, gifts, symbols and handmade items. Craftspeople, producers and shops add goods to the matching folders. A card shows photos, title, description, price, availability, features, point of sale and contacts; you can open the seller’s page and arrange an order.",
+      "electro": "Shops of electronics, appliances, electrical goods and equipment. Search by name, filters by price, specifications, country and city, link to the shop page. A card shows photos, title, description, specifications, price, warranty, availability, seller and delivery.",
+      "delivery": "Carriers, transport companies and people who need delivery: “Carriers from Ukraine abroad”, “Carriers across Europe and other countries” and “Submit a delivery request” (from and to, what, number of items, weight and size, date, terms, contacts). Carriers see requests and offer their services.",
+      "abroad": "An international network of Ukrainian shops and warehouses abroad. Only countries, regions and cities that already have partners are shown. A card shows the name, photos, address, products, services, contacts and hours. “Submit a cooperation request”: type, country, region and city, name, address, description, products, contacts, photos; after administration review the partner is added to the list.",
+      "addSection": "Suggest a new main section or a new department inside an existing one: name, type, which direction it belongs to, description of goods or services, required categories, country or city, contacts, photos. The administration reviews the request and decides."
     }
   },
   "health": {
@@ -1134,19 +1262,75 @@
       "info_about": "Doctors, nutrition, sport, psychology, recovery and health goods — specialists who understand our people.",
       "info_how": "Choose a direction, find a specialist and request a consultation. Information here does not replace diagnosis or treatment: see a doctor for medical care."
     },
-    "intro": "Doctors, nutrition, sport, psychology, recovery and health goods. This is information, not medical advice."
+    "intro": "Doctors, nutrition, sport, psychology, recovery and health goods. This is information, not medical advice.",
+    "sub": {
+      "doctors": "Doctors, consultations and medical help",
+      "nutrition": "Dietitians and nutrition specialists",
+      "sport": "Trainers, fitness and yoga",
+      "psychology": "Psychologists and psychotherapists",
+      "recovery": "Massage, recovery and speech therapy",
+      "motherChild": "Motherhood, child specialists and consultations",
+      "shops": "Health goods and shops",
+      "info": "Team, partnership and opportunities",
+      "feedback": "Feedback and user support"
+    },
+    "desc": {
+      "doctors": "Online doctor consultations. Each folder offers specialist profiles (photo, education, qualification, experience, languages, format and price), “Request a consultation”, “Join the team” and the option to suggest a new direction. Qualifications and the right to practice are verified before a profile is published.",
+      "nutrition": "Each folder offers specialist profiles (photo, education, qualification, experience, languages, format and price), “Request a consultation”, “Join the team” and the option to suggest a new direction. Qualifications and the right to practice are verified before a profile is published.",
+      "sport": "Online and in-person sessions are possible if the specialist offers them. Each folder offers specialist profiles (photo, education, qualification, experience, languages, format and price), “Request a consultation”, “Join the team” and the option to suggest a new direction. Qualifications and the right to practice are verified before a profile is published.",
+      "psychology": "Specialists’ qualifications are verified for psychological services and requests are confidential. Each folder offers specialist profiles (photo, education, qualification, experience, languages, format and price), “Request a consultation”, “Join the team” and the option to suggest a new direction. Qualifications and the right to practice are verified before a profile is published.",
+      "recovery": "In-person services (massage, injury recovery) are searched by country and city: only places with registered specialists are shown. Speech therapists work online and, if they wish, in person. Each folder offers specialist profiles (photo, education, qualification, experience, languages, format and price), “Request a consultation”, “Join the team” and the option to suggest a new direction. Qualifications and the right to practice are verified before a profile is published.",
+      "motherChild": "Specialists for pregnancy, birth preparation and child care. Child massage therapists and rehabilitation specialists are searched by country and city; speech therapists work online. Services for children take account of age, parental consent and qualifications. Each folder offers specialist profiles (photo, education, qualification, experience, languages, format and price), “Request a consultation”, “Join the team” and the option to suggest a new direction. Qualifications and the right to practice are verified before a profile is published.",
+      "shops": "A catalogue of online shops and goods for health, sport, nutrition and care: categories, search by name, filters and sorting, product cards, seller contacts, order and delivery terms, and a shop application to join. Regulated goods are checked for legal compliance."
+    }
   },
   "helperHour": {
     "text": {
       "info_about": "Helper for an hour: masters, loaders and tool rental near you.",
       "info_how": "Describe what needs doing and performers in your city will respond. Masters create a cabinet and form teams in a city, region or country. Agree terms and payment directly.",
       "cabinet_create": "Submit the “Become a master or specialist” application. After administrator review you get a cabinet: profile, services, orders, reviews and settings."
+    },
+    "sub": {
+      "masters": "Catalogue of masters and specialists in your city",
+      "cabinet": "Registration, cabinet, teams and representative offices",
+      "job": "Earn with your own work or find a worker",
+      "rent": "Earn from tools and equipment you already own",
+      "masters_construction": "Craftsmen, builders, tilers, plasterers, painters",
+      "masters_plumbing": "Plumbers, installers, pipes, heating",
+      "masters_electric": "Lighting, sockets, wiring",
+      "masters_furniture": "Assembly, repair, installation and dismantling of furniture",
+      "masters_garden": "Mowing, tree trimming, vegetable garden, yard cleaning",
+      "masters_firewood": "Cutting, splitting and stacking firewood, odd jobs",
+      "masters_cleaning": "Deep cleaning, window washing",
+      "masters_transport": "Loaders, drivers, moving furniture and things",
+      "masters_misc": "Other household services and one-off help",
+      "job_find": "Looking for someone to do a job",
+      "job_need": "A job needs doing: leave a request"
+    },
+    "desc": {
+      "masters": "Choose a job category, enter country, city or district and open a master’s profile: photos of work, description, experience, price, reviews. Buttons “Contact the master” and “Order a job”. A profile has contacts, services, schedule and reviews after an order.",
+      "cabinet": "People register here and offer their services. Form: name, country, region and city, field and specialty, services, experience, photos of work, contacts. After verification a personal cabinet opens: profile, services, prices and terms, photos, schedule, new orders, replies, active and finished jobs, messages, reviews. Teams and offices: country → region → city → local team. Specialist applications and representative-office applications are processed separately.",
+      "job": "Works for both sides: those who look for a worker and those who want to earn by working. “Find a worker” — choose the kind of job, country and city, view profiles and prices. “A job needs doing” — a request: what to do, place, date, budget, contacts. Examples: firewood, vegetable garden, mowing, trees, yard, moving, furniture, small repairs, household and building work.",
+      "rent": "List your own tools, equipment and machinery for rent. A listing has a title, photos, description and condition, country and city, price per hour, day or other term, conditions and deposit, delivery and contacts. A renter chooses equipment, enters a city, compares prices and terms, agrees with the owner and presses “Rent”."
     }
   },
   "translator": {
     "text": {
       "info_about": "Translators and translation of documents and texts by language and country.",
       "info_how": "Choose a language and submit a request with description and deadline. Send only a description via the form; hand over original documents directly to the translator after agreeing."
+    },
+    "sub": {
+      "translators": "Find translators by language and field",
+      "documents": "Order ordinary or official translation",
+      "info": "About the platform, team and partnership",
+      "feedback": "Feedback and user support",
+      "documents_official": "Translation with the translator’s confirmed qualification and certification",
+      "documents_ordinary": "Certificates, applications, letters, contracts without official certification",
+      "documents_texts": "Articles, messages, websites, advertising, correspondence"
+    },
+    "desc": {
+      "translators": "Choose a language to open the catalogue of translators. A profile shows photo, translation languages, education and qualification, experience, fields (business correspondence, texts, study materials), format (online or offline), price, countries and cities, reviews. Buttons: “View profile”, “Request a translation or consultation”, “Contact the translator”, “Join the translators’ team”. You can also add a new language, suggest a field or become a translator; the administrator verifies and adds it to the catalogue.",
+      "documents": "A translation request: source and target language, document or text type, file or text, desired deadline, contacts. It goes to translators or the administrator; the reply has the price, deadlines and terms. For official translation you can choose a translator with a confirmed status in the required country. Clients’ documents are kept confidential."
     }
   },
   "turnkey": {
@@ -1154,21 +1338,83 @@
       "info_about": "Business Speed — a set of services to launch and grow a business: specialists, partners and other platform projects.",
       "info_how": "Pick business specialists, request partner matching or find a sales market. Administrators will respond to your request."
     },
-    "intro": "Business Speed — help starting and growing a business: specialists, partners, sales markets and platform projects."
+    "intro": "Business Speed — help starting and growing a business: specialists, partners, sales markets and platform projects.",
+    "sub": {
+      "specialists": "Professional services for entrepreneurs",
+      "partners": "Suppliers, goods, services and sales markets",
+      "projects": "All opportunities of our business ecosystem",
+      "info": "About the platform and partnership",
+      "feedback": "Feedback and help for members",
+      "specialists_accounting": "Accounting, reporting, financial documents",
+      "specialists_legal": "Contracts, consultations, legal support",
+      "specialists_it": "Websites, programs, technical support",
+      "specialists_sales": "Clients, sales, handling requests",
+      "specialists_hr": "Finding and selecting employees",
+      "specialists_logistics": "Supply, transport, routes",
+      "specialists_admin": "Process organization, document flow, administrative support"
+    },
+    "desc": {
+      "specialists": "Our own team of specialists provides entrepreneurs with professional services remotely or in another format when needed, without keeping a staff. A category shows recommended specialists, their services, experience, countries and languages, contacts. Buttons: “View specialists”, “Request a service” (service, country and city, company or activity, task, one-off or ongoing, deadline, contacts), “Become our specialist”. Price, scope, the specialist’s pay and the platform’s fee are agreed transparently in advance.",
+      "partners": "An international base of businesses, producers, suppliers, shops and service companies on the platform. Choose a country (those with partners are shown), then a catalogue with search by product or service, activity, categories, filters by city or region and supplier type. An enterprise card has contacts, product catalogue and cooperation terms.",
+      "projects": "Shows which other platform projects are useful for your business: jobs, export alliance, China, shops and others, with help choosing a project."
+    }
   },
   "invest": {
     "text": {
       "info_about": "A place where project authors, investors and specialists meet. The platform only introduces parties, takes no part in deals and guarantees no funding or profit.",
       "info_how": "Authors submit projects, investors create a profile (open or hidden), specialists offer services. Parties settle everything themselves; investing involves risk."
     },
-    "intro": "Projects, investors and specialists. The platform only introduces parties; investing involves risk."
+    "intro": "Projects, investors and specialists. The platform only introduces parties; investing involves risk.",
+    "sub": {
+      "projects": "Catalogue of approved investment projects",
+      "investors": "Find investors and their investment capacity",
+      "specialists": "Professional team to deliver projects",
+      "info": "About the platform, cooperation and earning opportunities",
+      "feedback": "Requests, reviews and user support",
+      "specialists_analyst": "Analysis of investment opportunities and projects",
+      "specialists_financial": "Financial models, budgets and calculations",
+      "specialists_economist": "Economic research and outlook assessment",
+      "specialists_auditor": "Review of financial documents and reporting",
+      "specialists_marketer": "Marketing strategies and promotion",
+      "specialists_risk": "Risk assessment and mitigation planning",
+      "specialists_valuation": "Valuation of businesses, property and assets",
+      "specialists_lawyers": "Legal support and contracts",
+      "specialists_pm": "Organizing work and monitoring delivery"
+    },
+    "desc": {
+      "projects": "A catalogue of projects checked by the administration. A card shows name, country, industry, short description, required amount, amount raised (if allowed), stage, contact person and investor-search status. The full page has the presentation, the problem solved, business model, funds needed and their use, plan and stages, financial forecasts, risks and conditions, documents. Buttons: “Apply to invest”, “Contact the representative”, “Get more information”, “Submit a project for placement”. Only approved projects are published.",
+      "investors": "A catalogue of the platform’s investors. A card shows name or company, country, fields, approximate budget, interesting industries, cooperation format and a contact request. A profile can be public or hidden (then only the administration sees it and proposals arrive privately). The budget is an approximate willingness to consider investing, not proof of funds or a commitment. Buttons: “View investors”, “Become an investor on the platform”.",
+      "specialists": "Each specialty has its own folder with a catalogue of experts. Specialists help prepare, launch, manage and grow investment projects. You can suggest a new specialty or become a specialist."
+    }
   },
   "travel": {
     "text": {
       "info_about": "Tours, hot offers, tickets and insurance for our people.",
       "info_how": "Submit a request for a tour, holiday selection or tickets — the reply appears in “My requests”. Hot offers disappear after the date passes or when no seats remain."
     },
-    "intro": "Tours, hot offers, tickets and insurance. Pick a holiday or submit a request."
+    "intro": "Tours, hot offers, tickets and insurance. Pick a holiday or submit a request.",
+    "sub": {
+      "turnkey": "Fully organized trips",
+      "join": "Group trips with set dates",
+      "pick": "Personal trip selection",
+      "hot": "Deals, discounts and bargain trips",
+      "tickets": "Air, rail and other tickets",
+      "insurance": "Insurance services for tourists",
+      "info": "About the platform and cooperation",
+      "feedback": "Feedback and support",
+      "hot_cancelled": "Cancelled tours at a better price",
+      "hot_prepaid": "Already paid trips at a discount, if they can legally be re-registered",
+      "hot_urgent": "Nearest departure dates at special prices",
+      "hot_promo": "Promotions and discounts directly from tour operators",
+      "hot_lastSeats": "Limited seats on special terms"
+    },
+    "desc": {
+      "turnkey": "Ready trips with the hotel, flight, transfer, meals and excursions already planned. Choose a country and a tour, state the departure city, date and number of adults and children, and send a request; a travel specialist calculates the full price with all costs, then terms and booking are agreed.",
+      "join": "Planned group trips: destination, route, dates, meeting point, day-by-day programme, hotels, transport, meals, excursions, price, free seats, organizer contact. Buttons: “Detailed programme”, “Join the group”, “Request a seat booking”, “Ask the organizer”. A seat is taken after the booking is confirmed.",
+      "pick": "For those who have not yet chosen a country, hotel or tour. Request: desired country, departure city, dates or period, number of days, adults and children with ages, budget, hotel and meal wishes, type of holiday, other wishes, contacts. A specialist selects options according to your budget and wishes.",
+      "hot": "A catalogue of bargain offers: photo, title, country and resort, hotel, dates, departure city, free seats, old and new price (if the discount is confirmed), what is included, extra costs, booking and payment terms, validity. For cancelled and already paid tours, the possibility to change the tourist, refund and re-registration under the operator’s rules and contract is always checked.",
+      "tickets": "A request to search for and book tickets: from and to, date, return date, number of passengers, class or seat, luggage, contacts. A specialist finds options, sends the price and terms and, once agreed, helps make the booking."
+    }
   },
   "pets": {
     "text": {
@@ -1177,7 +1423,38 @@
       "travel_docs": "Before traveling with an animal check destination rules: microchip, rabies vaccination, veterinary certificate. Rules change — confirm with official services.",
       "travel_rules": "Carriers have their own rules on weight, carriers and breeds. Confirm terms with the airline or carrier in advance."
     },
-    "intro": "Animals, shops, vets, training, grooming, pet sitting and help for animals — all in one place."
+    "intro": "Animals, shops, vets, training, grooming, pet sitting and help for animals — all in one place.",
+    "sub": {
+      "animals": "Listings and search for animals",
+      "shops": "Shops and goods for all kinds of animals",
+      "vet": "Vets and animal health",
+      "training": "Dog handlers and trainers",
+      "grooming": "Salons, groomers and training",
+      "sitting": "Temporary care and hotels",
+      "walking": "Walking, feeding and help at home",
+      "travel": "Transport, documents and holidays",
+      "nutrition": "Diets, food and recommendations",
+      "club": "Interest club",
+      "support": "Shelters, volunteering and charity",
+      "info": "About the platform and cooperation",
+      "feedback": "Requests and support",
+      "animals_rodents": "Hamsters, guinea pigs, rabbits, chinchillas",
+      "grooming_shop": "Clippers, scissors, shampoos, dryers, salon equipment",
+      "grooming_learning": "Bathing, brushing, nails, ears and eyes, home grooming",
+      "grooming_onsite": "Mobile groomers, mobile and stationary salons"
+    },
+    "desc": {
+      "animals": "A catalogue of animal listings. Each folder has “Post your listing” (species, breed, age, sex, country and city, photos, description, health and vaccination, listing type, contacts, terms of transfer) and shops for that kind of animal. Breeds are automatic subfolders: if a folder does not exist, the system offers to create it after administration review; a single reference list of species and breeds avoids duplicates.",
+      "shops": "A general catalogue of online shops for all kinds of animals. A shop page has name and logo, country and city, categories, product photos, description and prices, payment, delivery and returns, contacts, reviews. Buttons: “View shops”, “Find a product”, “Become a partner shop”, “Apply to open a shop”.",
+      "vet": "Vets for consultations and appointments. A profile has photo, education and qualification, experience, animal species, fields, languages, country and city, online or clinic, price, reviews. Buttons: “Request a consultation”, “Book an appointment”, “Join the vets’ team”. An online consultation does not replace an examination where physical diagnostics or emergency help is needed; qualifications are verified.",
+      "training": "A catalogue of dog handlers and trainers. A profile has photo, experience, specialty, breeds and age groups, individual or group lessons, online or offline, city, price. Buttons: “Find a trainer”, “Request a lesson”, “Join the trainers’ team”.",
+      "grooming": "Groomers, salons, groomer shops and training in self-care. For offline services choose a country and city. Buttons: “Request a service”, “Join the groomers’ team”, “Add your salon or shop”.",
+      "sitting": "For owners who need to leave an animal under supervision temporarily and for those providing such services. “I need pet sitting” — a request (species and breed, age, dates, city, wishes, contacts); “I can take a pet”; “Pet hotels”; private help and temporary care.",
+      "walking": "Dog walking, feeding and help at home: “I need a dog walker” (a request) and “I can walk dogs” (a performer’s form).",
+      "travel": "Animal transport, documents for travel, transport rules, pet-friendly hotels and a travel agency for trips with pets.",
+      "nutrition": "Nutrition for dogs, cats, birds, rodents, fish and reptiles, choosing food, diets and therapeutic nutrition, weight control, care consultations.",
+      "support": "Shelters, help for strays, volunteers, feeding shelters, fundraisers and funds, help for injured animals and owners, finding a new home, charities; you can suggest an organization or a fundraiser."
+    }
   },
   "trade": {
     "text": {
@@ -1412,5 +1689,17 @@
     "search": "Search",
     "map": "Map",
     "talks": "Negotiations"
+  },
+  "lawyers": {
+    "sub": {
+      "network": "Country → region → district → lawyer",
+      "cabinet": "Lawyer application and personal cabinet",
+      "team": "Teams and representative offices in countries, regions and districts",
+      "consult": "Lawyers’ help and consultations",
+      "help": "Project user support"
+    },
+    "desc": {
+      "network": "Choose online or offline, then country → region → district → city. The leader of each level (photo, contacts, cabinet) is shown at the top. If a team exists — “Join the team”; if not — “Apply to create a representative office”. The list of countries, regions and leaders is managed by the administration. Lawyer profiles are published after their documents and right to practice are verified."
+    }
   }
 }
