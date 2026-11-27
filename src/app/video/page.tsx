@@ -41,6 +41,10 @@ export default function VideoPage() {
     loadingRef.current = true;
     try {
       const qs = new URLSearchParams({ videos: '1', limit: '8', scope });
+      // Відкрили рілс із чужого профілю: гортаємо рілси цього автора, починаючи з вибраного
+      const sp = new URLSearchParams(window.location.search);
+      const fromAuthor = Number(sp.get('author')); const fromPost = Number(sp.get('post'));
+      if (fromAuthor > 0 && readStoredUser()) { qs.set('authorId', String(fromAuthor)); qs.set('scope', 'all'); if (!next && fromPost > 0) qs.set('cursor', String(fromPost + 1)); }
       if (next) qs.set('cursor', String(next));
       // Гість бачить публічні рілси (без входу), з обмеженням глибини
       if (!readStoredUser()) { guestPages.current = next ? guestPages.current + 1 : 0; qs.set('page', String(guestPages.current)); }

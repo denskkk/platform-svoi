@@ -351,7 +351,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
       {mixed && <MediaCarousel media={mixed} onOpenImage={setLightbox} />}
       {!mixed && post.video && (
         <div className="mt-3 bg-black">
-          <FeedVideo src={post.video.url} poster={post.video.posterUrl} />
+          <FeedVideo src={post.video.url} poster={post.video.posterUrl} landscape={post.video.isVertical === false} />
         </div>
       )}
       {imgs.length > 0 && (

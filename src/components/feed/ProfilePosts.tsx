@@ -113,7 +113,7 @@ export function ProfilePosts({ authorId }: { authorId: number }) {
               const album = !post.repostOf && (post.media?.length ?? 0) > 1 ? post.media! : null;
               return (
                 <li key={post.id} className="bg-white">
-                  <Link href={`/feed/${post.id}`} className="relative block aspect-[3/4] bg-neutral-900 overflow-hidden">
+                  <Link href={post.video && !post.repostOf && post.video.isVertical !== false ? `/video?post=${post.id}&author=${post.author.id}` : `/feed/${post.id}`} className="relative block aspect-[3/4] bg-neutral-900 overflow-hidden">
                     {album
                       ? (
                         <span className={cn('grid h-full w-full gap-px bg-neutral-900', album.length === 2 ? 'grid-cols-2' : 'grid-cols-2 grid-rows-2')}>

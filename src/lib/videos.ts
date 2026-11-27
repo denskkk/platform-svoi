@@ -69,9 +69,16 @@ async function processOne(video: { id: number; rawName: string | null }): Promis
 
     const poster = await run(FFMPEG, ['-y', '-ss', String(Math.min(1, duration / 2)), '-i', output, '-frames:v', '1', '-vf', 'scale=480:-2', '-q:v', '4', join(videosDir(), posterName)], 60_000);
     const info = await stat(output);
+    // Розміри вже перекодованого файлу (ffmpeg сам враховує поворот), за ними вирішуємо: рілси чи стрічка
+    let dims: { width: number; height: number; isVertical: boolean } | null = null;
+    try {
+      const dp = await run(FFPROBE, ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', output], 30_000);
+      const [w, h] = dp.out.trim().split('\n')[0].split(',').map(Number);
+      if (w > 0 && h > 0) dims = { width: w, height: h, isVertical: h > w };
+    } catch { /* орієнтація лишиться невідомою */ }
     await prisma.postVideo.update({
       where: { id: video.id },
-      data: { status: 'ready', url: `/uploads/videos/${outName}`, posterUrl: poster.code === 0 ? `/uploads/videos/${posterName}` : null, durationSec: Math.round(Math.min(duration, VIDEO_LIMITS.maxSeconds)), sizeBytes: info.size, error: null },
+      data: { status: 'ready', url: `/uploads/videos/${outName}`, posterUrl: poster.code === 0 ? `/uploads/videos/${posterName}` : null, durationSec: Math.round(Math.min(duration, VIDEO_LIMITS.maxSeconds)), sizeBytes: info.size, error: null, ...(dims ?? {}) },
     });
     await unlink(input).catch(() => undefined);
   } catch (e: any) {
