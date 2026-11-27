@@ -2,19 +2,26 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, ImageIcon, Loader2, Plus, RefreshCw, X } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, ImageIcon, Loader2, Play, Plus, RefreshCw, X } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { useI18n } from '@/i18n/client';
-import { authHeaders, jsonHeaders } from '@/lib/feedClient';
-import { uploadVideo, waitVideoReady, VIDEO_MAX_BYTES } from '@/lib/videoClient';
+import { jsonHeaders } from '@/lib/feedClient';
+import { VIDEO_MAX_BYTES } from '@/lib/videoClient';
+import { startPublish } from '@/lib/publishQueue';
+import { PublishBar } from './PublishBar';
 import { nativePlatform, openAppSettings, shellOutdated } from '@/lib/nativeApp';
 import { localizedPath } from '@/i18n/routes';
 
-export type CreatorMode = 'text' | 'photo' | 'story' | 'reel';
+/** Режими студії: «Допис» (фото й відео разом, карусель), «Історія», «Текст». Старі назви photo/reel відкривають «Допис». */
+export type CreatorMode = 'text' | 'post' | 'story' | 'photo' | 'reel';
+type Mode = 'text' | 'post' | 'story';
+const normMode = (m: CreatorMode): Mode => (m === 'photo' || m === 'reel' || m === 'post' ? 'post' : m);
 interface Item { id: number; kind: 'image' | 'video'; blob: Blob; url: string }
 
 const MAX_SECONDS = 60;        // збігається з VIDEO_LIMITS.maxSeconds на сервері
-const MAX_PHOTOS = 6;          // як у PostComposer
+const MAX_PHOTOS = 6;          // як у FEED_LIMITS
+const MAX_VIDEOS = 4;
+const MAX_MEDIA = 10;          // фото й відео разом в одній каруселі
 const HOLD_MS = 350;
 let seq = 0;
 
@@ -53,7 +60,8 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   const { t, locale } = useI18n();
   const router = useRouter();
   const toast = useToast();
-  const [mode, setMode] = useState<CreatorMode>(initialMode);
+  const [mode, setMode] = useState<Mode>(normMode(initialMode));
+  const [sel, setSel] = useState(0);
   const [facing, setFacing] = useState<'user' | 'environment'>('environment');
   const [camera, setCamera] = useState<CamState>('starting');
   const [camErr, setCamErr] = useState('');
@@ -64,7 +72,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   const [items, setItems] = useState<Item[]>([]);
   const [preview, setPreview] = useState(false);
   const [caption, setCaption] = useState(initialCaption);
-  const [busy, setBusy] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null); // лише для текстового допису
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -112,7 +120,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
     }
   }, [stopStream]);
 
-  const allowCamera = () => { camAsked.current = true; startCamera(facing, mode !== 'photo'); };
+  const allowCamera = () => { camAsked.current = true; startCamera(facing, true); };
 
   // Камеру вмикаємо САМІ лише коли дозвіл уже є; інакше — спершу зрозумілий екран із кнопкою (не раптовий системний запит при відкритті студії)
   useEffect(() => {
@@ -126,18 +134,18 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
         if (st !== 'granted') { setCamera('ask'); return; }
         camAsked.current = true;
       }
-      startCamera(facing, mode !== 'photo');
+      startCamera(facing, true);
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preview, facing, mode === 'photo', mode === 'text']);
+  }, [preview, facing, mode === 'text']);
 
   // Після системного запиту дозволу / згортання застосунку потік може обірватися — відновлюємо
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState !== 'visible' || (!camAsked.current && camRef.current !== 'denied') || preview || mode === 'text' || recRef.current) return;
       const live = streamRef.current?.getTracks().some((tr) => tr.readyState === 'live');
-      if (!live) { camAsked.current = true; startCamera(facing, mode !== 'photo'); }
+      if (!live) { camAsked.current = true; startCamera(facing, true); }
     };
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
@@ -156,14 +164,38 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
     return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
   }, [onClose, busy]);
 
-  const addItem = (kind: 'image' | 'video', blob: Blob) => {
+  const addItem = (kind: 'image' | 'video', blob: Blob): boolean => {
+    const prev = itemsRef.current;
+    if (mode !== 'story') {
+      if (prev.length >= MAX_MEDIA) { toast.info(t('feed.composer.maxMedia', { max: MAX_MEDIA })); return false; }
+      if (kind === 'image' && prev.filter((p) => p.kind === 'image').length >= MAX_PHOTOS) { toast.info(t('feed.composer.maxPhotos', { max: MAX_PHOTOS })); return false; }
+      if (kind === 'video' && prev.filter((p) => p.kind === 'video').length >= MAX_VIDEOS) { toast.info(t('feed.composer.maxVideos', { max: MAX_VIDEOS })); return false; }
+    }
     const it: Item = { id: ++seq, kind, blob, url: URL.createObjectURL(blob) };
-    setItems((prev) => {
-      if (mode === 'photo' && kind === 'image') return prev.filter((p) => p.kind === 'image').concat(it).slice(0, MAX_PHOTOS);
-      prev.forEach((p) => URL.revokeObjectURL(p.url));
-      return [it];
-    });
+    if (mode === 'story') prev.forEach((p) => URL.revokeObjectURL(p.url));
+    itemsRef.current = mode === 'story' ? [it] : prev.concat(it);
+    setItems(itemsRef.current);
+    setSel(itemsRef.current.length - 1);
     setPreview(true);
+    return true;
+  };
+
+  const removeItem = (id: number) => {
+    const it = itemsRef.current.find((x) => x.id === id);
+    if (it) URL.revokeObjectURL(it.url);
+    itemsRef.current = itemsRef.current.filter((x) => x.id !== id);
+    setItems(itemsRef.current);
+    setSel((s0) => Math.max(0, Math.min(s0, itemsRef.current.length - 1)));
+    if (!itemsRef.current.length) setPreview(false);
+  };
+
+  const moveItem = (id: number, dir: -1 | 1) => {
+    const list = itemsRef.current.slice();
+    const i = list.findIndex((x) => x.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    itemsRef.current = list; setItems(list); setSel(j);
   };
 
   const takePhoto = async () => {
@@ -202,93 +234,79 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
   };
   const stopRec = () => { if (recRef.current && recRef.current.state !== 'inactive') recRef.current.stop(); };
 
-  // Кнопка затвора: у «Історії» тап = фото, утримання = відео; у «Рілсі» тап починає/зупиняє запис; у «Фото» тап = знімок
+  // Кнопка затвора (допис і історія): тап = фото, утримання = відео до 60 с
   const down = () => {
     heldRef.current = false;
-    if (mode === 'story') holdRef.current = setTimeout(() => { heldRef.current = true; startRec(); }, HOLD_MS);
+    holdRef.current = setTimeout(() => { heldRef.current = true; startRec(); }, HOLD_MS);
   };
   const up = () => {
     if (holdRef.current) { clearTimeout(holdRef.current); holdRef.current = null; }
-    if (mode === 'story') { if (heldRef.current) stopRec(); else takePhoto(); return; }
-    if (mode === 'reel') { if (recRef.current) stopRec(); else startRec(); return; }
-    takePhoto();
+    if (heldRef.current) stopRec(); else takePhoto();
   };
 
+  /** Галерея: можна вибрати кілька файлів, фото й відео разом — кожен стає слайдом каруселі у порядку вибору. */
   const fromFiles = async (files: FileList | null, forceKind?: 'image' | 'video') => {
     if (!files?.length) return;
-    const list = Array.from(files);
-    const vid = list.find((f) => f.type.startsWith('video/'));
-    if (vid && forceKind !== 'image' && mode !== 'photo') {
-      if (vid.size > VIDEO_MAX_BYTES) { toast.error(t('cabinet.studio.tooLarge')); return; }
-      addItem('video', vid); return;
+    const list = Array.from(files).slice(0, mode === 'story' ? 1 : MAX_MEDIA);
+    let added = 0, bad = 0;
+    for (const f of list) {
+      const isVideo = f.type.startsWith('video/') || /\.(mp4|mov|m4v|webm|3gp)$/i.test(f.name);
+      if (isVideo && forceKind !== 'image') {
+        if (f.size > VIDEO_MAX_BYTES) { toast.error(t('cabinet.studio.tooLarge')); continue; }
+        if (addItem('video', f)) added++;
+      } else if (f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name)) {
+        if (addItem('image', await shrink(f))) added++;
+      } else bad++;
     }
-    const imgs = list.filter((f) => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
-    if (!imgs.length) { toast.error(t('cabinet.studio.badFile')); return; }
-    for (const f of imgs.slice(0, mode === 'photo' ? MAX_PHOTOS : 1)) addItem('image', await shrink(f));
+    if (!added && bad) toast.error(t('cabinet.studio.badFile'));
   };
 
   const back = () => {
-    items.forEach((i) => URL.revokeObjectURL(i.url)); setItems([]); setCaption(''); setPreview(false);
+    itemsRef.current.forEach((i) => URL.revokeObjectURL(i.url)); itemsRef.current = []; setItems([]); setCaption(''); setPreview(false); setSel(0);
   };
 
-  const uploadImage = async (blob: Blob) => {
-    const form = new FormData();
-    form.append('file', new File([blob], blob.type === 'image/png' ? 'photo.png' : 'photo.jpg', { type: blob.type || 'image/jpeg' }));
-    form.append('type', 'posts');
-    const r = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers: authHeaders(), body: form });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok || !d.url) throw new Error(d.error);
-    return d.url as string;
-  };
-  const uploadVideoItem = async (blob: Blob) => {
-    const id = await uploadVideo(blob, t, (pct) => setBusy(`${t('cabinet.studio.uploading')} ${pct}%`));
-    setBusy(t('cabinet.studio.processing'));
-    return waitVideoReady(id, t);
+  const switchMode = (m: Mode) => {
+    if (m === mode) return;
+    itemsRef.current.forEach((i) => URL.revokeObjectURL(i.url)); itemsRef.current = []; setItems([]); setPreview(false); setSel(0);
+    setMode(m);
   };
 
   const publish = async () => {
-    if (busy || (mode !== 'text' && !items.length)) return;
-    if (mode === 'text' && !caption.trim()) return;
-    setBusy(t('cabinet.studio.uploading'));
-    try {
-      const first = items[0];
-      let go = '/feed';
-      if (mode === 'text') {
-        const r = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content: caption.trim() }) });
+    if (busy) return;
+    if (mode === 'text') {
+      if (!caption.trim()) return;
+      setBusy(t('cabinet.studio.uploading'));
+      try {
+        const r = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify({ content: caption.trim(), requestId: `${Date.now()}-${Math.random().toString(36).slice(2)}` }) });
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
-      } else if (mode === 'story') {
-        const body: Record<string, unknown> = { caption: caption.trim() };
-        if (first.kind === 'video') body.videoId = await uploadVideoItem(first.blob); else body.imageUrl = await uploadImage(first.blob);
-        const r = await fetch('/api/stories', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(body) });
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
-        window.dispatchEvent(new Event('svoi:stories-changed'));
-      } else {
-        const body: Record<string, unknown> = { content: caption.trim() };
-        if (first.kind === 'video') { body.videoId = await uploadVideoItem(first.blob); go = '/video'; }
-        else { const urls: string[] = []; for (const it of items.filter((x) => x.kind === 'image')) urls.push(await uploadImage(it.blob)); body.images = urls; }
-        const r = await fetch('/api/posts', { method: 'POST', credentials: 'include', headers: jsonHeaders(), body: JSON.stringify(body) });
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error);
+        toast.success(t('cabinet.studio.published'));
+        onClose();
+        const here = window.location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+        if (here === '/feed') window.location.reload(); else router.push(localizedPath('/feed', locale));
+      } catch (e: any) {
+        toast.error(e?.message || t('feed.composer.uploadFailed'));
+        setBusy(null);
       }
-      toast.success(t(mode === 'story' ? 'feed.stories.added' : 'cabinet.studio.published'));
-      onClose();
-      const here = window.location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
-      if (mode === 'story' && here === '/feed') return;
-      if (here === go) window.location.reload(); else router.push(localizedPath(go, locale));
-    } catch (e: any) {
-      toast.error(e?.message || t('feed.composer.uploadFailed'));
-      setBusy(null);
+      return;
     }
+    if (!items.length) return;
+    // Фото/відео вантажаться у фоні: студія закривається одразу, прогрес — у плашці внизу (повтор при збої — без повторного вантаження готового)
+    const ok = startPublish(items.map((i) => ({ kind: i.kind, blob: i.blob })), caption, mode, t);
+    if (!ok) { toast.info(t('cabinet.studio.busyJob')); return; }
+    onClose();
   };
 
-  const tabs: Array<[CreatorMode, string]> = [['text', t('cabinet.studio.modeText')], ['photo', t('cabinet.studio.modePost')], ['story', t('cabinet.studio.modeStory')], ['reel', t('cabinet.studio.modeReel')]];
-  const acceptGallery = mode === 'photo' ? 'image/*' : mode === 'story' ? 'image/*,video/mp4,video/quicktime,video/webm' : 'video/mp4,video/quicktime,video/webm';
+  const tabs: Array<[Mode, string]> = [['post', t('cabinet.studio.modePost')], ['story', t('cabinet.studio.modeStory')], ['text', t('cabinet.studio.modeText')]];
+  const acceptGallery = 'image/*,video/mp4,video/quicktime,video/webm';
   const circ = 2 * Math.PI * 38;
-  const hint = mode === 'story' ? t('cabinet.studio.hintStory') : mode === 'reel' ? t('cabinet.studio.hintReel') : t('cabinet.studio.hintPhoto');
-  const nameOf = (m: CreatorMode) => (m === 'text' ? t('cabinet.studio.modeText') : m === 'photo' ? t('cabinet.studio.modePost') : m === 'story' ? t('cabinet.studio.modeStory') : t('cabinet.studio.modeReel'));
+  const hint = t('cabinet.studio.hintStory');
+  const nameOf = (m: Mode) => (m === 'text' ? t('cabinet.studio.modeText') : m === 'post' ? t('cabinet.studio.modePost') : t('cabinet.studio.modeStory'));
+  const cur = items[Math.min(sel, items.length - 1)];
+  const curIdx = cur ? items.indexOf(cur) : 0;
 
   return (
     <div style={{ top: 'var(--vv-top, 0px)', height: 'var(--vvh, 100dvh)' }} className="fixed inset-x-0 z-[80] bg-black text-white select-none overscroll-none" role="dialog" aria-modal="true" aria-label={nameOf(mode)}>
-      <input ref={galleryRef} type="file" accept={acceptGallery} multiple={mode === 'photo'} hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
+      <input ref={galleryRef} type="file" accept={acceptGallery} multiple={mode === 'post'} hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
       <input ref={cameraPhotoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files, 'image'); e.target.value = ''; }} />
       <input ref={cameraVideoRef} type="file" accept="video/*" capture="environment" hidden onChange={(e) => { fromFiles(e.target.files); e.target.value = ''; }} />
 
@@ -303,7 +321,7 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
           <p className="px-4 pb-1 text-right text-xs text-neutral-400">{caption.length}/2000</p>
           <div className="flex justify-center gap-6 border-t border-neutral-200 py-3 pb-[calc(0.75rem+var(--safe-area-inset-bottom,0px))] text-sm font-bold">
             {tabs.map(([m, label]) => (
-              <button key={m} type="button" disabled={!!busy} onClick={() => setMode(m)} className={`px-1 pb-1 border-b-2 ${mode === m ? 'border-neutral-900 text-neutral-900' : 'border-transparent text-neutral-400'}`}>{label}</button>
+              <button key={m} type="button" disabled={!!busy} onClick={() => switchMode(m)} className={`px-1 pb-1 border-b-2 ${mode === m ? 'border-neutral-900 text-neutral-900' : 'border-transparent text-neutral-400'}`}>{label}</button>
             ))}
           </div>
         </div>
@@ -324,8 +342,8 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
                   {camera === 'denied' && <button type="button" onClick={allowCamera} className={nativePlatform() === 'ios' ? 'w-full max-w-xs rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold' : 'mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition'}>{t('cabinet.studio.retry')}</button>}
                   {camera === 'off' && <button type="button" onClick={allowCamera} className="mt-1 w-full max-w-xs rounded-full bg-primary-500 px-6 py-3 font-extrabold text-neutral-900 active:scale-95 transition">{t('cabinet.studio.retry')}</button>}
                   <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
-                    {!shellOutdated() && mode !== 'reel' && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemCamera')}</button>}
-                    {!shellOutdated() && mode !== 'photo' && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
+                    {!shellOutdated() && <button type="button" onClick={() => cameraPhotoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemCamera')}</button>}
+                    {!shellOutdated() && <button type="button" onClick={() => cameraVideoRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.systemVideo')}</button>}
                     <button type="button" onClick={() => galleryRef.current?.click()} className="rounded-full border border-white/40 px-6 py-2.5 text-sm font-bold">{t('cabinet.studio.gallery')}</button>
                   </div>
                   {camErr && <p className="mt-1 text-[11px] text-white/40">{camErr}</p>}
@@ -343,45 +361,69 @@ export function Creator({ initialMode, initialCaption = '', onClose }: { initial
             <div className="flex items-center justify-around px-6">
               <button type="button" onClick={() => galleryRef.current?.click()} aria-label={t('cabinet.studio.gallery')} className="flex h-12 w-12 flex-col items-center justify-center rounded-xl border-2 border-white/80 bg-black/40"><ImageIcon className="h-6 w-6" /></button>
               <button type="button" disabled={camera !== 'on'} onPointerDown={(e) => { try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* ignore */ } down(); }} onPointerUp={up} onPointerCancel={() => { if (holdRef.current) clearTimeout(holdRef.current); if (heldRef.current) stopRec(); }} onContextMenu={(e) => e.preventDefault()}
-                aria-label={mode === 'reel' ? (recording ? t('cabinet.studio.stop') : t('cabinet.studio.record')) : t('cabinet.studio.shutter')} className="relative h-20 w-20 touch-none disabled:opacity-40">
+                aria-label={recording ? t('cabinet.studio.stop') : t('cabinet.studio.shutter')} className="relative h-20 w-20 touch-none disabled:opacity-40">
                 <svg viewBox="0 0 88 88" className="absolute inset-0 h-full w-full -rotate-90"><circle cx="44" cy="44" r="38" fill="none" stroke="white" strokeOpacity=".4" strokeWidth="6" />
                   {recording && <circle cx="44" cy="44" r="38" fill="none" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={circ * (1 - Math.min(1, seconds / MAX_SECONDS))} />}</svg>
-                <span className={`absolute transition-all ${recording ? 'inset-6 rounded-lg bg-red-500' : mode === 'photo' ? 'inset-3 rounded-full bg-white' : 'inset-3 rounded-full bg-red-500'}`} />
+                <span className={`absolute transition-all ${recording ? 'inset-6 rounded-lg bg-red-500' : 'inset-3 rounded-full bg-white'}`} />
               </button>
-              <span className="h-12 w-12" aria-hidden />
+              {items.length > 0 && mode === 'post'
+                ? <button type="button" onClick={() => setPreview(true)} disabled={recording} aria-label={t('cabinet.studio.addedCount', { count: items.length })} className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500 font-extrabold text-neutral-900">{items.length}<span className="sr-only">{t('cabinet.studio.addedCount', { count: items.length })}</span></button>
+                : <span className="h-12 w-12" aria-hidden />}
             </div>
             <div className="mt-4 flex justify-center gap-6 text-sm font-bold">
               {tabs.map(([m, label]) => (
-                <button key={m} type="button" disabled={recording} onClick={() => setMode(m)} className={`px-1 pb-1 border-b-2 ${mode === m ? 'border-white text-white' : 'border-transparent text-white/60'}`}>{label}</button>
+                <button key={m} type="button" disabled={recording} onClick={() => switchMode(m)} className={`px-1 pb-1 border-b-2 ${mode === m ? 'border-white text-white' : 'border-transparent text-white/60'}`}>{label}</button>
               ))}
             </div>
           </div>
         </>
       )}
 
-      {preview && mode !== 'text' && (
+      {preview && mode !== 'text' && cur && (
         <>
           <div className="absolute inset-0 bg-black">
-            {items[0]?.kind === 'video'
-              ? <video src={items[0].url} playsInline autoPlay loop controls={false} muted={false} className="h-full w-full object-contain" onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play(); else v.pause(); }} />
-              : mode === 'photo' && items.length > 1
-                ? <ul className="grid h-full grid-cols-2 gap-1 overflow-y-auto p-1 pt-20 pb-60">{items.map((i) => <li key={i.id} className="relative aspect-square"><img src={i.url} alt="" className="h-full w-full rounded-lg object-cover" /><button type="button" aria-label={t('cabinet.studio.remove')} onClick={() => setItems((p) => { const n = p.filter((x) => x.id !== i.id); URL.revokeObjectURL(i.url); if (!n.length) setPreview(false); return n; })} className="absolute right-1 top-1 rounded-full bg-black/60 p-1"><X className="h-4 w-4" /></button></li>)}</ul>
-                : <img src={items[0]?.url} alt="" className="h-full w-full object-contain" />}
+            {cur.kind === 'video'
+              ? <video key={cur.id} src={cur.url} playsInline autoPlay loop controls={false} muted={false} className="h-full w-full object-contain" onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play(); else v.pause(); }} />
+              // eslint-disable-next-line @next/next/no-img-element
+              : <img key={cur.id} src={cur.url} alt="" className="h-full w-full object-contain" />}
           </div>
           <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4 pt-[calc(1rem+var(--safe-area-inset-top,0px))] bg-gradient-to-b from-black/60 to-transparent">
-            <button type="button" onClick={back} disabled={!!busy} aria-label={t('cabinet.studio.retake')} className="rounded-full bg-black/40 p-2.5"><X className="h-6 w-6" /></button>
-            <span className="rounded-full bg-black/40 px-3 py-1 text-sm font-bold">{nameOf(mode)}</span>
+            <button type="button" onClick={back} aria-label={t('cabinet.studio.retake')} className="rounded-full bg-black/40 p-2.5"><X className="h-6 w-6" /></button>
+            <span className="rounded-full bg-black/40 px-3 py-1 text-sm font-bold">{nameOf(mode)}{mode === 'post' && items.length > 1 ? ` · ${curIdx + 1}/${items.length}` : ''}</span>
             <span className="w-11" aria-hidden />
           </div>
-          <div className="absolute inset-x-0 bottom-0 space-y-3 p-4 pb-[calc(1rem+var(--safe-area-inset-bottom,0px))] bg-gradient-to-t from-black/80 to-transparent pt-12">
-            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={mode === 'story' ? 200 : 2000} rows={2} disabled={!!busy} placeholder={mode === 'story' ? t('cabinet.studio.captionStory') : t('cabinet.studio.caption')} aria-label={t('cabinet.studio.caption')}
+          <div className="absolute inset-x-0 bottom-0 space-y-3 p-4 pb-[calc(1rem+var(--safe-area-inset-bottom,0px))] bg-gradient-to-t from-black/85 via-black/60 to-transparent pt-12">
+            {mode === 'post' && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-1" role="list">
+                {items.map((it, i) => (
+                  <div key={it.id} role="listitem" className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg ${it.id === cur.id ? 'ring-2 ring-primary-400' : 'opacity-80'}`}>
+                    <button type="button" onClick={() => setSel(i)} aria-label={`${i + 1}`} className="h-full w-full">
+                      {it.kind === 'video'
+                        ? <video src={it.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+                        // eslint-disable-next-line @next/next/no-img-element
+                        : <img src={it.url} alt="" className="h-full w-full object-cover" />}
+                    </button>
+                    {it.kind === 'video' && <span className="pointer-events-none absolute bottom-0.5 left-0.5 rounded-full bg-black/60 p-0.5"><Play className="h-3 w-3 fill-white" aria-hidden /></span>}
+                    <button type="button" onClick={() => removeItem(it.id)} aria-label={t('cabinet.studio.remove')} className="absolute right-0.5 top-0.5 rounded-full bg-black/70 p-0.5"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                ))}
+                {items.length < MAX_MEDIA && (
+                  <button type="button" onClick={() => setPreview(false)} aria-label={t('cabinet.studio.addMore')} className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/60 text-white"><Plus className="h-6 w-6" /></button>
+                )}
+              </div>
+            )}
+            {mode === 'post' && items.length > 1 && cur && (
+              <div className="flex items-center justify-between">
+                <button type="button" disabled={curIdx === 0} onClick={() => moveItem(cur.id, -1)} aria-label={t('feed.composer.moveEarlier')} className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-sm font-bold disabled:opacity-30"><ChevronLeft className="h-4 w-4" />{t('feed.composer.moveEarlier')}</button>
+                <span className="text-xs text-white/70">{t('feed.composer.mediaCount', { count: items.length, max: MAX_MEDIA })}</span>
+                <button type="button" disabled={curIdx === items.length - 1} onClick={() => moveItem(cur.id, 1)} aria-label={t('feed.composer.moveLater')} className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-sm font-bold disabled:opacity-30">{t('feed.composer.moveLater')}<ChevronRight className="h-4 w-4" /></button>
+              </div>
+            )}
+            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={mode === 'story' ? 200 : 2000} rows={2} placeholder={mode === 'story' ? t('cabinet.studio.captionStory') : t('cabinet.studio.caption')} aria-label={t('cabinet.studio.caption')}
               className="w-full resize-none rounded-2xl border border-white/30 bg-black/40 px-4 py-2.5 text-base text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-primary-400" />
-            <div className="flex gap-2">
-              {mode === 'photo' && items[0]?.kind === 'image' && items.length < MAX_PHOTOS && <button type="button" onClick={() => setPreview(false)} disabled={!!busy} className="inline-flex items-center gap-1 rounded-full border border-white/60 px-4 py-3 font-bold"><Plus className="h-5 w-5" />{t('cabinet.studio.addMore')}</button>}
-              <button type="button" onClick={publish} disabled={!!busy} className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary-500 py-3 font-extrabold text-neutral-900 disabled:opacity-60">
-                {busy ? <><Loader2 className="h-5 w-5 animate-spin" />{busy}</> : t('cabinet.studio.publish')}
-              </button>
-            </div>
+            <button type="button" onClick={publish} className="flex w-full items-center justify-center gap-2 rounded-full bg-primary-500 py-3 font-extrabold text-neutral-900 active:scale-[0.98] transition">
+              {t('cabinet.studio.publish')}
+            </button>
           </div>
         </>
       )}
@@ -396,10 +438,10 @@ export function CreatorHost() {
   useEffect(() => {
     const on = (e: Event) => {
       const d = (e as CustomEvent).detail || {};
-      if (d.mode === 'text' || d.mode === 'photo' || d.mode === 'story' || d.mode === 'reel') { setCaption(typeof d.caption === 'string' ? d.caption : ''); setMode(d.mode); }
+      if (d.mode === 'text' || d.mode === 'post' || d.mode === 'photo' || d.mode === 'story' || d.mode === 'reel') { setCaption(typeof d.caption === 'string' ? d.caption : ''); setMode(d.mode); }
     };
     window.addEventListener('svoi:create', on);
     return () => window.removeEventListener('svoi:create', on);
   }, []);
-  return <><span data-creator-host hidden />{mode ? <Creator key={mode} initialMode={mode} initialCaption={caption} onClose={() => setMode(null)} /> : null}</>;
+  return <><span data-creator-host hidden /><PublishBar />{mode ? <Creator key={normMode(mode)} initialMode={mode} initialCaption={caption} onClose={() => setMode(null)} /> : null}</>;
 }

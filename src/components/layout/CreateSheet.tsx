@@ -2,13 +2,13 @@
 
 import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Camera, Clapperboard, PenSquare, Radio, Sparkles, X } from 'lucide-react'
+import { Images, PenSquare, Radio, Sparkles, X } from 'lucide-react'
 import { useI18n } from '@/i18n/client'
 import { useToast } from '@/components/ui/Toast'
 
-type Kind = 'post' | 'photo' | 'video' | 'story' | 'live'
+type Kind = 'media' | 'text' | 'story' | 'live'
 
-/** Нижня шторка кнопки «+»: допис, фото, відео, історія, прямий ефір (скоро). */
+/** Нижня шторка кнопки «+»: фото й відео (карусель), історія, текст, прямий ефір (скоро). */
 export function CreateSheet({ onClose }: { onClose: () => void }) {
   const { t } = useI18n()
   const router = useRouter()
@@ -23,16 +23,15 @@ export function CreateSheet({ onClose }: { onClose: () => void }) {
 
   const choose = (kind: Kind) => {
     if (kind === 'live') { toast.info(t('cabinet.create.liveSoon')); onClose(); return }
-    // Усе створення — у повноекранній студії (текст, фото, історія, рілс), як у TikTok / Instagram
-    window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: kind === 'video' ? 'reel' : kind === 'post' ? 'text' : kind } }))
+    // Усе створення — у повноекранній студії (допис із фото й відео, історія, текст), як у TikTok / Instagram
+    window.dispatchEvent(new CustomEvent('svoi:create', { detail: { mode: kind === 'media' ? 'post' : kind } }))
     onClose()
   }
 
   const items: { kind: Kind; icon: typeof PenSquare; label: string; soon?: boolean }[] = [
-    { kind: 'post', icon: PenSquare, label: t('cabinet.create.post') },
-    { kind: 'photo', icon: Camera, label: t('cabinet.create.photo') },
-    { kind: 'video', icon: Clapperboard, label: t('cabinet.create.video') },
+    { kind: 'media', icon: Images, label: t('cabinet.create.media') },
     { kind: 'story', icon: Sparkles, label: t('cabinet.create.story') },
+    { kind: 'text', icon: PenSquare, label: t('cabinet.create.post') },
     { kind: 'live', icon: Radio, label: t('cabinet.create.live'), soon: true },
   ]
 
@@ -45,7 +44,7 @@ export function CreateSheet({ onClose }: { onClose: () => void }) {
           <h2 className="text-lg font-bold text-neutral-900">{t('cabinet.create.title')}</h2>
           <button type="button" onClick={onClose} aria-label={t('cabinet.create.close')} className="p-2 rounded-full hover:bg-neutral-100"><X className="w-5 h-5" /></button>
         </div>
-        <ul className="grid grid-cols-3 gap-3">
+        <ul className="grid grid-cols-2 gap-3">
           {items.map(({ kind, icon: Icon, label, soon }) => (
             <li key={kind}>
               <button type="button" onClick={() => choose(kind)} className="relative w-full rounded-2xl bg-[#0b2a6b] text-white py-4 flex flex-col items-center gap-2 active:scale-95 transition">
