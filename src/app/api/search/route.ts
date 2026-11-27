@@ -37,14 +37,19 @@ export async function GET(request: NextRequest) {
     const project = /^[a-z0-9-]{1,60}$/.test(params.get('project') || '') ? (params.get('project') as string) : '';
     // Без тексту пошук можливий, якщо задано фільтр (місто або напрям)
     if (q.length < 2 && !city && !project) return NextResponse.json({ q, people: [], business: [], listings: [], clubs: [], posts: [] });
-    const textOr = (fields: string[]) => (q.length >= 2 ? { OR: fields.map(contains) } : {});
+    // Пошук по словах: кожне слово має зустрітися в одному з полів (порядок і відмінок не важливі).
+    // Закінчення відсікаємо («квартиру» → «кварти»), щоб знаходило «квартира», «квартири».
+    const stem = (w: string) => (w.length >= 7 ? w.slice(0, -2) : w.length >= 5 ? w.slice(0, -1) : w);
+    const tokens = Array.from(new Set(q.toLowerCase().split(/[\s,.;:!?]+/).filter((w) => w.length >= 2).map(stem)));
+    const words = tokens.length ? tokens : q.length >= 2 ? [q] : [];
+    const contains = (field: string, value: string) => ({ [field]: { contains: value, mode: 'insensitive' as const } });
+    const textOr = (fields: string[]) => (words.length ? { AND: words.map((w) => ({ OR: fields.map((f) => contains(f, w)) })) } : {});
     const cityIs = (field = 'city') => (city ? { [field]: { contains: city, mode: 'insensitive' as const } } : {});
 
     const take = type === 'all' ? 5 : 20;
     const blocked = await getBlockedIds(userId);
     const excluded = [...blocked, userId];
     const privateHidden = await getPrivateAuthorIdsHiddenFrom(userId);
-    const contains = (field: string) => ({ [field]: { contains: q, mode: 'insensitive' as const } });
 
     const wantPeople = (type === 'all' || type === 'people') && !project;
     const wantBusiness = (type === 'all' || type === 'business') && !project;
@@ -72,7 +77,7 @@ export async function GET(request: NextRequest) {
         ? prisma.businessInfo.findMany({
             where: {
               user: { isActive: true, id: { notIn: excluded } },
-              ...textOr(['companyName', 'businessType', 'businessCategory', 'description', 'city']),
+              ...textOr(['companyName', 'businessType', 'businessCategory', 'description', 'servicesList', 'city']),
               ...cityIs(),
             },
             select: {
@@ -107,7 +112,7 @@ export async function GET(request: NextRequest) {
         : [],
       wantPosts
         ? prisma.post.findMany({
-            where: { isHidden: false, isPrivate: false, clubId: null, author: { isActive: true }, authorId: { notIn: [...excluded, ...privateHidden] }, content: { contains: q, mode: 'insensitive' } },
+            where: { isHidden: false, isPrivate: false, clubId: null, author: { isActive: true }, authorId: { notIn: [...excluded, ...privateHidden] }, ...textOr(['content']) },
             orderBy: { id: 'desc' },
             take,
             select: { id: true, content: true, createdAt: true, author: { select: { id: true, firstName: true, lastName: true, avatarUrl: true, businessInfo: { select: { companyName: true, logoUrl: true } } } } },

@@ -135,7 +135,7 @@ export default function SearchPage() {
         {!hasQuery && <p className="text-center text-sm text-neutral-500 py-10">{t('search.hint')}</p>}
         {loading && <div className="flex justify-center py-6"><Loader2 className="w-6 h-6 animate-spin text-neutral-400" /></div>}
         {error && !loading && <p className="text-center text-sm text-red-600 py-6">{t('search.failed')}</p>}
-        {searched && !loading && !error && total === 0 && hits.length === 0 && <p className="text-center text-neutral-600 py-10">{t('search.empty')}</p>}
+        {searched && !loading && !error && total === 0 && <p className="text-center text-neutral-600 py-10">{t('search.empty')}</p>}
 
         {hits.length > 0 && (
           <section className="space-y-2">
