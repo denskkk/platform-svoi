@@ -10,7 +10,7 @@ import { projectTheme, projectWallpaper } from '@/lib/projectThemes';
 interface Project { slug: string; bannerUrl: string | null; nameUk: string; nameEn: string; descriptionUk: string | null; descriptionEn: string | null; status: 'active' | 'coming_soon' | 'hidden' }
 
 /** Окрема стрічка «Проєкти» у новинах: великі квадратні картки напрямків платформи, гортаються вбік. */
-export function ProjectsStrip() {
+export function ProjectsStrip({ round = 0 }: { round?: number }) {
   const { t, locale } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
   const [matched, setMatched] = useState(false);
@@ -33,6 +33,7 @@ export function ProjectsStrip() {
     return () => { off = true; };
   }, []);
   if (projects.length === 0) return null;
+  const shown = Array.from({ length: Math.min(5, projects.length) }, (_, i) => projects[(round * 4 + i) % projects.length]);
   const nm = (p: Project) => (locale === 'uk' ? p.nameUk : p.nameEn || p.nameUk);
   const ds = (p: Project) => (locale === 'uk' ? p.descriptionUk : p.descriptionEn || p.descriptionUk);
   return (
@@ -45,7 +46,7 @@ export function ProjectsStrip() {
         <Link href="/projects" className="text-sm font-semibold text-primary-700 hover:underline">{t('feed.recommendations.seeAll')}</Link>
       </div>
       <ul className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [scrollbar-width:none]">
-        {projects.map((p) => {
+        {shown.map((p) => {
           const th = projectTheme(p.slug);
           return (
             <li key={p.slug} className="w-[78%] max-w-[18rem] shrink-0 snap-start">
