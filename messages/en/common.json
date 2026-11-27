@@ -12,7 +12,8 @@
     "goHome": "Go to home page"
   },
   "states": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "loadFailed": "Could not load the data. Check your connection and try again."
   },
   "auth": {
     "unavailable": "Could not verify your session. Check your connection and try again.",

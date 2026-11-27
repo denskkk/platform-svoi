@@ -70,6 +70,7 @@ export default function EditServicePage() {
       setCategories(data.categories || []);
     } catch (err) {
       console.error('Error loading categories:', err);
+      toast.error(t('common.states.loadFailed'));
     }
   };
 
