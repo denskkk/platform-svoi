@@ -65,7 +65,7 @@ MIGRATIONS=(
   20261145_china_sections_remap.sql 20261146_folder_images.sql 20261147_taxi_request_details.sql
   20261148_representations.sql 20261149_real_estate_sections.sql 20261150_project_structures.sql
   20261151_antiques_clubs_structure.sql 20261152_export_alliance.sql 20261153_nine_projects_structure.sql
-  20261154_negotiations.sql 20261155_post_mixed_media.sql 20261156_users_terms_accepted.sql 20261157_conversation_cleared.sql 20261158_real_estate_merge.sql 20261159_helper_hour_split.sql
+  20261154_negotiations.sql 20261155_post_mixed_media.sql 20261156_users_terms_accepted.sql 20261157_conversation_cleared.sql 20261158_real_estate_merge.sql 20261159_helper_hour_split.sql 20261160_cooperatives_description.sql
 )
 export PGCLIENTENCODING=UTF8
 for f in "${MIGRATIONS[@]}"; do
