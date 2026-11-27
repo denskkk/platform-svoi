@@ -37,6 +37,23 @@ export default function AboutPage() {
           </h1>
 
           <div className="prose prose-lg max-w-none">
+            <section id="manifest" className="mb-10 rounded-2xl bg-gradient-to-br from-blue-50 to-yellow-50 border border-blue-100 p-6 sm:p-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">{t('about.manifest.title')}</h2>
+              {['i1', 'i2', 'i3'].map((k) => (
+                <p key={k} className="text-gray-700 leading-relaxed mb-3 text-lg">{t(`about.manifest.${k}`)}</p>
+              ))}
+              {[['b1t', ['b1p1', 'b1p2', 'b1p3']], ['b2t', ['b2p1', 'b2p2', 'b2p3']], ['b3t', ['b3p1', 'b3p2']], ['b4t', ['b4p1']], ['b5t', ['b5p1', 'b5p2']]].map(([title, ps]) => (
+                <div key={title as string} className="mt-6">
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">{t(`about.manifest.${title as string}`)}</h3>
+                  {(ps as string[]).map((k) => (
+                    <p key={k} className="text-gray-700 leading-relaxed mb-3">{t(`about.manifest.${k}`)}</p>
+                  ))}
+                </div>
+              ))}
+              <p className="mt-6 text-xl font-bold text-gray-900">{t('about.manifest.call')}</p>
+              <p className="mt-2 text-lg font-semibold text-blue-800">{t('about.manifest.motto')}</p>
+            </section>
+
             <section className="mb-8">
               <h2 className={H2_CLASS}>{t('about.overview.title')}</h2>
               <p className="text-gray-600 leading-relaxed mb-3">{t('about.overview.intro')}</p>
