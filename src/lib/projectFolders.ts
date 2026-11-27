@@ -189,15 +189,14 @@ const SPECS: Record<string, Spec[]> = {
   'real-estate': [
     { key: 'sale', icon: '🏠', kids: [
       leaf('apartments', '🏢', { derive: { dealType: 'sale', propertyType: 'apartment' } }),
-      leaf('houses', '🏡', { derive: { dealType: 'sale', propertyType: 'house' } }),
-      leaf('land', '🌳', { derive: { dealType: 'sale', propertyType: 'land' } }),
+      // Будинки, котеджі, таунхаус і ділянки — одна папка; тип обирається в оголошенні та в пошуку всередині
+      leaf('houses', '🏡', { derive: { dealType: 'sale' } }),
       leaf('commercial', '🏬', { derive: { dealType: 'sale', propertyType: 'commercial' } }),
       leaf('garages', '🚗', { derive: { dealType: 'sale', propertyType: 'garage' } }),
-      leaf('newbuilds', '🏗️', { derive: { dealType: 'sale', propertyType: 'newbuild' } }),
     ] },
     { key: 'rent', icon: '🔑', kids: [
       leaf('apartments', '🏢', { derive: { dealType: 'rent', propertyType: 'apartment' } }),
-      leaf('houses', '🏡', { derive: { dealType: 'rent', propertyType: 'house' } }),
+      leaf('houses', '🏡', { derive: { dealType: 'rent' } }),
       leaf('rooms', '🛏️', { derive: { dealType: 'rent', propertyType: 'room' } }),
       leaf('commercial', '🏬', { derive: { dealType: 'rent', propertyType: 'commercial' } }),
       leaf('offices', '💼', { derive: { dealType: 'rent', propertyType: 'office' } }),
@@ -284,23 +283,22 @@ const SPECS: Record<string, Spec[]> = {
       leaf('furniture', '🪑', { acts: ['orderWork'] }), leaf('garden', '🌿', { acts: ['orderWork'] }), leaf('firewood', '🪵', { acts: ['orderWork'] }),
       leaf('cleaning', '🧹', { acts: ['orderWork'] }), leaf('transport', '🚚', { acts: ['orderWork'] }), leaf('misc', '🛠️', { acts: ['orderWork'] }),
     ] },
+    // «Виконую роботу» і «Оренда» — окремі папки першого рівня (раніше були зліплені в одну «Оренда та робота»)
+    { key: 'job', icon: '💪', kids: [leaf('find', '🔎'), leaf('need', '📝', { acts: ['offerWork'] })] },
+    { key: 'rent', icon: '🔧', kids: [
+      leaf('powerTools', '🔧', { acts: ['rentRequest'] }), leaf('garden', '🌱', { acts: ['rentRequest'] }), leaf('washers', '🚿', { acts: ['rentRequest'] }), leaf('building', '🏗️', { acts: ['rentRequest'] }),
+      leaf('trailers', '🚛', { acts: ['rentRequest'] }), leaf('generators', '🔋', { acts: ['rentRequest'] }), leaf('repair', '🪛', { acts: ['rentRequest'] }), leaf('other', '📦', { acts: ['rentRequest'] }),
+    ] },
     { key: 'cabinet', icon: '🗂️', kids: [
       fx('apply', '📝', 'masterApply'),
       view('create', '🛠️', 'info'),
       { key: 'my', icon: '🧰', kids: [
         { key: 'profile', icon: '👤', href: '/profile' }, { key: 'services', icon: '🧾', href: '/my-listings' },
-        { key: 'orders', icon: '🆕', to: 'work.job.need' }, { key: 'replies', icon: '💬', href: '/chat' },
+        { key: 'orders', icon: '🆕', to: 'job.need' }, { key: 'replies', icon: '💬', href: '/chat' },
         { key: 'active', icon: '⏳', href: '/my-listings' }, { key: 'messages', icon: '✉️', href: '/chat' },
         { key: 'reviews', icon: '⭐', href: '/reviews' }, { key: 'settings', icon: '⚙️', href: '/menu/settings' },
       ] },
       { key: 'team', icon: '👥', kids: [view('network', '🌍', 'reptree'), view('create', '🏙️', 'repapply:open'), view('join', '🤝', 'repapply:open'), { key: 'invite', icon: '📨', href: '/menu/qr' }] },
-    ] },
-    { key: 'work', icon: '🧰', kids: [
-      { key: 'rent', icon: '🔧', kids: [
-        leaf('powerTools', '🔧', { acts: ['rentRequest'] }), leaf('garden', '🌱', { acts: ['rentRequest'] }), leaf('washers', '🚿', { acts: ['rentRequest'] }), leaf('building', '🏗️', { acts: ['rentRequest'] }),
-        leaf('trailers', '🚛', { acts: ['rentRequest'] }), leaf('generators', '🔋', { acts: ['rentRequest'] }), leaf('repair', '🪛', { acts: ['rentRequest'] }), leaf('other', '📦', { acts: ['rentRequest'] }),
-      ] },
-      { key: 'job', icon: '💪', kids: [leaf('find', '🔎'), leaf('need', '📝', { acts: ['offerWork'] })] },
     ] },
     INFO([S_ABOUT, S_HOW, S_EARN, S_REP, S_TEAM, S_PARTNER, S_INVITE, S_NEWS]),
     FEEDBACK([F_SUGGEST, fb('complaintMaster', '📣', 'complaint'), fb('rentProblem', '🧰', 'complaint'), fb('dishonest', '🚫', 'complaint'), F_REVIEW, F_DIRECTION]),

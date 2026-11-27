@@ -39,5 +39,24 @@
     "invest": "Investments",
     "travel": "Travel agency",
     "pets": "Pet shop"
+  },
+  "hits": {
+    "title": "Go to",
+    "apartmentsSale": "Apartments: buy",
+    "housesSale": "Houses, cottages and land: buy",
+    "garages": "Garages and parking",
+    "commercial": "Commercial property",
+    "rent": "Property: rent",
+    "realEstate": "Real estate project",
+    "helperHour": "Handyman project",
+    "taxi": "Taxi project",
+    "beauty": "Beauty project",
+    "export": "Ukrainian Export Alliance",
+    "lawyers": "Lawyers project",
+    "china": "China turnkey project",
+    "cars": "Cars project",
+    "antiques": "Antiques shop",
+    "clubs": "Interest clubs",
+    "shops": "Shop for your own"
   }
 }

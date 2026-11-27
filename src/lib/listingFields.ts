@@ -57,7 +57,8 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
   ],
   'real-estate': [
     { key: 'adKind', type: 'select', required: true, options: ['offer', 'request'], filter: 'select' },
-    { key: 'propertyType', type: 'select', required: true, options: ['apartment', 'house', 'commercial', 'land', 'garage', 'newbuild', 'room', 'office'], filter: 'select' },
+    { key: 'propertyType', type: 'select', required: true, options: ['apartment', 'house', 'townhouse', 'land', 'commercial', 'garage', 'newbuild', 'room', 'office'], filter: 'select' },
+    { key: 'marketType', type: 'select', options: ['secondary', 'newbuild'], filter: 'select' },
     { key: 'dealType', type: 'select', required: true, options: ['sale', 'rent'], filter: 'select' },
     { key: 'country', type: 'text', maxLength: 60, filter: 'text' },
     { key: 'district', type: 'text', maxLength: 80, filter: 'text' },
@@ -402,12 +403,12 @@ export const LISTING_FIELDS: Record<string, ListingField[]> = {
  * Проєкти з папками (projectFolders): оголошення завжди належить розділу (поле `section`, обов'язкове),
  * а решта полів стають необов'язковими й показуються лише там, де мають сенс (див. SECTION_RULES).
  */
-const RE_BUY = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_sale_land', 'real_estate_sale_commercial', 'real_estate_sale_garages', 'real_estate_sale_newbuilds'];
+const RE_BUY = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_sale_commercial', 'real_estate_sale_garages'];
 const RE_RENT = ['real_estate_rent_apartments', 'real_estate_rent_houses', 'real_estate_rent_rooms', 'real_estate_rent_commercial', 'real_estate_rent_offices', 'real_estate_rent_garages', 'real_estate_rent_short'];
 const RE_SECTIONS = RE_BUY.concat(RE_RENT);
 const RE_HOME = ['real_estate_home_sell', 'real_estate_home_free', 'real_estate_home_moving'];
 // Розділи, де має сенс кількість кімнат (не земля, гаражі, комерція й офіси)
-const RE_ROOMS = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_sale_newbuilds', 'real_estate_rent_apartments', 'real_estate_rent_houses', 'real_estate_rent_rooms', 'real_estate_rent_short'];
+const RE_ROOMS = ['real_estate_sale_apartments', 'real_estate_sale_houses', 'real_estate_rent_apartments', 'real_estate_rent_houses', 'real_estate_rent_rooms', 'real_estate_rent_short'];
 const CAR_SECTIONS = ['cars_buy', 'cars_rent'];
 const ids = (slug: string, prefix: string) => sectionLeaves(slug).map((l) => l.id).filter((id) => id.indexOf(prefix) === 0);
 const JOB_SECTIONS = ['jobs_vacancies', 'jobs_apply_candidates'];
@@ -418,14 +419,15 @@ const HEALTH_SPECIALISTS = ids('health', 'health_').filter((id) => id.indexOf('h
 const PET_ADS = sectionLeaves('pets').map((l) => l.id).filter((id) => /_list$/.test(id));
 const PET_SPECIALISTS = ids('pets', 'pets_vet_').concat(ids('pets', 'pets_training_'), ids('pets', 'pets_nutrition_'), ['pets_grooming_learning', 'pets_grooming_onsite']);
 const PET_CARE = ['pets_sitting_need', 'pets_sitting_can', 'pets_sitting_hotels', 'pets_sitting_help', 'pets_walking_need', 'pets_walking_can'];
-const HH_RENT = ids('helper-hour', 'helper_hour_work_rent_');
-const HH_JOB = ids('helper-hour', 'helper_hour_work_job_');
+const HH_RENT = ids('helper-hour', 'helper_hour_rent_');
+const HH_JOB = ids('helper-hour', 'helper_hour_job_');
 const HH_ALL = ids('helper-hour', 'helper_hour_');
 const EXA = (...p: string[]) => ids('export-alliance', 'export_alliance_').filter((x) => p.some((q) => x.indexOf('export_alliance_' + q) === 0));
 const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
   'real-estate': {
     // Тип об'єкта виставляється розділом (derive); обирає його сам користувач лише в короткостроковій оренді
-    propertyType: { sections: ['real_estate_rent_short'], requiredIn: ['real_estate_rent_short'] },
+    propertyType: { sections: ['real_estate_sale_houses', 'real_estate_rent_houses', 'real_estate_rent_short'], requiredIn: ['real_estate_sale_houses', 'real_estate_rent_houses', 'real_estate_rent_short'] },
+    marketType: { sections: ['real_estate_sale_apartments'], requiredIn: ['real_estate_sale_apartments'] },
     dealType: { sections: RE_SECTIONS, derived: true },
     country: { sections: RE_SECTIONS.concat(RE_HOME) },
     district: { sections: RE_SECTIONS.concat(RE_HOME) },
@@ -653,8 +655,8 @@ const SECTION_RULES: Record<string, Record<string, Partial<ListingField>>> = {
   },
   'helper-hour': {
     experience: { sections: HH_ALL }, country: { sections: HH_ALL },
-    tools: { sections: ['helper_hour_work_job_find'] }, availability: { sections: ['helper_hour_work_job_find'] },
-    desiredDate: { sections: ['helper_hour_work_job_need'] }, address: { sections: ['helper_hour_work_job_need'] },
+    tools: { sections: ['helper_hour_job_find'] }, availability: { sections: ['helper_hour_job_find'] },
+    desiredDate: { sections: ['helper_hour_job_need'] }, address: { sections: ['helper_hour_job_need'] },
     rentDeposit: { sections: HH_RENT }, deliveryOption: { sections: HH_RENT }, techState: { sections: HH_RENT },
   },
 };
