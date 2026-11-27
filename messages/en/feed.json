@@ -232,7 +232,8 @@
       "videos": "Videos",
       "saved": "Saved",
       "reacted": "Liked and commented",
-      "private": "Private"
+      "private": "Private",
+      "photos": "Photos"
     },
     "emptyTab": {
       "posts": "No posts yet",
@@ -240,7 +241,8 @@
       "videos": "No videos yet",
       "saved": "No saved posts yet",
       "reacted": "You have not liked or commented on anything yet",
-      "private": "No private posts. You can make a post private in its menu (three dots)."
+      "private": "No private posts. You can make a post private in its menu (three dots).",
+      "photos": "No photos yet"
     }
   },
   "single": {

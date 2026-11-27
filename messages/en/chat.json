@@ -17,11 +17,17 @@
     "createConversation": "Failed to create conversation",
     "loadMessages": "Failed to load messages",
     "sendMessage": "Failed to send message",
-    "connection": "Failed to connect to the server"
+    "connection": "Failed to connect to the server",
+    "deleteFailed": "Could not delete the chat"
   },
   "back": "Back",
   "tabs": {
     "direct": "Direct",
     "groups": "Groups"
-  }
+  },
+  "deleteChat": "Delete chat",
+  "deleteConfirm": "Delete this chat for you? The other person keeps the conversation.",
+  "create": "Create",
+  "createGroupChat": "Group chat",
+  "createBoard": "Notice board (community)"
 }

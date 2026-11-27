@@ -382,7 +382,11 @@
     "share": "Share",
     "emptyFollowing": "No videos from people you follow yet",
     "emptyFollowingHint": "Follow creators or browse recommendations.",
-    "seeAll": "See \"For you\""
+    "seeAll": "See \"For you\"",
+    "business": "Business",
+    "live": "LIVE",
+    "liveSoon": "Live streams are coming soon",
+    "liveSoonHint": "Streams from people and companies will appear here. For now, watch videos."
   },
   "tiles": {
     "shop": "Online shop",

@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { MessageCircle, Send, ArrowLeft, Plus, X } from 'lucide-react';
+import { ClipboardList, MessageCircle, Send, ArrowLeft, Plus, Trash2, X } from 'lucide-react';
 import { GroupChatList } from '@/components/chat/GroupChatList';
 import { NewGroupForm } from '@/components/chat/NewGroupForm';
 import { canCreateGroupChats } from '@/lib/groupRights';
@@ -63,6 +63,7 @@ function ChatPageContent() {
   // Вкладки месенджера: особисті чати / групові; створення групи — у модальному вікні прямо тут
   const [tab, setTab] = useState<'direct' | 'groups'>('direct');
   const [newGroup, setNewGroup] = useState(false);
+  const [plusMenu, setPlusMenu] = useState(false);
   const [groupsKey, setGroupsKey] = useState(0);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -103,6 +104,21 @@ function ChatPageContent() {
       initFromLocal();
     }
   }, [router]);
+
+  // «Видалити чат» ховає історію лише для мене; співрозмовник її не втрачає
+  const deleteConversation = async () => {
+    if (!selectedConversation) return;
+    if (!window.confirm(t('chat.deleteConfirm'))) return;
+    try {
+      const res = await fetch(`/api/conversations/${selectedConversation}`, { method: 'DELETE', credentials: 'include', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+      if (!res.ok) throw new Error();
+      setConversations((prev) => prev.filter((c) => c.id !== selectedConversation));
+      setSelectedConversation(null);
+      setMessages([]);
+    } catch {
+      setError(t('chat.errors.deleteFailed'));
+    }
+  };
 
   const loadConversations = useCallback(async () => {
     try {
@@ -345,9 +361,24 @@ function ChatPageContent() {
                 ))}
               </div>
               {canCreateGroupChats(user) && (
-                <button type="button" onClick={() => setNewGroup(true)} aria-label={t('cabinet.groupChats.new')} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-500 text-neutral-900 hover:bg-primary-600">
-                  <Plus className="h-5 w-5" />
-                </button>
+                <div className="relative shrink-0">
+                  <button type="button" onClick={() => setPlusMenu((v) => !v)} aria-expanded={plusMenu} aria-label={t('chat.create')} className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-500 text-neutral-900 hover:bg-primary-600">
+                    <Plus className="h-5 w-5" />
+                  </button>
+                  {plusMenu && (
+                    <>
+                      <button type="button" className="fixed inset-0 z-20 cursor-default" aria-label={t('chat.back')} onClick={() => setPlusMenu(false)} />
+                      <div className="absolute right-0 top-11 z-30 w-60 overflow-hidden rounded-xl border border-neutral-200 bg-white py-1 shadow-xl">
+                        <button type="button" onClick={() => { setPlusMenu(false); setNewGroup(true); }} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-neutral-800 hover:bg-neutral-50">
+                          <MessageCircle className="h-5 w-5 text-neutral-500" />{t('chat.createGroupChat')}
+                        </button>
+                        <Link href="/clubs/new" onClick={() => setPlusMenu(false)} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-neutral-800 hover:bg-neutral-50">
+                          <ClipboardList className="h-5 w-5 text-neutral-500" />{t('chat.createBoard')}
+                        </Link>
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
             </div>
             {tab === 'groups' ? (
@@ -436,7 +467,11 @@ function ChatPageContent() {
                         {t('chat.viewProfile')}
                       </Link>
                     </div>
-                    <div className="ml-auto">
+                    <div className="ml-auto flex items-center gap-1">
+                      <button type="button" onClick={deleteConversation} aria-label={t('chat.deleteChat')} title={t('chat.deleteChat')}
+                        className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 hover:bg-red-50 hover:text-red-600">
+                        <Trash2 className="h-5 w-5" />
+                      </button>
                       <ReportButton
                         reportedUserId={selectedConv.otherUser.id}
                         contentType="user"

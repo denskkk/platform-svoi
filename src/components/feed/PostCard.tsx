@@ -2,6 +2,7 @@
 
 import { memo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BadgeCheck, ThumbsUp, MessageCircle, Bookmark, Share2, MoreHorizontal, Pencil, Trash2, X, UserPlus, UserCheck, Repeat2, Link2, Lock, Unlock } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -40,7 +41,10 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
   const { t, locale } = useI18n();
   const toast = useToast();
   const [expanded, setExpanded] = useState(false);
+  const router = useRouter();
   const [showComments, setShowComments] = useState(autoOpenComments);
+  // У стрічці коментарі не розгортаються під дописом (лише лічильник): читати й писати — на сторінці допису. На самій сторінці допису вони вже відкриті.
+  const toggleComments = () => { if (autoOpenComments) setShowComments((v) => !v); else router.push(`/feed/${post.id}`); };
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
@@ -382,7 +386,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
             )}
           </span>
           {post.commentsCount > 0 && (
-            <button type="button" onClick={() => setShowComments((v) => !v)} className="hover:underline">
+            <button type="button" onClick={toggleComments} className="hover:underline">
               {t('feed.post.commentsLabel', { count: post.commentsCount })}
             </button>
           )}
@@ -422,7 +426,7 @@ function PostCardImpl({ post, canInteract, canFollow, onChange, onFollowChange, 
         </div>
         <button
           type="button"
-          onClick={() => setShowComments((v) => !v)}
+          onClick={toggleComments}
           aria-expanded={showComments}
           aria-label={t('feed.post.comments')}
           className={cn('inline-flex items-center justify-center gap-2 py-2 rounded-md text-[14px] font-semibold transition hover:bg-neutral-100 active:scale-95', showComments ? 'text-primary-600' : 'text-neutral-600')}

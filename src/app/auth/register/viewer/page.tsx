@@ -102,6 +102,7 @@ function ViewerRegisterForm() {
         },
         body: JSON.stringify({
           ref: readInviteRef(),
+          acceptTerms: true,
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           email: formData.email.trim(),

@@ -89,9 +89,11 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    const clearedAt = conversation.user1Id === userId ? conversation.user1ClearedAt : conversation.user2ClearedAt;
     const messages = await prisma.message.findMany({
       where: {
-        conversationId
+        conversationId,
+        ...(clearedAt ? { createdAt: { gt: clearedAt } } : {}),
       },
       include: {
         sender: {

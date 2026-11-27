@@ -214,6 +214,9 @@
     "linkCopied": "Link copied",
     "more": "More",
     "favorite": "Add to favorites",
-    "unfavorite": "Remove from favorites"
+    "unfavorite": "Remove from favorites",
+    "invited": "People invited",
+    "deals": "Closed deals",
+    "editProfile": "Edit profile"
   }
 }

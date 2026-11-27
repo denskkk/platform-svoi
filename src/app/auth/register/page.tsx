@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ConsentCheckbox } from '@/components/ui/ConsentCheckbox';
 import { Eye, EyeOff, Globe, Loader2, Newspaper, Store, Wallet } from 'lucide-react';
 import { useI18n } from '@/i18n/client';
 import { readInviteRef } from '@/lib/inviteRef';
@@ -23,6 +24,7 @@ export default function RegisterPage() {
   // Після успішної реєстрації пропонуємо доповнити профіль; next — куди йти, якщо «пізніше»
   const [nextUrl, setNextUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   // Перший екран реєстрації — вибір мови (як у TikTok); показується один раз на пристрої
@@ -44,6 +46,7 @@ export default function RegisterPage() {
     const age = Number(form.age);
     if (!form.age || !Number.isInteger(age) || age < 14 || age > 120) { setError(t('auth.register.simple.errors.age')); return; }
     if (!form.gender) { setError(t('auth.register.simple.errors.gender')); return; }
+    if (!consent) { setError(t('auth.register.simple.errors.consent')); return; }
 
     setLoading(true);
     try {
@@ -53,7 +56,7 @@ export default function RegisterPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ firstName, lastName, email, password: form.password, accountType: 'basic', age, gender: form.gender, ref: readInviteRef() }),
+          body: JSON.stringify({ firstName, lastName, email, password: form.password, accountType: 'basic', age, gender: form.gender, ref: readInviteRef(), acceptTerms: true }),
         });
       } catch {
         throw new Error(t('auth.register.simple.errors.network'));
@@ -148,12 +151,7 @@ export default function RegisterPage() {
             </button>
           </div>
 
-          <p className="text-xs text-neutral-500 leading-relaxed">
-            {t('auth.register.simple.agreePrefix')}{' '}
-            <Link href="/terms-of-use" className="text-primary-700 hover:underline">{t('auth.register.simple.terms')}</Link>{' '}
-            {t('auth.register.simple.and')}{' '}
-            <Link href="/privacy" className="text-primary-700 hover:underline">{t('auth.register.simple.privacy')}</Link>.
-          </p>
+          <ConsentCheckbox checked={consent} onChange={setConsent} />
 
           {error && <p role="alert" className="rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</p>}
 
