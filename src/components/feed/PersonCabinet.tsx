@@ -213,22 +213,22 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
         )}
 
         {/* Про мене */}
-        {profile.bio && <p className="mt-4 whitespace-pre-line break-words text-[15px] leading-relaxed text-neutral-800">{profile.bio}</p>}
-        {facts.length > 0 && (
+        {!isOwn && profile.bio && <p className="mt-4 whitespace-pre-line break-words text-[15px] leading-relaxed text-neutral-800">{profile.bio}</p>}
+        {!isOwn && facts.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-neutral-600">
             {facts.map(({ icon: Icon, text }) => (
               <li key={text} className="inline-flex items-center gap-1.5"><Icon className="h-4 w-4 text-neutral-400" aria-hidden />{text}</li>
             ))}
           </ul>
         )}
-        {tags.length > 0 && (
+        {!isOwn && tags.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-1.5">
             {tags.map((tag) => <li key={tag} className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-800">{tag}</li>)}
           </ul>
         )}
 
         {/* Контакти й соцмережі */}
-        {(hasContacts || socials.length > 0) && (
+        {!isOwn && (hasContacts || socials.length > 0) && (
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {profile.phone && <a href={`tel:${profile.phone}`} className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-800 hover:bg-neutral-200"><Phone className="h-4 w-4" />{profile.phone}</a>}
             {profile.email && !isOwn && <a href={`mailto:${profile.email}`} className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-800 hover:bg-neutral-200"><Mail className="h-4 w-4 shrink-0" /><span className="truncate">{profile.email}</span></a>}
@@ -243,9 +243,12 @@ export function PersonCabinet({ profile, isOwn, currentUser, isFavorite, onToggl
         {/* Основні дії */}
         <div className="mt-5 flex flex-wrap gap-2">
           {isOwn ? (
-            <div ref={editRef} className="relative w-full">
-              <button type="button" onClick={() => setEditMenu((v) => !v)} aria-expanded={editMenu} className={cn(btn, 'w-full bg-primary-500 text-white hover:bg-primary-600')}>
-                <Pencil className="h-4 w-4" />{t('profile.view.actions.edit')}
+            <div ref={editRef} className="relative flex w-full gap-2">
+              <Link href="/profile/edit" className={cn(btn, 'flex-1 bg-primary-500 text-neutral-900 hover:bg-primary-600')}>
+                <Pencil className="h-4 w-4" />{t('profile.cabinet.editProfile')}
+              </Link>
+              <button type="button" onClick={() => setEditMenu((v) => !v)} aria-expanded={editMenu} aria-label={t('profile.cabinet.more')} className={cn(btn, 'bg-neutral-100 px-3 text-neutral-700 hover:bg-neutral-200')}>
+                <MoreHorizontal className="h-5 w-5" />
               </button>
               {editMenu && (
                 <div className="absolute inset-x-0 bottom-14 z-20 space-y-1 rounded-xl border border-neutral-200 bg-white p-2 shadow-xl">
