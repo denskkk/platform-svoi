@@ -499,6 +499,11 @@
       "delivery": "Delivery terms",
       "country": "Country",
       "region": "Region"
+    },
+    "consumer-platform": {
+      "adKind": "Type",
+      "country": "Country",
+      "region": "Region"
     }
   },
   "options": {
