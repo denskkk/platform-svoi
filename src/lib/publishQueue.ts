@@ -49,7 +49,7 @@ async function run() {
   emit();
   try {
     const n = j.items.length;
-    const prog = j.items.map((_, i) => (j.ready[i] ? 100 : 0));
+    const prog: number[] = j.items.map((_, i) => (j.ready[i] ? 100 : 0));
     const sync = () => { if (state) { state = { ...state, pct: Math.round(prog.reduce((a, b) => a + b, 0) / n) }; emit(); } };
     sync();
     await Promise.all(j.items.map(async (it, i) => {

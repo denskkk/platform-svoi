@@ -28,16 +28,19 @@ export const authorSelect = {
   businessInfo: { select: { companyName: true, logoUrl: true } },
 } as const;
 
+/** Масив порядку — змінюваний (не readonly), інакше Prisma не приймає його всередині `as const` */
+const VIDEO_ORDER = [{ position: 'asc' }, { id: 'asc' }] as Array<{ position: 'asc' } | { id: 'asc' }>;
+
 export const postInclude = {
   author: { select: authorSelect },
   images: { orderBy: { position: 'asc' as const }, select: { id: true, url: true, position: true } },
-  videos: { orderBy: [{ position: 'asc' as const }, { id: 'asc' as const }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
+  videos: { orderBy: VIDEO_ORDER, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
   repostOf: {
     select: {
       id: true, content: true, isHidden: true,
       author: { select: authorSelect },
       images: { orderBy: { position: 'asc' as const }, take: 4, select: { id: true, url: true, position: true } },
-      videos: { orderBy: [{ position: 'asc' as const }, { id: 'asc' as const }], select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
+      videos: { orderBy: VIDEO_ORDER, select: { id: true, status: true, url: true, posterUrl: true, durationSec: true, position: true } },
     },
   },
 } as const;
